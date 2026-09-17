@@ -4,7 +4,7 @@
 
 *# HAY SECCIONES TEMPORALES, Y HAY QUE REVISAR SI LA ESCRITURA ES FORMALMENTE CORRECTA O NO.*
 
-
+ABC primer push
 
 La propuesta es realizar una red social enfocada en compartir actividades, experiencias o lugares en distintas ciudades, para solucionar el problema de "No saber qué hacer".
 
