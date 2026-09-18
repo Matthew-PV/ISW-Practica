@@ -1,0 +1,281 @@
+# =========================
+
+# OS / IDE
+
+# =========================
+
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+
+# =========================
+
+# Environment / Secrets
+
+# =========================
+
+.env
+.env.*
+!.env.example
+!.env.template
+
+*.pem
+*.key
+*.crt
+secrets/
+credentials/
+*.secret
+
+# =========================
+
+# Logs / Temporary
+
+# =========================
+
+*.log
+logs/
+tmp/
+temp/
+.cache/
+
+# =========================
+
+# Dependencies
+
+# =========================
+
+node_modules/
+vendor/
+
+# =========================
+
+# Build / Distribution
+
+# =========================
+
+dist/
+build/
+out/
+target/
+coverage/
+.next/
+.nuxt/
+.svelte-kit/
+.angular/
+.cache/
+
+# =========================
+
+# Python
+
+# =========================
+
+**pycache**/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.venv/
+venv/
+env/
+ENV/
+
+# =========================
+
+# Java / Kotlin / Gradle
+
+# =========================
+
+.gradle/
+*.class
+*.jar
+*.war
+*.ear
+
+# =========================
+
+# C / C++
+
+# =========================
+
+*.o
+*.obj
+*.so
+*.dll
+*.dylib
+*.a
+*.lib
+*.exe
+
+# =========================
+
+# Rust
+
+# =========================
+
+/target/
+
+# =========================
+
+# Go
+
+# =========================
+
+bin/
+*.test
+
+# =========================
+
+# PHP / Laravel
+
+# =========================
+
+.phpunit.result.cache
+.phpunit.cache/
+storage/logs/
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+
+# =========================
+
+# Ruby
+
+# =========================
+
+.bundle/
+vendor/bundle/
+*.gem
+/.ruby-version
+
+# =========================
+
+# Databases / Local data
+
+# =========================
+
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+
+# =========================
+
+# Docker
+
+# =========================
+
+docker-compose.override.yml
+
+# =========================
+
+# Terraform
+
+# =========================
+
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+
+# =========================
+
+# Serverless
+
+# =========================
+
+.serverless/
+.aws-sam/
+
+# =========================
+
+# Test / Reports
+
+# =========================
+
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+
+# =========================
+
+# Generated files
+
+# =========================
+
+*.generated.*
+generated/
+*.tmp
+*.bak
+*.orig
+
+# =========================
+
+# Archives
+
+# =========================
+
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# =========================
+
+# Local configuration
+
+# =========================
+
+*.local
+config.local.*
+settings.local.*
+
+# =========================
+
+# OS-specific trash
+
+# =========================
+
+.Trashes
+.AppleDouble
+.LSOverride
+$RECYCLE.BIN/
+
+# =========================
+
+# Misc
+
+# =========================
+
+*.pid
+*.seed
+*.pid.lock
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Don't ignore these
+
+!.gitkeep
+!.env.example
+!.env.template
+
