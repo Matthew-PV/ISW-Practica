@@ -229,9 +229,89 @@ El frontend no necesita instalación: Bootstrap se carga desde CDN y `js/api.js`
 
 
 
-### 7. Entorno de desarrollo
+### 7. Instalación de herramientas
 
-Requisitos: [Node.js](https://nodejs.org/) 22 o superior y [Docker](https://docs.docker.com/get-docker/).
+Para desarrollar solo hace falta instalar tres programas. Todo lo demás se instala solo o no necesita instalación:
+
+* **MySQL** se ejecuta dentro de Docker, así que no se instala en el ordenador.
+* **Express, Prisma, Jest y el resto de librerías** se descargan con `npm install` (sección 8).
+* **Bootstrap** se carga desde CDN en cada página.
+
+| Herramienta | Para qué | Versión |
+|---|---|---|
+| Git | Clonar el repositorio y trabajar con ramas | Cualquiera reciente |
+| Node.js (incluye npm) | Ejecutar el backend e instalar sus librerías | LTS, 22 o superior |
+| Docker (con Docker Compose) | Levantar MySQL | Cualquiera reciente |
+
+#### 7.1. Windows
+
+1. **Git:** descargar e instalar [Git for Windows](https://git-scm.com/download/win).
+2. **Node.js:** descargar el instalador **LTS** de [nodejs.org](https://nodejs.org/) y seguir el asistente con las opciones por defecto.
+3. **Docker:** instalar [Docker Desktop](https://docs.docker.com/desktop/setup/install/windows-install/). Durante la instalación, dejar marcada la opción de usar **WSL 2**. Reiniciar si lo pide y abrir Docker Desktop, que tiene que estar en marcha para usar `docker`.
+
+#### 7.2. macOS
+
+1. **Git:** ejecutar `git --version` en la terminal. Si no está instalado, macOS ofrece instalar las *Command Line Tools*, que lo incluyen.
+2. **Node.js:** descargar el instalador **LTS** de [nodejs.org](https://nodejs.org/), o con Homebrew: `brew install node`.
+3. **Docker:** instalar [Docker Desktop](https://docs.docker.com/desktop/setup/install/mac-install/) (elegir la versión Apple Silicon o Intel según el equipo) y abrirlo.
+
+#### 7.3. Linux (Ubuntu, Linux Mint y derivadas)
+
+Los comandos se ejecutan en **bash**.
+
+**Git:**
+
+```bash
+sudo apt-get update
+sudo apt-get install -y git
+```
+
+**Node.js**, desde el repositorio oficial de NodeSource (sustituir `24` por la versión LTS vigente si ha cambiado):
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_24.x | sudo -E bash -
+sudo apt-get install -y nodejs
+```
+
+**Docker Engine**, desde el repositorio oficial de Docker:
+
+```bash
+sudo apt-get install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" \
+  | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+Para usar `docker` sin `sudo`, añadir el usuario al grupo `docker` y **cerrar sesión y volver a entrar**:
+
+```bash
+sudo usermod -aG docker $USER
+```
+
+En Linux Mint, `UBUNTU_CODENAME` hace que se use el repositorio de la versión de Ubuntu en la que se basa.
+
+#### 7.4. Comprobar la instalación
+
+```bash
+git --version
+node -v                 # v22.x o superior
+npm -v
+docker --version
+docker compose version
+docker run --rm hello-world   # descarga una imagen de prueba y muestra un mensaje de bienvenida
+```
+
+Si todos los comandos responden sin error, el equipo está listo para la puesta en marcha de la sección 8.
+
+
+
+### 8. Entorno de desarrollo
+
+Requisitos: las herramientas de la sección 7.
 
 Puesta en marcha en local, desde la raíz del repositorio:
 
@@ -255,7 +335,7 @@ Scripts de `backend/package.json`:
 
 
 
-### 8. Pruebas
+### 9. Pruebas
 
 * **Tests unitarios (Jest)** de la lógica de negocio: validaciones, permisos, cálculos.
 * **Tests de endpoints (Jest + Supertest)** de la API: cada criterio de validación de una tarjeta se traduce en al menos un test.

@@ -23,7 +23,7 @@ El detalle de cada herramienta, la estructura del repositorio y la puesta en mar
 
 ## Puesta en marcha
 
-Requiere Node.js 22+ y Docker.
+Requiere Git, Node.js 22+ y Docker. Cómo instalarlos en Windows, macOS y Linux: [sección 7 de la arquitectura](documentacion/arquitectura.md#7-instalación-de-herramientas).
 
 ```bash
 docker compose up -d          # MySQL
@@ -39,7 +39,7 @@ npm run dev                   # http://localhost:3000
 Toda la documentación detallada vive en [`documentacion/`](documentacion/):
 
 * [Propuesta inicial](documentacion/propuesta-inicial.md) — planteamiento conceptual del producto: problema, público objetivo, objetivos, módulos funcionales, modelo de datos, comparación con soluciones existentes, límites de alcance y riesgos.
-* [Arquitectura](documentacion/arquitectura.md) — alcance técnico, capas del sistema, herramientas y sus ventajas, comunicación frontend–backend, autenticación y autorización, estructura del repositorio, entorno de desarrollo y pruebas.
+* [Arquitectura](documentacion/arquitectura.md) — alcance técnico, capas del sistema, herramientas y sus ventajas, comunicación frontend–backend, autenticación y autorización, estructura del repositorio, instalación de herramientas, entorno de desarrollo y pruebas.
 * [Cuestiones pendientes](documentacion/cuestiones.md) — notas de trabajo del equipo y desglose de tareas de las primeras historias de usuario.
 
 Las historias de usuario del equipo están en [`customer-stories/`](customer-stories/).
