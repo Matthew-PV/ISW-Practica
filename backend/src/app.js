@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, '..', '..', 'frontend')));
 // Errores no controlados
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(500).json({ error: 'Error interno del servidor' });
+  res.status(err.status || 500).json({ error: err.status ? err.message : 'Error interno del servidor' });
 });
 
 module.exports = app;
