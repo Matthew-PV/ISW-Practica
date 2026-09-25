@@ -40,7 +40,7 @@ Toda la documentación detallada vive en [`documentacion/`](documentacion/):
 
 * [Propuesta inicial](documentacion/propuesta-inicial.md) — planteamiento conceptual del producto: problema, público objetivo, objetivos, módulos funcionales, modelo de datos, comparación con soluciones existentes, límites de alcance y riesgos.
 * [Arquitectura](documentacion/arquitectura.md) — alcance técnico, capas del sistema, herramientas y sus ventajas, comunicación frontend–backend, autenticación y autorización, estructura del repositorio, instalación de herramientas, entorno de desarrollo y pruebas.
-* [Cuestiones pendientes](documentacion/cuestiones.md) — notas de trabajo del equipo y desglose de tareas de las primeras historias de usuario.
+* [Modificaciones](documentacion/modificaciones.md) — registro de los cambios realizados: qué se ha hecho, cómo probarlo y notas para quien siga trabajando.
 
 Las historias de usuario del equipo están en [`customer-stories/`](customer-stories/).
 
@@ -49,7 +49,7 @@ Las historias de usuario del equipo están en [`customer-stories/`](customer-sto
 * `backend/` — servidor Node.js + Express: API REST, lógica de negocio, persistencia con Prisma y pruebas.
 * `frontend/` — páginas HTML, CSS y JavaScript con Bootstrap.
 * `docker-compose.yml` — MySQL para desarrollo local.
-* `documentacion/` — documentación del proyecto (propuesta de producto, arquitectura y notas de trabajo).
+* `documentacion/` — documentación del proyecto (propuesta de producto, arquitectura y registro de modificaciones).
 * `customer-stories/` — historias de usuario del equipo, en formato hoja de cálculo (una hoja por historia) y los documentos individuales de partida de cada miembro.
 
 ## Licencia

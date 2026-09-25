@@ -1,6 +1,6 @@
 # Arquitectura — PlanB
 
-> Arquitectura y diseño técnico del proyecto. Parte de la [propuesta inicial](propuesta-inicial.md) y de las [cuestiones pendientes](cuestiones.md) del 22/09/2026.
+> Arquitectura y diseño técnico del proyecto. Parte de la [propuesta inicial](propuesta-inicial.md).
 
 
 
