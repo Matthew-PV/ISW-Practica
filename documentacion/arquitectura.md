@@ -207,33 +207,51 @@ ISW-Practica/
 │   │   ├── middlewares/       # sesión, roles, validación de datos
 │   │   ├── services/          # lógica de negocio
 │   │   ├── repositories/      # acceso a datos con Prisma (persistencia)
-│   │   └── app.js             # configuración de Express
-│   └── tests/                 # pruebas con Jest y Supertest
+│   │   ├── app.js             # configuración de Express
+│   │   └── server.js          # arranque del servidor
+│   ├── tests/                 # pruebas con Jest y Supertest
+│   ├── .env.example           # variables de entorno necesarias (sin valores reales)
+│   └── package.json           # dependencias y scripts de npm
 ├── frontend/
 │   ├── *.html                 # una página por pantalla
 │   ├── css/
 │   └── js/                    # código de cada página y llamadas a la API
 ├── docker-compose.yml         # MySQL para desarrollo
-├── .env.example               # variables de entorno necesarias (sin valores reales)
 ├── documentacion/
 └── customer-stories/
 ```
 
 Las carpetas de `backend/src` se corresponden con las capas de la sección 2. Las rutas solo llaman a servicios, los servicios solo llaman a repositorios y solo los repositorios usan Prisma.
 
-Las claves y contraseñas (conexión a MySQL, credenciales de Cloudinary, secreto de sesión) se guardan en un archivo `.env` que **no se sube a git**. El archivo `.env.example` indica qué variables hay que rellenar.
+Las claves y contraseñas (conexión a MySQL, credenciales de Cloudinary, secreto de sesión) se guardan en `backend/.env`, que **no se sube a git**. El archivo `backend/.env.example` indica qué variables hay que rellenar.
+
+El frontend no necesita instalación: Bootstrap se carga desde CDN y `js/api.js` agrupa las llamadas a la API.
 
 
 
 ### 7. Entorno de desarrollo
 
-Puesta en marcha en local:
+Requisitos: [Node.js](https://nodejs.org/) 22 o superior y [Docker](https://docs.docker.com/get-docker/).
 
-1. `docker compose up -d` levanta MySQL.
-2. Copiar `.env.example` a `.env` y rellenar los valores.
-3. `npm install` en `backend/`.
-4. `npx prisma migrate dev` crea o actualiza las tablas.
-5. `npm run dev` arranca el servidor, que sirve la API y la web.
+Puesta en marcha en local, desde la raíz del repositorio:
+
+1. `docker compose up -d` levanta MySQL en `localhost:3306`.
+2. `cd backend` y copiar `.env.example` a `.env`. Los valores de la base de datos ya coinciden con `docker-compose.yml`; solo hay que cambiar `SESSION_SECRET` y rellenar `CLOUDINARY_URL` cuando haga falta.
+3. `npm install` instala las dependencias.
+4. `npm run db:migrate` crea o actualiza las tablas a partir de `prisma/schema.prisma`.
+5. `npm run dev` arranca el servidor en http://localhost:3000, que sirve la API y la web, y se reinicia solo al guardar cambios.
+
+Scripts de `backend/package.json`:
+
+| Script | Qué hace |
+|---|---|
+| `npm run dev` | Arranca el servidor y lo reinicia al cambiar el código |
+| `npm start` | Arranca el servidor sin reinicio automático |
+| `npm test` | Ejecuta las pruebas con Jest |
+| `npm run db:migrate` | Aplica los cambios de `schema.prisma` a la base de datos y genera la migración |
+| `npm run db:studio` | Abre Prisma Studio, una interfaz web para ver y editar los datos |
+
+`docker compose down` para MySQL; los datos se conservan en un volumen de Docker. `docker compose down -v` los borra.
 
 
 

@@ -1,0 +1,11 @@
+// Esquema de la base de datos. Los modelos se añaden conforme se implementan
+// las historias de usuario; después, `npm run db:migrate` crea la migración.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}

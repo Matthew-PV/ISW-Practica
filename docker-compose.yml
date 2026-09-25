@@ -1,0 +1,16 @@
+# MySQL para desarrollo local. Arrancar con: docker compose up -d
+services:
+  db:
+    image: mysql:8.4
+    container_name: planb-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: planb
+      MYSQL_DATABASE: planb
+    ports:
+      - "3306:3306"
+    volumes:
+      - planb-mysql-data:/var/lib/mysql
+
+volumes:
+  planb-mysql-data:

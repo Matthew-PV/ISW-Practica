@@ -21,18 +21,34 @@ PlanB es una **aplicación web responsive** organizada en capas: un único backe
 
 El detalle de cada herramienta, la estructura del repositorio y la puesta en marcha están en [`documentacion/arquitectura.md`](documentacion/arquitectura.md).
 
+## Puesta en marcha
+
+Requiere Node.js 22+ y Docker.
+
+```bash
+docker compose up -d          # MySQL
+cd backend
+cp .env.example .env          # ajustar SESSION_SECRET
+npm install
+npm run db:migrate
+npm run dev                   # http://localhost:3000
+```
+
 ## Documentación
 
 Toda la documentación detallada vive en [`documentacion/`](documentacion/):
 
 * [Propuesta inicial](documentacion/propuesta-inicial.md) — planteamiento conceptual del producto: problema, público objetivo, objetivos, módulos funcionales, modelo de datos, comparación con soluciones existentes, límites de alcance y riesgos.
-* [Arquitectura](documentacion/arquitectura.md) — alcance técnico, capas del sistema, herramientas y sus ventajas, comunicación frontend–backend, autenticación y autorización, avisos, estructura del repositorio, entorno de desarrollo y pruebas.
+* [Arquitectura](documentacion/arquitectura.md) — alcance técnico, capas del sistema, herramientas y sus ventajas, comunicación frontend–backend, autenticación y autorización, estructura del repositorio, entorno de desarrollo y pruebas.
 * [Cuestiones pendientes](documentacion/cuestiones.md) — notas de trabajo del equipo y desglose de tareas de las primeras historias de usuario.
 
 Las historias de usuario del equipo están en [`customer-stories/`](customer-stories/).
 
 ## Estructura del repositorio
 
+* `backend/` — servidor Node.js + Express: API REST, lógica de negocio, persistencia con Prisma y pruebas.
+* `frontend/` — páginas HTML, CSS y JavaScript con Bootstrap.
+* `docker-compose.yml` — MySQL para desarrollo local.
 * `documentacion/` — documentación del proyecto (propuesta de producto, arquitectura y notas de trabajo).
 * `customer-stories/` — historias de usuario del equipo, en formato hoja de cálculo (una hoja por historia) y los documentos individuales de partida de cada miembro.
 
