@@ -93,6 +93,8 @@ Autenticación completa: registro, inicio de sesión y sesiones.
   - `index.html` — página de login, con el estado del servidor en la barra superior (lo pinta `js/index.js`).
   - `bienvenida.html` + `js/bienvenida.js` — pantalla de bienvenida.
   - `js/auth.js` — `enviarFormulario()` sirve para los dos formularios, login y registro. En el registro muestra el CAPTCHA (`iniciarCaptcha()`) y lo reinicia tras cada error.
+  - `js/api.js` — si no se puede llegar al servidor, el error es «No se ha podido conectar con el servidor» en lugar del mensaje en inglés del navegador.
+  - Los botones de los formularios se desactivan mientras se espera la respuesta, así que un doble clic no envía dos veces.
   - `css/styles.css` — clase `contenedor-formulario` para la columna de 400px de los formularios.
 - Backend:
   - `GET /api/auth/yo` devuelve `{ id, nombreUsuario, email }`. Responde 401 si no hay sesión o si el usuario ya no existe.

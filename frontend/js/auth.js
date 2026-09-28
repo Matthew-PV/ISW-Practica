@@ -11,6 +11,9 @@ function enviarFormulario(idFormulario, idError, ruta, campos, datosExtra = () =
     e.preventDefault();
     const errorBox = document.getElementById(idError);
     errorBox.classList.add('d-none');
+    // Se desactiva el botón mientras se espera la respuesta, para no enviar dos veces
+    const boton = formulario.querySelector('button[type="submit"]');
+    boton.disabled = true;
 
     const datos = datosExtra();
     for (const campo of campos) {
@@ -23,6 +26,7 @@ function enviarFormulario(idFormulario, idError, ruta, campos, datosExtra = () =
     } catch (err) {
       errorBox.textContent = err.message;
       errorBox.classList.remove('d-none');
+      boton.disabled = false;
       // Cada respuesta del CAPTCHA solo vale una vez: tras un error hay que resolverlo de nuevo
       window.turnstile?.reset();
     }
