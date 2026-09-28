@@ -40,4 +40,9 @@ async function iniciarSesion({ email, password }) {
   return { id: usuario.id, nombreUsuario: usuario.nombreUsuario, email: usuario.email };
 }
 
-module.exports = { registrar, iniciarSesion };
+async function obtenerUsuario(id) {
+  const usuario = await usuarioRepository.buscarPorId(id);
+  return { id: usuario.id, nombreUsuario: usuario.nombreUsuario, email: usuario.email };
+}
+
+module.exports = { registrar, iniciarSesion, obtenerUsuario };

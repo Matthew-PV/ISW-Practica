@@ -96,3 +96,17 @@ La página de relleno de `/` se ha quitado. Ahora `/` muestra directamente el fo
 
 - `/login.html` ya no existe: cualquier enlace al login debe apuntar a `/`.
 - Tras iniciar sesión o registrarse, `js/auth.js` redirige a `/`, que vuelve a mostrar el formulario: todavía no hay página para después del login.
+
+## Pantalla de bienvenida — Implementado (28/09/2026)
+
+Tras iniciar sesión o registrarse aparece una pantalla que saluda al usuario por su nombre.
+
+### Qué se ha hecho
+
+- Backend:
+  - `GET /api/auth/yo` — ahora devuelve `{ id, nombreUsuario, email }` del usuario con sesión (antes solo el `id`). Usa `obtenerUsuario()` en `src/services/authService.js`.
+  - `tests/yo.test.js` — pruebas de `/api/auth/yo` con y sin sesión. Simulan el repositorio con `jest.mock`, así que no necesitan MySQL.
+
+### Cómo probarlo
+
+1. `npm test` dentro de `backend/` — pasan las 4 pruebas.

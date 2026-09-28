@@ -45,11 +45,16 @@ router.post('/logout', (req, res) => {
   });
 });
 
-router.get('/yo', (req, res) => {
-  if (!req.session.usuarioId) {
-    return res.status(401).json({ error: 'No hay sesión iniciada' });
+router.get('/yo', async (req, res, next) => {
+  try {
+    if (!req.session.usuarioId) {
+      return res.status(401).json({ error: 'No hay sesión iniciada' });
+    }
+    const usuario = await authService.obtenerUsuario(req.session.usuarioId);
+    res.json(usuario);
+  } catch (err) {
+    next(err);
   }
-  res.json({ id: req.session.usuarioId });
 });
 
 module.exports = router;
