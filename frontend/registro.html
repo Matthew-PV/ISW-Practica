@@ -30,6 +30,8 @@
         <label for="password" class="form-label">Contraseña</label>
         <input type="password" class="form-control" id="password" required minlength="8" maxlength="72">
       </div>
+      <!-- CAPTCHA de Cloudflare Turnstile, lo muestra iniciarCaptcha() de js/auth.js -->
+      <div id="captcha" class="mb-3"></div>
       <div id="error-registro" class="alert alert-danger d-none"></div>
       <button type="submit" class="btn btn-primary w-100">Crear cuenta</button>
     </form>
@@ -41,5 +43,7 @@
 
   <script src="js/api.js"></script>
   <script src="js/auth.js"></script>
+  <!-- Va después de auth.js, que define iniciarCaptcha() -->
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=iniciarCaptcha" async defer></script>
 </body>
 </html>

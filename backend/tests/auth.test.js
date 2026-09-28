@@ -5,6 +5,7 @@ const request = require('supertest');
 const bcrypt = require('bcrypt');
 const app = require('../src/app');
 const usuarioRepository = require('../src/repositories/usuarioRepository');
+const captchaService = require('../src/services/captchaService');
 
 const DATOS_PUBLICOS = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com' };
 let usuario;
@@ -59,6 +60,18 @@ describe('POST /api/auth/registro', () => {
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe('El nombre de usuario ya está en uso');
+  });
+
+  test('sin superar el CAPTCHA responde 400 y no consulta la base de datos', async () => {
+    jest.spyOn(captchaService, 'verificar').mockResolvedValue(false);
+
+    const res = await request(app)
+      .post('/api/auth/registro')
+      .send({ nombreUsuario: 'ana', email: 'ana@ejemplo.com', password: 'secreta123', captcha: 'malo' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toMatch(/robot/);
+    expect(usuarioRepository.crear).not.toHaveBeenCalled();
   });
 
   test('crea el usuario, guarda la contraseña cifrada y no la devuelve', async () => {

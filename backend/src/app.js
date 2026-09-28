@@ -10,8 +10,19 @@ const sesionStore = require('./repositories/sesionStore');
 const app = express();
 
 // Cabeceras de seguridad (helmet): política de contenido (CSP) que solo permite cargar scripts
-// propios, protección contra meter la web en un marco ajeno, y sin anunciar que usamos Express
-app.use(helmet());
+// propios y los del CAPTCHA de Cloudflare, protección contra meter la web en un marco ajeno,
+// y sin anunciar que usamos Express
+const CLOUDFLARE_CAPTCHA = 'https://challenges.cloudflare.com';
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        scriptSrc: ["'self'", CLOUDFLARE_CAPTCHA],
+        frameSrc: [CLOUDFLARE_CAPTCHA],
+      },
+    },
+  })
+);
 
 app.use(express.json());
 

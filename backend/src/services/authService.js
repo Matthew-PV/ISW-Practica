@@ -1,6 +1,7 @@
 // Lógica de negocio de la autenticación: registro, inicio de sesión y usuario actual.
 const bcrypt = require('bcrypt');
 const usuarioRepository = require('../repositories/usuarioRepository');
+const captchaService = require('./captchaService');
 const { crearError } = require('../errores');
 
 // Coste del cifrado con bcrypt: más alto es más seguro pero más lento
@@ -47,9 +48,9 @@ function passwordDemasiadoLarga(password) {
   return Buffer.byteLength(password) > PASSWORD_MAX_BYTES;
 }
 
-// Crea un usuario nuevo con la contraseña cifrada.
+// Crea un usuario nuevo con la contraseña cifrada. `ip` es la del navegador, para el CAPTCHA.
 // Los duplicados los detecta MySQL con los índices únicos de email y nombre de usuario.
-async function registrar(datos) {
+async function registrar(datos, ip) {
   const { nombreUsuario, password, ...resto } = leerTextos(datos, ['nombreUsuario', 'email', 'password']);
   const email = normalizarEmail(resto.email);
 
@@ -61,6 +62,11 @@ async function registrar(datos) {
   }
   if (password.length < PASSWORD_MIN || passwordDemasiadoLarga(password)) {
     throw crearError('La contraseña debe tener entre 8 y 72 caracteres', 400);
+  }
+  // El CAPTCHA se comprueba antes de consultar la base de datos: sin él, alguien podría
+  // probar emails de forma automática y ver cuáles responden «El email ya está registrado»
+  if (!(await captchaService.verificar(datos.captcha, ip))) {
+    throw crearError('No se ha podido comprobar que no eres un robot. Inténtalo de nuevo.', 400);
   }
 
   const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);

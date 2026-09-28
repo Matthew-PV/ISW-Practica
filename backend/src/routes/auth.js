@@ -21,9 +21,14 @@ function abrirSesion(req, usuarioId) {
 // Crea la cuenta y deja la sesión iniciada.
 // Los datos los valida el servicio; req.body es undefined si la petición no trae JSON.
 router.post('/registro', limiteRegistro, async (req, res) => {
-  const usuario = await authService.registrar(req.body ?? {});
+  const usuario = await authService.registrar(req.body ?? {}, req.ip);
   await abrirSesion(req, usuario.id);
   res.status(201).json(usuario);
+});
+
+// Clave pública del CAPTCHA, que el formulario de registro necesita para mostrarlo
+router.get('/captcha', (req, res) => {
+  res.json({ siteKey: process.env.TURNSTILE_SITE_KEY });
 });
 
 // Inicia la sesión con email y contraseña

@@ -14,3 +14,8 @@ jest.mock('../src/middlewares/limites', () => {
   const dejarPasar = (req, res, next) => next();
   return { limiteLogin: dejarPasar, limiteRegistro: dejarPasar };
 });
+
+// El CAPTCHA se da siempre por bueno (sin llamar a Cloudflare). Es una función normal y no
+// jest.fn() para que jest.resetAllMocks() no la anule; los tests la cambian con jest.spyOn.
+// tests/captcha.test.js prueba el servicio real.
+jest.mock('../src/services/captchaService', () => ({ verificar: async () => true }));

@@ -92,7 +92,7 @@ Autenticación completa: registro, inicio de sesión y sesiones.
 - Frontend:
   - `index.html` — página de login, con el estado del servidor en la barra superior (lo pinta `js/index.js`).
   - `bienvenida.html` + `js/bienvenida.js` — pantalla de bienvenida.
-  - `js/auth.js` — `enviarFormulario()` sirve para los dos formularios, login y registro.
+  - `js/auth.js` — `enviarFormulario()` sirve para los dos formularios, login y registro. En el registro muestra el CAPTCHA (`iniciarCaptcha()`) y lo reinicia tras cada error.
   - `css/styles.css` — clase `contenedor-formulario` para la columna de 400px de los formularios.
 - Backend:
   - `GET /api/auth/yo` devuelve `{ id, nombreUsuario, email }`. Responde 401 si no hay sesión o si el usuario ya no existe.
@@ -104,6 +104,7 @@ Autenticación completa: registro, inicio de sesión y sesiones.
   - `GET /api/health` consulta también MySQL (`src/repositories/saludRepository.js`) y responde 503 si no responde. El indicador del login pasa a «sin conexión» y, al pasar el ratón por encima, muestra el motivo.
   - Límite de intentos por IP (`src/middlewares/limites.js`, con `express-rate-limit`): 10 logins fallidos cada 15 minutos y 20 registros por hora. Al pasarse, responde 429 «Demasiados intentos». Los contadores están en memoria y se reinician con el servidor.
   - Cabeceras de seguridad con `helmet` en `app.js`: política de contenido (CSP), que solo deja ejecutar scripts propios; protección contra meter la web en un marco ajeno (`X-Frame-Options`); `nosniff`; y ya no se envía `X-Powered-By: Express`.
+  - CAPTCHA en el registro con Cloudflare Turnstile (`src/services/captchaService.js`). Se comprueba antes de consultar la base de datos, así que un programa no puede probar emails en masa para ver cuáles están registrados. `GET /api/auth/captcha` da la clave pública al formulario. Nuevas variables `TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY` en `.env` (ver `.env.example`).
   - `src/errores.js` — `crearError(mensaje, status)`, común para todo el backend.
   - Login: con un email que no existe también se ejecuta bcrypt (contra `HASH_FICTICIO`), así que la respuesta tarda lo mismo y el tiempo no delata qué emails están registrados.
   - Sesiones: al iniciar sesión o registrarse se crea una sesión nueva con otro id (`abrirSesion()` en `routes/auth.js`), lo que evita la fijación de sesión. El logout, además de cerrar la sesión en el servidor, borra la cookie del navegador.
@@ -124,4 +125,6 @@ Autenticación completa: registro, inicio de sesión y sesiones.
 - Cualquier enlace al login debe apuntar a `/`.
 - Para devolver un error al cliente, lanzar `crearError(mensaje, status)` de `src/errores.js`.
 - La CSP bloquea los scripts en línea (`<script>…</script>`, `onclick="…"`) y los de otros dominios: el código va en archivos de `js/`. Si hace falta cargar algo de otro dominio, hay que añadirlo a la configuración de `helmet` en `app.js`.
+- **Tras el `git pull`, copiar a `backend/.env` las dos variables `TURNSTILE_…` de `.env.example`**; sin ellas no se puede registrar nadie. Son las claves de prueba de Cloudflare, que siempre aceptan. Para desplegar, crear las reales en Cloudflare → Turnstile. El registro necesita conexión a internet para verificar el CAPTCHA.
+- En las pruebas, `tests/setup.js` da el CAPTCHA siempre por bueno; `tests/captcha.test.js` prueba el servicio real simulando las respuestas de Cloudflare.
 - Para un formulario nuevo, basta llamar a `enviarFormulario()` en `js/auth.js` con el id del formulario, el id de la caja de error, la ruta de la API y los campos.
