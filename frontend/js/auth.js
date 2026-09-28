@@ -1,20 +1,24 @@
 // Lógica de los formularios de login y registro.
 
-const formLogin = document.getElementById('form-login');
-if (formLogin) {
-  formLogin.addEventListener('submit', async (e) => {
+// Envía el formulario `idFormulario` a la API con el valor de cada campo (el id del input
+// coincide con el nombre que espera la API). Si va bien, lleva a la bienvenida; si no,
+// muestra el mensaje del servidor en la caja de error.
+function enviarFormulario(idFormulario, idError, ruta, campos) {
+  const formulario = document.getElementById(idFormulario);
+  if (!formulario) return; // el formulario no está en esta página
+
+  formulario.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const errorBox = document.getElementById('error-login');
+    const errorBox = document.getElementById(idError);
     errorBox.classList.add('d-none');
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    const datos = {};
+    for (const campo of campos) {
+      datos[campo] = document.getElementById(campo).value;
+    }
 
     try {
-      await api('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ email, password }),
-      });
+      await api(ruta, { method: 'POST', body: JSON.stringify(datos) });
       window.location.href = 'bienvenida.html';
     } catch (err) {
       errorBox.textContent = err.message;
@@ -23,26 +27,5 @@ if (formLogin) {
   });
 }
 
-const formRegistro = document.getElementById('form-registro');
-if (formRegistro) {
-  formRegistro.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const errorBox = document.getElementById('error-registro');
-    errorBox.classList.add('d-none');
-
-    const nombreUsuario = document.getElementById('nombreUsuario').value;
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    try {
-      await api('/auth/registro', {
-        method: 'POST',
-        body: JSON.stringify({ nombreUsuario, email, password }),
-      });
-      window.location.href = 'bienvenida.html';
-    } catch (err) {
-      errorBox.textContent = err.message;
-      errorBox.classList.remove('d-none');
-    }
-  });
-}
+enviarFormulario('form-login', 'error-login', '/auth/login', ['email', 'password']);
+enviarFormulario('form-registro', 'error-registro', '/auth/registro', ['nombreUsuario', 'email', 'password']);

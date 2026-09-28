@@ -130,6 +130,9 @@ Repaso de todo lo construido hasta ahora para quitar código duplicado, comentar
   - `src/app.js` — el manejador de errores solo escribe en consola los errores inesperados (500). Los esperados, como un 400 o un 401, ya no llenan la consola de trazas.
   - `src/app.js`, `src/server.js` y `src/routes/index.js` — comentados.
   - **Corrección:** si la sesión apunta a un usuario que ya no existe (por ejemplo, tras vaciar la base de datos), `GET /api/auth/yo` responde 401 en vez de 500.
+- Frontend:
+  - `js/auth.js` — la función `enviarFormulario()` sustituye a los dos bloques casi iguales de login y registro. Para un formulario nuevo basta una llamada con el id del formulario, el id de la caja de error, la ruta de la API y los campos.
+  - `css/styles.css` — clase `contenedor-formulario` (ancho máximo de 400px), que sustituye al `style` repetido en `index.html` y `registro.html`.
 - Pruebas:
   - `tests/auth.test.js` (antes `tests/yo.test.js`) — cubre toda la autenticación: registro, login, `yo` y logout, con sus casos de error. Simulan el repositorio, así que no necesitan MySQL.
   - `tests/setup.js` — pone `SESSION_SECRET` antes de cada archivo de pruebas (configurado en `"jest"` de `package.json`). Así no hay que repetirlo en cada test.
@@ -137,6 +140,7 @@ Repaso de todo lo construido hasta ahora para quitar código duplicado, comentar
 ### Cómo probarlo
 
 1. `npm test` dentro de `backend/` — pasan todas las pruebas.
+2. `npm run dev` y probar en http://localhost:3000 el login (con una contraseña incorrecta sale el error; con la correcta, la bienvenida) y el registro (con un email repetido sale «El email ya está registrado»).
 
 ### Para quien siga trabajando en esto
 

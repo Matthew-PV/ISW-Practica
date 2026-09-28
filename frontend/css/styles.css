@@ -1,1 +1,6 @@
 /* Estilos propios que complementan a Bootstrap */
+
+/* Columna estrecha y centrada para los formularios de login y registro */
+.contenedor-formulario {
+  max-width: 400px;
+}
