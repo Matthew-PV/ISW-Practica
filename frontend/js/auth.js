@@ -15,7 +15,7 @@ if (formLogin) {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       });
-      window.location.href = '/';
+      window.location.href = 'bienvenida.html';
     } catch (err) {
       errorBox.textContent = err.message;
       errorBox.classList.remove('d-none');
@@ -39,7 +39,7 @@ if (formRegistro) {
         method: 'POST',
         body: JSON.stringify({ nombreUsuario, email, password }),
       });
-      window.location.href = '/';
+      window.location.href = 'bienvenida.html';
     } catch (err) {
       errorBox.textContent = err.message;
       errorBox.classList.remove('d-none');
