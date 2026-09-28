@@ -1,4 +1,4 @@
-const prisma = require('../prismaClient');
+const prisma = require('./prisma');
 
 async function crear({ nombreUsuario, email, passwordHash }) {
   return prisma.usuario.create({

@@ -121,6 +121,9 @@ Repaso de todo lo construido hasta ahora para quitar código duplicado, comentar
 
 ### Qué se ha hecho
 
+- Backend:
+  - Un solo cliente de Prisma: `src/repositories/prisma.js`. Se ha borrado `src/prismaClient.js`, que era un duplicado; `usuarioRepository.js` importa ahora `./prisma`.
+  - Se ha borrado `src/services/.gitkeep`: la carpeta ya no está vacía.
 - Pruebas:
   - `tests/auth.test.js` (antes `tests/yo.test.js`) — cubre toda la autenticación: registro, login, `yo` y logout, con sus casos de error. Simulan el repositorio, así que no necesitan MySQL.
 
