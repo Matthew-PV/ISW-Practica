@@ -1,3 +1,4 @@
+// Arranque del servidor (npm run dev / npm start). La configuración está en app.js.
 const app = require('./app');
 
 const port = process.env.PORT || 3000;

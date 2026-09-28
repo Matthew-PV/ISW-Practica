@@ -127,6 +127,8 @@ Repaso de todo lo construido hasta ahora para quitar código duplicado, comentar
   - `src/services/authService.js` — las funciones `crearError()` y `datosPublicos()` sustituyen a código que se repetía tres veces. Las dos comprobaciones de «Email o contraseña incorrectos» se han unido en una. Todas las funciones están comentadas.
   - `src/routes/auth.js` — sin `try/catch`: Express 5 pasa solo al manejador de errores los fallos de las rutas `async`. Rutas comentadas.
   - `src/repositories/usuarioRepository.js` — comentado.
+  - `src/app.js` — el manejador de errores solo escribe en consola los errores inesperados (500). Los esperados, como un 400 o un 401, ya no llenan la consola de trazas.
+  - `src/app.js`, `src/server.js` y `src/routes/index.js` — comentados.
   - **Corrección:** si la sesión apunta a un usuario que ya no existe (por ejemplo, tras vaciar la base de datos), `GET /api/auth/yo` responde 401 en vez de 500.
 - Pruebas:
   - `tests/auth.test.js` (antes `tests/yo.test.js`) — cubre toda la autenticación: registro, login, `yo` y logout, con sus casos de error. Simulan el repositorio, así que no necesitan MySQL.
