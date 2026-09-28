@@ -76,82 +76,38 @@ Autenticación completa: registro, inicio de sesión y sesiones.
 - Para proteger una ruta nueva (que solo la vea alguien logueado), comprobar `req.session.usuarioId` igual que hace `GET /api/auth/yo`. Se puede sacar a un middleware común si hace falta en varias rutas.
 - Pendiente: mostrar en el frontend si hay sesión iniciada (por ejemplo, saludo + botón de cerrar sesión en `index.html`). No estaba pedido para esta tarea.
 
-## Login como página principal — Implementado (28/09/2026)
+## Pantallas, refactorización y robustez — Implementado (28/09/2026)
 
-La página de relleno de `/` se ha quitado. Ahora `/` muestra directamente el formulario de inicio de sesión.
+### Lo importante para entender el cambio
 
-### Qué se ha hecho
+- **Flujo de pantallas:** `/` es ahora el login (antes era una página de relleno y `login.html` ya no existe). Al entrar o registrarse se llega a `bienvenida.html`, que saluda por el nombre; sin sesión, devuelve al login.
+- **Errores en el backend:** los servicios lanzan errores con la propiedad `status` y `app.js` los devuelve con ese código y su mensaje. Las rutas no llevan `try/catch`, porque Express 5 pasa solo los errores de las funciones `async`. Solo los errores inesperados (500) se escriben en consola.
+- **Prisma** solo se usa desde `src/repositories/`. El cliente único está en `src/repositories/prisma.js`.
+- **Pruebas sin MySQL:** simulan los repositorios con `jest.mock`. `tests/setup.js` prepara el entorno de todas las pruebas.
+
+### Qué ha cambiado
 
 - Frontend:
-  - `index.html` — ahora es la página de login (antes `login.html`, que ya no existe). En la barra superior muestra el estado del servidor: «conectado» o «sin conexión».
-  - `js/index.js` — sigue comprobando `GET /api/health` y pinta el estado en la barra.
-  - `registro.html` — el enlace «Inicia sesión» apunta a `/`.
-
-### Cómo probarlo
-
-1. `npm run dev` dentro de `backend/` y abrir http://localhost:3000 — aparece el formulario de login y, arriba a la derecha, «conectado» en verde.
-2. «Regístrate» lleva a `registro.html`, e «Inicia sesión» vuelve a `/`.
-
-### Para quien siga trabajando en esto
-
-- `/login.html` ya no existe: cualquier enlace al login debe apuntar a `/`.
-
-## Pantalla de bienvenida — Implementado (28/09/2026)
-
-Tras iniciar sesión o registrarse aparece una pantalla que saluda al usuario por su nombre.
-
-### Qué se ha hecho
-
+  - `index.html` — página de login, con el estado del servidor en la barra superior (lo pinta `js/index.js`).
+  - `bienvenida.html` + `js/bienvenida.js` — pantalla de bienvenida.
+  - `js/auth.js` — `enviarFormulario()` sirve para los dos formularios, login y registro.
+  - `css/styles.css` — clase `contenedor-formulario` para la columna de 400px de los formularios.
 - Backend:
-  - `GET /api/auth/yo` — ahora devuelve `{ id, nombreUsuario, email }` del usuario con sesión (antes solo el `id`). Usa `obtenerUsuario()` en `src/services/authService.js`.
-  - `tests/yo.test.js` — pruebas de `/api/auth/yo` con y sin sesión. Simulan el repositorio con `jest.mock`, así que no necesitan MySQL.
-- Frontend:
-  - `bienvenida.html` y `js/bienvenida.js` — muestran «¡Bienvenido, <nombre>!» con el nombre que da `GET /api/auth/yo`. Si no hay sesión, redirigen a `/`.
-  - `js/auth.js` — tras iniciar sesión o registrarse redirige a `bienvenida.html` (antes a `/`).
-
-### Cómo probarlo
-
-1. `npm test` dentro de `backend/` — pasan las 4 pruebas.
-2. `npm run dev`, abrir http://localhost:3000 e iniciar sesión (o registrarse) — aparece «¡Bienvenido, <tu nombre>!».
-3. Abrir http://localhost:3000/bienvenida.html en una ventana privada, sin sesión — redirige al login.
-
-## Revisión y refactorización del código — Implementado (28/09/2026)
-
-Repaso de todo lo construido hasta ahora para quitar código duplicado, comentar las funciones y corregir fallos pequeños. El comportamiento de la aplicación no cambia, salvo donde se indica.
-
-### Qué se ha hecho
-
-- Backend:
-  - Un solo cliente de Prisma: `src/repositories/prisma.js`. Se ha borrado `src/prismaClient.js`, que era un duplicado; `usuarioRepository.js` importa ahora `./prisma`.
-  - Se ha borrado `src/services/.gitkeep`: la carpeta ya no está vacía.
-  - `src/services/authService.js` — las funciones `crearError()` y `datosPublicos()` sustituyen a código que se repetía tres veces. Las dos comprobaciones de «Email o contraseña incorrectos» se han unido en una. Todas las funciones están comentadas.
-  - `src/routes/auth.js` — sin `try/catch`: Express 5 pasa solo al manejador de errores los fallos de las rutas `async`. Rutas comentadas.
-  - `src/repositories/usuarioRepository.js` — comentado.
-  - `src/app.js` — el manejador de errores solo escribe en consola los errores inesperados (500). Los esperados, como un 400 o un 401, ya no llenan la consola de trazas.
-  - `src/app.js`, `src/server.js` y `src/routes/index.js` — comentados.
-  - **Corrección:** si la sesión apunta a un usuario que ya no existe (por ejemplo, tras vaciar la base de datos), `GET /api/auth/yo` responde 401 en vez de 500.
-- Frontend:
-  - `js/auth.js` — la función `enviarFormulario()` sustituye a los dos bloques casi iguales de login y registro. Para un formulario nuevo basta una llamada con el id del formulario, el id de la caja de error, la ruta de la API y los campos.
-  - `css/styles.css` — clase `contenedor-formulario` (ancho máximo de 400px), que sustituye al `style` repetido en `index.html` y `registro.html`.
-- Pruebas:
-  - `tests/auth.test.js` (antes `tests/yo.test.js`) — cubre toda la autenticación: registro, login, `yo` y logout, con sus casos de error. Simulan el repositorio, así que no necesitan MySQL.
-  - `tests/setup.js` — pone `SESSION_SECRET` antes de cada archivo de pruebas (configurado en `"jest"` de `package.json`). Así no hay que repetirlo en cada test.
+  - `GET /api/auth/yo` devuelve `{ id, nombreUsuario, email }`. Responde 401 si no hay sesión o si el usuario ya no existe.
+  - `src/services/authService.js` — `datosPublicos()` (lo que se puede enviar al frontend, nunca la contraseña cifrada) y `crearError()`.
+  - Se ha borrado el cliente de Prisma duplicado (`src/prismaClient.js`). Todo el backend está comentado.
+- Pruebas: `tests/auth.test.js` cubre registro, login, `yo` y logout, con sus casos de error.
+- Repositorio: `.gitignore` reescrito solo con lo que usa el proyecto.
 
 ### Cómo probarlo
 
 1. `npm test` dentro de `backend/` — pasan todas las pruebas.
-2. `npm run dev` y probar en http://localhost:3000 el login (con una contraseña incorrecta sale el error; con la correcta, la bienvenida) y el registro (con un email repetido sale «El email ya está registrado»).
+2. `npm run dev` y abrir http://localhost:3000:
+   - login con una contraseña incorrecta → sale el error; con la correcta → bienvenida;
+   - registro con un email repetido → «El email ya está registrado»;
+   - http://localhost:3000/bienvenida.html sin sesión (ventana privada) → vuelve al login.
 
 ### Para quien siga trabajando en esto
 
-- En las rutas nuevas no hace falta `try/catch`: basta con que el servicio lance un error con la propiedad `status` (como hace `crearError()` en `authService.js`) y `app.js` lo devuelve con ese código y su mensaje. Si otro servicio lo necesita, conviene sacar `crearError()` a un archivo común.
-
-## Limpieza del .gitignore — Implementado (28/09/2026)
-
-### Qué se ha hecho
-
-- `.gitignore` — reescrito solo con lo que usa el proyecto: secretos (`.env`, claves), `node_modules/`, cobertura de Jest, registros, `docker-compose.override.yml`, sistema operativo y editores. Antes era una plantilla genérica de muchos lenguajes, con entradas repetidas y alguna mal escrita.
-
-### Cómo probarlo
-
-1. `git status --ignored` — aparecen como ignorados `backend/.env` y `node_modules/`; `backend/.env.example` sigue en el repositorio.
+- Cualquier enlace al login debe apuntar a `/`.
+- Para un formulario nuevo, basta llamar a `enviarFormulario()` en `js/auth.js` con el id del formulario, el id de la caja de error, la ruta de la API y los campos.
