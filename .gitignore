@@ -20,9 +20,6 @@ npm-debug.log*
 # Docker: configuración local de cada miembro
 docker-compose.override.yml
 
-# Archivos temporales de Office (se crean al abrir un documento)
-~$*
-
 # Sistema operativo
 .DS_Store
 Thumbs.db

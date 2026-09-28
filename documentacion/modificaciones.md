@@ -150,9 +150,8 @@ Repaso de todo lo construido hasta ahora para quitar código duplicado, comentar
 
 ### Qué se ha hecho
 
-- `.gitignore` — reescrito solo con lo que usa el proyecto: secretos (`.env`, claves), `node_modules/`, cobertura de Jest, registros, `docker-compose.override.yml`, temporales de Office, sistema operativo y editores. Antes era una plantilla genérica de muchos lenguajes, con entradas repetidas y alguna mal escrita.
-- Se han quitado del repositorio dos archivos temporales de Office que se habían subido por error (`~$Customer_Stories_PlanB.xlsx` y `~$-Joaquin.docx`). Ahora se ignoran con la regla `~$*`.
+- `.gitignore` — reescrito solo con lo que usa el proyecto: secretos (`.env`, claves), `node_modules/`, cobertura de Jest, registros, `docker-compose.override.yml`, sistema operativo y editores. Antes era una plantilla genérica de muchos lenguajes, con entradas repetidas y alguna mal escrita.
 
 ### Cómo probarlo
 
-1. `git status --ignored` — aparecen como ignorados `backend/.env`, `node_modules/` y los `~$…` de Office; `backend/.env.example` sigue en el repositorio.
+1. `git status --ignored` — aparecen como ignorados `backend/.env` y `node_modules/`; `backend/.env.example` sigue en el repositorio.
