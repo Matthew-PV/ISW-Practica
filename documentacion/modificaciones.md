@@ -114,3 +114,16 @@ Tras iniciar sesión o registrarse aparece una pantalla que saluda al usuario po
 1. `npm test` dentro de `backend/` — pasan las 4 pruebas.
 2. `npm run dev`, abrir http://localhost:3000 e iniciar sesión (o registrarse) — aparece «¡Bienvenido, <tu nombre>!».
 3. Abrir http://localhost:3000/bienvenida.html en una ventana privada, sin sesión — redirige al login.
+
+## Revisión y refactorización del código — Implementado (28/09/2026)
+
+Repaso de todo lo construido hasta ahora para quitar código duplicado, comentar las funciones y corregir fallos pequeños. El comportamiento de la aplicación no cambia, salvo donde se indica.
+
+### Qué se ha hecho
+
+- Pruebas:
+  - `tests/auth.test.js` (antes `tests/yo.test.js`) — cubre toda la autenticación: registro, login, `yo` y logout, con sus casos de error. Simulan el repositorio, así que no necesitan MySQL.
+
+### Cómo probarlo
+
+1. `npm test` dentro de `backend/` — pasan todas las pruebas.
