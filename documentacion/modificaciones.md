@@ -84,7 +84,8 @@ Autenticación completa: registro, inicio de sesión y sesiones.
 - **Errores en el backend:** los servicios lanzan errores con la propiedad `status` y `app.js` los devuelve con ese código y su mensaje. Las rutas no llevan `try/catch`, porque Express 5 pasa solo los errores de las funciones `async`. Solo los errores inesperados (500) se escriben en consola.
 - **Prisma** solo se usa desde `src/repositories/`. El cliente único está en `src/repositories/prisma.js`.
 - **Validación en el servidor:** `authService` comprueba tipos, formato y longitud de todos los datos antes de tocar la base de datos, y normaliza los textos (Unicode NFC; el email, sin espacios y en minúsculas). Los límites del HTML son solo una ayuda: la regla de verdad está en el servidor.
-- **Pruebas sin MySQL:** simulan los repositorios con `jest.mock`. `tests/setup.js` prepara el entorno de todas las pruebas.
+- **Sesiones en MySQL:** se guardan en la tabla `Session` (`src/repositories/sesionStore.js`, con `@quixo3/prisma-session-store`), así que sobreviven a los reinicios del servidor. Caducan tras un día sin actividad. Hay una migración nueva: tras el `git pull`, ejecutar `npm install` y `npx prisma migrate deploy` en `backend/`.
+- **Pruebas sin MySQL:** simulan los repositorios con `jest.mock`, y las sesiones se guardan en memoria. `tests/setup.js` prepara el entorno de todas las pruebas.
 
 ### Qué ha cambiado
 

@@ -19,3 +19,12 @@ model Usuario {
   ciudad        String?
   creadoEn      DateTime @default(now())
 }
+
+// Sesiones de express-session, guardadas por @quixo3/prisma-session-store
+// (así sobreviven a los reinicios del servidor). Los campos los fija esa librería.
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String   @db.MediumText
+  expiresAt DateTime
+}

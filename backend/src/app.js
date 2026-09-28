@@ -4,14 +4,17 @@ const path = require('node:path');
 const express = require('express');
 const session = require('express-session');
 const apiRouter = require('./routes');
+const sesionStore = require('./repositories/sesionStore');
 
 const app = express();
 
 app.use(express.json());
 
-// Sesiones: la cookie solo guarda el identificador de sesión y JavaScript no puede leerla (httpOnly)
+// Sesiones: se guardan en MySQL (sobreviven a los reinicios). La cookie solo lleva el
+// identificador de sesión y JavaScript no puede leerla (httpOnly)
 app.use(
   session({
+    store: sesionStore,
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
