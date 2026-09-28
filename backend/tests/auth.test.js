@@ -17,6 +17,11 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
+// Deshace los jest.spyOn para que no afecten al siguiente test
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 // Devuelve un agente (guarda la cookie de sesión entre peticiones) ya logueado como `usuario`
 async function agenteConSesion() {
   usuarioRepository.buscarPorEmail.mockResolvedValue(usuario);
@@ -85,6 +90,17 @@ describe('POST /api/auth/login', () => {
       .send({ email: 'nadie@ejemplo.com', password: 'secreta123' });
 
     expect(res.status).toBe(401);
+  });
+
+  // Si con un email inexistente no se ejecutara bcrypt, la respuesta sería más rápida
+  // y delataría qué emails están registrados
+  test('con un email que no existe también ejecuta bcrypt', async () => {
+    usuarioRepository.buscarPorEmail.mockResolvedValue(null);
+    const compare = jest.spyOn(bcrypt, 'compare');
+
+    await request(app).post('/api/auth/login').send({ email: 'nadie@ejemplo.com', password: 'secreta123' });
+
+    expect(compare).toHaveBeenCalledTimes(1);
   });
 
   test('con la contraseña incorrecta responde 401', async () => {

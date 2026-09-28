@@ -15,6 +15,9 @@ const EMAIL_MAX = 191; // tamaño de la columna en MySQL
 const PASSWORD_MIN = 8;
 // bcrypt solo usa los primeros 72 bytes: una contraseña más larga se confundiría con otra
 const PASSWORD_MAX_BYTES = 72;
+// Hash con el que se compara cuando el email no existe, para que el login tarde lo mismo
+// tanto si el email está registrado como si no (si no, el tiempo delataría qué emails existen)
+const HASH_FICTICIO = bcrypt.hashSync('contraseña-ficticia', SALT_ROUNDS);
 
 // Datos del usuario que se pueden enviar al frontend (nunca la contraseña cifrada)
 function datosPublicos(usuario) {
@@ -87,7 +90,8 @@ async function iniciarSesion(datos) {
   }
 
   const usuario = await usuarioRepository.buscarPorEmail(normalizarEmail(email));
-  if (!usuario || !(await bcrypt.compare(password, usuario.passwordHash))) {
+  const coincide = await bcrypt.compare(password, usuario?.passwordHash ?? HASH_FICTICIO);
+  if (!usuario || !coincide) {
     throw incorrectos;
   }
   return datosPublicos(usuario);

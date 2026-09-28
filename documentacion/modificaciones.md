@@ -100,6 +100,7 @@ Autenticación completa: registro, inicio de sesión y sesiones.
   - Nombre de usuario o email repetido → 400 con un mensaje claro (antes, 500). Lo detecta MySQL con los índices únicos (error `P2002` de Prisma), así que funciona aunque lleguen dos registros a la vez.
   - Datos de tipo incorrecto, petición sin cuerpo o JSON roto → 400 (antes, 500 o un mensaje en inglés).
   - `src/errores.js` — `crearError(mensaje, status)`, común para todo el backend.
+  - Login: con un email que no existe también se ejecuta bcrypt (contra `HASH_FICTICIO`), así que la respuesta tarda lo mismo y el tiempo no delata qué emails están registrados.
   - Sesiones: al iniciar sesión o registrarse se crea una sesión nueva con otro id (`abrirSesion()` en `routes/auth.js`), lo que evita la fijación de sesión. El logout, además de cerrar la sesión en el servidor, borra la cookie del navegador.
   - Se ha borrado el cliente de Prisma duplicado (`src/prismaClient.js`). Todo el backend está comentado.
 - Pruebas: `tests/auth.test.js` cubre registro, login, `yo` y logout, con sus casos de error; `tests/validacion.test.js`, los datos válidos y no válidos.
