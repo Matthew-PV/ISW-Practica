@@ -144,4 +144,4 @@ Repaso de todo lo construido hasta ahora para quitar código duplicado, comentar
 
 ### Para quien siga trabajando en esto
 
-- En las rutas nuevas no hace falta `try/catch`: basta con lanzar un error con `crearError(mensaje, status)` desde el servicio y Express lo devuelve con ese código.
+- En las rutas nuevas no hace falta `try/catch`: basta con que el servicio lance un error con la propiedad `status` (como hace `crearError()` en `authService.js`) y `app.js` lo devuelve con ese código y su mensaje. Si otro servicio lo necesita, conviene sacar `crearError()` a un archivo común.
