@@ -145,3 +145,14 @@ Repaso de todo lo construido hasta ahora para quitar código duplicado, comentar
 ### Para quien siga trabajando en esto
 
 - En las rutas nuevas no hace falta `try/catch`: basta con que el servicio lance un error con la propiedad `status` (como hace `crearError()` en `authService.js`) y `app.js` lo devuelve con ese código y su mensaje. Si otro servicio lo necesita, conviene sacar `crearError()` a un archivo común.
+
+## Limpieza del .gitignore — Implementado (28/09/2026)
+
+### Qué se ha hecho
+
+- `.gitignore` — reescrito solo con lo que usa el proyecto: secretos (`.env`, claves), `node_modules/`, cobertura de Jest, registros, `docker-compose.override.yml`, temporales de Office, sistema operativo y editores. Antes era una plantilla genérica de muchos lenguajes, con entradas repetidas y alguna mal escrita.
+- Se han quitado del repositorio dos archivos temporales de Office que se habían subido por error (`~$Customer_Stories_PlanB.xlsx` y `~$-Joaquin.docx`). Ahora se ignoran con la regla `~$*`.
+
+### Cómo probarlo
+
+1. `git status --ignored` — aparecen como ignorados `backend/.env`, `node_modules/` y los `~$…` de Office; `backend/.env.example` sigue en el repositorio.
