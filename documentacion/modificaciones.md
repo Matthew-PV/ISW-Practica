@@ -124,9 +124,17 @@ Repaso de todo lo construido hasta ahora para quitar código duplicado, comentar
 - Backend:
   - Un solo cliente de Prisma: `src/repositories/prisma.js`. Se ha borrado `src/prismaClient.js`, que era un duplicado; `usuarioRepository.js` importa ahora `./prisma`.
   - Se ha borrado `src/services/.gitkeep`: la carpeta ya no está vacía.
+  - `src/services/authService.js` — las funciones `crearError()` y `datosPublicos()` sustituyen a código que se repetía tres veces. Las dos comprobaciones de «Email o contraseña incorrectos» se han unido en una. Todas las funciones están comentadas.
+  - `src/routes/auth.js` — sin `try/catch`: Express 5 pasa solo al manejador de errores los fallos de las rutas `async`. Rutas comentadas.
+  - `src/repositories/usuarioRepository.js` — comentado.
+  - **Corrección:** si la sesión apunta a un usuario que ya no existe (por ejemplo, tras vaciar la base de datos), `GET /api/auth/yo` responde 401 en vez de 500.
 - Pruebas:
   - `tests/auth.test.js` (antes `tests/yo.test.js`) — cubre toda la autenticación: registro, login, `yo` y logout, con sus casos de error. Simulan el repositorio, así que no necesitan MySQL.
 
 ### Cómo probarlo
 
 1. `npm test` dentro de `backend/` — pasan todas las pruebas.
+
+### Para quien siga trabajando en esto
+
+- En las rutas nuevas no hace falta `try/catch`: basta con lanzar un error con `crearError(mensaje, status)` desde el servicio y Express lo devuelve con ese código.

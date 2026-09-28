@@ -115,6 +115,15 @@ describe('GET /api/auth/yo', () => {
     expect(res.status).toBe(200);
     expect(res.body).toEqual(DATOS_PUBLICOS);
   });
+
+  test('si el usuario de la sesión ya no existe responde 401', async () => {
+    const agente = await agenteConSesion();
+    usuarioRepository.buscarPorId.mockResolvedValue(null);
+
+    const res = await agente.get('/api/auth/yo');
+
+    expect(res.status).toBe(401);
+  });
 });
 
 describe('POST /api/auth/logout', () => {
