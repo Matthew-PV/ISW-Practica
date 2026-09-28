@@ -123,3 +123,26 @@ En `backend/`:
 - La CSP bloquea los scripts en línea (`<script>…</script>`, `onclick="…"`) y los de otros dominios: el código va en archivos de `js/`, y lo que se cargue de otro dominio hay que añadirlo a la configuración de `helmet` en `app.js`.
 - Formularios nuevos: `enviarFormulario()` de `js/auth.js`, con el id del formulario, el de la caja de error, la ruta de la API y los campos.
 - El registro necesita internet para verificar el CAPTCHA. Para desplegar, crear las claves reales en Cloudflare → Turnstile.
+
+# Perfil: consultar el perfil propio — Implementado (28/09/2026)
+
+Primera parte de PB-01. Endpoint de solo lectura del propio perfil.
+
+## Qué se ha hecho
+
+- `usuarioRepository.obtenerPerfil(id)` — trae solo `id`, `nombreUsuario`, `email`, `foto`, `ciudad` (nunca la contraseña).
+- `perfilService.obtenerPerfilPropio(id)` — llama al repositorio, 401 si el usuario ya no existe.
+- `GET /api/perfil` — comprueba la sesión y devuelve el perfil.
+
+## Cómo probarlo
+
+```bash
+curl -i -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"...","password":"..."}' -c cookies.txt
+
+curl -i http://localhost:3000/api/perfil -b cookies.txt   # 200, con los datos
+curl -i http://localhost:3000/api/perfil                  # 401 sin sesión
+```
+
+
