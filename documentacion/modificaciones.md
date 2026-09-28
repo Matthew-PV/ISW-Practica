@@ -103,11 +103,12 @@ Autenticación completa: registro, inicio de sesión y sesiones.
   - `bcrypt` actualizado a la versión 6: la 5 arrastraba `tar`, con vulnerabilidades críticas. Las contraseñas ya guardadas siguen funcionando. Tras el `git pull`, ejecutar `npm install` en `backend/`.
   - `GET /api/health` consulta también MySQL (`src/repositories/saludRepository.js`) y responde 503 si no responde. El indicador del login pasa a «sin conexión» y, al pasar el ratón por encima, muestra el motivo.
   - Límite de intentos por IP (`src/middlewares/limites.js`, con `express-rate-limit`): 10 logins fallidos cada 15 minutos y 20 registros por hora. Al pasarse, responde 429 «Demasiados intentos». Los contadores están en memoria y se reinician con el servidor.
+  - Cabeceras de seguridad con `helmet` en `app.js`: política de contenido (CSP), que solo deja ejecutar scripts propios; protección contra meter la web en un marco ajeno (`X-Frame-Options`); `nosniff`; y ya no se envía `X-Powered-By: Express`.
   - `src/errores.js` — `crearError(mensaje, status)`, común para todo el backend.
   - Login: con un email que no existe también se ejecuta bcrypt (contra `HASH_FICTICIO`), así que la respuesta tarda lo mismo y el tiempo no delata qué emails están registrados.
   - Sesiones: al iniciar sesión o registrarse se crea una sesión nueva con otro id (`abrirSesion()` en `routes/auth.js`), lo que evita la fijación de sesión. El logout, además de cerrar la sesión en el servidor, borra la cookie del navegador.
   - Se ha borrado el cliente de Prisma duplicado (`src/prismaClient.js`). Todo el backend está comentado.
-- Pruebas: `tests/auth.test.js` cubre registro, login, `yo` y logout, con sus casos de error; `tests/validacion.test.js`, los datos válidos y no válidos.
+- Pruebas: `tests/auth.test.js` cubre registro, login, `yo` y logout, con sus casos de error; `tests/validacion.test.js`, los datos válidos y no válidos; `tests/app.test.js` (antes `health.test.js`), `/api/health`, el 404 de la API y las cabeceras de seguridad.
 - Repositorio: `.gitignore` reescrito solo con lo que usa el proyecto.
 
 ### Cómo probarlo
@@ -122,4 +123,5 @@ Autenticación completa: registro, inicio de sesión y sesiones.
 
 - Cualquier enlace al login debe apuntar a `/`.
 - Para devolver un error al cliente, lanzar `crearError(mensaje, status)` de `src/errores.js`.
+- La CSP bloquea los scripts en línea (`<script>…</script>`, `onclick="…"`) y los de otros dominios: el código va en archivos de `js/`. Si hace falta cargar algo de otro dominio, hay que añadirlo a la configuración de `helmet` en `app.js`.
 - Para un formulario nuevo, basta llamar a `enviarFormulario()` en `js/auth.js` con el id del formulario, el id de la caja de error, la ruta de la API y los campos.

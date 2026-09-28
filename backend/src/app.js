@@ -2,11 +2,16 @@
 // Se exporta sin arrancar el servidor para que las pruebas la usen directamente.
 const path = require('node:path');
 const express = require('express');
+const helmet = require('helmet');
 const session = require('express-session');
 const apiRouter = require('./routes');
 const sesionStore = require('./repositories/sesionStore');
 
 const app = express();
+
+// Cabeceras de seguridad (helmet): política de contenido (CSP) que solo permite cargar scripts
+// propios, protección contra meter la web en un marco ajeno, y sin anunciar que usamos Express
+app.use(helmet());
 
 app.use(express.json());
 
