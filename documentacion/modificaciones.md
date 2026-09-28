@@ -85,7 +85,7 @@ Autenticación completa: registro, inicio de sesión y sesiones.
 - **Prisma** solo se usa desde `src/repositories/`. El cliente único está en `src/repositories/prisma.js`.
 - **Validación en el servidor:** `authService` comprueba tipos, formato y longitud de todos los datos antes de tocar la base de datos, y normaliza los textos (Unicode NFC; el email, sin espacios y en minúsculas). Los límites del HTML son solo una ayuda: la regla de verdad está en el servidor.
 - **Sesiones en MySQL:** se guardan en la tabla `Session` (`src/repositories/sesionStore.js`, con `@quixo3/prisma-session-store`), así que sobreviven a los reinicios del servidor. Caducan tras un día sin actividad. Hay una migración nueva: tras el `git pull`, ejecutar `npm install` y `npx prisma migrate deploy` en `backend/`.
-- **Pruebas sin MySQL:** simulan los repositorios con `jest.mock`, y las sesiones se guardan en memoria. `tests/setup.js` prepara el entorno de todas las pruebas.
+- **Pruebas sin MySQL:** simulan los repositorios con `jest.mock`, y las sesiones se guardan en memoria. `tests/setup.js` desactiva los límites de intentos; `tests/limites.test.js` los prueba de verdad con `jest.unmock`. `tests/setup.js` prepara el entorno de todas las pruebas.
 
 ### Qué ha cambiado
 
@@ -102,6 +102,7 @@ Autenticación completa: registro, inicio de sesión y sesiones.
   - Datos de tipo incorrecto, petición sin cuerpo o JSON roto → 400 (antes, 500 o un mensaje en inglés).
   - `bcrypt` actualizado a la versión 6: la 5 arrastraba `tar`, con vulnerabilidades críticas. Las contraseñas ya guardadas siguen funcionando. Tras el `git pull`, ejecutar `npm install` en `backend/`.
   - `GET /api/health` consulta también MySQL (`src/repositories/saludRepository.js`) y responde 503 si no responde. El indicador del login pasa a «sin conexión» y, al pasar el ratón por encima, muestra el motivo.
+  - Límite de intentos por IP (`src/middlewares/limites.js`, con `express-rate-limit`): 10 logins fallidos cada 15 minutos y 20 registros por hora. Al pasarse, responde 429 «Demasiados intentos». Los contadores están en memoria y se reinician con el servidor.
   - `src/errores.js` — `crearError(mensaje, status)`, común para todo el backend.
   - Login: con un email que no existe también se ejecuta bcrypt (contra `HASH_FICTICIO`), así que la respuesta tarda lo mismo y el tiempo no delata qué emails están registrados.
   - Sesiones: al iniciar sesión o registrarse se crea una sesión nueva con otro id (`abrirSesion()` en `routes/auth.js`), lo que evita la fijación de sesión. El logout, además de cerrar la sesión en el servidor, borra la cookie del navegador.

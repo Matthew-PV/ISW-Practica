@@ -19,6 +19,7 @@
     "@quixo3/prisma-session-store": "^3.1.21",
     "bcrypt": "^6.0.0",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.7.0",
     "express-session": "^1.18.1"
   },
   "devDependencies": {

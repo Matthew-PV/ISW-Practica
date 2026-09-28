@@ -2,6 +2,7 @@
 // Express 5 pasa al manejador de errores de app.js cualquier error de una ruta async, sin try/catch.
 const express = require('express');
 const authService = require('../services/authService');
+const { limiteLogin, limiteRegistro } = require('../middlewares/limites');
 
 const router = express.Router();
 
@@ -19,14 +20,14 @@ function abrirSesion(req, usuarioId) {
 
 // Crea la cuenta y deja la sesión iniciada.
 // Los datos los valida el servicio; req.body es undefined si la petición no trae JSON.
-router.post('/registro', async (req, res) => {
+router.post('/registro', limiteRegistro, async (req, res) => {
   const usuario = await authService.registrar(req.body ?? {});
   await abrirSesion(req, usuario.id);
   res.status(201).json(usuario);
 });
 
 // Inicia la sesión con email y contraseña
-router.post('/login', async (req, res) => {
+router.post('/login', limiteLogin, async (req, res) => {
   const usuario = await authService.iniciarSesion(req.body ?? {});
   await abrirSesion(req, usuario.id);
   res.json(usuario);
