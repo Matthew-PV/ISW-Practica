@@ -1,5 +1,3 @@
-process.env.SESSION_SECRET = 'test';
-
 const request = require('supertest');
 const app = require('../src/app');
 

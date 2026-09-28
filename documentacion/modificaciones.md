@@ -132,6 +132,7 @@ Repaso de todo lo construido hasta ahora para quitar código duplicado, comentar
   - **Corrección:** si la sesión apunta a un usuario que ya no existe (por ejemplo, tras vaciar la base de datos), `GET /api/auth/yo` responde 401 en vez de 500.
 - Pruebas:
   - `tests/auth.test.js` (antes `tests/yo.test.js`) — cubre toda la autenticación: registro, login, `yo` y logout, con sus casos de error. Simulan el repositorio, así que no necesitan MySQL.
+  - `tests/setup.js` — pone `SESSION_SECRET` antes de cada archivo de pruebas (configurado en `"jest"` de `package.json`). Así no hay que repetirlo en cada test.
 
 ### Cómo probarlo
 

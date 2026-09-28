@@ -1,5 +1,3 @@
-process.env.SESSION_SECRET = 'test';
-
 // Se simula el repositorio para no depender de MySQL en las pruebas
 jest.mock('../src/repositories/usuarioRepository');
 
