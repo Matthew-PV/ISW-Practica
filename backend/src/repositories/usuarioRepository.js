@@ -17,4 +17,18 @@ async function buscarPorId(id) {
   return prisma.usuario.findUnique({ where: { id } });
 }
 
-module.exports = { crear, buscarPorEmail, buscarPorId };
+// Devuelve solo los campos seguros de mostrar (nunca la contraseña).
+async function obtenerPerfil(id) {
+  return prisma.usuario.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      nombreUsuario: true,
+      email: true,
+      foto: true,
+      ciudad: true,
+    },
+  });
+}
+
+module.exports = { crear, buscarPorEmail, buscarPorId, obtenerPerfil };

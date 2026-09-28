@@ -1,11 +1,13 @@
 // Router principal de la API, montado en /api. Cada grupo de rutas va en su propio archivo.
 const express = require('express');
 const authRoutes = require('./auth');
+const perfilRoutes = require('./perfil');
 const saludRepository = require('../repositories/saludRepository');
 
 const router = express.Router();
 
 router.use('/auth', authRoutes);
+router.use('/perfil', perfilRoutes);
 
 // Comprobación de que el servidor y la base de datos responden
 router.get('/health', async (req, res) => {
