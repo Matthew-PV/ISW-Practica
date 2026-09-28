@@ -1,3 +1,4 @@
+// Página principal (login): muestra en la barra si el servidor responde.
 const estado = document.getElementById('estado-servidor');
 
 api('/health')

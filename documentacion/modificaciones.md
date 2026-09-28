@@ -75,3 +75,24 @@ Autenticación completa: registro, inicio de sesión y sesiones.
 - La sesión se guarda con `req.session.usuarioId` (cookie HttpOnly, ya configurada en `app.js`).
 - Para proteger una ruta nueva (que solo la vea alguien logueado), comprobar `req.session.usuarioId` igual que hace `GET /api/auth/yo`. Se puede sacar a un middleware común si hace falta en varias rutas.
 - Pendiente: mostrar en el frontend si hay sesión iniciada (por ejemplo, saludo + botón de cerrar sesión en `index.html`). No estaba pedido para esta tarea.
+
+## Login como página principal — Implementado (28/09/2026)
+
+La página de relleno de `/` se ha quitado. Ahora `/` muestra directamente el formulario de inicio de sesión.
+
+### Qué se ha hecho
+
+- Frontend:
+  - `index.html` — ahora es la página de login (antes `login.html`, que ya no existe). En la barra superior muestra el estado del servidor: «conectado» o «sin conexión».
+  - `js/index.js` — sigue comprobando `GET /api/health` y pinta el estado en la barra.
+  - `registro.html` — el enlace «Inicia sesión» apunta a `/`.
+
+### Cómo probarlo
+
+1. `npm run dev` dentro de `backend/` y abrir http://localhost:3000 — aparece el formulario de login y, arriba a la derecha, «conectado» en verde.
+2. «Regístrate» lleva a `registro.html`, e «Inicia sesión» vuelve a `/`.
+
+### Para quien siga trabajando en esto
+
+- `/login.html` ya no existe: cualquier enlace al login debe apuntar a `/`.
+- Tras iniciar sesión o registrarse, `js/auth.js` redirige a `/`, que vuelve a mostrar el formulario: todavía no hay página para después del login.
