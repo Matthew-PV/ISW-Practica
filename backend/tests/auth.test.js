@@ -135,14 +135,33 @@ describe('GET /api/auth/yo', () => {
   });
 });
 
+// Id de la sesión que viene en la cookie de una respuesta
+function idDeSesion(res) {
+  const cookie = res.headers['set-cookie']?.find((c) => c.startsWith('connect.sid='));
+  return cookie?.split(';')[0];
+}
+
+describe('seguridad de la sesión', () => {
+  test('iniciar sesión crea un id de sesión nuevo (evita la fijación de sesión)', async () => {
+    const agente = await agenteConSesion();
+    const antes = await agente.post('/api/auth/login').send({ email: usuario.email, password: 'secreta123' });
+    const despues = await agente.post('/api/auth/login').send({ email: usuario.email, password: 'secreta123' });
+
+    expect(idDeSesion(antes)).toBeDefined();
+    expect(idDeSesion(despues)).toBeDefined();
+    expect(idDeSesion(despues)).not.toBe(idDeSesion(antes));
+  });
+});
+
 describe('POST /api/auth/logout', () => {
-  test('cierra la sesión', async () => {
+  test('cierra la sesión y borra la cookie', async () => {
     const agente = await agenteConSesion();
 
     const res = await agente.post('/api/auth/logout');
     const yo = await agente.get('/api/auth/yo');
 
     expect(res.status).toBe(204);
+    expect(res.headers['set-cookie']?.[0]).toMatch(/^connect\.sid=;.*Expires=Thu, 01 Jan 1970/);
     expect(yo.status).toBe(401);
   });
 });
