@@ -99,6 +99,7 @@ Autenticación completa: registro, inicio de sesión y sesiones.
   - Reglas de registro: nombre de usuario de 3 a 30 letras (de cualquier alfabeto), números, `_`, `.` o `-`, sin espacios, emojis ni caracteres invisibles; email con formato válido (máx. 191); contraseña de 8 caracteres a 72 bytes (bcrypt ignora lo que pasa de 72 bytes, así que dos contraseñas largas podrían confundirse).
   - Nombre de usuario o email repetido → 400 con un mensaje claro (antes, 500). Lo detecta MySQL con los índices únicos (error `P2002` de Prisma), así que funciona aunque lleguen dos registros a la vez.
   - Datos de tipo incorrecto, petición sin cuerpo o JSON roto → 400 (antes, 500 o un mensaje en inglés).
+  - `bcrypt` actualizado a la versión 6: la 5 arrastraba `tar`, con vulnerabilidades críticas. Las contraseñas ya guardadas siguen funcionando. Tras el `git pull`, ejecutar `npm install` en `backend/`.
   - `src/errores.js` — `crearError(mensaje, status)`, común para todo el backend.
   - Login: con un email que no existe también se ejecuta bcrypt (contra `HASH_FICTICIO`), así que la respuesta tarda lo mismo y el tiempo no delata qué emails están registrados.
   - Sesiones: al iniciar sesión o registrarse se crea una sesión nueva con otro id (`abrirSesion()` en `routes/auth.js`), lo que evita la fijación de sesión. El logout, además de cerrar la sesión en el servidor, borra la cookie del navegador.
