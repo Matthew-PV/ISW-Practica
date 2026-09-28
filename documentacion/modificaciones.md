@@ -83,6 +83,7 @@ Autenticación completa: registro, inicio de sesión y sesiones.
 - **Flujo de pantallas:** `/` es ahora el login (antes era una página de relleno y `login.html` ya no existe). Al entrar o registrarse se llega a `bienvenida.html`, que saluda por el nombre; sin sesión, devuelve al login.
 - **Errores en el backend:** los servicios lanzan errores con la propiedad `status` y `app.js` los devuelve con ese código y su mensaje. Las rutas no llevan `try/catch`, porque Express 5 pasa solo los errores de las funciones `async`. Solo los errores inesperados (500) se escriben en consola.
 - **Prisma** solo se usa desde `src/repositories/`. El cliente único está en `src/repositories/prisma.js`.
+- **Validación en el servidor:** `authService` comprueba tipos, formato y longitud de todos los datos antes de tocar la base de datos, y normaliza los textos (Unicode NFC; el email, sin espacios y en minúsculas). Los límites del HTML son solo una ayuda: la regla de verdad está en el servidor.
 - **Pruebas sin MySQL:** simulan los repositorios con `jest.mock`. `tests/setup.js` prepara el entorno de todas las pruebas.
 
 ### Qué ha cambiado
@@ -95,8 +96,12 @@ Autenticación completa: registro, inicio de sesión y sesiones.
 - Backend:
   - `GET /api/auth/yo` devuelve `{ id, nombreUsuario, email }`. Responde 401 si no hay sesión o si el usuario ya no existe.
   - `src/services/authService.js` — `datosPublicos()` (lo que se puede enviar al frontend, nunca la contraseña cifrada) y `crearError()`.
+  - Reglas de registro: nombre de usuario de 3 a 30 letras (de cualquier alfabeto), números, `_`, `.` o `-`, sin espacios, emojis ni caracteres invisibles; email con formato válido (máx. 191); contraseña de 8 caracteres a 72 bytes (bcrypt ignora lo que pasa de 72 bytes, así que dos contraseñas largas podrían confundirse).
+  - Nombre de usuario o email repetido → 400 con un mensaje claro (antes, 500). Lo detecta MySQL con los índices únicos (error `P2002` de Prisma), así que funciona aunque lleguen dos registros a la vez.
+  - Datos de tipo incorrecto, petición sin cuerpo o JSON roto → 400 (antes, 500 o un mensaje en inglés).
+  - `src/errores.js` — `crearError(mensaje, status)`, común para todo el backend.
   - Se ha borrado el cliente de Prisma duplicado (`src/prismaClient.js`). Todo el backend está comentado.
-- Pruebas: `tests/auth.test.js` cubre registro, login, `yo` y logout, con sus casos de error.
+- Pruebas: `tests/auth.test.js` cubre registro, login, `yo` y logout, con sus casos de error; `tests/validacion.test.js`, los datos válidos y no válidos.
 - Repositorio: `.gitignore` reescrito solo con lo que usa el proyecto.
 
 ### Cómo probarlo
@@ -110,4 +115,5 @@ Autenticación completa: registro, inicio de sesión y sesiones.
 ### Para quien siga trabajando en esto
 
 - Cualquier enlace al login debe apuntar a `/`.
+- Para devolver un error al cliente, lanzar `crearError(mensaje, status)` de `src/errores.js`.
 - Para un formulario nuevo, basta llamar a `enviarFormulario()` en `js/auth.js` con el id del formulario, el id de la caja de error, la ruta de la API y los campos.

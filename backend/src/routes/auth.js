@@ -5,26 +5,17 @@ const authService = require('../services/authService');
 
 const router = express.Router();
 
-// Crea la cuenta y deja la sesión iniciada
+// Crea la cuenta y deja la sesión iniciada.
+// Los datos los valida el servicio; req.body es undefined si la petición no trae JSON.
 router.post('/registro', async (req, res) => {
-  const { nombreUsuario, email, password } = req.body;
-  if (!nombreUsuario || !email || !password) {
-    return res.status(400).json({ error: 'Faltan datos obligatorios' });
-  }
-
-  const usuario = await authService.registrar({ nombreUsuario, email, password });
+  const usuario = await authService.registrar(req.body ?? {});
   req.session.usuarioId = usuario.id;
   res.status(201).json(usuario);
 });
 
 // Inicia la sesión con email y contraseña
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ error: 'Faltan datos obligatorios' });
-  }
-
-  const usuario = await authService.iniciarSesion({ email, password });
+  const usuario = await authService.iniciarSesion(req.body ?? {});
   req.session.usuarioId = usuario.id;
   res.json(usuario);
 });

@@ -20,7 +20,7 @@
     <form id="form-registro">
       <div class="mb-3">
         <label for="nombreUsuario" class="form-label">Nombre de usuario</label>
-        <input type="text" class="form-control" id="nombreUsuario" required minlength="3">
+        <input type="text" class="form-control" id="nombreUsuario" required minlength="3" maxlength="30">
       </div>
       <div class="mb-3">
         <label for="email" class="form-label">Email</label>
@@ -28,7 +28,7 @@
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" id="password" required minlength="8">
+        <input type="password" class="form-control" id="password" required minlength="8" maxlength="72">
       </div>
       <div id="error-registro" class="alert alert-danger d-none"></div>
       <button type="submit" class="btn btn-primary w-100">Crear cuenta</button>

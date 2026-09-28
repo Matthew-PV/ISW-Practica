@@ -28,10 +28,15 @@ app.use('/api', (req, res) => {
 // Páginas del frontend
 app.use(express.static(path.join(__dirname, '..', '..', 'frontend')));
 
-// Errores: los que traen `status` (p. ej. de crearError en los servicios) se devuelven con su mensaje;
-// el resto son fallos inesperados, se registran en consola y no se muestra su detalle al usuario.
+// Errores:
+// - los de express.json (JSON roto, cuerpo demasiado grande...) traen `type`: mensaje genérico en español;
+// - los de crearError (src/errores.js) se devuelven con su código y su mensaje;
+// - el resto son fallos inesperados: se registran en consola y no se muestra su detalle al usuario.
 app.use((err, req, res, next) => {
-  if (err.status) {
+  if (err.type && err.status < 500) {
+    return res.status(err.status).json({ error: 'La petición no es válida' });
+  }
+  if (err.status < 500) {
     return res.status(err.status).json({ error: err.message });
   }
   console.error(err);

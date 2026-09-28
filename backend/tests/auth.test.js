@@ -33,19 +33,30 @@ describe('POST /api/auth/registro', () => {
     expect(res.status).toBe(400);
   });
 
+  // MySQL rechaza los duplicados por los índices únicos; Prisma lo indica con el código P2002
   test('con un email ya registrado responde 400', async () => {
-    usuarioRepository.buscarPorEmail.mockResolvedValue(usuario);
+    usuarioRepository.crear.mockRejectedValue({ code: 'P2002', meta: { target: 'Usuario_email_key' } });
 
     const res = await request(app)
       .post('/api/auth/registro')
       .send({ nombreUsuario: 'otra', email: usuario.email, password: 'secreta123' });
 
     expect(res.status).toBe(400);
-    expect(usuarioRepository.crear).not.toHaveBeenCalled();
+    expect(res.body.error).toBe('El email ya está registrado');
+  });
+
+  test('con un nombre de usuario ya en uso responde 400', async () => {
+    usuarioRepository.crear.mockRejectedValue({ code: 'P2002', meta: { target: 'Usuario_nombreUsuario_key' } });
+
+    const res = await request(app)
+      .post('/api/auth/registro')
+      .send({ nombreUsuario: 'ana', email: 'otra@ejemplo.com', password: 'secreta123' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('El nombre de usuario ya está en uso');
   });
 
   test('crea el usuario, guarda la contraseña cifrada y no la devuelve', async () => {
-    usuarioRepository.buscarPorEmail.mockResolvedValue(null);
     usuarioRepository.crear.mockResolvedValue(usuario);
 
     const res = await request(app)
