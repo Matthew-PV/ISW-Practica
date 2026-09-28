@@ -52,8 +52,9 @@ Todo el proyecto está escrito en **JavaScript**, tanto el backend como el front
 |---|---|
 | Base de datos | MySQL |
 | Persistencia | Prisma |
-| Backend (rutas y lógica) | Node.js, Express, bcrypt, express-session |
+| Backend (rutas y lógica) | Node.js, Express, bcrypt, express-session (con prisma-session-store), helmet, express-rate-limit |
 | Interfaz | HTML, CSS, JavaScript, Bootstrap |
+| Protección contra bots | Cloudflare Turnstile |
 | Imágenes | Cloudinary |
 | Entorno de desarrollo | Docker (docker-compose) |
 | Pruebas | Jest, Supertest |
@@ -122,6 +123,7 @@ Middleware de Express que gestiona las **sesiones** de usuario. Al iniciar sesi�
 * El navegador envía la cookie automáticamente, sin código extra en el frontend.
 * La cookie se marca como `HttpOnly`, así que el JavaScript de la página no puede leerla, lo que protege frente a robos por XSS.
 * Cerrar sesión es inmediato: basta con borrar la sesión en el servidor.
+* Las sesiones se guardan en MySQL (tabla `Session`) mediante **@quixo3/prisma-session-store**, que usa el mismo cliente de Prisma. Así sobreviven a los reinicios del servidor, y las caducadas se borran solas.
 
 #### 3.7. HTML, CSS y JavaScript
 
@@ -166,13 +168,37 @@ Librería que hace peticiones HTTP a la aplicación Express desde los tests, sin
 * Permite probar cada endpoint de principio a fin: se envía una petición y se comprueban el código de estado y el JSON devuelto.
 * Encaja directamente con los criterios de validación de las tarjetas de historias de usuario («si un usuario sin rol de moderador pide la lista, recibe un error»...).
 
+#### 3.13. helmet
+
+Middleware de Express que añade a cada respuesta las **cabeceras de seguridad** que le dicen al navegador cómo protegerse.
+
+* **Política de contenido (CSP):** el navegador solo ejecuta scripts de nuestro propio servidor (y los del CAPTCHA de Cloudflare). Aunque alguien consiguiera colar un `<script>` en una página, no se ejecutaría.
+* Impide que otra web muestre PlanB dentro de un marco para engañar al usuario (*clickjacking*).
+* Deja de anunciar que el servidor usa Express.
+
+#### 3.14. express-rate-limit
+
+Middleware que **limita cuántas peticiones** puede hacer una misma IP en un periodo de tiempo. Al superar el límite, responde `429 Too Many Requests`.
+
+* Frena los ataques de fuerza bruta contra el login (probar muchas contraseñas) y la creación masiva de cuentas.
+* Se aplica solo a las rutas que lo necesitan, como un middleware más.
+
+#### 3.15. Cloudflare Turnstile
+
+**CAPTCHA** gratuito de Cloudflare que comprueba que quien usa un formulario es una persona y no un programa. La mayoría de las veces no pide nada al usuario: lo decide analizando el navegador.
+
+* El navegador resuelve el CAPTCHA y envía un *token* junto con el formulario; el backend pregunta a Cloudflare si ese token es válido antes de hacer nada más.
+* En el registro impide que un programa pruebe emails en masa para averiguar cuáles tienen cuenta.
+* Para desarrollo, Cloudflare ofrece claves de prueba que siempre aceptan, así que no hace falta crear una cuenta hasta el despliegue.
+
 
 
 ### 4. Comunicación entre frontend y backend
 
 * El backend expone una **API REST** que recibe y devuelve **JSON**. Todas sus rutas empiezan por `/api` (por ejemplo, `GET /api/experiencias?ciudad=Madrid`).
 * El resto de rutas sirven las páginas HTML del frontend. Frontend y API salen del **mismo servidor y el mismo dominio**, por lo que la cookie de sesión se envía sola y no hay que configurar CORS.
-* Cada endpoint indica el resultado con el código HTTP correspondiente: `200`/`201` si ha ido bien, `400` si los datos son inválidos, `401` si no hay sesión, `403` si no hay permiso y `404` si el recurso no existe.
+* Cada endpoint indica el resultado con el código HTTP correspondiente: `200`/`201` si ha ido bien, `400` si los datos son inválidos, `401` si no hay sesión, `403` si no hay permiso, `404` si el recurso no existe y `429` si se han hecho demasiados intentos.
+* Los errores se devuelven como `{ "error": "mensaje" }`, con un mensaje en español que el frontend puede mostrar tal cual.
 
 
 
@@ -182,7 +208,9 @@ Librería que hace peticiones HTTP a la aplicación Express desde los tests, sin
 
 * Registro e inicio de sesión con **email y contraseña**.
 * La contraseña se guarda como hash con **bcrypt**.
-* La sesión se mantiene con **express-session** mediante una cookie `HttpOnly`.
+* La sesión se mantiene con **express-session** mediante una cookie `HttpOnly`. Al iniciar sesión se crea siempre una sesión nueva, para que nadie pueda reutilizar un identificador anterior.
+* Todos los datos se validan en el backend (tipo, formato y longitud), aunque el formulario ya los compruebe.
+* El login admite un número limitado de intentos fallidos por IP y el registro exige superar el CAPTCHA.
 
 #### 5.2. Autorización
 

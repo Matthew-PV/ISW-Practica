@@ -78,55 +78,48 @@ Autenticación completa: registro, inicio de sesión y sesiones.
 
 ## Pantallas, refactorización y robustez — Implementado (28/09/2026)
 
+### Antes de nada, tras el `git pull`
+
+En `backend/`:
+
+1. `npm install` — hay dependencias nuevas (`helmet`, `express-rate-limit`, `@quixo3/prisma-session-store`) y `bcrypt` pasa a la versión 6.
+2. `npx prisma migrate deploy` — crea la tabla `Session`.
+3. Copiar a `.env` las variables `TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY` de `.env.example`. **Sin ellas no se puede registrar nadie.** Son claves de prueba de Cloudflare, que siempre aceptan.
+
 ### Lo importante para entender el cambio
 
-- **Flujo de pantallas:** `/` es ahora el login (antes era una página de relleno y `login.html` ya no existe). Al entrar o registrarse se llega a `bienvenida.html`, que saluda por el nombre; sin sesión, devuelve al login.
-- **Errores en el backend:** los servicios lanzan errores con la propiedad `status` y `app.js` los devuelve con ese código y su mensaje. Las rutas no llevan `try/catch`, porque Express 5 pasa solo los errores de las funciones `async`. Solo los errores inesperados (500) se escriben en consola.
-- **Prisma** solo se usa desde `src/repositories/`. El cliente único está en `src/repositories/prisma.js`.
-- **Validación en el servidor:** `authService` comprueba tipos, formato y longitud de todos los datos antes de tocar la base de datos, y normaliza los textos (Unicode NFC; el email, sin espacios y en minúsculas). Los límites del HTML son solo una ayuda: la regla de verdad está en el servidor.
-- **Sesiones en MySQL:** se guardan en la tabla `Session` (`src/repositories/sesionStore.js`, con `@quixo3/prisma-session-store`), así que sobreviven a los reinicios del servidor. Caducan tras un día sin actividad. Hay una migración nueva: tras el `git pull`, ejecutar `npm install` y `npx prisma migrate deploy` en `backend/`.
-- **Pruebas sin MySQL:** simulan los repositorios con `jest.mock`, y las sesiones se guardan en memoria. `tests/setup.js` desactiva los límites de intentos; `tests/limites.test.js` los prueba de verdad con `jest.unmock`. `tests/setup.js` prepara el entorno de todas las pruebas.
+- **Pantallas:** `/` es el login (`login.html` ya no existe). Tras entrar o registrarse se llega a `bienvenida.html`, que saluda por el nombre; sin sesión, vuelve al login.
+- **El servidor no se fía del navegador:** `authService` valida tipo, formato y longitud de cada dato y normaliza los textos (Unicode NFC; el email, sin espacios y en minúsculas). Los límites del HTML son solo una ayuda.
+- **Errores:** los servicios lanzan `crearError(mensaje, status)` (`src/errores.js`) y `app.js` responde con ese código y `{ error: mensaje }` en español. Las rutas no llevan `try/catch`: Express 5 pasa solo los errores de las funciones `async`. Solo los fallos inesperados (500) se escriben en consola.
+- **Sesiones en MySQL** (tabla `Session`): sobreviven a los reinicios del servidor y caducan tras un día sin actividad.
+- **Capas:** Prisma solo se usa en `src/repositories/`; los límites de intentos, en `src/middlewares/`.
 
 ### Qué ha cambiado
 
-- Frontend:
-  - `index.html` — página de login, con el estado del servidor en la barra superior (lo pinta `js/index.js`).
-  - `bienvenida.html` + `js/bienvenida.js` — pantalla de bienvenida.
-  - `js/auth.js` — `enviarFormulario()` sirve para los dos formularios, login y registro. En el registro muestra el CAPTCHA (`iniciarCaptcha()`) y lo reinicia tras cada error.
-  - `js/api.js` — si no se puede llegar al servidor, el error es «No se ha podido conectar con el servidor» en lugar del mensaje en inglés del navegador.
-  - Los botones de los formularios se desactivan mientras se espera la respuesta, así que un doble clic no envía dos veces.
-  - `css/styles.css` — clase `contenedor-formulario` para la columna de 400px de los formularios.
-- Backend:
-  - `GET /api/auth/yo` devuelve `{ id, nombreUsuario, email }`. Responde 401 si no hay sesión o si el usuario ya no existe.
-  - `src/services/authService.js` — `datosPublicos()` (lo que se puede enviar al frontend, nunca la contraseña cifrada) y `crearError()`.
-  - Reglas de registro: nombre de usuario de 3 a 30 letras (de cualquier alfabeto), números, `_`, `.` o `-`, sin espacios, emojis ni caracteres invisibles; email con formato válido (máx. 191); contraseña de 8 caracteres a 72 bytes (bcrypt ignora lo que pasa de 72 bytes, así que dos contraseñas largas podrían confundirse).
-  - Nombre de usuario o email repetido → 400 con un mensaje claro (antes, 500). Lo detecta MySQL con los índices únicos (error `P2002` de Prisma), así que funciona aunque lleguen dos registros a la vez.
-  - Datos de tipo incorrecto, petición sin cuerpo o JSON roto → 400 (antes, 500 o un mensaje en inglés).
-  - `bcrypt` actualizado a la versión 6: la 5 arrastraba `tar`, con vulnerabilidades críticas. Las contraseñas ya guardadas siguen funcionando. Tras el `git pull`, ejecutar `npm install` en `backend/`.
-  - `GET /api/health` consulta también MySQL (`src/repositories/saludRepository.js`) y responde 503 si no responde. El indicador del login pasa a «sin conexión» y, al pasar el ratón por encima, muestra el motivo.
-  - Límite de intentos por IP (`src/middlewares/limites.js`, con `express-rate-limit`): 10 logins fallidos cada 15 minutos y 20 registros por hora. Al pasarse, responde 429 «Demasiados intentos». Los contadores están en memoria y se reinician con el servidor.
-  - Cabeceras de seguridad con `helmet` en `app.js`: política de contenido (CSP), que solo deja ejecutar scripts propios; protección contra meter la web en un marco ajeno (`X-Frame-Options`); `nosniff`; y ya no se envía `X-Powered-By: Express`.
-  - CAPTCHA en el registro con Cloudflare Turnstile (`src/services/captchaService.js`). Se comprueba antes de consultar la base de datos, así que un programa no puede probar emails en masa para ver cuáles están registrados. `GET /api/auth/captcha` da la clave pública al formulario. Nuevas variables `TURNSTILE_SITE_KEY` y `TURNSTILE_SECRET_KEY` en `.env` (ver `.env.example`).
-  - `src/errores.js` — `crearError(mensaje, status)`, común para todo el backend.
-  - Login: con un email que no existe también se ejecuta bcrypt (contra `HASH_FICTICIO`), así que la respuesta tarda lo mismo y el tiempo no delata qué emails están registrados.
-  - Sesiones: al iniciar sesión o registrarse se crea una sesión nueva con otro id (`abrirSesion()` en `routes/auth.js`), lo que evita la fijación de sesión. El logout, además de cerrar la sesión en el servidor, borra la cookie del navegador.
-  - Se ha borrado el cliente de Prisma duplicado (`src/prismaClient.js`). Todo el backend está comentado.
-- Pruebas: `tests/auth.test.js` cubre registro, login, `yo` y logout, con sus casos de error; `tests/validacion.test.js`, los datos válidos y no válidos; `tests/app.test.js` (antes `health.test.js`), `/api/health`, el 404 de la API y las cabeceras de seguridad.
-- Repositorio: `.gitignore` reescrito solo con lo que usa el proyecto.
+- **Seguridad y robustez**
+  - Registro: nombre de usuario de 3 a 30 letras (de cualquier alfabeto), números, `_`, `.` o `-`, sin espacios, emojis ni caracteres invisibles; email válido; contraseña de 8 caracteres a 72 bytes (bcrypt ignora lo que pasa de 72).
+  - Datos incorrectos, nombre o email repetidos, JSON roto o petición sin cuerpo → 400 con un mensaje claro (antes, muchos daban 500).
+  - Sesión nueva en cada login (evita la fijación de sesión); el logout también borra la cookie.
+  - Límite por IP: 10 logins fallidos cada 15 minutos y 20 registros por hora → 429.
+  - CAPTCHA Cloudflare Turnstile en el registro, comprobado antes de consultar la base de datos. El login tarda lo mismo exista o no el email. Ninguno de los dos permite averiguar qué emails están registrados.
+  - Cabeceras de seguridad con `helmet`: CSP (solo scripts propios y los de Cloudflare), protección contra marcos ajenos, y sin `X-Powered-By`.
+  - `/api/health` comprueba también MySQL (503 si no responde) y el indicador del login lo refleja.
+  - Frontend: el fallo de red sale en español y los botones se desactivan mientras se envía el formulario.
+- **Organización del código:** código repetido eliminado (dos clientes de Prisma, los dos formularios de `js/auth.js`, construcción de usuarios y errores en el servicio) y todo el backend comentado.
+- **Pruebas:** `tests/setup.js` prepara el entorno de todas: sesiones en memoria, sin límites de intentos y con el CAPTCHA siempre aceptado. Los archivos `limites.test.js` y `captcha.test.js` prueban de verdad esas dos piezas. Ninguna prueba necesita MySQL.
+- **Documentación:** `arquitectura.md` y el README describen las herramientas nuevas. `.gitignore` reescrito solo con lo que usa el proyecto.
 
 ### Cómo probarlo
 
 1. `npm test` dentro de `backend/` — pasan todas las pruebas.
 2. `npm run dev` y abrir http://localhost:3000:
-   - login con una contraseña incorrecta → sale el error; con la correcta → bienvenida;
-   - registro con un email repetido → «El email ya está registrado»;
-   - http://localhost:3000/bienvenida.html sin sesión (ventana privada) → vuelve al login.
+   - login con contraseña incorrecta → error; con la correcta → bienvenida;
+   - registro: sin esperar al CAPTCHA → «No se ha podido comprobar que no eres un robot»; con un email repetido → «El email ya está registrado»;
+   - reiniciar el servidor con la sesión iniciada y recargar la bienvenida → sigue la sesión.
 
 ### Para quien siga trabajando en esto
 
-- Cualquier enlace al login debe apuntar a `/`.
-- Para devolver un error al cliente, lanzar `crearError(mensaje, status)` de `src/errores.js`.
-- La CSP bloquea los scripts en línea (`<script>…</script>`, `onclick="…"`) y los de otros dominios: el código va en archivos de `js/`. Si hace falta cargar algo de otro dominio, hay que añadirlo a la configuración de `helmet` en `app.js`.
-- **Tras el `git pull`, copiar a `backend/.env` las dos variables `TURNSTILE_…` de `.env.example`**; sin ellas no se puede registrar nadie. Son las claves de prueba de Cloudflare, que siempre aceptan. Para desplegar, crear las reales en Cloudflare → Turnstile. El registro necesita conexión a internet para verificar el CAPTCHA.
-- En las pruebas, `tests/setup.js` da el CAPTCHA siempre por bueno; `tests/captcha.test.js` prueba el servicio real simulando las respuestas de Cloudflare.
-- Para un formulario nuevo, basta llamar a `enviarFormulario()` en `js/auth.js` con el id del formulario, el id de la caja de error, la ruta de la API y los campos.
+- Enlaces al login: a `/`.
+- La CSP bloquea los scripts en línea (`<script>…</script>`, `onclick="…"`) y los de otros dominios: el código va en archivos de `js/`, y lo que se cargue de otro dominio hay que añadirlo a la configuración de `helmet` en `app.js`.
+- Formularios nuevos: `enviarFormulario()` de `js/auth.js`, con el id del formulario, el de la caja de error, la ruta de la API y los campos.
+- El registro necesita internet para verificar el CAPTCHA. Para desplegar, crear las claves reales en Cloudflare → Turnstile.

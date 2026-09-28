@@ -13,7 +13,8 @@ PlanB es una **aplicación web responsive** organizada en capas: un único backe
 | Capa | Tecnología |
 |---|---|
 | Interfaz | HTML, CSS, JavaScript + Bootstrap |
-| Backend | Node.js + Express (sesiones con express-session, contraseñas con bcrypt) |
+| Backend | Node.js + Express (sesiones con express-session guardadas en MySQL, contraseñas con bcrypt, cabeceras de seguridad con helmet, límite de intentos con express-rate-limit) |
+| Protección contra bots | CAPTCHA Cloudflare Turnstile en el registro |
 | Persistencia | Prisma |
 | Base de datos | MySQL (en Docker para desarrollo) |
 | Imágenes | Cloudinary |
