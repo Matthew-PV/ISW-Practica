@@ -145,4 +145,23 @@ curl -i http://localhost:3000/api/perfil -b cookies.txt   # 200, con los datos
 curl -i http://localhost:3000/api/perfil                  # 401 sin sesión
 ```
 
+# Perfil: test de la consulta del perfil propio — Implementado (30/09/2026)
+
+Test automático de `GET /api/perfil` (ver `perfil-consultar.md` para el endpoint en sí).
+
+## Qué se ha hecho
+
+- `tests/perfil.test.js` (nuevo), con el mismo patrón que `auth.test.js`: repositorio simulado con `jest.mock()`, agente con sesión (`agenteConSesion()`).
+- Casos cubiertos:
+  - Sin sesión → 401.
+  - Con sesión → 200, devuelve el perfil, sin `passwordHash`.
+  - Si el usuario de la sesión ya no existe → 401.
+
+## Cómo probarlo
+
+```bash
+npm test
+```
+
+54 tests en total, todos en verde.
 
