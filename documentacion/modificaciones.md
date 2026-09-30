@@ -165,3 +165,30 @@ npm test
 
 54 tests en total, todos en verde.
 
+# Editar mi perfil — hecho (30/09/2026)
+
+## Qué hace esto
+
+Ahora, si tienes la sesión iniciada, puedes cambiar tu nombre de usuario y tu ciudad desde tu perfil. Cada uno solo puede tocar el suyo, claro. El email de 
+momento no se puede cambiar por aquí, lo dejamos fijo a propósito.
+
+## Qué comprueba antes de guardar
+
+- Que el nombre de usuario tenga entre 3 y 30 caracteres válidos (letras, números, `_`, `.` o `-`).
+- Que ese nombre no lo esté usando ya otra persona.
+- Que tengas la sesión iniciada, si no, no te deja tocar nada.
+
+## Archivos que he tocado
+
+- `src/repositories/usuarioRepository.js` — `actualizarPerfil(id, datos)`.
+- `src/services/perfilService.js` — `actualizarPerfilPropio(id, datos)`, valida antes de guardar.
+- `src/routes/perfil.js` — ruta `PUT /api/perfil`.
+- `tests/perfil.test.js` — pruebas automáticas.
+
+## Cómo probarlo
+
+```bash
+npm test
+```
+
+58 tests en total, todos en verde.

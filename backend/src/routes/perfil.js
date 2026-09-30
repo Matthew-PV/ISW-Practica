@@ -14,4 +14,14 @@ router.get('/', async (req, res) => {
   res.json(perfil);
 });
 
+// Actualiza nombreUsuario y/o ciudad del usuario con la sesión iniciada
+router.put('/', async (req, res) => {
+  if (!req.session.usuarioId) {
+    return res.status(401).json({ error: 'No hay sesión iniciada' });
+  }
+
+  const perfil = await perfilService.actualizarPerfilPropio(req.session.usuarioId, req.body ?? {});
+  res.json(perfil);
+});
+
 module.exports = router;

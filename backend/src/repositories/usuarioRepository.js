@@ -31,4 +31,19 @@ async function obtenerPerfil(id) {
   });
 }
 
-module.exports = { crear, buscarPorEmail, buscarPorId, obtenerPerfil };
+// Actualiza nombreUsuario y/o ciudad. Devuelve solo los campos seguros de mostrar.
+async function actualizarPerfil(id, { nombreUsuario, ciudad }) {
+  return prisma.usuario.update({
+    where: { id },
+    data: { nombreUsuario, ciudad },
+    select: {
+      id: true,
+      nombreUsuario: true,
+      email: true,
+      foto: true,
+      ciudad: true,
+    },
+  });
+}
+
+module.exports = { crear, buscarPorEmail, buscarPorId, obtenerPerfil, actualizarPerfil };

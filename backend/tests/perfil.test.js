@@ -54,3 +54,44 @@ describe('GET /api/perfil', () => {
     expect(res.status).toBe(401);
   });
 });
+
+describe('PUT /api/perfil', () => {
+  test('sin sesión responde 401', async () => {
+    const res = await request(app).put('/api/perfil').send({ nombreUsuario: 'ana', ciudad: 'Madrid' });
+
+    expect(res.status).toBe(401);
+  });
+
+  test('con un nombre de usuario demasiado corto responde 400', async () => {
+    const agente = await agenteConSesion();
+
+    const res = await agente.put('/api/perfil').send({ nombreUsuario: 'ab', ciudad: 'Madrid' });
+
+    expect(res.status).toBe(400);
+    expect(usuarioRepository.actualizarPerfil).not.toHaveBeenCalled();
+  });
+
+  test('con un nombre de usuario ya en uso responde 400', async () => {
+    const agente = await agenteConSesion();
+    usuarioRepository.actualizarPerfil.mockRejectedValue({
+      code: 'P2002',
+      meta: { target: 'Usuario_nombreUsuario_key' },
+    });
+
+    const res = await agente.put('/api/perfil').send({ nombreUsuario: 'otra', ciudad: 'Madrid' });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('El nombre de usuario ya está en uso');
+  });
+
+  test('con datos válidos actualiza el perfil y lo devuelve', async () => {
+    const agente = await agenteConSesion();
+    const actualizado = { ...PERFIL, ciudad: 'Madrid' };
+    usuarioRepository.actualizarPerfil.mockResolvedValue(actualizado);
+
+    const res = await agente.put('/api/perfil').send({ nombreUsuario: 'ana', ciudad: 'Madrid' });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(actualizado);
+  });
+});
