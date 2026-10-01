@@ -37,4 +37,13 @@ async function actualizarPerfil(id, { nombreUsuario, ciudad }) {
   });
 }
 
-module.exports = { crear, buscarPorEmail, buscarPorId, obtenerPerfil, actualizarPerfil };
+// Guarda la URL de la foto de perfil. Devuelve solo los campos seguros de mostrar.
+async function actualizarFoto(id, foto) {
+  return prisma.usuario.update({
+    where: { id },
+    data: { foto },
+    select: CAMPOS_PERFIL,
+  });
+}
+
+module.exports = { crear, buscarPorEmail, buscarPorId, obtenerPerfil, actualizarPerfil, actualizarFoto };

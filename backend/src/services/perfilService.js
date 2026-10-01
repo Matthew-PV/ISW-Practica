@@ -1,5 +1,6 @@
 // Lógica de negocio del perfil de usuario: consulta y edición de los propios datos.
 const usuarioRepository = require('../repositories/usuarioRepository');
+const fotoRepository = require('../repositories/fotoRepository');
 const { crearError } = require('../errores');
 const { validarNombreUsuario } = require('./nombreUsuario');
 
@@ -17,6 +18,16 @@ function leerCiudad(valor) {
     throw crearError('La ciudad no puede superar los 191 caracteres', 400);
   }
   return ciudad || null;
+}
+
+// Firmas (primeros bytes) de los formatos admitidos. Se mira el contenido y no la extensión
+// ni el tipo que declara el navegador, que se pueden falsear.
+function esFormatoPermitido(contenido) {
+  const ascii = (inicio, fin) => contenido.subarray(inicio, fin).toString('latin1');
+  const jpg = contenido.subarray(0, 3).equals(Buffer.from([0xff, 0xd8, 0xff]));
+  const png = contenido.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+  const webp = ascii(0, 4) === 'RIFF' && ascii(8, 12) === 'WEBP';
+  return jpg || png || webp;
 }
 
 // Devuelve el perfil del usuario de la sesión (nunca la contraseña cifrada).
@@ -47,4 +58,28 @@ async function actualizarPerfilPropio(id, datos) {
   }
 }
 
-module.exports = { obtenerPerfilPropio, actualizarPerfilPropio };
+// Sube la foto del usuario de la sesión a Cloudinary y guarda en el perfil solo su URL.
+// `archivo` es el que deja el middleware recibirFoto (el tamaño ya está comprobado).
+// Si la foto no es válida no se sube nada y el perfil conserva la anterior.
+async function actualizarFotoPropia(id, archivo) {
+  if (!archivo) {
+    throw crearError('Falta la foto', 400);
+  }
+  if (!esFormatoPermitido(archivo.buffer)) {
+    throw crearError('La foto debe ser JPG, PNG o WebP', 400);
+  }
+
+  let url;
+  try {
+    url = await fotoRepository.subirFotoPerfil(id, archivo.buffer);
+  } catch (err) {
+    // Cloudinary responde 400 si el archivo empieza como una imagen pero está dañado
+    if (err.http_code === 400) {
+      throw crearError('La foto no es una imagen válida', 400);
+    }
+    throw err;
+  }
+  return usuarioRepository.actualizarFoto(id, url);
+}
+
+module.exports = { obtenerPerfilPropio, actualizarPerfilPropio, actualizarFotoPropia };

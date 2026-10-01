@@ -283,3 +283,51 @@ npm test
 - Las rutas nuevas que exijan sesión deben usar `requiereSesion` (`src/middlewares/sesion.js`), no repetir la comprobación.
 - Para validar un nombre de usuario en otro sitio, usar `validarNombreUsuario` (`src/services/nombreUsuario.js`).
 - La ciudad del perfil (`Usuario.ciudad`) sigue siendo texto libre, distinta del catálogo `Ciudad` de las experiencias.
+
+## Perfil: subir la foto (FLA05, tareas 4 y 5) — Implementado (01/10/2026)
+
+Cada usuario puede subir su foto de perfil. La foto se guarda en Cloudinary y en MySQL solo su URL.
+
+### Antes de nada, tras el `git pull`
+
+- `cd backend && npm install`: hay dos dependencias nuevas, **cloudinary** (SDK oficial) y **multer** (recibe archivos de formularios en Express).
+- Rellenar `CLOUDINARY_URL` en `backend/.env` con la del panel de Cloudinary (Dashboard → API Keys → *API environment variable*, con el secreto incluido). Pedid la del equipo a Joaquín; nunca se sube a git.
+
+### Qué se ha hecho
+
+- `PUT /api/perfil/foto` — exige sesión. Recibe un formulario *multipart* con la foto en el campo `foto` y devuelve el perfil con la URL nueva.
+- Tarea 4, validación (si falla responde 400, no se sube nada y se conserva la foto anterior):
+  - formato JPG, PNG o WebP, comprobado por los primeros bytes del archivo (su firma), no por la extensión ni por el tipo que dice el navegador, que se pueden falsear;
+  - tamaño máximo de 5 MB: multer deja de leer en cuanto se supera;
+  - una sola foto y en el campo `foto`;
+  - si el archivo empieza como una imagen pero está dañado, Cloudinary lo rechaza y la API responde «La foto no es una imagen válida».
+- Tarea 5, almacenamiento: la foto se sube a Cloudinary (carpeta `planb/perfiles`, con nombre `usuario-<id>`) y en `Usuario.foto` se guarda solo su URL `https`. Cada usuario tiene una sola foto: la nueva sustituye a la anterior también en Cloudinary.
+- Archivos:
+  - `src/middlewares/foto.js` (nuevo) — `recibirFoto`: multer en memoria, límite de tamaño y errores en 400.
+  - `src/repositories/fotoRepository.js` (nuevo) — `subirFotoPerfil`: sube a Cloudinary y devuelve la URL.
+  - `src/repositories/usuarioRepository.js` — `actualizarFoto(id, url)`.
+  - `src/services/perfilService.js` — `actualizarFotoPropia`: valida el formato, sube y guarda la URL.
+  - `src/routes/perfil.js` — la ruta nueva.
+  - `tests/fotoPerfil.test.js` (nuevo) — pruebas con MySQL y Cloudinary simulados.
+
+### Cómo probarlo
+
+```bash
+cd backend
+npm test
+```
+
+141 pruebas en total, todas en verde. Con el servidor arrancado (`npm run dev`) y una sesión iniciada con curl (`-c cookies.txt` en el login):
+
+```bash
+curl -b cookies.txt -X PUT http://localhost:3000/api/perfil/foto -F "foto=@mi-foto.png"   # 200, con la URL
+curl -b cookies.txt -X PUT http://localhost:3000/api/perfil/foto -F "foto=@animacion.gif" # 400
+curl -b cookies.txt http://localhost:3000/api/perfil                                      # la foto sigue ahí
+```
+
+Se ha comprobado contra Cloudinary y MySQL reales: subida, rechazo de una imagen dañada y consulta del perfil. Los datos de prueba se borraron después.
+
+### Para quien siga trabajando en esto
+
+- Tarea 6 (imagen por defecto): `foto` es `null` mientras el usuario no sube ninguna. Para mostrar las fotos en el frontend hay que permitir `https://res.cloudinary.com` en `imgSrc` de la política de contenido de helmet (`src/app.js`); ahora solo se permiten imágenes propias.
+- Tarea 10: faltan las pruebas de "edición reflejada" con la foto desde el frontend; las del backend están en `tests/fotoPerfil.test.js`.

@@ -168,6 +168,8 @@ Servicio en la nube para almacenar y servir imágenes. El backend sube cada foto
 * Redimensiona y optimiza las imágenes automáticamente (por ejemplo, genera miniaturas para los listados).
 * El plan gratuito es suficiente para el proyecto.
 
+El navegador envía la foto en un formulario *multipart* (el formato de los formularios con archivos). En el backend, **multer** la recibe en memoria, sin escribirla en disco, y el SDK oficial **cloudinary** la sube con las credenciales de la variable `CLOUDINARY_URL` de `.env`.
+
 #### 3.10. Docker (docker-compose)
 
 Docker ejecuta programas dentro de **contenedores**, que son entornos aislados con una configuración fija. `docker-compose` permite describir en un archivo (`docker-compose.yml`) qué contenedores levantar.
@@ -255,7 +257,7 @@ ISW-Practica/
 │   │   ├── routes/            # URLs de la API → llaman a los servicios
 │   │   ├── middlewares/       # sesión, roles, validación de datos
 │   │   ├── services/          # lógica de negocio
-│   │   ├── repositories/      # acceso a datos con Prisma (persistencia)
+│   │   ├── repositories/      # acceso a datos: MySQL con Prisma y fotos en Cloudinary
 │   │   ├── app.js             # configuración de Express
 │   │   └── server.js          # arranque del servidor
 │   ├── tests/                 # pruebas con Jest y Supertest
