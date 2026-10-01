@@ -1,5 +1,5 @@
 // Reglas del nombre de usuario, comunes al registro y a la edición del perfil.
-const { crearError } = require('../errores');
+const { crearError } = require('../../errores');
 
 // De 3 a 30 letras (de cualquier alfabeto), números, `_`, `.` o `-`.
 // Deja fuera espacios, emojis, caracteres invisibles y de control.

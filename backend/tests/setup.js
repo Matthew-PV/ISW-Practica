@@ -3,14 +3,14 @@
 process.env.SESSION_SECRET = 'test';
 
 // Las pruebas guardan las sesiones en memoria en lugar de en MySQL
-jest.mock('../src/repositories/sesionStore', () => {
+jest.mock('../src/repositories/shared/sesionStore', () => {
   const session = require('express-session');
   return new session.MemoryStore();
 });
 
 // Los límites de intentos se desactivan (muchas pruebas hacen varios registros o logins seguidos).
 // tests/limites.test.js los prueba de verdad con jest.unmock.
-jest.mock('../src/middlewares/limites', () => {
+jest.mock('../src/middlewares/limitesMiddleware', () => {
   const dejarPasar = (req, res, next) => next();
   return { limiteLogin: dejarPasar, limiteRegistro: dejarPasar };
 });

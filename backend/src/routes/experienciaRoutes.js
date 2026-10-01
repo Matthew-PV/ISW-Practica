@@ -1,7 +1,7 @@
 // Creación de experiencias, bajo /api/experiencias.
 const express = require('express');
 const experienciaService = require('../services/experienciaService');
-const { requiereSesion } = require('../middlewares/sesion');
+const { requiereSesion } = require('../middlewares/sesionMiddleware');
 
 const router = express.Router();
 

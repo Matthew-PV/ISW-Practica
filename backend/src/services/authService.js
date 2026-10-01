@@ -2,7 +2,7 @@
 const bcrypt = require('bcrypt');
 const usuarioRepository = require('../repositories/usuarioRepository');
 const captchaService = require('./captchaService');
-const { validarNombreUsuario } = require('./nombreUsuario');
+const { validarNombreUsuario } = require('./shared/nombreUsuario');
 const { crearError } = require('../errores');
 
 // Coste del cifrado con bcrypt: más alto es más seguro pero más lento

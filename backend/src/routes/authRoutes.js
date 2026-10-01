@@ -2,8 +2,8 @@
 // Express 5 pasa al manejador de errores de app.js cualquier error de una ruta async, sin try/catch.
 const express = require('express');
 const authService = require('../services/authService');
-const { limiteLogin, limiteRegistro } = require('../middlewares/limites');
-const { requiereSesion } = require('../middlewares/sesion');
+const { limiteLogin, limiteRegistro } = require('../middlewares/limitesMiddleware');
+const { requiereSesion } = require('../middlewares/sesionMiddleware');
 
 const router = express.Router();
 

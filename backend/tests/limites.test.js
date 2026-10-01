@@ -1,5 +1,5 @@
 // Límites de intentos de login y registro, con los limitadores reales (setup.js los desactiva)
-jest.unmock('../src/middlewares/limites');
+jest.unmock('../src/middlewares/limitesMiddleware');
 jest.mock('../src/repositories/usuarioRepository');
 
 const request = require('supertest');

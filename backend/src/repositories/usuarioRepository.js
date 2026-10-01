@@ -1,6 +1,6 @@
 // Acceso a la tabla Usuario en MySQL. Cada función devuelve el usuario completo
 // (incluida la contraseña cifrada), o null si no existe.
-const prisma = require('./prisma');
+const prisma = require('./shared/prisma');
 
 // Campos del perfil que se pueden mostrar (nunca la contraseña cifrada)
 const CAMPOS_PERFIL = { id: true, nombreUsuario: true, email: true, foto: true, ciudad: true };

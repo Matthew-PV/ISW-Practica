@@ -5,7 +5,7 @@ const express = require('express');
 const helmet = require('helmet');
 const session = require('express-session');
 const apiRouter = require('./routes');
-const sesionStore = require('./repositories/sesionStore');
+const sesionStore = require('./repositories/shared/sesionStore');
 
 const app = express();
 

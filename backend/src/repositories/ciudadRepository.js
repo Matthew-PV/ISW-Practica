@@ -1,5 +1,5 @@
 // Acceso al catálogo de ciudades. Solo los repositorios consultan Prisma.
-const prisma = require('./prisma');
+const prisma = require('./shared/prisma');
 
 // Devuelve la ciudad, o null si no existe.
 async function buscarPorId(id) {

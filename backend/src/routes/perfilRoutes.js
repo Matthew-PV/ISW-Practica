@@ -1,8 +1,8 @@
 // Rutas del perfil de usuario, bajo /api/perfil.
 const express = require('express');
 const perfilService = require('../services/perfilService');
-const { requiereSesion } = require('../middlewares/sesion');
-const { recibirFoto } = require('../middlewares/foto');
+const { requiereSesion } = require('../middlewares/sesionMiddleware');
+const { recibirFoto } = require('../middlewares/fotoMiddleware');
 
 const router = express.Router();
 

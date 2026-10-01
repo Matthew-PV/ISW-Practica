@@ -2,7 +2,7 @@
 const usuarioRepository = require('../repositories/usuarioRepository');
 const fotoRepository = require('../repositories/fotoRepository');
 const { crearError } = require('../errores');
-const { validarNombreUsuario } = require('./nombreUsuario');
+const { validarNombreUsuario } = require('./shared/nombreUsuario');
 
 const CIUDAD_MAX = 191; // tamaño de la columna en MySQL
 
