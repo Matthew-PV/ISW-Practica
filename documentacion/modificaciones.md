@@ -386,3 +386,32 @@ Los datos de prueba se borraron después.
 - La ciudad del perfil (`Usuario.ciudad`) sigue siendo texto libre, distinta del catálogo `Ciudad` de las experiencias.
 - FLA05 tarea 6 (imagen por defecto): `foto` es `null` mientras el usuario no sube ninguna. Para mostrar las fotos en el frontend hay que permitir `https://res.cloudinary.com` en `imgSrc` de la política de contenido de helmet (`src/app.js`); ahora solo se permiten imágenes propias.
 - FLA05 tarea 10: faltan las pruebas de "edición reflejada" con la foto desde el frontend; las del backend están en `tests/fotoPerfil.test.js`. Para enviar la foto desde el frontend: `api()` (`js/shared/api.js`) pone por defecto `Content-Type: application/json`, y con un `FormData` hay que quitarla, porque esa cabecera la pone el navegador.
+
+# Pruebas de creación de experiencias (LUC01, objetivos 5, 6 y 7) — Preparado, pendiente de ejecutar (01/10/2026)
+
+Los objetivos 5, 6 y 7 piden **pruebas**, no código nuevo: la lógica de `POST /api/experiencias` ya existe en `experienciaService`. Se añade un archivo de pruebas que los comprueba uno a uno, con los repositorios simulados (no necesita MySQL).
+
+### Qué se ha hecho
+
+- `tests/experienciaObjetivos.test.js` (nuevo), con el mismo patrón que el resto de pruebas: repositorios simulados con `jest.mock()`, sin tocar la base de datos. No se modifica ningún archivo existente.
+- Casos cubiertos:
+  - **Objetivo 5, campos obligatorios:** si falta `titulo`, `descripcion` o `ciudadId` → 400 y no se llama a `experienciaRepository.crear`.
+  - **Objetivo 6, solo su ciudad:** la ciudad se comprueba con `ciudadRepository.buscarPorId` y la experiencia se guarda con ese mismo `ciudadId`. Si la ciudad no existe → 400 y no se guarda nada.
+  - **Objetivo 7, datos válidos:** `experienciaRepository.crear` recibe los datos validados más el `autorId` de la sesión (nunca el del cuerpo de la petición), y el resultado devuelve el `id` y el `autorId`.
+- Archivos que usa la prueba:
+  - `src/services/experienciaService.js` — `crearExperiencia` (lo que se prueba).
+  - `src/repositories/ciudadRepository.js`, `experienciaRepository.js` y `usuarioRepository.js` — simulados.
+  - `src/errores.js` — `crearError(mensaje, status)`, de donde sale el código 400.
+
+### Antes de nada
+
+- Hace falta Node.js. En macOS: `brew install node` y comprobar con `node -v && npm -v`.
+- Todos los comandos de npm se ejecutan dentro de `backend/`, no desde la raíz: `cd backend && npm install`.
+
+### Cómo probarlo
+
+```bash
+cd backend
+npx jest tests/experienciaObjetivos.test.js   # solo el archivo nuevo
+npm test                                      # toda la batería
+```
