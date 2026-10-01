@@ -3,6 +3,22 @@ const usuarioRepository = require('../repositories/usuarioRepository');
 const { crearError } = require('../errores');
 const { validarNombreUsuario } = require('./nombreUsuario');
 
+const CIUDAD_MAX = 191; // tamaño de la columna en MySQL
+
+// La ciudad del perfil es texto libre y opcional: null o un texto vacío la dejan sin ciudad.
+// Cuenta caracteres Unicode (un emoji ocupa dos posiciones en String.length).
+function leerCiudad(valor) {
+  if (valor === null) return null;
+  if (typeof valor !== 'string') {
+    throw crearError('La ciudad debe ser un texto', 400);
+  }
+  const ciudad = valor.normalize('NFC').trim();
+  if (Array.from(ciudad).length > CIUDAD_MAX) {
+    throw crearError('La ciudad no puede superar los 191 caracteres', 400);
+  }
+  return ciudad || null;
+}
+
 // Devuelve el perfil del usuario de la sesión (nunca la contraseña cifrada).
 // Falla si ya no existe (por ejemplo, si se ha vaciado la base de datos).
 async function obtenerPerfilPropio(id) {
@@ -16,9 +32,9 @@ async function obtenerPerfilPropio(id) {
 // Actualiza nombreUsuario y/o ciudad del usuario de la sesión.
 // El email no es editable desde aquí.
 async function actualizarPerfilPropio(id, datos) {
-  const { ciudad } = datos ?? {};
-  // Si no llega, no se cambia
+  // Un campo que no llega no se cambia
   const nombreUsuario = datos?.nombreUsuario === undefined ? undefined : validarNombreUsuario(datos.nombreUsuario);
+  const ciudad = datos?.ciudad === undefined ? undefined : leerCiudad(datos.ciudad);
 
   try {
     return await usuarioRepository.actualizarPerfil(id, { nombreUsuario, ciudad });

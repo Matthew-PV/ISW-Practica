@@ -94,6 +94,34 @@ describe('PUT /api/perfil', () => {
     expect(usuarioRepository.actualizarPerfil).toHaveBeenCalledWith(1, { nombreUsuario: 'José', ciudad: undefined });
   });
 
+  test.each([
+    ['un objeto', { nombre: 'Madrid' }],
+    ['un número', 28001],
+    ['de 192 caracteres', 'a'.repeat(192)],
+  ])('con una ciudad que es %s responde 400', async (_, ciudad) => {
+    const agente = await agenteConSesion();
+
+    const res = await agente.put('/api/perfil').send({ ciudad });
+
+    expect(res.status).toBe(400);
+    expect(usuarioRepository.actualizarPerfil).not.toHaveBeenCalled();
+  });
+
+  test.each([
+    ['sin espacios exteriores', '  Madrid  ', 'Madrid'],
+    ['vacía como sin ciudad', '   ', null],
+    ['null como sin ciudad', null, null],
+    ['de 191 caracteres', 'a'.repeat(191), 'a'.repeat(191)],
+  ])('guarda la ciudad %s', async (_, ciudad, guardada) => {
+    const agente = await agenteConSesion();
+    usuarioRepository.actualizarPerfil.mockResolvedValue(PERFIL);
+
+    const res = await agente.put('/api/perfil').send({ ciudad });
+
+    expect(res.status).toBe(200);
+    expect(usuarioRepository.actualizarPerfil).toHaveBeenCalledWith(1, { nombreUsuario: undefined, ciudad: guardada });
+  });
+
   test('con un nombre de usuario ya en uso responde 400', async () => {
     const agente = await agenteConSesion();
     usuarioRepository.actualizarPerfil.mockRejectedValue({
