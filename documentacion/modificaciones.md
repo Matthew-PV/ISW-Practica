@@ -415,4 +415,23 @@ Los objetivos 5, 6 y 7 piden **pruebas**, no código nuevo: la lógica de `POST 
 cd backend
 npx jest tests/experienciaObjetivos.test.js   # solo el archivo nuevo
 npm test                                      # toda la batería
+
+# Pantalla de mi perfil — hecho (01/10/2026)
+
+## Qué hace esto
+
+Desde la bienvenida hay un enlace "Mi perfil" que lleva a una pantalla donde ves y editas tu nombre de usuario y tu ciudad (el email no se puede tocar). 
+Si tienes foto, se muestra.
+
+## Archivos
+
+- `frontend/bienvenida.html` — enlace "Mi perfil".
+- `frontend/perfil.html` (nuevo) — el formulario.
+- `frontend/js/perfil.js` (nuevo) — carga el perfil (`GET /api/perfil`) y guarda cambios (`PUT /api/perfil`).
+
+## Probarlo
+
+Inicia sesión → "Mi perfil" → cambia algo → guardar.
+
+
 ```
