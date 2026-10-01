@@ -254,10 +254,13 @@ ISW-Practica/
 │   │   ├── schema.prisma      # esquema de la base de datos
 │   │   └── migrations/        # migraciones generadas por Prisma
 │   ├── src/
-│   │   ├── routes/            # URLs de la API → llaman a los servicios
-│   │   ├── middlewares/       # sesión, roles, validación de datos
-│   │   ├── services/          # lógica de negocio
-│   │   ├── repositories/      # acceso a datos: MySQL con Prisma y fotos en Cloudinary
+│   │   ├── routes/            # URLs de la API → llaman a los servicios (xRoutes.js)
+│   │   ├── middlewares/       # sesión, roles, validación de datos (xMiddleware.js)
+│   │   ├── services/          # lógica de negocio (xService.js)
+│   │   │   └── shared/        # reglas comunes a varios servicios
+│   │   ├── repositories/      # acceso a datos: MySQL con Prisma y fotos en Cloudinary (xRepository.js)
+│   │   │   └── shared/        # conexión con MySQL (prisma.js) y almacén de sesiones
+│   │   ├── errores.js         # crearError: errores con código HTTP, común a todas las capas
 │   │   ├── app.js             # configuración de Express
 │   │   └── server.js          # arranque del servidor
 │   ├── tests/                 # pruebas con Jest y Supertest
@@ -274,6 +277,8 @@ ISW-Practica/
 ```
 
 Las carpetas de `backend/src` se corresponden con las capas de la sección 2. Las rutas solo llaman a servicios, los servicios solo llaman a repositorios y solo los repositorios usan Prisma.
+
+Cada archivo lleva el nombre de su capa como sufijo, de modo que el nombre indica dónde está y con quién habla: `perfilRoutes.js` → `perfilService.js` → `usuarioRepository.js`. Las rutas y los servicios se agrupan por funcionalidad (auth, perfil, experiencias) y los repositorios por tabla o almacén de datos (usuario, experiencia, ciudad, foto), por eso varios servicios pueden usar el mismo repositorio. Lo que no pertenece a ninguna funcionalidad ni tabla concreta va en la carpeta `shared/` de su capa. Los middlewares hacen ese papel para las rutas. Cada archivo empieza con un comentario que indica su capa, quién lo usa y qué usa.
 
 Las claves y contraseñas (conexión a MySQL, credenciales de Cloudinary, secreto de sesión) se guardan en `backend/.env`, que **no se sube a git**. El archivo `backend/.env.example` indica qué variables hay que rellenar.
 

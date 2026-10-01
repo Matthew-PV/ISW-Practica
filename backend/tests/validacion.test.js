@@ -12,6 +12,7 @@ beforeEach(() => {
   usuarioRepository.crear.mockImplementation(async (datos) => ({ id: 1, ...datos }));
 });
 
+// Envía un registro con los datos de VALIDO, cambiando solo los campos de `cambios`
 function registrar(cambios) {
   return request(app).post('/api/auth/registro').send({ ...VALIDO, ...cambios });
 }

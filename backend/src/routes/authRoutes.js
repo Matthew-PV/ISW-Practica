@@ -1,5 +1,13 @@
 // Rutas de autenticación, bajo /api/auth. La sesión guarda solo el id del usuario (req.session.usuarioId).
 // Express 5 pasa al manejador de errores de app.js cualquier error de una ruta async, sin try/catch.
+// Capa: rutas (routes).
+// Lo usa: routes/index.js.
+// Usa: services/authService.js (la lógica), middlewares/limitesMiddleware.js (límite de intentos)
+//      y middlewares/sesionMiddleware.js (exigir sesión).
+//
+// Las rutas solo traducen HTTP ↔ servicio: sacan los datos de la petición, llaman al servicio
+// y devuelven su resultado como JSON. Las comprobaciones de datos están en el servicio.
+// Lo único propio de esta capa es la sesión (abrirla y cerrarla), porque es cosa de HTTP.
 const express = require('express');
 const authService = require('../services/authService');
 const { limiteLogin, limiteRegistro } = require('../middlewares/limitesMiddleware');
@@ -9,6 +17,7 @@ const router = express.Router();
 
 // Deja la sesión iniciada para el usuario. Antes crea una sesión nueva (con otro id) para que
 // nadie que conociera el id anterior pueda usarlo: así se evita la «fijación de sesión».
+// express-session usa callbacks; se envuelve en una promesa para poder usar await en las rutas.
 function abrirSesion(req, usuarioId) {
   return new Promise((resolve, reject) => {
     req.session.regenerate((err) => {
@@ -19,7 +28,8 @@ function abrirSesion(req, usuarioId) {
   });
 }
 
-// Crea la cuenta y deja la sesión iniciada.
+// POST /api/auth/registro — crea la cuenta y deja la sesión iniciada.
+// Cuerpo: { nombreUsuario, email, password, captcha }. Responde 201 con el usuario creado.
 // Los datos los valida el servicio; req.body es undefined si la petición no trae JSON.
 router.post('/registro', limiteRegistro, async (req, res) => {
   const usuario = await authService.registrar(req.body ?? {}, req.ip);
@@ -27,27 +37,32 @@ router.post('/registro', limiteRegistro, async (req, res) => {
   res.status(201).json(usuario);
 });
 
-// Clave pública del CAPTCHA, que el formulario de registro necesita para mostrarlo
+// GET /api/auth/captcha — clave pública del CAPTCHA, que el formulario de registro necesita
+// para mostrarlo. Es pública a propósito: la secreta (TURNSTILE_SECRET_KEY) nunca sale del servidor.
 router.get('/captcha', (req, res) => {
   res.json({ siteKey: process.env.TURNSTILE_SITE_KEY });
 });
 
-// Inicia la sesión con email y contraseña
+// POST /api/auth/login — inicia la sesión con email y contraseña.
+// Cuerpo: { email, password }. Responde 200 con el usuario, o 401 si los datos no coinciden.
 router.post('/login', limiteLogin, async (req, res) => {
   const usuario = await authService.iniciarSesion(req.body ?? {});
   await abrirSesion(req, usuario.id);
   res.json(usuario);
 });
 
-// Cierra la sesión en el servidor y borra la cookie del navegador
+// POST /api/auth/logout — cierra la sesión en el servidor y borra la cookie del navegador.
+// Responde 204 (sin contenido). Funciona también si no había sesión.
 router.post('/logout', (req, res) => {
   req.session.destroy(() => {
+    // connect.sid es el nombre por defecto de la cookie de express-session
     res.clearCookie('connect.sid');
     res.status(204).send();
   });
 });
 
-// Devuelve el usuario con la sesión iniciada, o 401 si no hay sesión
+// GET /api/auth/yo — devuelve el usuario con la sesión iniciada, o 401 si no hay sesión.
+// La usa el frontend para saber quién está conectado (por ejemplo, en bienvenida.html).
 router.get('/yo', requiereSesion, async (req, res) => {
   const usuario = await authService.obtenerUsuario(req.session.usuarioId);
   res.json(usuario);

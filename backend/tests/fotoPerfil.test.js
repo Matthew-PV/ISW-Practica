@@ -33,6 +33,7 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
+// Devuelve un agente (guarda la cookie de sesión entre peticiones) ya logueado como `usuario`
 async function agenteConSesion() {
   usuarioRepository.buscarPorEmail.mockResolvedValue(usuario);
   const agente = request.agent(app);
@@ -40,6 +41,7 @@ async function agenteConSesion() {
   return agente;
 }
 
+// Comprueba que no se ha subido nada a Cloudinary ni se ha cambiado la foto en MySQL
 function noSeHaGuardadoNada() {
   expect(fotoRepository.subirFotoPerfil).not.toHaveBeenCalled();
   expect(usuarioRepository.actualizarFoto).not.toHaveBeenCalled();

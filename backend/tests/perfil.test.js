@@ -1,3 +1,4 @@
+// Perfil propio por HTTP (/api/perfil): consulta y edición de nombre de usuario y ciudad.
 // Se simula el repositorio para no depender de MySQL en las pruebas
 jest.mock('../src/repositories/usuarioRepository');
 

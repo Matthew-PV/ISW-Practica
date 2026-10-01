@@ -353,3 +353,57 @@ Se ha comprobado así, con Chrome sin ventana (headless) contra el servidor y My
 - Página nueva `x.html` → su código en `js/x.js`, cargado después de `js/shared/api.js`.
 - Si dos o más páginas necesitan la misma función, va a `js/shared/`.
 - Ya no existe `enviarFormulario()` (citado en la sección del 28/09): los formularios nuevos siguen el modelo de `js/index.js`.
+
+## Reorganización y comentarios del backend — Implementado (01/10/2026)
+
+Los archivos del backend llevan el nombre de su capa, lo que no pertenece a ninguna funcionalidad concreta pasa a carpetas `shared/`, y todo el código está comentado en detalle. La API no cambia: mismas URLs, mismas respuestas.
+
+### Antes de nada, tras el `git pull`
+
+Si tenéis cambios sin subir en alguno de los archivos renombrados, git os avisará de conflicto: aplicad vuestros cambios sobre el archivo con el nombre nuevo.
+
+### Qué ha cambiado
+
+**Nombres** (con `git mv`, se conserva el historial de cada archivo):
+
+| Antes | Ahora |
+|---|---|
+| `src/routes/auth.js` | `src/routes/authRoutes.js` |
+| `src/routes/perfil.js` | `src/routes/perfilRoutes.js` |
+| `src/routes/experiencias.js` | `src/routes/experienciaRoutes.js` |
+| `src/middlewares/sesion.js` | `src/middlewares/sesionMiddleware.js` |
+| `src/middlewares/limites.js` | `src/middlewares/limitesMiddleware.js` |
+| `src/middlewares/foto.js` | `src/middlewares/fotoMiddleware.js` |
+| `src/services/nombreUsuario.js` | `src/services/shared/nombreUsuario.js` |
+| `src/repositories/prisma.js` | `src/repositories/shared/prisma.js` |
+| `src/repositories/sesionStore.js` | `src/repositories/shared/sesionStore.js` |
+
+- Regla: cada archivo termina en el nombre de su capa (`Routes`, `Middleware`, `Service`, `Repository`). Así se ve la cadena `perfilRoutes` → `perfilService` → `usuarioRepository`.
+- `shared/` contiene lo que no es de ninguna funcionalidad ni tabla concreta. No hay `routes/shared/`: lo que comparten las rutas son los middlewares, y los tres se usan (`sesionMiddleware` en auth, perfil y experiencias; `limitesMiddleware` en login y registro; `fotoMiddleware` en la subida de foto).
+- `errores.js` se queda en `src/` porque lo usan servicios y middlewares.
+- Actualizados los `require` del código y los `jest.mock` de `tests/setup.js` y `tests/limites.test.js`.
+
+**Comentarios**
+
+- Cada archivo de `src/` empieza con una cabecera: qué hace, su capa, quién lo usa y qué usa.
+- Cada función explica qué recibe, qué devuelve y qué errores lanza. Las rutas indican método, URL, cuerpo esperado y respuesta.
+- `prisma/seed.js` y `prisma/schema.prisma` comentados (los comentarios de Prisma no generan migraciones).
+- Tests: cabecera en `auth.test.js` y `perfil.test.js` y comentarios en las funciones auxiliares que no los tenían.
+- `documentacion/arquitectura.md` — estructura del repositorio y la regla de nombres.
+
+El código no cambia salvo las rutas de los `require` y el nombre de una variable en `routes/index.js` (`experienciasRoutes` → `experienciaRoutes`). Se ha comprobado comparando cada archivo con su versión anterior sin comentarios.
+
+### Cómo probarlo
+
+```bash
+cd backend
+npm test          # 139 pruebas, todas en verde
+npm run db:seed   # debe decir «0 ciudades creadas … 201 ya existentes»
+```
+
+Además se ha repetido en Chrome sin ventana (headless), contra el servidor y MySQL reales, la prueba del frontend: login fallido, registro con CAPTCHA, bienvenida y login correcto. El usuario de prueba se borró después.
+
+### Para quien siga trabajando en esto
+
+- Funcionalidad nueva `x`: `routes/xRoutes.js` (montada en `routes/index.js`) → `services/xService.js` → el repositorio de la tabla que use (`yRepository.js`).
+- Las notas anteriores de este documento citan las rutas antiguas; ahora `requiereSesion` está en `src/middlewares/sesionMiddleware.js` y `validarNombreUsuario` en `src/services/shared/nombreUsuario.js`.

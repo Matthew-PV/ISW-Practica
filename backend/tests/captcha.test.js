@@ -7,6 +7,8 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
+// Sustituye fetch para que «Cloudflare» responda `datos`, sin salir a internet.
+// Devuelve el espía para comprobar después qué se le envió.
 function cloudflareResponde(datos) {
   return jest.spyOn(global, 'fetch').mockResolvedValue({ json: async () => datos });
 }

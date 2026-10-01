@@ -33,6 +33,7 @@ beforeEach(() => {
 
 afterEach(() => jest.restoreAllMocks());
 
+// Devuelve un agente (guarda la cookie de sesión entre peticiones) ya logueado como `usuario`
 async function agenteConSesion() {
   const agente = request.agent(app);
   const login = await agente.post('/api/auth/login').send({ email: usuario.email, password: 'secreta123' });

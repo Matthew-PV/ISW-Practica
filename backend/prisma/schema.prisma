@@ -1,15 +1,21 @@
 // Esquema de la base de datos. Los modelos se añaden conforme se implementan
 // las historias de usuario; después, `npm run db:migrate` crea la migración.
 
+// Genera el cliente de JavaScript (@prisma/client) que usa src/repositories/shared/prisma.js
 generator client {
   provider = "prisma-client-js"
 }
 
+// Base de datos MySQL; la dirección y la contraseña salen de DATABASE_URL en .env
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
+// Usuario registrado. No puede haber dos con el mismo nombre de usuario ni el mismo email.
+// - passwordHash: la contraseña cifrada con bcrypt (nunca se guarda la original).
+// - foto: URL de la foto en Cloudinary; null mientras no suba ninguna.
+// - ciudad: texto libre del perfil, distinto del catálogo Ciudad de las experiencias.
 model Usuario {
   id            Int      @id @default(autoincrement())
   nombreUsuario String   @unique
