@@ -15,7 +15,7 @@
     </div>
   </nav>
 
-  <main class="container py-5" style="max-width: 500px;">
+  <main class="container contenedor-formulario py-5">
     <h1 class="h3 mb-4">Mi perfil</h1>
 
     <div class="text-center mb-4">
@@ -25,15 +25,15 @@
     <form id="form-perfil">
       <div class="mb-3">
         <label for="nombreUsuario" class="form-label">Nombre de usuario</label>
-        <input type="text" class="form-control" id="nombreUsuario" required minlength="3">
+        <input type="text" class="form-control" id="nombreUsuario" required minlength="3" maxlength="30">
       </div>
       <div class="mb-3">
-        <label class="form-label">Email</label>
+        <label for="email" class="form-label">Email</label>
         <input type="email" class="form-control" id="email" disabled>
       </div>
       <div class="mb-3">
         <label for="ciudad" class="form-label">Ciudad</label>
-        <input type="text" class="form-control" id="ciudad">
+        <input type="text" class="form-control" id="ciudad" maxlength="191">
       </div>
       <div id="error-perfil" class="alert alert-danger d-none"></div>
       <div id="exito-perfil" class="alert alert-success d-none"></div>

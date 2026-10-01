@@ -433,5 +433,23 @@ Si tienes foto, se muestra.
 
 Inicia sesión → "Mi perfil" → cambia algo → guardar.
 
+## Pantalla de mi perfil: mejoras y limpieza — Implementado (01/10/2026)
+
+Mejoras sobre la pantalla de mi perfil y mis entradas anteriores de este documento. La API no cambia.
+
+### Qué ha cambiado
+
+- `frontend/js/perfil.js`:
+  - mismos nombres que el resto de páginas (`formulario`, `cajaError`, `cajaExito`, `boton`);
+  - el botón «Guardar cambios» se desactiva mientras se envía (evita el doble envío) y se vuelve a activar al terminar, haya ido bien o mal;
+  - tras guardar, el formulario muestra lo que devuelve el backend (sin espacios sobrantes y normalizado), no lo que se escribió;
+  - nueva función `mostrarPerfil(perfil)`, usada al cargar y al guardar, y comentarios en cada paso.
+- `frontend/perfil.html`:
+  - usa la clase `contenedor-formulario` de `css/styles.css` en lugar de un estilo en línea, igual que el login y el registro;
+  - `maxlength="30"` en el nombre de usuario (como en el registro) y `maxlength="191"` en la ciudad (tamaño de la columna en MySQL);
+  - la etiqueta del email lleva `for="email"`.
+
+
+
 
 ```
