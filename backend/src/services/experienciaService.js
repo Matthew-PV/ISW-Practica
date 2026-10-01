@@ -86,6 +86,59 @@ async function validarCreacion(datos) {
 // - `datos`: el cuerpo de la petición (ver validarCreacion).
 // Devuelve la experiencia guardada, con su ciudad. Error 401 si el usuario ya no existe,
 // 400 si los datos no son válidos.
+
+// Valida los campos que se pueden modificar de una experiencia.
+// En una edición no es obligatorio enviar todos los campos,
+// solo aquellos que se quieran cambiar.
+function validarEdicion(datos) {
+  if (!datos || typeof datos !== 'object' || Array.isArray(datos)) {
+    throw crearError('Los datos de la experiencia deben ser un objeto', 400);
+  }
+
+  const cambios = {};
+
+  if (datos.titulo !== undefined) {
+    const titulo = leerTexto(datos.titulo, 'El título', true);
+    comprobarTextoCorto(titulo, 'El título');
+    cambios.titulo = titulo;
+  }
+
+  if (datos.descripcion !== undefined) {
+    const descripcion = leerTexto(datos.descripcion, 'La descripción', true);
+
+    if (Buffer.byteLength(descripcion, 'utf8') > DESCRIPCION_MAX_BYTES) {
+      throw crearError(
+        'La descripción es demasiado larga (máximo 65535 bytes en UTF-8)',
+        400
+      );
+    }
+
+    cambios.descripcion = descripcion;
+  }
+
+  if (datos.tipo !== undefined) {
+    const tipo = leerTexto(datos.tipo, 'El tipo', false);
+    comprobarTextoCorto(tipo, 'El tipo');
+    cambios.tipo = tipo;
+  }
+
+  if (datos.momentoAdecuado !== undefined) {
+    const momentoAdecuado = leerTexto(
+      datos.momentoAdecuado,
+      'El momento adecuado',
+      false
+    );
+
+    comprobarTextoCorto(momentoAdecuado, 'El momento adecuado');
+    cambios.momentoAdecuado = momentoAdecuado;
+  }
+
+  if (Object.keys(cambios).length === 0) {
+    throw crearError('Debes indicar al menos un campo para modificar', 400);
+  }
+
+  return cambios;
+}
 async function crearExperiencia(usuarioId, datos) {
   // La sesión podría apuntar a un usuario que ya no existe (por ejemplo, base de datos vaciada)
   if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
@@ -112,7 +165,7 @@ async function crearExperiencia(usuarioId, datos) {
 // Edita una experiencia existente.
 // Comprueba que el usuario exista, que la experiencia exista
 // y que pertenezca al usuario que intenta modificarla.
-async function editarExperiencia(usuarioId, experienciaId, cambiosValidados) {
+async function editarExperiencia(usuarioId, experienciaId, datos) {
   if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
       !(await usuarioRepository.buscarPorId(usuarioId))) {
     throw crearError('No hay sesión iniciada', 401);
@@ -132,6 +185,8 @@ async function editarExperiencia(usuarioId, experienciaId, cambiosValidados) {
     throw crearError('No puedes editar una experiencia de otro usuario', 403);
   }
 
+  const cambiosValidados = validarEdicion(datos);
+
   try {
     return await experienciaRepository.actualizar(
       experienciaId,
@@ -149,6 +204,7 @@ async function editarExperiencia(usuarioId, experienciaId, cambiosValidados) {
 
 module.exports = {
   validarCreacion,
+  validarEdicion,
   crearExperiencia,
   editarExperiencia
 };
