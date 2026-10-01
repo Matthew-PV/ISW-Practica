@@ -4,7 +4,7 @@ PlanB es una red social web, adaptada también al móvil, para compartir y descu
 
 ## Estado del proyecto
 
-El proyecto está en fase de definición: la propuesta de producto, las historias de usuario y la arquitectura ya están documentadas. La primera versión cubre la creación del perfil y la creación y edición de experiencias.
+La propuesta de producto, las historias de usuario y la arquitectura están documentadas. Ya se han implementado el registro, el inicio de sesión, la consulta y edición del perfil propio y la creación de experiencias por API, con un catálogo inicial de capitales. El formulario de creación y la edición de experiencias quedan pendientes.
 
 ## Arquitectura
 
@@ -32,6 +32,7 @@ cd backend
 cp .env.example .env          # ajustar SESSION_SECRET
 npm install
 npm run db:migrate
+npm run db:seed               # catálogo inicial de capitales (se puede repetir)
 npm run dev                   # http://localhost:3000
 ```
 
