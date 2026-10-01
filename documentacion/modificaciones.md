@@ -415,7 +415,7 @@ Los objetivos 5, 6 y 7 piden **pruebas**, no código nuevo: la lógica de `POST 
 cd backend
 npx jest tests/experienciaObjetivos.test.js   # solo el archivo nuevo
 npm test                                      # toda la batería
-
+```
 # Pantalla de mi perfil — hecho (01/10/2026)
 
 ## Qué hace esto
@@ -551,3 +551,21 @@ La imagen se ve en http://localhost:3000/img/foto-por-defecto.svg.
 - Para mostrar las fotos reales en una página hay que permitir `https://res.cloudinary.com` en `imgSrc` de la política de contenido de helmet (`src/app.js`); la imagen por defecto se ve sin tocar nada.
 - Si un test nuevo compara la respuesta de la API con un perfil simulado, el perfil debe llevar una foto real (como en `perfil.test.js`); con `foto: null` la respuesta traerá la imagen por defecto.
 - Hoy ninguna pantalla muestra la foto; cuando se añada una (por ejemplo en `bienvenida.html`), usar directamente `perfil.foto` como `src` de la imagen.
+
+## Foto de perfil desde la pantalla y fotos de Cloudinary visibles (FLA05) — Implementado (01/10/2026)
+
+Ahora la foto de perfil se puede subir y cambiar desde la pantalla «Mi perfil», y las fotos subidas a Cloudinary se ven en la web. Antes solo se podía subir con curl y el navegador bloqueaba las fotos. La API no cambia.
+
+### Qué ha cambiado
+
+- `backend/src/app.js` — la política de contenido de helmet permite imágenes de `https://res.cloudinary.com`. La imagen por defecto ya se veía porque es un archivo propio.
+- `frontend/perfil.html` — formulario nuevo encima de los datos del perfil: campo de archivo (JPG, PNG o WebP), botón «Subir foto» y mensajes de error y de éxito.
+- `frontend/js/perfil.js` — envía la foto a `PUT /api/perfil/foto`. Mientras se sube, el botón está desactivado; si va bien, muestra la foto nueva y «Foto actualizada.»; si no, el mensaje del backend («La foto debe ser JPG, PNG o WebP», «La foto no puede superar los 5 MB»...).
+- `frontend/js/shared/api.js` — cuando se envía un archivo (`FormData`), `api()` ya no pone la cabecera `Content-Type: application/json`. El resto de llamadas no cambian.
+
+### Cómo probarlo
+
+```bash
+cd backend
+npm test          # 147 pruebas, todas en verde
+npm run dev
