@@ -321,3 +321,35 @@ La subida se ha comprobado contra Cloudinary y MySQL reales: subida, rechazo de 
 - La ciudad del perfil (`Usuario.ciudad`) sigue siendo texto libre, distinta del catálogo `Ciudad` de las experiencias.
 - FLA05 tarea 6 (imagen por defecto): `foto` es `null` mientras el usuario no sube ninguna. Para mostrar las fotos en el frontend hay que permitir `https://res.cloudinary.com` en `imgSrc` de la política de contenido de helmet (`src/app.js`); ahora solo se permiten imágenes propias.
 - FLA05 tarea 10: faltan las pruebas de "edición reflejada" con la foto desde el frontend; las del backend están en `tests/fotoPerfil.test.js`.
+
+## Reorganización del JavaScript del frontend — Implementado (01/10/2026)
+
+El JavaScript del frontend pasa a tener un archivo por página, con el mismo nombre que su HTML, y una carpeta `shared/` para lo que usan varias páginas. El comportamiento de las pantallas no cambia.
+
+### Qué ha cambiado
+
+- `frontend/js/api.js` → `frontend/js/shared/api.js` (mismo contenido).
+- `frontend/js/auth.js` eliminado. Se reparte en:
+  - `frontend/js/index.js` — formulario de inicio de sesión (`index.html`).
+  - `frontend/js/registro.js` — formulario de registro y CAPTCHA (`registro.html`).
+- `frontend/js/bienvenida.js` — escrito con `async/await`, como los demás.
+- La función genérica `enviarFormulario()` desaparece: cada página escribe su formulario de forma directa, para que se lea de arriba abajo.
+- Los HTML cargan `js/shared/api.js` y después el JS de su página.
+- `documentacion/arquitectura.md` — estructura del repositorio actualizada.
+
+### Cómo probarlo
+
+Con el servidor arrancado (`npm run dev`), en el navegador:
+
+- `/bienvenida.html` sin sesión lleva al login.
+- Login con una contraseña incorrecta: aparece «Email o contraseña incorrectos» y el botón se puede volver a pulsar.
+- Registro: se ve el CAPTCHA y, al crear la cuenta, lleva a la bienvenida con el nombre.
+- Login con esa cuenta: lleva a la bienvenida con el nombre.
+
+Se ha comprobado así, con Chrome sin ventana (headless) contra el servidor y MySQL reales. El usuario de prueba se borró después.
+
+### Para quien siga trabajando en esto
+
+- Página nueva `x.html` → su código en `js/x.js`, cargado después de `js/shared/api.js`.
+- Si dos o más páginas necesitan la misma función, va a `js/shared/`.
+- Ya no existe `enviarFormulario()` (citado en la sección del 28/09): los formularios nuevos siguen el modelo de `js/index.js`.

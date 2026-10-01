@@ -1,5 +1,5 @@
 // Función común para hablar con el backend. La cargan todas las páginas antes que su propio
-// script, así que `api` está disponible como función global en auth.js y bienvenida.js.
+// script, así que `api` está disponible como función global en el JS de cada página.
 //
 // Uso: `await api('/auth/login', { method: 'POST', body: JSON.stringify(datos) })`.
 //  - `ruta`: la parte que va detrás de /api (por ejemplo '/auth/yo').

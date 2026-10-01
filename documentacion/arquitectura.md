@@ -266,7 +266,8 @@ ISW-Practica/
 ├── frontend/
 │   ├── *.html                 # una página por pantalla
 │   ├── css/
-│   └── js/                    # código de cada página y llamadas a la API
+│   └── js/                    # un archivo por página, con el mismo nombre que su HTML
+│       └── shared/            # código común a varias páginas (api.js: llamadas a la API)
 ├── docker-compose.yml         # MySQL para desarrollo
 ├── documentacion/
 └── customer-stories/
@@ -276,7 +277,7 @@ Las carpetas de `backend/src` se corresponden con las capas de la sección 2. La
 
 Las claves y contraseñas (conexión a MySQL, credenciales de Cloudinary, secreto de sesión) se guardan en `backend/.env`, que **no se sube a git**. El archivo `backend/.env.example` indica qué variables hay que rellenar.
 
-El frontend no necesita instalación: Bootstrap se carga desde CDN y `js/api.js` agrupa las llamadas a la API.
+El frontend no necesita instalación: Bootstrap se carga desde CDN y `js/shared/api.js` agrupa las llamadas a la API. Cada página carga primero `js/shared/api.js` y después su propio archivo (`perfil.html` → `js/perfil.js`).
 
 
 
