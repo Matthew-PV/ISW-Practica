@@ -290,6 +290,7 @@ Cada usuario puede subir su foto de perfil: se guarda en Cloudinary y en MySQL s
   - se guarda sin espacios exteriores y normalizada a NFC;
   - `null` o un texto vacío dejan el perfil sin ciudad.
 - `src/repositories/usuarioRepository.js` — los campos del perfil que se pueden mostrar están en una sola constante (`CAMPOS_PERFIL`), usada por `obtenerPerfil`, `actualizarPerfil` y `actualizarFoto`. Para mostrar un campo nuevo del perfil basta con añadirlo ahí.
+- **Eliminado `GET /api/health`** por completo: la ruta, `src/repositories/saludRepository.js`, sus pruebas y el indicador «Servidor: conectado» del login (`frontend/js/index.js`). Ahora `/api/health` responde 404 como cualquier ruta inexistente.
 - Comentarios en las funciones que no tenían: `ciudadRepository.buscarPorId` y `cerrarConexion`, `ciudadService.cargarCatalogoInicial`, `experienciaService.leerTexto` y la ruta `POST /api/experiencias`.
 - Pruebas nuevas: `PUT /api/perfil` sin cuerpo (no cambia nada), y un fallo inesperado de la base de datos en `PUT /api/perfil` y en el registro (responde 500 sin mostrar el detalle). Con ellas, `authService` y `perfilService` quedan cubiertos al 100 %.
 
@@ -300,7 +301,7 @@ cd backend
 npm test
 ```
 
-141 pruebas en total, todas en verde. `npx jest --coverage` muestra la cobertura por archivo; los repositorios salen bajos porque las pruebas los simulan.
+139 pruebas en total, todas en verde. `npx jest --coverage` muestra la cobertura por archivo; los repositorios salen bajos porque las pruebas los simulan.
 
 Con el servidor arrancado (`npm run dev`) y una sesión iniciada con curl (`-c cookies.txt` en el login):
 

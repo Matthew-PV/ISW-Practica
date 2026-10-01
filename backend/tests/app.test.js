@@ -1,29 +1,6 @@
-// Se simula el repositorio para decidir si la base de datos «responde» o no
-jest.mock('../src/repositories/saludRepository');
-
+// Comportamiento general de la aplicación: rutas inexistentes y cabeceras de seguridad.
 const request = require('supertest');
 const app = require('../src/app');
-const saludRepository = require('../src/repositories/saludRepository');
-
-describe('GET /api/health', () => {
-  test('con la base de datos disponible responde 200 con status ok', async () => {
-    saludRepository.comprobarBaseDeDatos.mockResolvedValue();
-
-    const res = await request(app).get('/api/health');
-
-    expect(res.status).toBe(200);
-    expect(res.body).toEqual({ status: 'ok' });
-  });
-
-  test('si la base de datos no responde, responde 503', async () => {
-    saludRepository.comprobarBaseDeDatos.mockRejectedValue(new Error('sin conexión'));
-
-    const res = await request(app).get('/api/health');
-
-    expect(res.status).toBe(503);
-    expect(res.body).toHaveProperty('error');
-  });
-});
 
 describe('ruta de la API inexistente', () => {
   test('responde 404 en JSON', async () => {
