@@ -71,6 +71,29 @@ describe('PUT /api/perfil', () => {
     expect(usuarioRepository.actualizarPerfil).not.toHaveBeenCalled();
   });
 
+  test.each([
+    ['un número', 12345],
+    ['null', null],
+    ['una lista', ['ana']],
+  ])('con un nombre de usuario que es %s responde 400', async (_, nombreUsuario) => {
+    const agente = await agenteConSesion();
+
+    const res = await agente.put('/api/perfil').send({ nombreUsuario });
+
+    expect(res.status).toBe(400);
+    expect(usuarioRepository.actualizarPerfil).not.toHaveBeenCalled();
+  });
+
+  test('guarda el nombre normalizado a NFC, igual que en el registro', async () => {
+    const agente = await agenteConSesion();
+    usuarioRepository.actualizarPerfil.mockResolvedValue(PERFIL);
+
+    // «José» con la tilde como carácter aparte (e + ´)
+    await agente.put('/api/perfil').send({ nombreUsuario: 'José' });
+
+    expect(usuarioRepository.actualizarPerfil).toHaveBeenCalledWith(1, { nombreUsuario: 'José', ciudad: undefined });
+  });
+
   test('con un nombre de usuario ya en uso responde 400', async () => {
     const agente = await agenteConSesion();
     usuarioRepository.actualizarPerfil.mockRejectedValue({

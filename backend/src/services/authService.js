@@ -2,14 +2,12 @@
 const bcrypt = require('bcrypt');
 const usuarioRepository = require('../repositories/usuarioRepository');
 const captchaService = require('./captchaService');
+const { validarNombreUsuario } = require('./nombreUsuario');
 const { crearError } = require('../errores');
 
 // Coste del cifrado con bcrypt: más alto es más seguro pero más lento
 const SALT_ROUNDS = 10;
 
-// Nombre de usuario: de 3 a 30 letras (de cualquier alfabeto), números, `_`, `.` o `-`.
-// Deja fuera espacios, emojis, caracteres invisibles y de control.
-const NOMBRE_USUARIO = /^[\p{L}\p{N}_.-]{3,30}$/u;
 // Email: algo@algo.algo, sin espacios ni caracteres invisibles o de control
 const EMAIL = /^[^\s@\p{C}]+@[^\s@\p{C}]+\.[^\s@\p{C}]+$/u;
 const EMAIL_MAX = 191; // tamaño de la columna en MySQL
@@ -51,12 +49,10 @@ function passwordDemasiadoLarga(password) {
 // Crea un usuario nuevo con la contraseña cifrada. `ip` es la del navegador, para el CAPTCHA.
 // Los duplicados los detecta MySQL con los índices únicos de email y nombre de usuario.
 async function registrar(datos, ip) {
-  const { nombreUsuario, password, ...resto } = leerTextos(datos, ['nombreUsuario', 'email', 'password']);
+  const { password, ...resto } = leerTextos(datos, ['nombreUsuario', 'email', 'password']);
+  const nombreUsuario = validarNombreUsuario(resto.nombreUsuario);
   const email = normalizarEmail(resto.email);
 
-  if (!NOMBRE_USUARIO.test(nombreUsuario)) {
-    throw crearError('El nombre de usuario debe tener de 3 a 30 caracteres: letras, números, _ . o -', 400);
-  }
   if (email.length > EMAIL_MAX || !EMAIL.test(email)) {
     throw crearError('El email no es válido', 400);
   }
