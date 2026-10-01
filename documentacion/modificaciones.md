@@ -252,14 +252,20 @@ En MySQL temporal se verificaron migraciones, restricciones, conservación de da
 
 Quedan pendientes el formulario visual, listado de ciudades por API, edición y publicación. Al añadir lugares habrá que comprobar que pertenecen a la ciudad de la experiencia. Ampliar ciudades, territorios o traducciones es opcional.
 
-## Foto de perfil (FLA05, tareas 4 y 5) y revisión del backend — Implementado (01/10/2026)
+## Foto de perfil (FLA05, tareas 4 y 5), revisión y reorganización del código — Implementado (01/10/2026)
 
-Cada usuario puede subir su foto de perfil: se guarda en Cloudinary y en MySQL solo su URL. Además, revisión del backend: repeticiones eliminadas y errores de validación corregidos en la edición del perfil.
+Cada usuario puede subir su foto de perfil: se guarda en Cloudinary y en MySQL solo su URL. Además:
+- revisión del backend: repeticiones eliminadas y errores de validación corregidos en la edición del perfil;
+- archivos del backend con el nombre de su capa y del frontend con el de su página;
+- todo el código comentado en detalle.
+
+La API no cambia: mismas URLs y mismas respuestas.
 
 ### Antes de nada, tras el `git pull`
 
 - `cd backend && npm install`: hay dos dependencias nuevas, **cloudinary** (SDK oficial) y **multer** (recibe archivos de formularios en Express).
 - Rellenar `CLOUDINARY_URL` en `backend/.env` con la del panel de Cloudinary (Dashboard → API Keys → *API environment variable*, con el secreto incluido). Pedid la del equipo a Joaquín; nunca se sube a git.
+- Varios archivos del backend y del frontend cambian de nombre o de carpeta (tablas de abajo). Si tenéis cambios sin subir en alguno, git avisará de conflicto: aplicad vuestros cambios sobre el archivo con el nombre nuevo.
 
 ### Qué ha cambiado
 
@@ -273,98 +279,31 @@ Cada usuario puede subir su foto de perfil: se guarda en Cloudinary y en MySQL s
   - si el archivo empieza como una imagen pero está dañado, Cloudinary lo rechaza y la API responde «La foto no es una imagen válida».
 - Tarea 5, almacenamiento: la foto se sube a Cloudinary (carpeta `planb/perfiles`, con nombre `usuario-<id>`) y en `Usuario.foto` se guarda solo su URL `https`. Cada usuario tiene una sola foto: la nueva sustituye a la anterior también en Cloudinary.
 - Archivos:
-  - `src/middlewares/foto.js` (nuevo) — `recibirFoto`: multer en memoria, límite de tamaño y errores en 400.
+  - `src/middlewares/fotoMiddleware.js` (nuevo) — `recibirFoto`: multer en memoria, límite de tamaño y errores en 400.
   - `src/repositories/fotoRepository.js` (nuevo) — `subirFotoPerfil`: sube a Cloudinary y devuelve la URL.
   - `src/repositories/usuarioRepository.js` — `actualizarFoto(id, url)`.
   - `src/services/perfilService.js` — `actualizarFotoPropia`: valida el formato, sube y guarda la URL.
-  - `src/routes/perfil.js` — la ruta nueva.
+  - `src/routes/perfilRoutes.js` — la ruta nueva.
   - `tests/fotoPerfil.test.js` (nuevo) — pruebas con MySQL y Cloudinary simulados.
+  - `documentacion/arquitectura.md` — cómo llega la foto al backend (multer) y a Cloudinary.
+- Excel: FLA05 tareas 4 y 5 marcadas como hechas, 30 min cada una.
 
 **Revisión del backend**
 
-- `src/middlewares/sesion.js` (nuevo) — `requiereSesion`: responde 401 `No hay sesión iniciada` si no hay sesión. Sustituye a la comprobación que se repetía en `GET /api/auth/yo`, en las rutas de `/api/perfil` (con `router.use`, para todas a la vez) y en `POST /api/experiencias`.
-- `src/services/nombreUsuario.js` (nuevo) — `validarNombreUsuario`: reglas del nombre de usuario, que antes estaban copiadas en `authService` y `perfilService`. Ahora el registro y la edición del perfil validan igual.
+- `src/middlewares/sesionMiddleware.js` (nuevo) — `requiereSesion`: responde 401 `No hay sesión iniciada` si no hay sesión. Sustituye a la comprobación que se repetía en `GET /api/auth/yo`, en las rutas de `/api/perfil` (con `router.use`, para todas a la vez) y en `POST /api/experiencias`.
+- `src/services/shared/nombreUsuario.js` (nuevo) — `validarNombreUsuario`: reglas del nombre de usuario, que antes estaban copiadas en `authService` y `perfilService`. Ahora el registro y la edición del perfil validan igual.
   - **Corrige** dos errores de `PUT /api/perfil`: un nombre que no era texto (por ejemplo `12345`) pasaba la validación y acababa en un error 500, y ahora es un 400; y el nombre no se normalizaba a NFC, así que «José» escrito de dos formas podía quedar como dos nombres distintos.
 - `src/services/perfilService.js` — validación de `ciudad` en `PUT /api/perfil`. **Corrige** que cualquier valor llegaba a la base de datos: un objeto, un número o un texto de más de 191 caracteres (el tamaño de la columna) acababa en error 500. Ahora:
   - tiene que ser texto o `null`, y como máximo 191 caracteres; si no, responde 400;
   - se guarda sin espacios exteriores y normalizada a NFC;
   - `null` o un texto vacío dejan el perfil sin ciudad.
 - `src/repositories/usuarioRepository.js` — los campos del perfil que se pueden mostrar están en una sola constante (`CAMPOS_PERFIL`), usada por `obtenerPerfil`, `actualizarPerfil` y `actualizarFoto`. Para mostrar un campo nuevo del perfil basta con añadirlo ahí.
-- **Eliminado `GET /api/health`** por completo: la ruta, `src/repositories/saludRepository.js`, sus pruebas y el indicador «Servidor: conectado» del login (`frontend/js/index.js`). Ahora `/api/health` responde 404 como cualquier ruta inexistente.
-- Comentarios en las funciones que no tenían: `ciudadRepository.buscarPorId` y `cerrarConexion`, `ciudadService.cargarCatalogoInicial`, `experienciaService.leerTexto` y la ruta `POST /api/experiencias`.
-- Comentarios ampliados en `frontend/js` (`api.js`, `auth.js`, `bienvenida.js`): qué hace cada función, qué recibe y cada paso del envío de formularios. El código no cambia.
+- **Eliminado `GET /api/health`** por completo: la ruta, `src/repositories/saludRepository.js`, sus pruebas y el indicador «Servidor: conectado» del login. Ahora `/api/health` responde 404 como cualquier ruta inexistente.
 - Pruebas nuevas: `PUT /api/perfil` sin cuerpo (no cambia nada), y un fallo inesperado de la base de datos en `PUT /api/perfil` y en el registro (responde 500 sin mostrar el detalle). Con ellas, `authService` y `perfilService` quedan cubiertos al 100 %.
 
-### Cómo probarlo
+**Backend: nombres por capa y carpetas `shared/`**
 
-```bash
-cd backend
-npm test
-```
-
-139 pruebas en total, todas en verde. `npx jest --coverage` muestra la cobertura por archivo; los repositorios salen bajos porque las pruebas los simulan.
-
-Con el servidor arrancado (`npm run dev`) y una sesión iniciada con curl (`-c cookies.txt` en el login):
-
-```bash
-curl -b cookies.txt -X PUT http://localhost:3000/api/perfil/foto -F "foto=@mi-foto.png"   # 200, con la URL
-curl -b cookies.txt -X PUT http://localhost:3000/api/perfil/foto -F "foto=@animacion.gif" # 400
-curl -b cookies.txt http://localhost:3000/api/perfil                                      # la foto sigue ahí
-```
-
-La subida se ha comprobado contra Cloudinary y MySQL reales: subida, rechazo de una imagen dañada y consulta del perfil. Los datos de prueba se borraron después.
-
-### Para quien siga trabajando en esto
-
-- Las rutas nuevas que exijan sesión deben usar `requiereSesion` (`src/middlewares/sesion.js`), no repetir la comprobación.
-- Para validar un nombre de usuario en otro sitio, usar `validarNombreUsuario` (`src/services/nombreUsuario.js`).
-- La ciudad del perfil (`Usuario.ciudad`) sigue siendo texto libre, distinta del catálogo `Ciudad` de las experiencias.
-- FLA05 tarea 6 (imagen por defecto): `foto` es `null` mientras el usuario no sube ninguna. Para mostrar las fotos en el frontend hay que permitir `https://res.cloudinary.com` en `imgSrc` de la política de contenido de helmet (`src/app.js`); ahora solo se permiten imágenes propias.
-- FLA05 tarea 10: faltan las pruebas de "edición reflejada" con la foto desde el frontend; las del backend están en `tests/fotoPerfil.test.js`.
-
-## Reorganización del JavaScript del frontend — Implementado (01/10/2026)
-
-El JavaScript del frontend pasa a tener un archivo por página, con el mismo nombre que su HTML, y una carpeta `shared/` para lo que usan varias páginas. El comportamiento de las pantallas no cambia.
-
-### Qué ha cambiado
-
-- `frontend/js/api.js` → `frontend/js/shared/api.js` (mismo contenido).
-- `frontend/js/auth.js` eliminado. Se reparte en:
-  - `frontend/js/index.js` — formulario de inicio de sesión (`index.html`).
-  - `frontend/js/registro.js` — formulario de registro y CAPTCHA (`registro.html`).
-- `frontend/js/bienvenida.js` — escrito con `async/await`, como los demás.
-- La función genérica `enviarFormulario()` desaparece: cada página escribe su formulario de forma directa, para que se lea de arriba abajo.
-- Los HTML cargan `js/shared/api.js` y después el JS de su página.
-- `documentacion/arquitectura.md` — estructura del repositorio actualizada.
-
-### Cómo probarlo
-
-Con el servidor arrancado (`npm run dev`), en el navegador:
-
-- `/bienvenida.html` sin sesión lleva al login.
-- Login con una contraseña incorrecta: aparece «Email o contraseña incorrectos» y el botón se puede volver a pulsar.
-- Registro: se ve el CAPTCHA y, al crear la cuenta, lleva a la bienvenida con el nombre.
-- Login con esa cuenta: lleva a la bienvenida con el nombre.
-
-Se ha comprobado así, con Chrome sin ventana (headless) contra el servidor y MySQL reales. El usuario de prueba se borró después.
-
-### Para quien siga trabajando en esto
-
-- Página nueva `x.html` → su código en `js/x.js`, cargado después de `js/shared/api.js`.
-- Si dos o más páginas necesitan la misma función, va a `js/shared/`.
-- Ya no existe `enviarFormulario()` (citado en la sección del 28/09): los formularios nuevos siguen el modelo de `js/index.js`.
-
-## Reorganización y comentarios del backend — Implementado (01/10/2026)
-
-Los archivos del backend llevan el nombre de su capa, lo que no pertenece a ninguna funcionalidad concreta pasa a carpetas `shared/`, y todo el código está comentado en detalle. La API no cambia: mismas URLs, mismas respuestas.
-
-### Antes de nada, tras el `git pull`
-
-Si tenéis cambios sin subir en alguno de los archivos renombrados, git os avisará de conflicto: aplicad vuestros cambios sobre el archivo con el nombre nuevo.
-
-### Qué ha cambiado
-
-**Nombres** (con `git mv`, se conserva el historial de cada archivo):
+Cada archivo termina en el nombre de su capa (`Routes`, `Middleware`, `Service`, `Repository`), así que el nombre indica con qué capa habla: `perfilRoutes` → `perfilService` → `usuarioRepository`. En la carpeta `shared/` de cada capa está lo que no pertenece a ninguna funcionalidad ni tabla concreta; lo que comparten las rutas son los middlewares. Los archivos se han movido con `git mv`, así que conservan su historial:
 
 | Antes | Ahora |
 |---|---|
@@ -378,32 +317,72 @@ Si tenéis cambios sin subir en alguno de los archivos renombrados, git os avisa
 | `src/repositories/prisma.js` | `src/repositories/shared/prisma.js` |
 | `src/repositories/sesionStore.js` | `src/repositories/shared/sesionStore.js` |
 
-- Regla: cada archivo termina en el nombre de su capa (`Routes`, `Middleware`, `Service`, `Repository`). Así se ve la cadena `perfilRoutes` → `perfilService` → `usuarioRepository`.
-- `shared/` contiene lo que no es de ninguna funcionalidad ni tabla concreta. No hay `routes/shared/`: lo que comparten las rutas son los middlewares, y los tres se usan (`sesionMiddleware` en auth, perfil y experiencias; `limitesMiddleware` en login y registro; `fotoMiddleware` en la subida de foto).
-- `errores.js` se queda en `src/` porque lo usan servicios y middlewares.
+- `errores.js` sigue en `src/`: lo usan servicios y middlewares.
 - Actualizados los `require` del código y los `jest.mock` de `tests/setup.js` y `tests/limites.test.js`.
+- `documentacion/arquitectura.md` — estructura del repositorio y regla de nombres.
 
-**Comentarios**
+**Frontend: un archivo JS por página**
 
-- Cada archivo de `src/` empieza con una cabecera: qué hace, su capa, quién lo usa y qué usa.
-- Cada función explica qué recibe, qué devuelve y qué errores lanza. Las rutas indican método, URL, cuerpo esperado y respuesta.
-- `prisma/seed.js` y `prisma/schema.prisma` comentados (los comentarios de Prisma no generan migraciones).
-- Tests: cabecera en `auth.test.js` y `perfil.test.js` y comentarios en las funciones auxiliares que no los tenían.
-- `documentacion/arquitectura.md` — estructura del repositorio y la regla de nombres.
+Cada página tiene su JS con el mismo nombre que su HTML, y lo común a varias páginas está en `js/shared/`. Las pantallas funcionan igual.
 
-El código no cambia salvo las rutas de los `require` y el nombre de una variable en `routes/index.js` (`experienciasRoutes` → `experienciaRoutes`). Se ha comprobado comparando cada archivo con su versión anterior sin comentarios.
+| Antes | Ahora |
+|---|---|
+| `frontend/js/api.js` | `frontend/js/shared/api.js` |
+| `frontend/js/auth.js` (login y registro) | `frontend/js/index.js` (login) y `frontend/js/registro.js` (registro y CAPTCHA) |
+
+- `frontend/js/bienvenida.js` — escrito con `async/await`, como los demás.
+- Los HTML cargan `js/shared/api.js` y después el JS de su página.
+- `enviarFormulario()` ya no existe: cada página tiene su propio código de envío del formulario.
+- `documentacion/arquitectura.md` — estructura del frontend.
+
+**Comentarios en todo el código**
+
+- Backend:
+  - cada archivo de `src/` empieza con una cabecera: qué hace, su capa, quién lo usa y qué usa;
+  - cada función explica qué recibe, qué devuelve y qué errores lanza;
+  - las rutas indican método, URL, cuerpo esperado y respuesta;
+  - también están comentados `prisma/seed.js`, `prisma/schema.prisma` (sus comentarios no generan migraciones) y las funciones auxiliares de los tests.
+- Frontend: cada archivo de `frontend/js` explica qué hace cada paso.
+- El código no cambia, salvo las rutas de los `require` y el nombre de una variable en `routes/index.js`. Se ha comprobado comparando cada archivo con su versión anterior sin comentarios.
 
 ### Cómo probarlo
 
 ```bash
 cd backend
 npm test          # 139 pruebas, todas en verde
-npm run db:seed   # debe decir «0 ciudades creadas … 201 ya existentes»
+npm run db:seed   # «0 ciudades creadas … 201 ya existentes»: no duplica nada
 ```
 
-Además se ha repetido en Chrome sin ventana (headless), contra el servidor y MySQL reales, la prueba del frontend: login fallido, registro con CAPTCHA, bienvenida y login correcto. El usuario de prueba se borró después.
+`npx jest --coverage` muestra la cobertura por archivo (abre `backend/coverage/lcov-report/index.html`). Los repositorios salen bajos porque las pruebas los simulan.
+
+Foto de perfil, con el servidor arrancado (`npm run dev`) y una sesión iniciada con curl (`-c cookies.txt` en el login):
+
+```bash
+curl -b cookies.txt -X PUT http://localhost:3000/api/perfil/foto -F "foto=@mi-foto.png"   # 200, con la URL
+curl -b cookies.txt -X PUT http://localhost:3000/api/perfil/foto -F "foto=@animacion.gif" # 400
+curl -b cookies.txt http://localhost:3000/api/perfil                                      # la foto sigue ahí
+```
+
+Pantallas, en el navegador:
+
+- `/bienvenida.html` sin sesión lleva al login.
+- Login con una contraseña incorrecta: aparece «Email o contraseña incorrectos» y el botón se puede volver a pulsar.
+- Registro: se ve el CAPTCHA y, al crear la cuenta, lleva a la bienvenida con el nombre.
+- Login con esa cuenta: lleva a la bienvenida con el nombre.
+
+Todo se ha probado contra Cloudinary y MySQL reales:
+- la foto: subida, rechazo de una imagen dañada y consulta del perfil;
+- las pantallas, con Chrome sin ventana (headless), también después de los renombrados.
+
+Los datos de prueba se borraron después.
 
 ### Para quien siga trabajando en esto
 
-- Funcionalidad nueva `x`: `routes/xRoutes.js` (montada en `routes/index.js`) → `services/xService.js` → el repositorio de la tabla que use (`yRepository.js`).
-- Las notas anteriores de este documento citan las rutas antiguas; ahora `requiereSesion` está en `src/middlewares/sesionMiddleware.js` y `validarNombreUsuario` en `src/services/shared/nombreUsuario.js`.
+- Funcionalidad nueva `x` en el backend: `routes/xRoutes.js` (montada en `routes/index.js`) → `services/xService.js` → el repositorio de la tabla que use.
+- Página nueva `x.html`: su código va en `js/x.js`, cargado después de `js/shared/api.js`. Lo que usen varias páginas va en `js/shared/`. Los formularios nuevos siguen el modelo de `js/index.js`.
+- Las rutas nuevas que exijan sesión deben usar `requiereSesion` (`src/middlewares/sesionMiddleware.js`), no repetir la comprobación.
+- Para validar un nombre de usuario en otro sitio, usar `validarNombreUsuario` (`src/services/shared/nombreUsuario.js`).
+- Las entradas anteriores de este documento citan nombres de archivo antiguos (`routes/auth.js`, `js/auth.js`, `enviarFormulario()`...). Las equivalencias están en las tablas de arriba.
+- La ciudad del perfil (`Usuario.ciudad`) sigue siendo texto libre, distinta del catálogo `Ciudad` de las experiencias.
+- FLA05 tarea 6 (imagen por defecto): `foto` es `null` mientras el usuario no sube ninguna. Para mostrar las fotos en el frontend hay que permitir `https://res.cloudinary.com` en `imgSrc` de la política de contenido de helmet (`src/app.js`); ahora solo se permiten imágenes propias.
+- FLA05 tarea 10: faltan las pruebas de "edición reflejada" con la foto desde el frontend; las del backend están en `tests/fotoPerfil.test.js`. Para enviar la foto desde el frontend: `api()` (`js/shared/api.js`) pone por defecto `Content-Type: application/json`, y con un `FormData` hay que quitarla, porque esa cabecera la pone el navegador.
