@@ -408,6 +408,7 @@ Los objetivos 5, 6 y 7 piden **pruebas**, no código nuevo: la lógica de `POST 
 - Hace falta Node.js. En macOS: `brew install node` y comprobar con `node -v && npm -v`.
 - Todos los comandos de npm se ejecutan dentro de `backend/`, no desde la raíz: `cd backend && npm install`.
 
+
 ### Cómo probarlo
 
 ```bash
