@@ -1,6 +1,7 @@
 // Acceso al catálogo de ciudades. Solo los repositorios consultan Prisma.
 const prisma = require('./prisma');
 
+// Devuelve la ciudad, o null si no existe.
 async function buscarPorId(id) {
   return prisma.ciudad.findUnique({ where: { id } });
 }
@@ -35,6 +36,7 @@ async function cargarCapitales(capitales) {
   }, { timeout: 60000 });
 }
 
+// Cierra la conexión con MySQL; la usa prisma/seed.js al terminar la carga.
 async function cerrarConexion() {
   await prisma.$disconnect();
 }

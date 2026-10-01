@@ -251,3 +251,11 @@ Pasan **114 pruebas**. Cubren los criterios de campos obligatorios, ciudad váli
 En MySQL temporal se verificaron migraciones, restricciones, conservación de datos, creación con servicio y repositorios reales y dos cargas del catálogo: la segunda no añadió registros. No se hizo una prueba HTTP completa con repositorios reales ni se modificó la base de PlanB; los contenedores de prueba se retiraron.
 
 Quedan pendientes el formulario visual, listado de ciudades por API, edición y publicación. Al añadir lugares habrá que comprobar que pertenecen a la ciudad de la experiencia. Ampliar ciudades, territorios o traducciones es opcional.
+
+## Revisión de calidad del backend — Implementado (01/10/2026)
+
+Revisión de todo el backend: comentarios, repeticiones y errores de validación en la edición del perfil. El comportamiento de las rutas no cambia salvo en los errores corregidos.
+
+### Qué se ha hecho
+
+- Comentarios en las funciones que no tenían: `ciudadRepository.buscarPorId` y `cerrarConexion`, `ciudadService.cargarCatalogoInicial`, `experienciaService.leerTexto` y la ruta `POST /api/experiencias`.

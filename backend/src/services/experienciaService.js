@@ -8,6 +8,7 @@ const TEXTO_CORTO_MAX = 191; // Columnas VARCHAR(191) de MySQL.
 const DESCRIPCION_MAX_BYTES = 65535; // Capacidad de la columna TEXT en UTF-8.
 const CIUDAD_ID_MAX = 2147483647; // Mayor entero positivo de una columna Int.
 
+// Devuelve el texto limpio; si falta o está vacío, null cuando es opcional o error 400 cuando es obligatorio.
 function leerTexto(valor, nombre, obligatorio) {
   if (valor === undefined || valor === null) {
     if (!obligatorio) return null;
