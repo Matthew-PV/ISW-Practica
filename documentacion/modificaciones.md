@@ -450,6 +450,65 @@ Mejoras sobre la pantalla de mi perfil y mis entradas anteriores de este documen
   - la etiqueta del email lleva `for="email"`.
 
 
+# Edición de experiencias — Implementado (01/10/2026)
 
+Se añade la edición de experiencias existentes. Solo el autor de una experiencia puede modificarla.
+
+## Qué se ha hecho
+
+- `PATCH /api/experiencias/:id` permite editar una experiencia existente.
+- Se comprueba que haya una sesión iniciada, que la experiencia exista y que pertenezca al usuario de la sesión.
+- Se pueden modificar de forma independiente:
+  - `titulo`
+  - `descripcion`
+  - `tipo`
+  - `momentoAdecuado`
+  - `ciudadId`
+- No es necesario enviar todos los campos, solo los que se quieran modificar.
+- Los campos de texto mantienen sus validaciones de formato y longitud.
+- Si se cambia `ciudadId`, se comprueba que la nueva ciudad exista.
+- Cada experiencia mantiene una única ciudad asociada; cambiar `ciudadId` sustituye la anterior.
+
+## Archivos modificados
+
+- `src/repositories/experienciaRepository.js`
+  - `buscarPorId(id)`
+  - `actualizar(id, datos)`
+- `src/services/experienciaService.js`
+  - `validarEdicion(datos)`
+  - `editarExperiencia(usuarioId, experienciaId, datos)`
+- `src/routes/experienciaRoutes.js`
+  - nueva ruta `PATCH /api/experiencias/:id`
+
+## Cómo probarlo
+
+Desde `backend/`:
+
+```bash
+npm test
+```
+
+Pasan 145 pruebas.
+
+Ejemplo de edición:
+
+```js
+const respuesta = await fetch('/api/experiencias/1', {
+  method: 'PATCH',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    titulo: 'Nuevo título',
+    tipo: 'Cultural'
+  })
+});
+
+console.log(respuesta.status, await respuesta.json());
+```
+
+## Pendiente
+
+Queda pendiente validar que, al cambiar la ciudad de una experiencia, todos los lugares asociados pertenezcan también a esa nueva ciudad.
+
+Actualmente todavía no existe en el modelo de datos la relación entre experiencias y lugares necesaria para realizar esta comprobación.
 
 ```
