@@ -18,6 +18,38 @@ model Usuario {
   foto          String?
   ciudad        String?
   creadoEn      DateTime @default(now())
+  experiencias  Experiencia[]
+}
+
+// Una ciudad puede tener varias experiencias. El nombre no es único:
+// pueden existir ciudades distintas con el mismo nombre.
+model Ciudad {
+  id           Int           @id @default(autoincrement())
+  nombre       String
+  pais         String?
+  codigoPais   String?       @db.Char(2)
+  experiencias Experiencia[]
+
+  // Las ciudades anteriores pueden seguir sin país hasta revisarse.
+  @@unique([codigoPais, nombre])
+}
+
+// Cada experiencia pertenece obligatoriamente a una única ciudad existente.
+model Experiencia {
+  id              Int     @id @default(autoincrement())
+  titulo          String
+  descripcion     String  @db.Text
+  ciudadId        Int
+  ciudad          Ciudad  @relation(fields: [ciudadId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  tipo            String?
+  momentoAdecuado String?
+  // Solo nullable para conservar experiencias anteriores sin autor conocido.
+  // La creación desde la aplicación siempre exige el usuario de la sesión.
+  autorId         Int?
+  autor           Usuario? @relation(fields: [autorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([ciudadId])
+  @@index([autorId])
 }
 
 // Sesiones de express-session, guardadas por @quixo3/prisma-session-store

@@ -2,12 +2,14 @@
 const express = require('express');
 const authRoutes = require('./auth');
 const perfilRoutes = require('./perfil');
+const experienciasRoutes = require('./experiencias');
 const saludRepository = require('../repositories/saludRepository');
 
 const router = express.Router();
 
 router.use('/auth', authRoutes);
 router.use('/perfil', perfilRoutes);
+router.use('/experiencias', experienciasRoutes);
 
 // Comprobación de que el servidor y la base de datos responden
 router.get('/health', async (req, res) => {
