@@ -109,4 +109,46 @@ async function crearExperiencia(usuarioId, datos) {
   }
 }
 
-module.exports = { validarCreacion, crearExperiencia };
+// Edita una experiencia existente.
+// Comprueba que el usuario exista, que la experiencia exista
+// y que pertenezca al usuario que intenta modificarla.
+async function editarExperiencia(usuarioId, experienciaId, cambiosValidados) {
+  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
+      !(await usuarioRepository.buscarPorId(usuarioId))) {
+    throw crearError('No hay sesión iniciada', 401);
+  }
+
+  if (!Number.isInteger(experienciaId) || experienciaId <= 0) {
+    throw crearError('El identificador de la experiencia no es válido', 400);
+  }
+
+  const experiencia = await experienciaRepository.buscarPorId(experienciaId);
+
+  if (!experiencia) {
+    throw crearError('La experiencia no existe', 404);
+  }
+
+  if (experiencia.autorId !== usuarioId) {
+    throw crearError('No puedes editar una experiencia de otro usuario', 403);
+  }
+
+  try {
+    return await experienciaRepository.actualizar(
+      experienciaId,
+      cambiosValidados
+    );
+  } catch (err) {
+    // La experiencia podría haberse eliminado entre la búsqueda y la actualización.
+    if (err.code === 'P2025') {
+      throw crearError('La experiencia ya no existe', 404);
+    }
+
+    throw err;
+  }
+}
+
+module.exports = {
+  validarCreacion,
+  crearExperiencia,
+  editarExperiencia
+};

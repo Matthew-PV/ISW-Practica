@@ -15,4 +15,21 @@ async function crear({ titulo, descripcion, ciudadId, tipo, momentoAdecuado, aut
   });
 }
 
-module.exports = { crear };
+// Busca una experiencia por su id.
+async function buscarPorId(id) {
+  return prisma.experiencia.findUnique({
+    where: { id },
+    include: { ciudad: true },
+  });
+}
+
+// Actualiza una experiencia existente.
+async function actualizar(id, datos) {
+  return prisma.experiencia.update({
+    where: { id },
+    data: datos,
+    include: { ciudad: true },
+  });
+}
+
+module.exports = { crear, buscarPorId, actualizar };
