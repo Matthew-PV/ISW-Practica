@@ -18,6 +18,11 @@ beforeEach(() => {
   jest.resetAllMocks();
 });
 
+// Devuelve console.error a su comportamiento normal tras las pruebas que lo silencian
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 // Devuelve un agente (guarda la cookie de sesión entre peticiones) ya logueado como `usuario`
 async function agenteConSesion() {
   usuarioRepository.buscarPorEmail.mockResolvedValue(usuario);
@@ -144,5 +149,28 @@ describe('PUT /api/perfil', () => {
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual(actualizado);
+  });
+
+  test('sin cuerpo no cambia ningún campo y devuelve el perfil', async () => {
+    const agente = await agenteConSesion();
+    usuarioRepository.actualizarPerfil.mockResolvedValue(PERFIL);
+
+    const res = await agente.put('/api/perfil');
+
+    expect(res.status).toBe(200);
+    expect(usuarioRepository.actualizarPerfil).toHaveBeenCalledWith(1, { nombreUsuario: undefined, ciudad: undefined });
+  });
+
+  test('un fallo inesperado al guardar responde 500 sin revelar detalles internos', async () => {
+    const agente = await agenteConSesion();
+    const error = new Error('Detalle interno de conexión');
+    usuarioRepository.actualizarPerfil.mockRejectedValue(error);
+    const registro = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const res = await agente.put('/api/perfil').send({ ciudad: 'Madrid' });
+
+    expect(res.status).toBe(500);
+    expect(res.body).toEqual({ error: 'Error interno del servidor' });
+    expect(registro).toHaveBeenCalledWith(error);
   });
 });

@@ -266,4 +266,20 @@ Revisión de todo el backend: comentarios, repeticiones y errores de validación
   - tiene que ser texto o `null`, y como máximo 191 caracteres; si no, responde 400;
   - se guarda sin espacios exteriores y normalizada a NFC;
   - `null` o un texto vacío dejan el perfil sin ciudad.
-- `src/repositories/usuarioRepository.js` — los campos del perfil que se pueden mostrar están en una sola constante (`CAMPOS_PERFIL`), usada por `obtenerPerfil` y `actualizarPerfil`. Al añadir un campo al perfil (por ejemplo, la foto de FLA05) basta con cambiarla ahí.
+- `src/repositories/usuarioRepository.js` — los campos del perfil que se pueden mostrar están en una sola constante (`CAMPOS_PERFIL`), usada por `obtenerPerfil` y `actualizarPerfil`. Para mostrar un campo nuevo del perfil basta con añadirlo ahí.
+- Pruebas nuevas: `PUT /api/perfil` sin cuerpo (no cambia nada), y un fallo inesperado de la base de datos en `PUT /api/perfil` y en el registro (responde 500 sin mostrar el detalle). Con ellas, `authService` y `perfilService` quedan cubiertos al 100 %.
+
+### Cómo probarlo
+
+```bash
+cd backend
+npm test
+```
+
+128 pruebas en total, todas en verde. `npx jest --coverage` muestra la cobertura por archivo; los repositorios salen bajos porque las pruebas los simulan.
+
+### Para quien siga trabajando en esto
+
+- Las rutas nuevas que exijan sesión deben usar `requiereSesion` (`src/middlewares/sesion.js`), no repetir la comprobación.
+- Para validar un nombre de usuario en otro sitio, usar `validarNombreUsuario` (`src/services/nombreUsuario.js`).
+- La ciudad del perfil (`Usuario.ciudad`) sigue siendo texto libre, distinta del catálogo `Ciudad` de las experiencias.

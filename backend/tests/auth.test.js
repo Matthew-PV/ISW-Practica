@@ -62,6 +62,20 @@ describe('POST /api/auth/registro', () => {
     expect(res.body.error).toBe('El nombre de usuario ya está en uso');
   });
 
+  test('un fallo inesperado al guardar responde 500 sin revelar detalles internos', async () => {
+    const error = new Error('Detalle interno de conexión');
+    usuarioRepository.crear.mockRejectedValue(error);
+    const registro = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const res = await request(app)
+      .post('/api/auth/registro')
+      .send({ nombreUsuario: 'ana', email: 'ana@ejemplo.com', password: 'secreta123' });
+
+    expect(res.status).toBe(500);
+    expect(res.body).toEqual({ error: 'Error interno del servidor' });
+    expect(registro).toHaveBeenCalledWith(error);
+  });
+
   test('sin superar el CAPTCHA responde 400 y no consulta la base de datos', async () => {
     jest.spyOn(captchaService, 'verificar').mockResolvedValue(false);
 
