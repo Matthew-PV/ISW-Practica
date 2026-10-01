@@ -19,4 +19,18 @@ router.post('/', requiereSesion, async (req, res) => {
   res.status(201).json(experiencia);
 });
 
+// PATCH /api/experiencias/:id — edita una experiencia existente.
+// Solo puede editarla su propio autor.
+router.patch('/:id', requiereSesion, async (req, res) => {
+  const experienciaId = Number(req.params.id);
+
+  const experiencia = await experienciaService.editarExperiencia(
+    req.session.usuarioId,
+    experienciaId,
+    req.body
+  );
+
+  res.status(200).json(experiencia);
+});
+
 module.exports = router;
