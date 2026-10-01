@@ -31,6 +31,8 @@ app.use(
         scriptSrc: ["'self'", CLOUDFLARE_CAPTCHA],
         // El CAPTCHA se dibuja dentro de un iframe de Cloudflare
         frameSrc: [CLOUDFLARE_CAPTCHA],
+        // Fotos de perfil: las propias (imagen por defecto) y las subidas a Cloudinary
+        imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com'],
       },
     },
   })
