@@ -2,6 +2,9 @@
 // (incluida la contraseña cifrada), o null si no existe.
 const prisma = require('./prisma');
 
+// Campos del perfil que se pueden mostrar (nunca la contraseña cifrada)
+const CAMPOS_PERFIL = { id: true, nombreUsuario: true, email: true, foto: true, ciudad: true };
+
 // Crea un usuario. La contraseña debe llegar ya cifrada.
 async function crear({ nombreUsuario, email, passwordHash }) {
   return prisma.usuario.create({
@@ -21,13 +24,7 @@ async function buscarPorId(id) {
 async function obtenerPerfil(id) {
   return prisma.usuario.findUnique({
     where: { id },
-    select: {
-      id: true,
-      nombreUsuario: true,
-      email: true,
-      foto: true,
-      ciudad: true,
-    },
+    select: CAMPOS_PERFIL,
   });
 }
 
@@ -36,13 +33,7 @@ async function actualizarPerfil(id, { nombreUsuario, ciudad }) {
   return prisma.usuario.update({
     where: { id },
     data: { nombreUsuario, ciudad },
-    select: {
-      id: true,
-      nombreUsuario: true,
-      email: true,
-      foto: true,
-      ciudad: true,
-    },
+    select: CAMPOS_PERFIL,
   });
 }
 

@@ -266,3 +266,4 @@ Revisión de todo el backend: comentarios, repeticiones y errores de validación
   - tiene que ser texto o `null`, y como máximo 191 caracteres; si no, responde 400;
   - se guarda sin espacios exteriores y normalizada a NFC;
   - `null` o un texto vacío dejan el perfil sin ciudad.
+- `src/repositories/usuarioRepository.js` — los campos del perfil que se pueden mostrar están en una sola constante (`CAMPOS_PERFIL`), usada por `obtenerPerfil` y `actualizarPerfil`. Al añadir un campo al perfil (por ejemplo, la foto de FLA05) basta con cambiarla ahí.
