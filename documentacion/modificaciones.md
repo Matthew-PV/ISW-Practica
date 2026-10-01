@@ -511,4 +511,43 @@ Queda pendiente validar que, al cambiar la ciudad de una experiencia, todos los 
 
 Actualmente todavía no existe en el modelo de datos la relación entre experiencias y lugares necesaria para realizar esta comprobación.
 
+
+# Foto de perfil: imagen por defecto (FLA05, objetivo 6) — Implementado (01/10/2026)
+
+Si el usuario no ha subido foto, la API devuelve una imagen por defecto en lugar de `null`. En MySQL sigue guardándose `null`: solo cambia lo que devuelve la API.
+
+### Qué se ha hecho
+
+- `frontend/img/foto-por-defecto.svg` (nuevo) — silueta genérica. Al ser un archivo propio, la política de contenido (CSP) de `helmet` ya lo permite.
+- `src/services/perfilService.js`:
+  - constante `FOTO_POR_DEFECTO` (`/img/foto-por-defecto.svg`), exportada para las pruebas;
+  - función `conFotoPorDefecto(perfil)`: si `foto` es `null`, la sustituye por la imagen por defecto;
+  - la usan las tres funciones que devuelven un perfil: `obtenerPerfilPropio`, `actualizarPerfilPropio` y `actualizarFotoPropia`. Por tanto, `GET /api/perfil`, `PUT /api/perfil` y `PUT /api/perfil/foto` devuelven la misma `foto`.
+- `tests/fotoPorDefecto.test.js` (nuevo): sin foto devuelve la imagen por defecto; con foto devuelve la suya.
+- `tests/perfil.test.js`: el perfil simulado (línea 11) pasa de `foto: null` a una URL de Cloudinary, porque dos pruebas comparaban la respuesta con ese perfil y esperaban `null`.
+
+`usuarioRepository.js` no cambia.
+
+### Cómo probarlo
+
+```bash
+cd backend
+npm test          # 147 pruebas, todas en verde
 ```
+
+Con el servidor arrancado (`npm run dev`) y una sesión iniciada con curl (`-c cookies.txt` en el login):
+
+```bash
+curl -b cookies.txt http://localhost:3000/api/perfil              # sin foto: "foto": "/img/foto-por-defecto.svg"
+curl -b cookies.txt -X PUT http://localhost:3000/api/perfil/foto -F "foto=@mi-foto.png"
+curl -b cookies.txt http://localhost:3000/api/perfil              # con foto: la URL de Cloudinary
+```
+
+La imagen se ve en http://localhost:3000/img/foto-por-defecto.svg.
+
+### Para quien siga trabajando en esto
+
+- El frontend ya no puede saber si un usuario tiene foto mirando solo `foto`. Si hace falta (por ejemplo, un botón «Añadir foto» solo cuando no hay ninguna), comparar con `/img/foto-por-defecto.svg` o devolver un campo extra desde `perfilService`.
+- Para mostrar las fotos reales en una página hay que permitir `https://res.cloudinary.com` en `imgSrc` de la política de contenido de helmet (`src/app.js`); la imagen por defecto se ve sin tocar nada.
+- Si un test nuevo compara la respuesta de la API con un perfil simulado, el perfil debe llevar una foto real (como en `perfil.test.js`); con `foto: null` la respuesta traerá la imagen por defecto.
+- Hoy ninguna pantalla muestra la foto; cuando se añada una (por ejemplo en `bienvenida.html`), usar directamente `perfil.foto` como `src` de la imagen.

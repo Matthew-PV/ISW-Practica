@@ -14,6 +14,15 @@ const { validarNombreUsuario } = require('./shared/nombreUsuario');
 
 const CIUDAD_MAX = 191; // tamaño de la columna en MySQL
 
+// Imagen que se muestra mientras el usuario no ha subido ninguna foto (archivo del frontend).
+const FOTO_POR_DEFECTO = '/img/foto-por-defecto.svg';
+
+// Devuelve el perfil con la imagen por defecto en `foto` si el usuario no tiene ninguna.
+// En MySQL sigue guardándose null: solo cambia lo que devuelve la API.
+function conFotoPorDefecto(perfil) {
+  return { ...perfil, foto: perfil.foto || FOTO_POR_DEFECTO };
+}
+
 // La ciudad del perfil es texto libre y opcional: null o un texto vacío la dejan sin ciudad.
 // Cuenta caracteres Unicode (un emoji ocupa dos posiciones en String.length).
 // Devuelve la ciudad limpia (sin espacios exteriores, en NFC) o null; error 400 si no es válida.
@@ -50,7 +59,7 @@ async function obtenerPerfilPropio(id) {
   if (!perfil) {
     throw crearError('No hay sesión iniciada', 401);
   }
-  return perfil;
+    return conFotoPorDefecto(perfil);
 }
 
 // Actualiza nombreUsuario y/o ciudad del usuario de la sesión.
@@ -63,7 +72,8 @@ async function actualizarPerfilPropio(id, datos) {
   const ciudad = datos?.ciudad === undefined ? undefined : leerCiudad(datos.ciudad);
 
   try {
-    return await usuarioRepository.actualizarPerfil(id, { nombreUsuario, ciudad });
+    const perfil = await usuarioRepository.actualizarPerfil(id, { nombreUsuario, ciudad });
+    return conFotoPorDefecto(perfil);
   } catch (err) {
     // P2002 es el código de Prisma para «valor duplicado en un campo único»
     if (err.code === 'P2002') {
@@ -97,7 +107,9 @@ async function actualizarFotoPropia(id, archivo) {
     throw err;
   }
   // Solo si la subida ha ido bien se guarda la URL en MySQL
-  return usuarioRepository.actualizarFoto(id, url);
+  const perfil = await usuarioRepository.actualizarFoto(id, url);
+  return conFotoPorDefecto(perfil);
 }
 
-module.exports = { obtenerPerfilPropio, actualizarPerfilPropio, actualizarFotoPropia };
+
+module.exports = { obtenerPerfilPropio, actualizarPerfilPropio, actualizarFotoPropia, FOTO_POR_DEFECTO };

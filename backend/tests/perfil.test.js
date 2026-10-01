@@ -8,7 +8,7 @@ const app = require('../src/app');
 const usuarioRepository = require('../src/repositories/usuarioRepository');
 
 const DATOS_LOGIN = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com' };
-const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', foto: null, ciudad: null };
+const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', foto: 'https://res.cloudinary.com/demo/usuario-1.png', ciudad: null };
 let usuario;
 
 beforeAll(async () => {
