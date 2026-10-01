@@ -90,7 +90,7 @@ async function validarCreacion(datos) {
 // Valida los campos que se pueden modificar de una experiencia.
 // En una edición no es obligatorio enviar todos los campos,
 // solo aquellos que se quieran cambiar.
-function validarEdicion(datos) {
+async function validarEdicion(datos) {  
   if (!datos || typeof datos !== 'object' || Array.isArray(datos)) {
     throw crearError('Los datos de la experiencia deben ser un objeto', 400);
   }
@@ -132,6 +132,23 @@ function validarEdicion(datos) {
     comprobarTextoCorto(momentoAdecuado, 'El momento adecuado');
     cambios.momentoAdecuado = momentoAdecuado;
   }
+
+  if (datos.ciudadId !== undefined) {
+  const ciudadId = datos.ciudadId;
+
+  if (!Number.isInteger(ciudadId) || ciudadId <= 0 || ciudadId > CIUDAD_ID_MAX) {
+    throw crearError(
+      'Debes indicar una ciudad con un identificador entero positivo válido',
+      400
+    );
+  }
+
+  if (!(await ciudadRepository.buscarPorId(ciudadId))) {
+    throw crearError('La ciudad seleccionada no existe', 400);
+  }
+
+  cambios.ciudadId = ciudadId;
+}
 
   if (Object.keys(cambios).length === 0) {
     throw crearError('Debes indicar al menos un campo para modificar', 400);
@@ -185,7 +202,7 @@ async function editarExperiencia(usuarioId, experienciaId, datos) {
     throw crearError('No puedes editar una experiencia de otro usuario', 403);
   }
 
-  const cambiosValidados = validarEdicion(datos);
+  const cambiosValidados = await validarEdicion(datos);
 
   try {
     return await experienciaRepository.actualizar(
