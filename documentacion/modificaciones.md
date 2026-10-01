@@ -252,48 +252,18 @@ En MySQL temporal se verificaron migraciones, restricciones, conservación de da
 
 Quedan pendientes el formulario visual, listado de ciudades por API, edición y publicación. Al añadir lugares habrá que comprobar que pertenecen a la ciudad de la experiencia. Ampliar ciudades, territorios o traducciones es opcional.
 
-## Revisión de calidad del backend — Implementado (01/10/2026)
+## Foto de perfil (FLA05, tareas 4 y 5) y revisión del backend — Implementado (01/10/2026)
 
-Revisión de todo el backend: comentarios, repeticiones y errores de validación en la edición del perfil. El comportamiento de las rutas no cambia salvo en los errores corregidos.
-
-### Qué se ha hecho
-
-- Comentarios en las funciones que no tenían: `ciudadRepository.buscarPorId` y `cerrarConexion`, `ciudadService.cargarCatalogoInicial`, `experienciaService.leerTexto` y la ruta `POST /api/experiencias`.
-- `src/middlewares/sesion.js` (nuevo) — `requiereSesion`: responde 401 `No hay sesión iniciada` si no hay sesión. Sustituye a la comprobación que se repetía en `GET /api/auth/yo`, en las rutas de `/api/perfil` (con `router.use`, para todas a la vez) y en `POST /api/experiencias`. Las rutas nuevas que exijan sesión deben usarlo.
-- `src/services/nombreUsuario.js` (nuevo) — `validarNombreUsuario`: reglas del nombre de usuario, que antes estaban copiadas en `authService` y `perfilService`. Ahora el registro y la edición del perfil validan igual.
-  - **Corrige** dos errores de `PUT /api/perfil`: un nombre que no era texto (por ejemplo `12345`) pasaba la validación y acababa en un error 500, y ahora es un 400; y el nombre no se normalizaba a NFC, así que «José» escrito de dos formas podía quedar como dos nombres distintos.
-- `src/services/perfilService.js` — validación de `ciudad` en `PUT /api/perfil`. **Corrige** que cualquier valor llegaba a la base de datos: un objeto, un número o un texto de más de 191 caracteres (el tamaño de la columna) acababa en error 500. Ahora:
-  - tiene que ser texto o `null`, y como máximo 191 caracteres; si no, responde 400;
-  - se guarda sin espacios exteriores y normalizada a NFC;
-  - `null` o un texto vacío dejan el perfil sin ciudad.
-- `src/repositories/usuarioRepository.js` — los campos del perfil que se pueden mostrar están en una sola constante (`CAMPOS_PERFIL`), usada por `obtenerPerfil` y `actualizarPerfil`. Para mostrar un campo nuevo del perfil basta con añadirlo ahí.
-- Pruebas nuevas: `PUT /api/perfil` sin cuerpo (no cambia nada), y un fallo inesperado de la base de datos en `PUT /api/perfil` y en el registro (responde 500 sin mostrar el detalle). Con ellas, `authService` y `perfilService` quedan cubiertos al 100 %.
-
-### Cómo probarlo
-
-```bash
-cd backend
-npm test
-```
-
-128 pruebas en total, todas en verde. `npx jest --coverage` muestra la cobertura por archivo; los repositorios salen bajos porque las pruebas los simulan.
-
-### Para quien siga trabajando en esto
-
-- Las rutas nuevas que exijan sesión deben usar `requiereSesion` (`src/middlewares/sesion.js`), no repetir la comprobación.
-- Para validar un nombre de usuario en otro sitio, usar `validarNombreUsuario` (`src/services/nombreUsuario.js`).
-- La ciudad del perfil (`Usuario.ciudad`) sigue siendo texto libre, distinta del catálogo `Ciudad` de las experiencias.
-
-## Perfil: subir la foto (FLA05, tareas 4 y 5) — Implementado (01/10/2026)
-
-Cada usuario puede subir su foto de perfil. La foto se guarda en Cloudinary y en MySQL solo su URL.
+Cada usuario puede subir su foto de perfil: se guarda en Cloudinary y en MySQL solo su URL. Además, revisión del backend: repeticiones eliminadas y errores de validación corregidos en la edición del perfil.
 
 ### Antes de nada, tras el `git pull`
 
 - `cd backend && npm install`: hay dos dependencias nuevas, **cloudinary** (SDK oficial) y **multer** (recibe archivos de formularios en Express).
 - Rellenar `CLOUDINARY_URL` en `backend/.env` con la del panel de Cloudinary (Dashboard → API Keys → *API environment variable*, con el secreto incluido). Pedid la del equipo a Joaquín; nunca se sube a git.
 
-### Qué se ha hecho
+### Qué ha cambiado
+
+**Foto de perfil**
 
 - `PUT /api/perfil/foto` — exige sesión. Recibe un formulario *multipart* con la foto en el campo `foto` y devuelve el perfil con la URL nueva.
 - Tarea 4, validación (si falla responde 400, no se sube nada y se conserva la foto anterior):
@@ -310,6 +280,19 @@ Cada usuario puede subir su foto de perfil. La foto se guarda en Cloudinary y en
   - `src/routes/perfil.js` — la ruta nueva.
   - `tests/fotoPerfil.test.js` (nuevo) — pruebas con MySQL y Cloudinary simulados.
 
+**Revisión del backend**
+
+- `src/middlewares/sesion.js` (nuevo) — `requiereSesion`: responde 401 `No hay sesión iniciada` si no hay sesión. Sustituye a la comprobación que se repetía en `GET /api/auth/yo`, en las rutas de `/api/perfil` (con `router.use`, para todas a la vez) y en `POST /api/experiencias`.
+- `src/services/nombreUsuario.js` (nuevo) — `validarNombreUsuario`: reglas del nombre de usuario, que antes estaban copiadas en `authService` y `perfilService`. Ahora el registro y la edición del perfil validan igual.
+  - **Corrige** dos errores de `PUT /api/perfil`: un nombre que no era texto (por ejemplo `12345`) pasaba la validación y acababa en un error 500, y ahora es un 400; y el nombre no se normalizaba a NFC, así que «José» escrito de dos formas podía quedar como dos nombres distintos.
+- `src/services/perfilService.js` — validación de `ciudad` en `PUT /api/perfil`. **Corrige** que cualquier valor llegaba a la base de datos: un objeto, un número o un texto de más de 191 caracteres (el tamaño de la columna) acababa en error 500. Ahora:
+  - tiene que ser texto o `null`, y como máximo 191 caracteres; si no, responde 400;
+  - se guarda sin espacios exteriores y normalizada a NFC;
+  - `null` o un texto vacío dejan el perfil sin ciudad.
+- `src/repositories/usuarioRepository.js` — los campos del perfil que se pueden mostrar están en una sola constante (`CAMPOS_PERFIL`), usada por `obtenerPerfil`, `actualizarPerfil` y `actualizarFoto`. Para mostrar un campo nuevo del perfil basta con añadirlo ahí.
+- Comentarios en las funciones que no tenían: `ciudadRepository.buscarPorId` y `cerrarConexion`, `ciudadService.cargarCatalogoInicial`, `experienciaService.leerTexto` y la ruta `POST /api/experiencias`.
+- Pruebas nuevas: `PUT /api/perfil` sin cuerpo (no cambia nada), y un fallo inesperado de la base de datos en `PUT /api/perfil` y en el registro (responde 500 sin mostrar el detalle). Con ellas, `authService` y `perfilService` quedan cubiertos al 100 %.
+
 ### Cómo probarlo
 
 ```bash
@@ -317,7 +300,9 @@ cd backend
 npm test
 ```
 
-141 pruebas en total, todas en verde. Con el servidor arrancado (`npm run dev`) y una sesión iniciada con curl (`-c cookies.txt` en el login):
+141 pruebas en total, todas en verde. `npx jest --coverage` muestra la cobertura por archivo; los repositorios salen bajos porque las pruebas los simulan.
+
+Con el servidor arrancado (`npm run dev`) y una sesión iniciada con curl (`-c cookies.txt` en el login):
 
 ```bash
 curl -b cookies.txt -X PUT http://localhost:3000/api/perfil/foto -F "foto=@mi-foto.png"   # 200, con la URL
@@ -325,9 +310,12 @@ curl -b cookies.txt -X PUT http://localhost:3000/api/perfil/foto -F "foto=@anima
 curl -b cookies.txt http://localhost:3000/api/perfil                                      # la foto sigue ahí
 ```
 
-Se ha comprobado contra Cloudinary y MySQL reales: subida, rechazo de una imagen dañada y consulta del perfil. Los datos de prueba se borraron después.
+La subida se ha comprobado contra Cloudinary y MySQL reales: subida, rechazo de una imagen dañada y consulta del perfil. Los datos de prueba se borraron después.
 
 ### Para quien siga trabajando en esto
 
-- Tarea 6 (imagen por defecto): `foto` es `null` mientras el usuario no sube ninguna. Para mostrar las fotos en el frontend hay que permitir `https://res.cloudinary.com` en `imgSrc` de la política de contenido de helmet (`src/app.js`); ahora solo se permiten imágenes propias.
-- Tarea 10: faltan las pruebas de "edición reflejada" con la foto desde el frontend; las del backend están en `tests/fotoPerfil.test.js`.
+- Las rutas nuevas que exijan sesión deben usar `requiereSesion` (`src/middlewares/sesion.js`), no repetir la comprobación.
+- Para validar un nombre de usuario en otro sitio, usar `validarNombreUsuario` (`src/services/nombreUsuario.js`).
+- La ciudad del perfil (`Usuario.ciudad`) sigue siendo texto libre, distinta del catálogo `Ciudad` de las experiencias.
+- FLA05 tarea 6 (imagen por defecto): `foto` es `null` mientras el usuario no sube ninguna. Para mostrar las fotos en el frontend hay que permitir `https://res.cloudinary.com` en `imgSrc` de la política de contenido de helmet (`src/app.js`); ahora solo se permiten imágenes propias.
+- FLA05 tarea 10: faltan las pruebas de "edición reflejada" con la foto desde el frontend; las del backend están en `tests/fotoPerfil.test.js`.
