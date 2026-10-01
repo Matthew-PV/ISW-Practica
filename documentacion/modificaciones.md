@@ -259,3 +259,4 @@ Revisión de todo el backend: comentarios, repeticiones y errores de validación
 ### Qué se ha hecho
 
 - Comentarios en las funciones que no tenían: `ciudadRepository.buscarPorId` y `cerrarConexion`, `ciudadService.cargarCatalogoInicial`, `experienciaService.leerTexto` y la ruta `POST /api/experiencias`.
+- `src/middlewares/sesion.js` (nuevo) — `requiereSesion`: responde 401 `No hay sesión iniciada` si no hay sesión. Sustituye a la comprobación que se repetía en `GET /api/auth/yo`, en las rutas de `/api/perfil` (con `router.use`, para todas a la vez) y en `POST /api/experiencias`. Las rutas nuevas que exijan sesión deben usarlo.

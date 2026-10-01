@@ -3,6 +3,7 @@
 const express = require('express');
 const authService = require('../services/authService');
 const { limiteLogin, limiteRegistro } = require('../middlewares/limites');
+const { requiereSesion } = require('../middlewares/sesion');
 
 const router = express.Router();
 
@@ -47,11 +48,7 @@ router.post('/logout', (req, res) => {
 });
 
 // Devuelve el usuario con la sesión iniciada, o 401 si no hay sesión
-router.get('/yo', async (req, res) => {
-  if (!req.session.usuarioId) {
-    return res.status(401).json({ error: 'No hay sesión iniciada' });
-  }
-
+router.get('/yo', requiereSesion, async (req, res) => {
   const usuario = await authService.obtenerUsuario(req.session.usuarioId);
   res.json(usuario);
 });
