@@ -59,3 +59,38 @@ formulario.addEventListener('submit', async (e) => {
 });
 
 cargarPerfil();
+
+// Subida de la foto de perfil (formulario aparte, con un archivo en lugar de JSON)
+const formularioFoto = document.getElementById('form-foto');
+const cajaErrorFoto = document.getElementById('error-foto');
+const cajaExitoFoto = document.getElementById('exito-foto');
+const botonFoto = formularioFoto.querySelector('button[type="submit"]');
+
+// Al pulsar «Subir foto» se envía el archivo elegido al backend
+formularioFoto.addEventListener('submit', async (e) => {
+  // Evita que el navegador envíe el formulario por su cuenta y recargue la página
+  e.preventDefault();
+  // Se ocultan los mensajes del intento anterior y se desactiva el botón para no enviar dos veces
+  cajaErrorFoto.classList.add('d-none');
+  cajaExitoFoto.classList.add('d-none');
+  botonFoto.disabled = true;
+
+  // FormData = formulario multipart; el backend espera el archivo en el campo `foto`
+  const datos = new FormData();
+  datos.append('foto', document.getElementById('foto').files[0]);
+
+  try {
+    // El backend valida formato y tamaño, la sube a Cloudinary y devuelve el perfil con la URL nueva
+    const perfil = await api('/perfil/foto', { method: 'PUT', body: datos });
+    mostrarPerfil(perfil);
+    formularioFoto.reset();
+    cajaExitoFoto.textContent = 'Foto actualizada.';
+    cajaExitoFoto.classList.remove('d-none');
+  } catch (err) {
+    // Se muestra el mensaje del backend tal cual (formato no permitido, más de 5 MB...)
+    cajaErrorFoto.textContent = err.message;
+    cajaErrorFoto.classList.remove('d-none');
+  }
+  // Se vuelve a habilitar el botón, haya ido bien o mal
+  botonFoto.disabled = false;
+});

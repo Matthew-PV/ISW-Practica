@@ -12,8 +12,10 @@ async function api(ruta, opciones = {}) {
     // La ruta es relativa (mismo servidor que sirve la página), así que el navegador envía
     // sola la cookie de sesión y no hace falta gestionarla aquí.
     res = await fetch(`/api${ruta}`, {
-      // Por defecto se envía JSON; las opciones de quien llama van después y pueden cambiarlo
-      headers: { 'Content-Type': 'application/json' },
+      // Por defecto se envía JSON. Con un archivo (FormData) no se pone: la cabecera la pone
+      // el navegador, con el separador del formulario multipart. Las opciones de quien llama
+      // van después y pueden cambiarlo
+      headers: opciones.body instanceof FormData ? {} : { 'Content-Type': 'application/json' },
       ...opciones,
     });
   } catch {
