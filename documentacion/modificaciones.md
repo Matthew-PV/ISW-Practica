@@ -193,7 +193,7 @@ npm test
 
 58 tests en total, todos en verde.
 
-## Creación de experiencias (LUC01) y catálogo de ciudades — Implementado (30/09–01/10/2026)
+# Creación de experiencias (LUC01) y catálogo de ciudades — Implementado (30/09–01/10/2026)
 
 Reúne las tareas 1–4 y la tarea intermedia del catálogo inicial.
 
@@ -252,7 +252,7 @@ En MySQL temporal se verificaron migraciones, restricciones, conservación de da
 
 Quedan pendientes el formulario visual, listado de ciudades por API, edición y publicación. Al añadir lugares habrá que comprobar que pertenecen a la ciudad de la experiencia. Ampliar ciudades, territorios o traducciones es opcional.
 
-## Foto de perfil (FLA05, tareas 4 y 5), revisión y reorganización del código — Implementado (01/10/2026)
+# Foto de perfil (FLA05, tareas 4 y 5), revisión y reorganización del código — Implementado (01/10/2026)
 
 Cada usuario puede subir su foto de perfil: se guarda en Cloudinary y en MySQL solo su URL. Además:
 - revisión del backend: repeticiones eliminadas y errores de validación corregidos en la edición del perfil;
