@@ -43,15 +43,19 @@ Toda la documentación detallada vive en [`documentacion/`](documentacion/):
 * [Propuesta inicial](documentacion/propuesta-inicial.md) — planteamiento conceptual del producto: problema, público objetivo, objetivos, módulos funcionales, modelo de datos, comparación con soluciones existentes, límites de alcance y riesgos.
 * [Arquitectura](documentacion/arquitectura.md) — alcance técnico, capas del sistema, herramientas y sus ventajas, comunicación frontend–backend, autenticación y autorización, estructura del repositorio, instalación de herramientas, entorno de desarrollo y pruebas.
 * [Modificaciones](documentacion/modificaciones.md) — registro de los cambios realizados: qué se ha hecho, cómo probarlo y notas para quien siga trabajando.
+* [Metodología de trabajo con IA](documentacion/metodologia.md) — proceso común, responsabilidades, revisión y forma de trabajo de cada integrante.
+* [Registro de prompts](documentacion/registro-prompts.md) — plantilla y entradas de las interacciones con IA que hayan influido en el proyecto.
 
 Las historias de usuario del equipo están en [`customer-stories/`](customer-stories/).
+
+Las instrucciones comunes para los agentes que colaboren en el repositorio están en [`AGENTS.md`](AGENTS.md).
 
 ## Estructura del repositorio
 
 * `backend/` — servidor Node.js + Express: API REST, lógica de negocio, persistencia con Prisma y pruebas.
 * `frontend/` — páginas HTML, CSS y JavaScript con Bootstrap.
 * `docker-compose.yml` — MySQL para desarrollo local.
-* `documentacion/` — documentación del proyecto (propuesta de producto, arquitectura y registro de modificaciones).
+* `documentacion/` — documentación del proyecto (propuesta, arquitectura, modificaciones, metodología y registro de prompts).
 * `customer-stories/` — historias de usuario del equipo, en formato hoja de cálculo (una hoja por historia) y los documentos individuales de partida de cada miembro.
 
 ## Licencia

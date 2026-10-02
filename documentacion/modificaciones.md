@@ -634,3 +634,24 @@ Registro: en http://localhost:3000/registro.html, con las herramientas del naveg
 - Las tarjetas se construyen con `textContent`, nunca metiendo el texto del usuario como HTML. Mantenerlo así en las tarjetas nuevas.
 - `GET /api/experiencias/mias` sirve también para FLA02 (mis experiencias publicadas en el perfil).
 - Las pruebas de pantallas cargan el HTML y los scripts de `frontend/` tal cual (ver la cabecera de `tests/registroPantalla.test.js`). Para probar otra pantalla, copiar ese esquema: `@jest-environment jsdom`, `fetch` simulado y el HTML cargado en `beforeEach`. Turnstile real no se puede automatizar (Cloudflare rechaza los navegadores automatizados), así que en las pruebas siempre va simulado.
+
+# Metodología y registro del trabajo con IA — Documentado (02/10/2026)
+
+El equipo acuerda hacer explícito y trazable el uso de agentes de inteligencia artificial en el desarrollo de PlanB.
+
+### Qué se ha añadido
+
+- `AGENTS.md` en la raíz: contexto común para agentes nuevos, con las fuentes de verdad, la arquitectura obligatoria, las convenciones de backend y frontend, las reglas de seguridad, las pruebas y la forma de entregar una tarea.
+- `documentacion/metodologia.md`: proceso de preparación, colaboración, revisión y validación; reparto de responsabilidades entre el agente y la persona; y fichas pendientes para que cada integrante describa su forma real de trabajo.
+- `documentacion/registro-prompts.md`: registro común con una plantilla, una sección por integrante y reglas para conservar los prompts relevantes sin incluir secretos ni inventar interacciones pasadas.
+- `README.md`: enlaces a los tres documentos nuevos y actualización de la descripción de `documentacion/`.
+
+### Decisiones tomadas
+
+- No se han reconstruido ni atribuido prompts anteriores. Cada integrante incorporará los suyos a partir del texto que conserve; un resumen de una interacción pasada deberá marcarse como reconstruido.
+- No es necesario copiar conversaciones completas: se registran el prompt inicial, las correcciones que cambien la solución, el resultado, la intervención humana, las comprobaciones y el commit o pull request.
+- La responsabilidad final sigue siendo del integrante que revisa e incorpora el cambio. El registro de IA aporta trazabilidad, pero no sustituye las pruebas ni la comprensión del código.
+
+### Cómo comprobarlo
+
+Abrir los enlaces de la sección «Documentación» del `README.md` y comprobar que cada integrante aparece tanto en la metodología como en el registro. Al iniciar una tarea nueva con un agente compatible, verificar que lee automáticamente el `AGENTS.md` de la raíz o proporcionárselo como contexto si la herramienta no admite este mecanismo.
