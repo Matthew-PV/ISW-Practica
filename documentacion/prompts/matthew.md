@@ -4,6 +4,27 @@ Identificador habitual: MAT / Matthew-PV.
 
 Las interacciones siguientes proceden de la conversación conservada en Codex. Cuando no consta la fecha exacta de la interacción, `2026-10-02` indica la fecha en la que se incorporó al registro, no necesariamente la fecha en que se escribió el prompt original. Se omiten mensajes de cortesía y confirmaciones que no influyeron en el trabajo.
 
+## 2026-10-02 — Planificar el aprendizaje de PlanB y Bootstrap
+
+- **Historia u objetivo:** comprender y explicar las herramientas de PlanB y preparar la próxima revisión.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows y copia local del repositorio.
+- **Contexto aportado:** disponibilidad habitual de 4 horas semanales, hasta 12 si fuese necesario; dos semanas; revisión dentro de siete días; conocimientos de Java, HTML, Git y teoría de MySQL; PlanB ya funciona en el equipo de Matthew.
+- **Prompt inicial:**
+
+  > Planea una hoja de ruta para que pueda comprender todas las herramientas del proyecto lo mejor posible. Para hacerla lo más realista y acertada posible, preguntame antes cosas como el tiempo disponible, el nivel de profundidad de conocimientos u otras cosas que consideres relevantes para crear esta hoja de ruta
+
+- **Corrección relevante:**
+
+  > En algún momento incorporaremos desarrollo de frontend mediante Bootstrap. ¿Puedes incluir eso en la hoja de ruta y generar un documento con todo el contenido y los ejercicios prácticos? Este será el que seguiré paso a paso para alcanzar los objetivos propuestos
+
+- **Resultado propuesto por la IA:** guía de dos semanas con sesiones de 4 horas, ampliaciones hasta 12 horas, ejercicios sobre el repositorio, práctica de Bootstrap y ensayo de la demostración.
+- **TDD:** no aplicable a la redacción; la guía incluye aprendizaje de pruebas y TDD.
+- **Comprensión humana de las pruebas:** una sesión enseña a identificar preparación, acción y resultado esperado en una prueba existente.
+- **Intervención humana:** Matthew concretó tiempo, experiencia previa, objetivo de comprensión, revisión próxima y necesidad de añadir desarrollo frontend con Bootstrap.
+- **Comprobación final:** tiempos, archivos, comandos y enlaces de la guía contrastados con el repositorio.
+- **Resultado en Git:** pendiente.
+
 ## 2026-10-02 — Configurar la puesta en contexto de chats nuevos
 
 - **Historia u objetivo:** mejorar el inicio de las sesiones de trabajo del equipo.

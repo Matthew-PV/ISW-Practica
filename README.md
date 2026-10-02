@@ -45,6 +45,7 @@ Toda la documentación detallada vive en [`documentacion/`](documentacion/):
 * [Modificaciones](documentacion/modificaciones.md) — registro de los cambios realizados: qué se ha hecho, cómo probarlo y notas para quien siga trabajando.
 * [Metodología de trabajo con IA](documentacion/metodologia.md) — proceso común, responsabilidades, revisión y forma de trabajo de cada integrante.
 * [Registro de prompts](documentacion/prompts/README.md) — índice, plantilla y un archivo por integrante para las interacciones con IA que hayan influido en el proyecto.
+* [Hoja de ruta de aprendizaje](documentacion/hoja-ruta-aprendizaje.md) — plan de dos semanas con ejercicios para comprender la arquitectura, las herramientas y el frontend con Bootstrap.
 
 Las historias de usuario del equipo están actualmente en [`customer-stories/`](customer-stories/). El equipo tiene pendiente reestructurar el Excel y trasladarlo a OneDrive para trabajar sobre una versión sincronizada. Hasta que se publique aquí el enlace y la fecha de migración, el archivo del repositorio sigue siendo la referencia disponible.
 
