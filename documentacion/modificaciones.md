@@ -608,6 +608,7 @@ La pantalla de bienvenida muestra ahora las experiencias del usuario en una reji
   - Objetivos migrados de FLA05, LUC01, LUC09, MAT16 y US60: «Y» y «Hecho» pasan a «Sí» y los tiempos a minutos («30 min» → 30; los números sueltos estaban en horas, así que 0,5 → 30). En LUC01 (CS-49) el antiguo «Objetivo 4.1» pasa a ser el 5 y los siguientes suben uno. El objetivo 4 de LUC09 (CS-57), que estaba sin marcar, queda en «No». Riesgo unificado: «Baja» y «Alta» pasan a «Bajo» y «Alto».
   - Hoja «Plantilla», la última: la página vacía de la que salen las nuevas.
 - `documentacion/office-scripts/crearPaginas.ts` (nuevo) — script del botón «Crear páginas» del Excel. Recorre el índice y, a cada fila con título, le pone la siguiente referencia libre si no la tiene, crea su página copiando «Plantilla» (con la referencia y la fecha de hoy) y enlaza el título. Es un Office Script: un programa en TypeScript que Excel para la web ejecuta dentro del libro desde la pestaña «Automatizar». Las fórmulas no pueden crear hojas, por eso este paso necesita el script.
+- `documentacion/metodologia.md` — apartados 3.1 a 3.4 nuevos con la estructura del Excel, el esquema de colores y formatos, cómo añadir historias y objetivos y las precauciones para no romper las fórmulas. La introducción del apartado 3 indica que la reestructuración ya está hecha y que el traslado a OneDrive sigue pendiente.
 
 ### Cómo probarlo
 
