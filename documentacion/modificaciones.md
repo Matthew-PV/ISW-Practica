@@ -571,7 +571,7 @@ npm test          # 147 pruebas, todas en verde
 npm run dev
 ```
 
-## Experiencias desde la bienvenida y pruebas pendientes (LUC01, LUC09, FLA05) — Implementado (02/10/2026)
+## Experiencias desde la bienvenida, pruebas pendientes y avisos del registro (LUC01, LUC09, FLA05, MAT16) — Implementado (02/10/2026)
 
 La pantalla de bienvenida muestra ahora las experiencias del usuario en una rejilla. La primera casilla es un «+» grande para crear una experiencia; al guardarla aparece justo detrás del «+». Al pulsar una tarjeta se abre el mismo formulario con sus datos para editarla.
 
@@ -590,12 +590,18 @@ La pantalla de bienvenida muestra ahora las experiencias del usuario en una reji
   - Objetivo 6: la experiencia de otro usuario responde 403 y no cambia; una experiencia antigua sin autor tampoco se puede editar; sin sesión, 401.
   - Objetivo 7: los campos enviados sustituyen a los anteriores y los demás se conservan; al volver a consultar aparecen los datos nuevos; vaciar un opcional lo deja sin valor; no se puede cambiar el autor ni el id; si algún dato no es válido no se cambia nada.
 - Pruebas del criterio de validación del perfil (FLA05, objetivo 10): `tests/perfilCriterio.test.js` (nuevo). Cada caso edita el perfil y después lo vuelve a consultar con `GET /api/perfil`: con un nombre válido y una foto permitida aparecen los dos; un nombre en uso por otra persona o con caracteres no permitidos se rechaza y sigue el anterior (sin guardar nada de esa petición); una foto GIF o de más de 5 MB se rechaza y sigue la anterior. Las pruebas de cada regla por separado ya estaban en `perfil.test.js` y `fotoPerfil.test.js`.
+- Registro (MAT16, objetivos 5, 6 y 7):
+  - `frontend/js/registro.js` — avisos visibles cuando el CAPTCHA no está disponible: si el script de Turnstile no carga (sin red o bloqueado), si no se puede pedir la clave pública al servidor o si falta en `.env` («No se ha podido cargar el CAPTCHA...»), y si Turnstile informa de un error («No se ha podido verificar el CAPTCHA...»; desaparece al resolverlo). Mientras se envía, el botón muestra un spinner y «Creando cuenta...»; tras cualquier error vuelve a «Crear cuenta» y queda disponible.
+  - `tests/registroPantalla.test.js` (nuevo) — prueba la pantalla en un navegador simulado (jsdom) con el servidor (`fetch`) y Turnstile simulados: registro correcto, envío en curso sin envíos duplicados, datos inválidos, email y nombre duplicados, CAPTCHA rechazado, fallo de red con reintento y los casos de CAPTCHA no disponible. El registro en el backend ya lo probaban `auth.test.js` y `captcha.test.js`.
+  - `backend/package.json` — nueva dependencia de desarrollo `jest-environment-jsdom`. El archivo de pruebas lo activa con el comentario `@jest-environment jsdom` de su cabecera; el resto de pruebas siguen en el entorno de Node.
+  - `documentacion/arquitectura.md` y `README.md` — jsdom en la tabla de herramientas y en la sección de pruebas.
 
 ### Cómo probarlo
 
 ```bash
 cd backend
-npm test          # 164 pruebas, todas en verde
+npm install       # instala jest-environment-jsdom
+npm test          # 178 pruebas, todas en verde
 npm run dev
 ```
 
@@ -613,8 +619,11 @@ curl -b cookies.txt http://localhost:3000/api/experiencias/mias
 curl http://localhost:3000/api/ciudades
 ```
 
+Registro: en http://localhost:3000/registro.html, con las herramientas del navegador bloquear `challenges.cloudflare.com` (pestaña *Network* → *Block request URL*) y recargar: aparece «No se ha podido cargar el CAPTCHA...». Al enviar el formulario, el botón muestra «Creando cuenta...» hasta que responde el servidor.
+
 ### Para quien siga trabajando en esto
 
 - La política de contenido de helmet solo deja cargar scripts propios, así que el JavaScript de Bootstrap (modales, desplegables...) no está disponible. El formulario usa el elemento `<dialog>` del navegador con `showModal()`.
 - Las tarjetas se construyen con `textContent`, nunca metiendo el texto del usuario como HTML. Mantenerlo así en las tarjetas nuevas.
 - `GET /api/experiencias/mias` sirve también para FLA02 (mis experiencias publicadas en el perfil).
+- Las pruebas de pantallas cargan el HTML y los scripts de `frontend/` tal cual (ver la cabecera de `tests/registroPantalla.test.js`). Para probar otra pantalla, copiar ese esquema: `@jest-environment jsdom`, `fetch` simulado y el HTML cargado en `beforeEach`. Turnstile real no se puede automatizar (Cloudflare rechaza los navegadores automatizados), así que en las pruebas siempre va simulado.

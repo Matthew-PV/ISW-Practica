@@ -18,7 +18,7 @@ PlanB es una **aplicación web responsive** organizada en capas: un único backe
 | Persistencia | Prisma |
 | Base de datos | MySQL (en Docker para desarrollo) |
 | Imágenes | Cloudinary |
-| Pruebas | Jest + Supertest |
+| Pruebas | Jest + Supertest (API) y jsdom (pantallas) |
 
 El detalle de cada herramienta, la estructura del repositorio y la puesta en marcha están en [`documentacion/arquitectura.md`](documentacion/arquitectura.md).
 

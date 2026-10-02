@@ -57,7 +57,7 @@ Todo el proyecto está escrito en **JavaScript**, tanto el backend como el front
 | Protección contra bots | Cloudflare Turnstile |
 | Imágenes | Cloudinary |
 | Entorno de desarrollo | Docker (docker-compose) |
-| Pruebas | Jest, Supertest |
+| Pruebas | Jest (con jsdom), Supertest |
 
 #### 3.1. MySQL
 
@@ -183,6 +183,7 @@ Framework de pruebas para JavaScript. Ejecuta los tests, comprueba los resultado
 
 * Necesita muy poca configuración.
 * Permite sustituir partes del sistema por simulaciones (*mocks*), por ejemplo para probar la lógica de negocio sin base de datos o sin subir fotos a Cloudinary.
+* Con el entorno **jsdom** (`jest-environment-jsdom`) simula un navegador: carga el HTML y el JavaScript de una pantalla y comprueba lo que ve el usuario (mensajes, estado de los botones) sin abrir un navegador real.
 
 #### 3.12. Supertest
 
@@ -263,7 +264,7 @@ ISW-Practica/
 │   │   ├── errores.js         # crearError: errores con código HTTP, común a todas las capas
 │   │   ├── app.js             # configuración de Express
 │   │   └── server.js          # arranque del servidor
-│   ├── tests/                 # pruebas con Jest y Supertest
+│   ├── tests/                 # pruebas con Jest, Supertest y jsdom
 │   ├── .env.example           # variables de entorno necesarias (sin valores reales)
 │   └── package.json           # dependencias y scripts de npm
 ├── frontend/
@@ -396,4 +397,5 @@ Scripts de `backend/package.json`:
 
 * **Tests unitarios (Jest)** de la lógica de negocio: validaciones, permisos, cálculos.
 * **Tests de endpoints (Jest + Supertest)** de la API: cada criterio de validación de una tarjeta se traduce en al menos un test.
-* **Frontend:** se prueba manualmente en el navegador, tanto en tamaño de ordenador como de móvil.
+* **Tests de pantallas (Jest + jsdom)** del frontend, con el servidor y el CAPTCHA simulados: por ejemplo, el registro (`tests/registroPantalla.test.js`).
+* **Frontend en el navegador:** se prueba manualmente, tanto en tamaño de ordenador como de móvil.
