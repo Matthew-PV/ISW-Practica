@@ -595,6 +595,7 @@ La pantalla de bienvenida muestra ahora las experiencias del usuario en una reji
   - `tests/registroPantalla.test.js` (nuevo) — prueba la pantalla en un navegador simulado (jsdom) con el servidor (`fetch`) y Turnstile simulados: registro correcto, envío en curso sin envíos duplicados, datos inválidos, email y nombre duplicados, CAPTCHA rechazado, fallo de red con reintento y los casos de CAPTCHA no disponible. El registro en el backend ya lo probaban `auth.test.js` y `captcha.test.js`.
   - `backend/package.json` — nueva dependencia de desarrollo `jest-environment-jsdom`. El archivo de pruebas lo activa con el comentario `@jest-environment jsdom` de su cabecera; el resto de pruebas siguen en el entorno de Node.
   - `documentacion/arquitectura.md` y `README.md` — jsdom en la tabla de herramientas y en la sección de pruebas.
+- `customer-stories/Customer_Stories_PlanB.xlsx` — seguimiento actualizado. LUC09: objetivos 6 y 7 hechos y objetivo 8 nuevo (pantalla de edición). LUC01: objetivos 1 a 7 marcados como hechos (ya tenían su tiempo real) y objetivo 8 nuevo (pantalla de creación). FLA05: objetivo 10 hecho. MAT16: objetivos 5, 6 y 7 hechos. Las tareas cerradas hoy llevan 5 min de tiempo estimado. FLA05, LUC01 y MAT16 tienen ahora una columna «Tiempo Estimado (h)» en E, como la que ya tenía LUC09; «Tiempo Real (h)» no se ha movido. LUC09 objetivo 4 sigue pendiente de LUC02.
 
 ### Cómo probarlo
 
