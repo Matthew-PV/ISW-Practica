@@ -571,7 +571,7 @@ npm test          # 147 pruebas, todas en verde
 npm run dev
 ```
 
-## Crear y editar experiencias desde la bienvenida (LUC01, LUC09) — Implementado (02/10/2026)
+## Crear y editar experiencias desde la bienvenida y pruebas de la edición (LUC01, LUC09) — Implementado (02/10/2026)
 
 La pantalla de bienvenida muestra ahora las experiencias del usuario en una rejilla. La primera casilla es un «+» grande para crear una experiencia; al guardarla aparece justo detrás del «+». Al pulsar una tarjeta se abre el mismo formulario con sus datos para editarla.
 
@@ -586,12 +586,15 @@ La pantalla de bienvenida muestra ahora las experiencias del usuario en una reji
   - `frontend/js/bienvenida.js` — carga a la vez las ciudades y las experiencias. El «+» abre el formulario vacío (`POST /api/experiencias`) y cada tarjeta lo abre con sus datos (`PATCH /api/experiencias/:id`). Al guardar, la tarjeta nueva se coloca detrás del «+» y la editada se sustituye en su sitio, sin recargar. Los errores del backend se muestran dentro del formulario, y el botón «Guardar» se desactiva mientras se envía.
   - `frontend/css/styles.css` — estilos del «+», de las tarjetas (descripción cortada a tres líneas) y del `<dialog>`.
 - `README.md` y `documentacion/arquitectura.md` — estado del proyecto y selección de ciudad en la interfaz.
+- Pruebas de la edición (LUC09, objetivos 6 y 7): `tests/edicionExperiencia.test.js` (nuevo), contra `PATCH /api/experiencias/:id`. El repositorio simulado guarda la experiencia en memoria para comprobar cómo queda después de cada petición.
+  - Objetivo 6: la experiencia de otro usuario responde 403 y no cambia; una experiencia antigua sin autor tampoco se puede editar; sin sesión, 401.
+  - Objetivo 7: los campos enviados sustituyen a los anteriores y los demás se conservan; al volver a consultar aparecen los datos nuevos; vaciar un opcional lo deja sin valor; no se puede cambiar el autor ni el id; si algún dato no es válido no se cambia nada.
 
 ### Cómo probarlo
 
 ```bash
 cd backend
-npm test          # 151 pruebas, todas en verde
+npm test          # 159 pruebas, todas en verde
 npm run dev
 ```
 
