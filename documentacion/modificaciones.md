@@ -643,7 +643,7 @@ El equipo acuerda hacer explícito y trazable el uso de agentes de inteligencia 
 
 - `AGENTS.md` en la raíz: contexto común para agentes nuevos, con las fuentes de verdad, la arquitectura obligatoria, las convenciones de backend y frontend, las reglas de seguridad, las pruebas y la forma de entregar una tarea.
 - `documentacion/metodologia.md`: proceso de preparación, colaboración, revisión y validación; reparto de responsabilidades entre el agente y la persona; y fichas pendientes para que cada integrante describa su forma real de trabajo.
-- `documentacion/registro-prompts.md`: registro común con una plantilla, una sección por integrante y reglas para conservar los prompts relevantes sin incluir secretos ni inventar interacciones pasadas.
+- `documentacion/prompts/`: registro distribuido, con un índice común, una plantilla y un archivo por integrante para conservar los prompts relevantes sin incluir secretos ni inventar interacciones pasadas.
 - `README.md`: enlaces a los tres documentos nuevos y actualización de la descripción de `documentacion/`.
 
 ### Decisiones tomadas
@@ -651,7 +651,16 @@ El equipo acuerda hacer explícito y trazable el uso de agentes de inteligencia 
 - No se han reconstruido ni atribuido prompts anteriores. Cada integrante incorporará los suyos a partir del texto que conserve; un resumen de una interacción pasada deberá marcarse como reconstruido.
 - No es necesario copiar conversaciones completas: se registran el prompt inicial, las correcciones que cambien la solución, el resultado, la intervención humana, las comprobaciones y el commit o pull request.
 - La responsabilidad final sigue siendo del integrante que revisa e incorpora el cambio. El registro de IA aporta trazabilidad, pero no sustituye las pruebas ni la comprensión del código.
+- El registro se divide por integrante para que pueda crecer sin convertir un único documento en un archivo difícil de consultar ni provocar conflictos frecuentes al editarlo entre varias personas.
 
 ### Cómo comprobarlo
 
-Abrir los enlaces de la sección «Documentación» del `README.md` y comprobar que cada integrante aparece tanto en la metodología como en el registro. Al iniciar una tarea nueva con un agente compatible, verificar que lee automáticamente el `AGENTS.md` de la raíz o proporcionárselo como contexto si la herramienta no admite este mecanismo.
+Abrir los enlaces de la sección «Documentación» del `README.md` y comprobar que cada integrante aparece tanto en la metodología como en el índice de `documentacion/prompts/`. Al iniciar una tarea nueva con un agente compatible, verificar que lee automáticamente el `AGENTS.md` de la raíz o proporcionárselo como contexto si la herramienta no admite este mecanismo.
+
+### Ampliación acordada el 02/10/2026
+
+- Se incorpora TDD como flujo preferente: prueba que falla, implementación mínima y refactorización. El integrante responsable debe entender la preparación, la acción y el resultado esperado del bloque de prueba añadido.
+- Se documenta como pendiente el traslado y la reestructuración de `Customer_Stories_PlanB.xlsx` en OneDrive. Hasta que el README publique el enlace y la fecha de migración, el Excel del repositorio sigue siendo la referencia disponible.
+- La metodología incluye el procedimiento concreto que Matthew utiliza en Windows para actualizar Git, dependencias, migraciones y pruebas, además de una plantilla para que el resto documente sus pasos reales en Windows, macOS o Linux y en su editor o terminal.
+- Se añade una ficha para un sexto integrante todavía sin nombre, código de historias ni commits conocidos. Sus datos no se completarán por suposición.
+- El registro de prompts pasa a un índice y un archivo por integrante en `documentacion/prompts/`.

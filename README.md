@@ -44,9 +44,9 @@ Toda la documentación detallada vive en [`documentacion/`](documentacion/):
 * [Arquitectura](documentacion/arquitectura.md) — alcance técnico, capas del sistema, herramientas y sus ventajas, comunicación frontend–backend, autenticación y autorización, estructura del repositorio, instalación de herramientas, entorno de desarrollo y pruebas.
 * [Modificaciones](documentacion/modificaciones.md) — registro de los cambios realizados: qué se ha hecho, cómo probarlo y notas para quien siga trabajando.
 * [Metodología de trabajo con IA](documentacion/metodologia.md) — proceso común, responsabilidades, revisión y forma de trabajo de cada integrante.
-* [Registro de prompts](documentacion/registro-prompts.md) — plantilla y entradas de las interacciones con IA que hayan influido en el proyecto.
+* [Registro de prompts](documentacion/prompts/README.md) — índice, plantilla y un archivo por integrante para las interacciones con IA que hayan influido en el proyecto.
 
-Las historias de usuario del equipo están en [`customer-stories/`](customer-stories/).
+Las historias de usuario del equipo están actualmente en [`customer-stories/`](customer-stories/). El equipo tiene pendiente reestructurar el Excel y trasladarlo a OneDrive para trabajar sobre una versión sincronizada. Hasta que se publique aquí el enlace y la fecha de migración, el archivo del repositorio sigue siendo la referencia disponible.
 
 Las instrucciones comunes para los agentes que colaboren en el repositorio están en [`AGENTS.md`](AGENTS.md).
 

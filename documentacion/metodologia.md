@@ -11,26 +11,112 @@ Su uso no elimina la responsabilidad del equipo. Cada integrante sigue siendo re
 1. **La historia de usuario guía el trabajo.** Antes de programar se identifican la historia, el objetivo y sus criterios de validación.
 2. **La persona conserva la decisión final.** El agente puede recomendar alternativas, pero el integrante acepta, modifica o rechaza la propuesta.
 3. **No se acepta código sin revisión.** Como mínimo se comprueba que el cambio se entiende, respeta la arquitectura y no modifica trabajo ajeno.
-4. **Toda afirmación debe poder comprobarse.** Las pruebas automáticas, la revisión manual o ambas deben demostrar los criterios de validación afectados.
-5. **Los cambios deben ser pequeños.** Una conversación y un commit deberían perseguir un objetivo concreto siempre que sea posible.
-6. **La documentación acompaña al código.** Se actualiza cuando cambia la arquitectura, la puesta en marcha, el comportamiento visible o una decisión relevante.
-7. **La seguridad tiene prioridad.** No se comparten secretos, credenciales, cookies, datos personales innecesarios ni archivos `.env` con el agente o en Git.
-8. **El uso de IA se registra con criterio.** Se conservan los prompts que influyen en el resultado, la verificación realizada y las decisiones humanas; no es necesario copiar cada mensaje incidental.
+4. **Se trabaja con TDD cuando sea aplicable.** Primero se escribe una prueba que falle, después el código mínimo que la hace pasar y finalmente se mejora el código manteniendo las pruebas en verde.
+5. **El humano entiende las pruebas.** Antes de aceptar un cambio, el integrante debe poder explicar al menos la preparación, la acción y el resultado esperado de cada bloque de pruebas incorporado para su tarea.
+6. **Toda afirmación debe poder comprobarse.** Las pruebas automáticas, la revisión manual o ambas deben demostrar los criterios de validación afectados.
+7. **Los cambios deben ser pequeños.** Una conversación y un commit deberían perseguir un objetivo concreto siempre que sea posible.
+8. **La documentación acompaña al código.** Se actualiza cuando cambia la arquitectura, la puesta en marcha, el comportamiento visible o una decisión relevante.
+9. **La seguridad tiene prioridad.** No se comparten secretos, credenciales, cookies, datos personales innecesarios ni archivos `.env` con el agente o en Git.
+10. **El uso de IA se registra con criterio.** Se conservan los prompts que influyen en el resultado, la verificación realizada y las decisiones humanas; no es necesario copiar cada mensaje incidental.
 
-## 3. Flujo de una tarea
+## 3. Gestión de las historias de usuario
 
-### 3.1. Preparación humana
+El equipo externalizará `customer-stories/Customer_Stories_PlanB.xlsx` a OneDrive y reestructurará el libro para que todos trabajen sobre una versión única y sincronizada en tiempo real.
+
+Este cambio está **pendiente**. Mientras no se complete:
+
+- el Excel del repositorio sigue siendo la referencia disponible;
+- no se debe borrar, ignorar ni declarar obsoleto todavía;
+- no se deben mantener dos versiones activas con cambios diferentes.
+
+Cuando se complete la migración, el equipo debe:
+
+1. Añadir en el README el enlace de OneDrive y la fecha desde la que esa versión es la oficial.
+2. Decidir si el Excel del repositorio se elimina o se conserva como una copia histórica claramente fechada y de solo lectura.
+3. Actualizar `.gitignore` si fuese necesario para evitar que vuelva a añadirse una copia de trabajo.
+4. Actualizar `AGENTS.md` y esta metodología para indicar que los criterios se consultan en OneDrive.
+
+Hasta entonces, cualquier agente debe informar si encuentra diferencias entre el Excel local y la descripción de una tarea recibida del equipo.
+
+## 4. Flujo de una tarea
+
+### 4.1. Preparación humana
 
 El integrante responsable:
 
-1. Actualiza su copia del repositorio y comprueba que no tiene cambios ajenos sin guardar.
+1. Actualiza su copia del repositorio siguiendo el procedimiento de su entorno y comprueba que no tiene cambios ajenos sin guardar.
 2. Selecciona una tarea concreta de `customer-stories/Customer_Stories_PlanB.xlsx`.
 3. Lee sus criterios de validación y localiza las capas que probablemente se verán afectadas.
 4. Explica al agente el objetivo, las restricciones y el estado conocido. Si la tarea parte de trabajo de otra persona, lo indica expresamente.
 
-### 3.2. Trabajo con el agente
+#### Procedimiento actual de Matthew en Windows
 
-El agente debe leer primero `AGENTS.md` y solo la documentación necesaria. Durante el trabajo:
+Matthew trabaja actualmente con la aplicación Codex de ChatGPT y prevé usar también un agente integrado en Visual Studio. Mantendrá Codex para consultas, documentación y tareas sencillas o que no requieran modificar código.
+
+Desde PowerShell o la terminal integrada de Visual Studio:
+
+```powershell
+cd C:\Users\mattp\dev\school\3-GISI\ISW-Practica
+git status
+git pull
+git log --oneline ORIG_HEAD..HEAD
+git diff --name-status ORIG_HEAD..HEAD
+docker compose up -d
+cd backend
+npm install
+npx prisma migrate deploy
+npx prisma generate
+npm test
+npm run dev
+```
+
+Cómo aplicar estos pasos:
+
+1. `git status`: si muestra archivos modificados o nuevos que Matthew quiere conservar, no continúa con el `pull` hasta haber entendido y guardado esos cambios mediante un commit o con ayuda de un compañero o agente.
+2. `git pull`: descarga e integra el trabajo nuevo del equipo.
+3. Los dos comandos siguientes muestran los commits y archivos recibidos. Si no se descargó nada, pueden no mostrar diferencias.
+4. Antes de tocar `.env`, compara `backend/.env.example` con su configuración local. Nunca copia un `.env` ajeno ni sube el suyo a Git.
+5. `docker compose up -d` asegura que MySQL esté iniciado.
+6. `npm install` actualiza las dependencias según `backend/package-lock.json`.
+7. `prisma migrate deploy` aplica las migraciones ya creadas por el equipo y `prisma generate` actualiza el cliente de Prisma. Para crear una migración nueva durante una tarea se usa el script de desarrollo correspondiente, no `migrate deploy`.
+8. `npm test` comprueba el estado recibido antes de empezar trabajo nuevo.
+9. `npm run dev` arranca PlanB. Este comando permanece ejecutándose hasta que se detiene con `Ctrl+C`.
+
+`npm run db:seed` se ejecuta después de las migraciones solamente cuando hayan cambiado el catálogo, el archivo de semillas o las instrucciones del equipo. `docker compose down -v` no forma parte de la actualización normal porque borra los datos locales.
+
+#### Plantilla pendiente para los demás integrantes
+
+Cada integrante debe añadir un procedimiento real, probado en su equipo, sin copiar comandos de otro sistema operativo a ciegas:
+
+```text
+Nombre:
+Sistema operativo y versión: [Windows / macOS / Linux]
+Editor o entorno: [Visual Studio / otro]
+Agente utilizado:
+Terminal utilizada:
+Ruta local del repositorio:
+Pasos para guardar o revisar cambios locales antes de actualizar:
+Comandos exactos para actualizar Git:
+Comandos exactos para actualizar dependencias y base de datos:
+Comandos para ejecutar las pruebas:
+Comando para arrancar PlanB:
+Problemas habituales o diferencias de su entorno:
+```
+
+Algunos integrantes usan agentes desde Visual Studio y algunos ejecutan Git desde su terminal integrada. El equipo también utiliza macOS y Linux. Estos datos sirven como punto de partida, pero no se atribuyen a una persona concreta hasta que confirme su ficha.
+
+### 4.2. Trabajo con el agente mediante TDD
+
+El agente debe leer primero `AGENTS.md` y solo la documentación necesaria. El ciclo habitual es:
+
+1. Traducir un criterio de validación a uno o varios casos de prueba.
+2. Explicar el bloque de prueba al integrante con el patrón **preparación → acción → resultado esperado**.
+3. Añadir la prueba y ejecutarla para observar el fallo esperado (**rojo**).
+4. Añadir el código mínimo para que pase (**verde**).
+5. Simplificar o aclarar el código sin cambiar el comportamiento (**refactorización**).
+6. Ejecutar la prueba específica y después toda la batería.
+
+Durante el trabajo, el agente:
 
 - explica el enfoque antes de introducir decisiones relevantes;
 - respeta el flujo rutas → servicios → repositorios;
@@ -39,24 +125,25 @@ El agente debe leer primero `AGENTS.md` y solo la documentación necesaria. Dura
 - escribe o adapta pruebas vinculadas a los criterios de validación;
 - diferencia hechos comprobados de suposiciones.
 
-El integrante formula correcciones cuando la propuesta no coincide con la historia, la arquitectura o el resultado esperado. Las correcciones que cambien de forma importante la solución también se anotan en el registro de prompts.
+El integrante formula correcciones cuando la propuesta no coincide con la historia, la arquitectura o el resultado esperado. Antes de aceptar las pruebas, explica con sus propias palabras qué preparan, qué ejecutan y qué comprueban. Las correcciones que cambien de forma importante la solución también se anotan en su archivo de prompts.
 
-### 3.3. Revisión y validación humana
+### 4.3. Revisión y validación humana
 
 Antes de considerar terminada la tarea, el integrante:
 
 1. Revisa el resumen o la comparación de archivos modificados.
 2. Pide explicación de cualquier fragmento que no entienda.
-3. Ejecuta las pruebas específicas y la batería completa desde `backend/` con `npm test`.
-4. Comprueba manualmente la interfaz cuando el comportamiento visible haya cambiado.
-5. Verifica que no se hayan añadido secretos, archivos temporales o cambios ajenos.
-6. Actualiza la historia de usuario y la documentación que corresponda.
-7. Registra la interacción relevante en `documentacion/registro-prompts.md`.
-8. Crea un commit cuyo mensaje describa el resultado.
+3. Comprueba que la prueba nueva falló antes de la implementación por el motivo previsto y entiende su estructura.
+4. Ejecuta las pruebas específicas y la batería completa desde `backend/` con `npm test`.
+5. Comprueba manualmente la interfaz cuando el comportamiento visible haya cambiado.
+6. Verifica que no se hayan añadido secretos, archivos temporales o cambios ajenos.
+7. Actualiza la historia de usuario y la documentación que corresponda.
+8. Registra la interacción relevante en su archivo de `documentacion/prompts/`.
+9. Crea un commit cuyo mensaje describa el resultado.
 
 Si una comprobación no puede realizarse, se deja escrita como pendiente; no se da por superada.
 
-## 4. Qué se registra y qué no
+## 5. Qué se registra y qué no
 
 Se registra:
 
@@ -72,7 +159,7 @@ No es necesario registrar saludos, preguntas puramente explicativas que no afect
 
 El registro no demuestra por sí mismo que una tarea sea correcta. Sirve para conocer cómo se llegó al resultado; la evidencia técnica son el código, las pruebas y la revisión.
 
-## 5. Forma de trabajo de cada integrante
+## 6. Forma de trabajo de cada integrante
 
 Esta sección debe completarla cada persona en primera persona. No debe describir una forma de trabajo ideal, sino la que realmente utiliza. Las cinco fichas se dejan inicialmente pendientes para no atribuir prácticas que el integrante no haya confirmado.
 
@@ -83,11 +170,14 @@ Esta sección debe completarla cada persona en primera persona. No debe describi
 | Jorge Delgado Castellanos | JOR / jorjonudo | Pendiente de completar por el integrante |
 | Lucía Alexandra Guzmán Álvarez | LUC | Pendiente de completar por la integrante |
 | Joaquín de Vicente Abad | JOA | Pendiente de completar por el integrante |
+| Integrante 6 — nombre pendiente | Código pendiente | Pendiente de completar cuando confirme su identidad |
 
 Cada ficha debe responder de forma breve a estas preguntas:
 
 ```text
 Nombre:
+Sistema operativo:
+Editor y terminal:
 Agente o herramientas que utilizo:
 Para qué tareas suelo utilizarlos:
 Cómo preparo el contexto o el prompt:
@@ -97,7 +187,7 @@ Cómo traslado el resultado a la historia de usuario y a Git:
 Limitaciones o precauciones personales:
 ```
 
-## 6. Reparto de responsabilidades
+## 7. Reparto de responsabilidades
 
 | Actividad | Agente de IA | Integrante responsable |
 |---|---|---|
@@ -105,22 +195,25 @@ Limitaciones o precauciones personales:
 | Diseñar una solución | Propone opciones y consecuencias | Elige y justifica la opción |
 | Modificar código | Puede generar o editar | Revisa y comprende el cambio |
 | Crear pruebas | Propone casos y automatiza | Comprueba que representan los criterios |
+| Aplicar TDD | Escribe y ejecuta el ciclo rojo-verde-refactorización | Entiende la prueba y confirma que representa el comportamiento |
 | Ejecutar comprobaciones | Puede ejecutar y resumir resultados | Valora la evidencia y prueba manualmente cuando proceda |
 | Documentar | Puede redactar una base | Corrige el contenido y asume su autoría final |
 | Commit o entrega | Puede sugerir el contenido | Decide qué se incorpora y responde por ello |
 
-## 7. Criterio de finalización
+## 8. Criterio de finalización
 
 Una tarea asistida por IA está terminada cuando:
 
 - satisface los criterios de validación acordados;
 - respeta la arquitectura y las convenciones del repositorio;
 - las pruebas relevantes pasan y su resultado está anotado;
+- se conserva evidencia del fallo inicial de la prueba o se explica por qué TDD no fue aplicable;
+- el integrante entiende el bloque de pruebas incorporado;
 - el integrante puede explicar el cambio y sus consecuencias;
 - la documentación y la historia de usuario están actualizadas cuando corresponde;
 - la interacción relevante está incluida en el registro de prompts;
 - el repositorio no contiene secretos ni archivos accidentales.
 
-## 8. Mejora de la metodología
+## 9. Mejora de la metodología
 
 El equipo revisará este documento cuando detecte un problema repetido, cambie su forma de coordinación o incorpore una herramienta nueva. La modificación debe explicar el motivo y acordarse como cualquier otra decisión de equipo.

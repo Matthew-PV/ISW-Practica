@@ -30,6 +30,8 @@ Consulta únicamente la documentación necesaria para la tarea y usa este orden 
 
 `README.md` resume el estado actual y la puesta en marcha. Si la documentación, las historias y el código se contradicen, indícalo antes de decidir cuál actualizar. Distingue siempre entre funcionalidad implementada, trabajo pendiente y diseño futuro.
 
+El equipo está preparando el traslado de `Customer_Stories_PlanB.xlsx` a OneDrive para disponer de una única versión sincronizada. Hasta que el README indique que la migración ha terminado y contenga el enlace acordado, el archivo del repositorio sigue siendo la referencia disponible. Después del traslado, consulta la versión de OneDrive indicada por el equipo y no des por actualizada la copia antigua del repositorio.
+
 ## 3. Arquitectura obligatoria
 
 PlanB es un monolito web por capas. El flujo normal del backend es:
@@ -70,7 +72,19 @@ Cada archivo nuevo debe respetar los sufijos `Routes.js`, `Middleware.js`, `Serv
 - `Usuario.ciudad` es texto libre del perfil; el modelo `Ciudad` es el catálogo estructurado usado por las experiencias. No los confundas.
 - Conserva las sesiones, validaciones, permisos de autor y protecciones existentes. El frontend puede ocultar acciones, pero la autorización siempre se comprueba en el backend.
 
-## 6. Pruebas y comprobación
+## 6. Desarrollo guiado por pruebas (TDD)
+
+Para cada comportamiento nuevo o corrección se sigue, siempre que sea aplicable, el ciclo TDD (*Test-Driven Development*, desarrollo guiado por pruebas):
+
+1. **Rojo:** escribir primero una prueba que represente el criterio de validación y comprobar que falla por el motivo esperado.
+2. **Verde:** implementar el cambio mínimo necesario para que la prueba pase.
+3. **Refactorización:** mejorar la claridad sin cambiar el comportamiento y volver a ejecutar las pruebas.
+
+Antes de implementar, explica al integrante responsable el bloque de prueba: preparación de datos o simulaciones, acción que se ejecuta y resultado que se espera. El humano debe poder explicar al menos qué comportamiento protege la prueba. Si TDD no es viable para una parte concreta —por ejemplo, una comprobación visual puramente manual—, indícalo y define la verificación alternativa antes de cambiar el código.
+
+No escribas una prueba que pase desde el principio sin demostrar que detecta la ausencia o el defecto del comportamiento, salvo que estés caracterizando una funcionalidad ya existente. No cambies la prueba para acomodar una implementación incorrecta.
+
+### Tipos de pruebas y comprobación
 
 - Relaciona las pruebas con los criterios de validación de la historia de usuario.
 - Servicios: pruebas unitarias con repositorios simulados cuando corresponda.
@@ -90,7 +104,7 @@ Cada archivo nuevo debe respetar los sufijos `Routes.js`, `Middleware.js`, `Serv
 
 ## 8. Registro del uso de IA
 
-La colaboración con IA forma parte de la metodología del equipo y se documenta en `documentacion/registro-prompts.md`.
+La colaboración con IA forma parte de la metodología del equipo y se documenta en `documentacion/prompts/`, con un archivo separado por integrante.
 
 - Al terminar una tarea asistida por IA, recuerda al integrante registrar el prompt inicial y las correcciones que hayan influido de forma importante en el resultado.
 - No inventes, reconstruyas ni atribuyas prompts que el integrante no haya aportado.
@@ -109,4 +123,5 @@ Al finalizar, comunica de forma breve:
 3. Decisiones o riesgos importantes.
 4. Pruebas ejecutadas y resultado.
 5. Pasos manuales pendientes, si existen.
-6. Entrada que debería añadirse al registro de prompts, sin inventar su contenido.
+6. Entrada que debería añadirse al archivo de prompts del integrante, sin inventar su contenido.
+7. Evidencia del ciclo rojo, verde y refactorización, o motivo por el que no se aplicó TDD.
