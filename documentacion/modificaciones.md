@@ -571,7 +571,7 @@ npm test          # 147 pruebas, todas en verde
 npm run dev
 ```
 
-## Crear y editar experiencias desde la bienvenida y pruebas de la edición (LUC01, LUC09) — Implementado (02/10/2026)
+## Experiencias desde la bienvenida y pruebas pendientes (LUC01, LUC09, FLA05) — Implementado (02/10/2026)
 
 La pantalla de bienvenida muestra ahora las experiencias del usuario en una rejilla. La primera casilla es un «+» grande para crear una experiencia; al guardarla aparece justo detrás del «+». Al pulsar una tarjeta se abre el mismo formulario con sus datos para editarla.
 
@@ -589,12 +589,13 @@ La pantalla de bienvenida muestra ahora las experiencias del usuario en una reji
 - Pruebas de la edición (LUC09, objetivos 6 y 7): `tests/edicionExperiencia.test.js` (nuevo), contra `PATCH /api/experiencias/:id`. El repositorio simulado guarda la experiencia en memoria para comprobar cómo queda después de cada petición.
   - Objetivo 6: la experiencia de otro usuario responde 403 y no cambia; una experiencia antigua sin autor tampoco se puede editar; sin sesión, 401.
   - Objetivo 7: los campos enviados sustituyen a los anteriores y los demás se conservan; al volver a consultar aparecen los datos nuevos; vaciar un opcional lo deja sin valor; no se puede cambiar el autor ni el id; si algún dato no es válido no se cambia nada.
+- Pruebas del criterio de validación del perfil (FLA05, objetivo 10): `tests/perfilCriterio.test.js` (nuevo). Cada caso edita el perfil y después lo vuelve a consultar con `GET /api/perfil`: con un nombre válido y una foto permitida aparecen los dos; un nombre en uso por otra persona o con caracteres no permitidos se rechaza y sigue el anterior (sin guardar nada de esa petición); una foto GIF o de más de 5 MB se rechaza y sigue la anterior. Las pruebas de cada regla por separado ya estaban en `perfil.test.js` y `fotoPerfil.test.js`.
 
 ### Cómo probarlo
 
 ```bash
 cd backend
-npm test          # 159 pruebas, todas en verde
+npm test          # 164 pruebas, todas en verde
 npm run dev
 ```
 
