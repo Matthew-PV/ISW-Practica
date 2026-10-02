@@ -664,3 +664,5 @@ Abrir los enlaces de la sección «Documentación» del `README.md` y comprobar 
 - La metodología incluye el procedimiento concreto que Matthew utiliza en Windows para actualizar Git, dependencias, migraciones y pruebas, además de una plantilla para que el resto documente sus pasos reales en Windows, macOS o Linux y en su editor o terminal.
 - Se añade una ficha para un sexto integrante todavía sin nombre, código de historias ni commits conocidos. Sus datos no se completarán por suposición.
 - El registro de prompts pasa a un índice y un archivo por integrante en `documentacion/prompts/`.
+- La ficha de Matthew queda completada con su entorno actual, objetivos de aprendizaje, preparación del contexto, revisión, TDD, actualización y precauciones. El uso futuro de un agente en Visual Studio se diferencia de las herramientas que ya utiliza.
+- `documentacion/prompts/matthew.md` incorpora los prompts sustantivos conservados en esta conversación. Cuando no consta la fecha original, el documento identifica el 02/10/2026 como fecha de incorporación al registro y no como fecha atribuida al mensaje.

@@ -161,11 +161,11 @@ El registro no demuestra por sí mismo que una tarea sea correcta. Sirve para co
 
 ## 6. Forma de trabajo de cada integrante
 
-Esta sección debe completarla cada persona en primera persona. No debe describir una forma de trabajo ideal, sino la que realmente utiliza. Las cinco fichas se dejan inicialmente pendientes para no atribuir prácticas que el integrante no haya confirmado.
+Esta sección debe completarla cada persona en primera persona. No debe describir una forma de trabajo ideal, sino la que realmente utiliza. La ficha de Matthew se completa con la información que ha confirmado; las demás siguen pendientes para no atribuir prácticas que cada integrante no haya validado.
 
 | Integrante | Identificador habitual | Forma de trabajo documentada |
 |---|---|---|
-| Matthew Puente Villegas Michavil | MAT / Matthew-PV | Pendiente de completar por el integrante |
+| Matthew Puente Villegas Michavil | MAT / Matthew-PV | Completada en la sección 6.1 |
 | Flavia Méndez Tsutsumi | FLA / flaviamendez | Pendiente de completar por la integrante |
 | Jorge Delgado Castellanos | JOR / jorjonudo | Pendiente de completar por el integrante |
 | Lucía Alexandra Guzmán Álvarez | LUC | Pendiente de completar por la integrante |
@@ -186,6 +186,24 @@ Qué pruebas realizo antes de aceptar cambios:
 Cómo traslado el resultado a la historia de usuario y a Git:
 Limitaciones o precauciones personales:
 ```
+
+### 6.1. Matthew Puente Villegas Michavil
+
+**Sistema operativo y entorno.** Trabajo en Windows. Actualmente utilizo principalmente la aplicación Codex de ChatGPT sobre mi copia local del repositorio y PowerShell. Preveo incorporar un agente integrado en Visual Studio y utilizar también su terminal. Seguiré recurriendo a Codex para comprender conceptos, revisar el repositorio, preparar documentación y resolver tareas sencillas o que no requieran modificar código.
+
+**Experiencia y objetivo personal.** Tengo poca experiencia práctica en creación y despliegue de aplicaciones. Por eso no busco únicamente que el agente termine una tarea: necesito entender los conceptos, las decisiones y el código suficiente para conservar el control del proyecto y explicárselo al resto del equipo.
+
+**Preparación del contexto.** Explico al agente el objetivo, la historia de usuario y las restricciones que conozco. Le facilito `AGENTS.md` o compruebo que lo haya leído y le indico qué documentación o estado del repositorio debe revisar. Si no entiendo el alcance, comienzo pidiendo una explicación antes de autorizar cambios.
+
+**Uso de los agentes.** Los utilizo para revisar cambios del repositorio, entender tecnologías y configuración, diseñar la forma de trabajo del equipo, redactar documentación y apoyar tareas de programación. Para trabajo técnico, espero que el agente respete la arquitectura de PlanB, no modifique trabajo ajeno y explique las decisiones relevantes.
+
+**TDD y comprensión de las pruebas.** Quiero que las tareas de programación sigan el ciclo rojo, verde y refactorización aunque el agente escriba y ejecute las pruebas. Antes de aceptar una prueba, debo poder explicar qué datos o simulaciones prepara, qué acción ejecuta y qué resultado comprueba. Si algo no se entiende, pido una explicación en lenguaje más sencillo antes de continuar.
+
+**Revisión y corrección.** Reviso el resumen y los archivos cambiados, pregunto por la terminología desconocida y comparo el resultado con el criterio de validación. No doy por válida una afirmación solo porque la haga el agente: compruebo los resultados de las pruebas y, cuando cambia una pantalla, realizo también una comprobación manual.
+
+**Actualización y entrega.** Antes de empezar sigo el procedimiento de Windows descrito en la sección 4.1. Mantengo el `.env` fuera de Git, reviso las migraciones y dependencias recibidas y ejecuto la batería de pruebas. Al terminar, actualizo la historia de usuario cuando corresponda, añado la interacción relevante a `documentacion/prompts/matthew.md` y preparo un commit comprensible.
+
+**Precauciones personales.** No incorporo secretos ni credenciales al repositorio o a los prompts. Evito aceptar tecnologías o abstracciones que no pueda justificar. Si el agente y la documentación se contradicen, detengo la decisión hasta comprobar el código, las pruebas y el criterio de la historia.
 
 ## 7. Reparto de responsabilidades
 
