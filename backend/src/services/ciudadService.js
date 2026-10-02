@@ -1,6 +1,6 @@
-// Carga inicial, sin descargar datos durante la ejecución.
+// Catálogo de ciudades: carga inicial (sin descargar datos durante la ejecución) y listado.
 // Capa: servicios (services).
-// Lo usa: prisma/seed.js (`npm run db:seed`). Ninguna ruta de la API lo llama.
+// Lo usan: prisma/seed.js (`npm run db:seed`, carga inicial) y routes/ciudadRoutes.js (listado).
 // Usa: data/capitales.json (el catálogo) y repositories/ciudadRepository.js (guardarlo).
 //
 // El catálogo de capitales viene en un archivo del propio repositorio (data/capitales.json),
@@ -20,4 +20,9 @@ async function cargarCatalogoInicial() {
   return ciudadRepository.cargarCapitales(capitales);
 }
 
-module.exports = { cargarCatalogoInicial };
+// Devuelve el catálogo de ciudades [{ id, nombre, pais }] ordenado por nombre.
+async function listarCiudades() {
+  return ciudadRepository.listar();
+}
+
+module.exports = { cargarCatalogoInicial, listarCiudades };

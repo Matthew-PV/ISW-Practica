@@ -219,7 +219,18 @@ async function editarExperiencia(usuarioId, experienciaId, datos) {
   }
 }
 
+// Devuelve las experiencias del usuario de la sesión, de la más nueva a la más antigua.
+// Error 401 si el usuario ya no existe.
+async function listarExperienciasPropias(usuarioId) {
+  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
+      !(await usuarioRepository.buscarPorId(usuarioId))) {
+    throw crearError('No hay sesión iniciada', 401);
+  }
+  return experienciaRepository.listarPorAutor(usuarioId);
+}
+
 module.exports = {
+  listarExperienciasPropias,
   validarCreacion,
   validarEdicion,
   crearExperiencia,

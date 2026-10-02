@@ -4,3 +4,46 @@
 .contenedor-formulario {
   max-width: 400px;
 }
+
+/* Bienvenida: botón «+» grande para crear una experiencia, del mismo tamaño que las tarjetas */
+.tarjeta-nueva {
+  width: 100%;
+  height: 100%;
+  min-height: 10rem;
+  font-size: 4rem;
+  line-height: 1;
+  color: var(--bs-secondary-color);
+  background: transparent;
+  border: 2px dashed var(--bs-border-color);
+  border-radius: var(--bs-border-radius-lg);
+}
+
+.tarjeta-nueva:hover,
+.tarjeta-nueva:focus-visible {
+  color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+/* Tarjeta de experiencia: misma altura mínima que el «+» y descripción cortada a tres líneas */
+.tarjeta-experiencia {
+  min-height: 10rem;
+}
+
+.descripcion-corta {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Ventana del formulario de experiencia */
+.dialogo-experiencia {
+  width: min(32rem, calc(100% - 2rem));
+  padding: 0;
+  border: 0;
+  border-radius: var(--bs-border-radius-lg);
+}
+
+.dialogo-experiencia::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}

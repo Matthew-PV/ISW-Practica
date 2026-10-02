@@ -4,7 +4,7 @@ PlanB es una red social web, adaptada también al móvil, para compartir y descu
 
 ## Estado del proyecto
 
-La propuesta de producto, las historias de usuario y la arquitectura están documentadas. Ya se han implementado el registro, el inicio de sesión, la consulta y edición del perfil propio y la creación de experiencias por API, con un catálogo inicial de capitales. El formulario de creación y la edición de experiencias quedan pendientes.
+La propuesta de producto, las historias de usuario y la arquitectura están documentadas. Ya se han implementado el registro, el inicio de sesión, la consulta y edición del perfil propio (con su foto) y la creación y edición de experiencias desde la pantalla de bienvenida, con un catálogo inicial de capitales. Al editar una experiencia queda pendiente rechazar un cambio de ciudad incompatible con sus lugares, que necesita los lugares de LUC02.
 
 ## Arquitectura
 

@@ -1,4 +1,4 @@
-// Rutas de las experiencias, bajo /api/experiencias. De momento solo la creación (LUC01).
+// Rutas de las experiencias, bajo /api/experiencias: listar las propias, crear (LUC01) y editar (LUC09).
 // Capa: rutas (routes).
 // Lo usa: routes/index.js.
 // Usa: services/experienciaService.js (la lógica) y middlewares/sesionMiddleware.js (exigir sesión).
@@ -9,6 +9,12 @@ const experienciaService = require('../services/experienciaService');
 const { requiereSesion } = require('../middlewares/sesionMiddleware');
 
 const router = express.Router();
+
+// GET /api/experiencias/mias — las experiencias del usuario de la sesión, de la más nueva
+// a la más antigua, cada una con su ciudad. 401 si no hay sesión.
+router.get('/mias', requiereSesion, async (req, res) => {
+  res.json(await experienciaService.listarExperienciasPropias(req.session.usuarioId));
+});
 
 // POST /api/experiencias — crea una experiencia cuyo autor es el usuario de la sesión (201),
 // o 400 si los datos no son válidos.

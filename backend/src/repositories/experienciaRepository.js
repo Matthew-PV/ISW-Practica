@@ -32,4 +32,13 @@ async function actualizar(id, datos) {
   });
 }
 
-module.exports = { crear, buscarPorId, actualizar };
+// Devuelve las experiencias de un autor, de la más nueva a la más antigua, con su ciudad.
+async function listarPorAutor(autorId) {
+  return prisma.experiencia.findMany({
+    where: { autorId },
+    orderBy: { id: 'desc' },
+    include: { ciudad: true },
+  });
+}
+
+module.exports = { crear, buscarPorId, actualizar, listarPorAutor };

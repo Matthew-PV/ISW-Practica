@@ -1,13 +1,21 @@
 // Acceso al catálogo de ciudades. Solo los repositorios consultan Prisma.
 // Capa: repositorios (repositories).
 // Lo usan: services/experienciaService.js (buscarPorId), services/ciudadService.js
-//          (cargarCapitales) y prisma/seed.js (cerrarConexion).
+//          (listar, cargarCapitales) y prisma/seed.js (cerrarConexion).
 // Usa: repositories/shared/prisma.js (la conexión con MySQL).
 const prisma = require('./shared/prisma');
 
 // Devuelve la ciudad, o null si no existe.
 async function buscarPorId(id) {
   return prisma.ciudad.findUnique({ where: { id } });
+}
+
+// Devuelve todo el catálogo ordenado por nombre (para el desplegable de ciudades).
+async function listar() {
+  return prisma.ciudad.findMany({
+    select: { id: true, nombre: true, pais: true },
+    orderBy: { nombre: 'asc' },
+  });
 }
 
 // Una transacción aplica toda la carga o la deshace si falla.
@@ -56,4 +64,4 @@ async function cerrarConexion() {
   await prisma.$disconnect();
 }
 
-module.exports = { buscarPorId, cargarCapitales, cerrarConexion };
+module.exports = { buscarPorId, listar, cargarCapitales, cerrarConexion };

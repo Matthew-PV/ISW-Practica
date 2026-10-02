@@ -569,3 +569,48 @@ Ahora la foto de perfil se puede subir y cambiar desde la pantalla «Mi perfil»
 cd backend
 npm test          # 147 pruebas, todas en verde
 npm run dev
+```
+
+## Crear y editar experiencias desde la bienvenida (LUC01, LUC09) — Implementado (02/10/2026)
+
+La pantalla de bienvenida muestra ahora las experiencias del usuario en una rejilla. La primera casilla es un «+» grande para crear una experiencia; al guardarla aparece justo detrás del «+». Al pulsar una tarjeta se abre el mismo formulario con sus datos para editarla.
+
+### Qué se ha hecho
+
+- API: dos lecturas nuevas que usa la pantalla.
+  - `GET /api/experiencias/mias` — las experiencias del usuario de la sesión, de la más nueva a la más antigua, cada una con su ciudad. Responde 401 sin sesión. Archivos: `routes/experienciaRoutes.js`, `services/experienciaService.js` (`listarExperienciasPropias`) y `repositories/experienciaRepository.js` (`listarPorAutor`).
+  - `GET /api/ciudades` — el catálogo `[{ id, nombre, pais }]` ordenado por nombre, para el desplegable de ciudades. Es público. Archivos: `routes/ciudadRoutes.js` (nuevo), `routes/index.js`, `services/ciudadService.js` (`listarCiudades`) y `repositories/ciudadRepository.js` (`listar`).
+  - `tests/listados.test.js` (nuevo) — sin sesión, sesión de un usuario que ya no existe, solo las experiencias del autor de la sesión y el catálogo de ciudades.
+- Frontend:
+  - `frontend/bienvenida.html` — rejilla de Bootstrap (2 columnas en móvil, 3 en tablet y 4 en escritorio) y formulario dentro de un `<dialog>`: título, descripción, ciudad (desplegable), tipo y momento adecuado.
+  - `frontend/js/bienvenida.js` — carga a la vez las ciudades y las experiencias. El «+» abre el formulario vacío (`POST /api/experiencias`) y cada tarjeta lo abre con sus datos (`PATCH /api/experiencias/:id`). Al guardar, la tarjeta nueva se coloca detrás del «+» y la editada se sustituye en su sitio, sin recargar. Los errores del backend se muestran dentro del formulario, y el botón «Guardar» se desactiva mientras se envía.
+  - `frontend/css/styles.css` — estilos del «+», de las tarjetas (descripción cortada a tres líneas) y del `<dialog>`.
+- `README.md` y `documentacion/arquitectura.md` — estado del proyecto y selección de ciudad en la interfaz.
+
+### Cómo probarlo
+
+```bash
+cd backend
+npm test          # 151 pruebas, todas en verde
+npm run dev
+```
+
+Abrir http://localhost:3000, iniciar sesión y, en la bienvenida:
+
+1. Pulsar «+», rellenar el formulario y pulsar «Guardar»: la experiencia aparece justo detrás del «+».
+2. Pulsar una tarjeta, cambiar algún dato y guardar: la tarjeta se actualiza en su sitio.
+3. Escribir solo espacios en el título: el formulario muestra «El título es obligatorio» y no se cierra.
+4. Recargar la página: las experiencias siguen ahí, de la más nueva a la más antigua.
+
+Con curl (sesión iniciada con `-c cookies.txt` en el login):
+
+```bash
+curl -b cookies.txt http://localhost:3000/api/experiencias/mias
+curl http://localhost:3000/api/ciudades
+```
+
+### Para quien siga trabajando en esto
+
+- La política de contenido de helmet solo deja cargar scripts propios, así que el JavaScript de Bootstrap (modales, desplegables...) no está disponible. El formulario usa el elemento `<dialog>` del navegador con `showModal()`.
+- Las tarjetas se construyen con `textContent`, nunca metiendo el texto del usuario como HTML. Mantenerlo así en las tarjetas nuevas.
+- `GET /api/experiencias/mias` sirve también para FLA02 (mis experiencias publicadas en el perfil).
