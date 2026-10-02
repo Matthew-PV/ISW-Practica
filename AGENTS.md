@@ -17,7 +17,24 @@ PlanB está desarrollado por un equipo de estudiantes que utiliza agentes de IA 
 
 La IA propone y ejecuta tareas técnicas, pero no sustituye la revisión del integrante responsable. No afirmes que algo funciona si no se ha comprobado; indica con precisión qué se verificó y qué quedó sin verificar.
 
-## 2. Fuentes de verdad
+## 2. Protocolo para poner en contexto a un integrante
+
+Cuando una persona abra un chat nuevo y pida «ponme en contexto», «ayúdame a empezar a trabajar», «¿qué tengo que hacer para empezar?» o una petición equivalente, no comiences dando instrucciones genéricas ni modificando archivos.
+
+1. Pregunta primero: **«¿Quién eres dentro del equipo?»** Acepta el nombre, el identificador de historias o el usuario de GitHub.
+2. Localiza su ficha en `documentacion/metodologia.md` y su archivo en `documentacion/prompts/`.
+3. Si su ficha está completa, resume brevemente:
+   - el estado actual de PlanB relevante para trabajar;
+   - las fuentes que debe consultar;
+   - sus pasos concretos para actualizar el repositorio, dependencias, base de datos y pruebas según su sistema operativo y entorno;
+   - las precauciones sobre cambios locales, `.env`, migraciones y archivos que no deben subirse;
+   - el flujo TDD y la obligación de entender el bloque de pruebas.
+4. Si su ficha está incompleta, indícalo y pregunta por sistema operativo, editor, terminal y agente antes de dar comandos específicos. No supongas que usa Windows, macOS, Linux, PowerShell, Bash o la terminal de Visual Studio.
+5. Pregunta qué historia u objetivo va a trabajar solo después de haberle dado los pasos iniciales. Entonces consulta únicamente la documentación necesaria para esa tarea.
+
+No vuelvas a preguntar la identidad si ya consta de forma inequívoca en el chat actual. No muestres a un integrante datos personales innecesarios ni el contenido completo de los registros de otros miembros.
+
+## 3. Fuentes de verdad
 
 Consulta únicamente la documentación necesaria para la tarea y usa este orden de prioridad:
 
@@ -32,7 +49,7 @@ Consulta únicamente la documentación necesaria para la tarea y usa este orden 
 
 El equipo está preparando el traslado de `Customer_Stories_PlanB.xlsx` a OneDrive para disponer de una única versión sincronizada. Hasta que el README indique que la migración ha terminado y contenga el enlace acordado, el archivo del repositorio sigue siendo la referencia disponible. Después del traslado, consulta la versión de OneDrive indicada por el equipo y no des por actualizada la copia antigua del repositorio.
 
-## 3. Arquitectura obligatoria
+## 4. Arquitectura obligatoria
 
 PlanB es un monolito web por capas. El flujo normal del backend es:
 
@@ -53,7 +70,7 @@ Reutiliza antes de duplicar:
 
 Cada archivo nuevo debe respetar los sufijos `Routes.js`, `Middleware.js`, `Service.js` o `Repository.js`. Mantén el código sencillo y comprensible para estudiantes; evita abstracciones prematuras.
 
-## 4. Frontend
+## 5. Frontend
 
 - Cada página `frontend/x.html` tiene su comportamiento en `frontend/js/x.js`.
 - El código usado por varias páginas va en `frontend/js/shared/`.
@@ -63,7 +80,7 @@ Cada archivo nuevo debe respetar los sufijos `Routes.js`, `Middleware.js`, `Serv
 - Cuando se envíe `FormData`, no fijes manualmente `Content-Type`: el navegador añade el límite correcto del formulario.
 - Comprueba las pantallas en tamaños de escritorio y móvil cuando el cambio afecte a la interfaz.
 
-## 5. Datos, configuración y seguridad
+## 6. Datos, configuración y seguridad
 
 - Nunca incluyas secretos, contraseñas, cookies de sesión ni archivos `.env` en Git, documentación, pruebas o respuestas.
 - `backend/.env.example` solo contiene nombres y valores de ejemplo seguros; actualízalo si se añade una variable necesaria.
@@ -72,7 +89,7 @@ Cada archivo nuevo debe respetar los sufijos `Routes.js`, `Middleware.js`, `Serv
 - `Usuario.ciudad` es texto libre del perfil; el modelo `Ciudad` es el catálogo estructurado usado por las experiencias. No los confundas.
 - Conserva las sesiones, validaciones, permisos de autor y protecciones existentes. El frontend puede ocultar acciones, pero la autorización siempre se comprueba en el backend.
 
-## 6. Desarrollo guiado por pruebas (TDD)
+## 7. Desarrollo guiado por pruebas (TDD)
 
 Para cada comportamiento nuevo o corrección se sigue, siempre que sea aplicable, el ciclo TDD (*Test-Driven Development*, desarrollo guiado por pruebas):
 
@@ -94,7 +111,7 @@ No escribas una prueba que pase desde el principio sin demostrar que detecta la 
 - No cambies una prueba solo para ocultar un fallo. Si cambia un comportamiento acordado, explica por qué deben cambiar tanto el código como su expectativa.
 - Informa del comando ejecutado, el resultado y cualquier parte que no haya podido comprobarse.
 
-## 7. Forma de trabajar con Git
+## 8. Forma de trabajar con Git
 
 - Revisa el estado del repositorio antes de editar y preserva cambios locales ajenos.
 - Realiza cambios pequeños y relacionados con una sola tarea.
@@ -102,7 +119,7 @@ No escribas una prueba que pase desde el principio sin demostrar que detecta la 
 - No incluyas archivos temporales, `node_modules`, `.env`, cookies ni bloqueos creados fuera del paquete al que pertenecen.
 - Los mensajes de commit deben explicar el resultado y, cuando sea útil, mencionar la historia u objetivo correspondiente.
 
-## 8. Registro del uso de IA
+## 9. Registro del uso de IA
 
 La colaboración con IA forma parte de la metodología del equipo y se documenta en `documentacion/prompts/`, con un archivo separado por integrante.
 
@@ -114,7 +131,7 @@ La colaboración con IA forma parte de la metodología del equipo y se documenta
 
 La forma de trabajo y las responsabilidades se describen en `documentacion/metodologia.md`.
 
-## 9. Entrega de una tarea
+## 10. Entrega de una tarea
 
 Al finalizar, comunica de forma breve:
 

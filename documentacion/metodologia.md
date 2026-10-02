@@ -40,6 +40,18 @@ Hasta entonces, cualquier agente debe informar si encuentra diferencias entre el
 
 ## 4. Flujo de una tarea
 
+### 4.0. Inicio de un chat nuevo
+
+Para comenzar una sesión, el integrante puede escribir simplemente **«Ponme en contexto para empezar a trabajar en PlanB»**. `AGENTS.md` indica al agente que siga este orden:
+
+1. Preguntar quién es la persona dentro del equipo.
+2. Consultar su ficha metodológica y su archivo de prompts.
+3. Explicar el estado relevante del proyecto y los pasos de actualización propios de su entorno.
+4. Recordar las precauciones de Git, `.env`, migraciones y TDD.
+5. Preguntar qué historia u objetivo va a trabajar.
+
+Si la ficha de esa persona todavía está incompleta, el agente pregunta primero por su sistema operativo, editor, terminal y agente. Así evita dar comandos de Windows a quien trabaja en macOS o Linux. La identidad solo se pregunta una vez por chat y no se solicita si ya consta claramente en la conversación.
+
 ### 4.1. Preparación humana
 
 El integrante responsable:

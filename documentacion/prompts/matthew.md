@@ -4,6 +4,24 @@ Identificador habitual: MAT / Matthew-PV.
 
 Las interacciones siguientes proceden de la conversación conservada en Codex. Cuando no consta la fecha exacta de la interacción, `2026-10-02` indica la fecha en la que se incorporó al registro, no necesariamente la fecha en que se escribió el prompt original. Se omiten mensajes de cortesía y confirmaciones que no influyeron en el trabajo.
 
+## 2026-10-02 — Configurar la puesta en contexto de chats nuevos
+
+- **Historia u objetivo:** mejorar el inicio de las sesiones de trabajo del equipo.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows.
+- **Contexto aportado:** `AGENTS.md`, metodología por integrante y procedimientos distintos según el entorno.
+- **Prompt inicial:**
+
+  > Me gustaría que al crear un nuevo chat de IA y pedir al agente que me ponga en contexto, me pregunté quién soy y me de los pasos necesarios para empezar a trabajar. ¿Eso es configurable?
+
+- **Correcciones relevantes:** ninguna.
+- **Resultado propuesto por la IA:** añadir a `AGENTS.md` un protocolo activado por peticiones de puesta en contexto, con identificación del integrante, lectura de su ficha y pasos específicos para comenzar.
+- **TDD:** no aplicable; solo cambia documentación e instrucciones para agentes.
+- **Comprensión humana de las pruebas:** no se incorporan pruebas de software.
+- **Intervención humana:** Matthew definió el comportamiento de inicio que necesita en chats nuevos.
+- **Comprobación final:** formato, numeración y enlaces Markdown comprobados.
+- **Resultado en Git:** pendiente.
+
 ## 2026-10-02 — Registrar la implementación de LUC01 y el catálogo inicial de ciudades
 
 - **Historia u objetivo:** LUC01, creación de experiencias; objetivos 1–4 y tarea intermedia de catálogo de ciudades.
