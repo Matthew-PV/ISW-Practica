@@ -22,13 +22,14 @@
       <img id="foto-perfil" src="" alt="Foto de perfil" class="rounded-circle d-none" width="120" height="120">
     </div>
 
-    <form id="form-foto" class="mb-4">
+    <!-- La foto se sube en cuanto se elige (js/perfil.js); no depende de «Guardar cambios» -->
+    <div class="mb-4">
       <label for="foto" class="form-label">Foto de perfil (JPG, PNG o WebP, máximo 5 MB)</label>
-      <input type="file" class="form-control" id="foto" accept="image/jpeg,image/png,image/webp" required>
+      <input type="file" class="form-control" id="foto" accept="image/jpeg,image/png,image/webp">
+      <div id="ayuda-foto" class="form-text">Se guarda en cuanto la eliges.</div>
       <div id="error-foto" class="alert alert-danger d-none mt-2"></div>
       <div id="exito-foto" class="alert alert-success d-none mt-2"></div>
-      <button type="submit" class="btn btn-outline-primary w-100 mt-2">Subir foto</button>
-    </form>
+    </div>
 
     <form id="form-perfil">
       <div class="mb-3">

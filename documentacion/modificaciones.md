@@ -571,7 +571,7 @@ npm test          # 147 pruebas, todas en verde
 npm run dev
 ```
 
-## Experiencias desde la bienvenida, pruebas pendientes y avisos del registro (LUC01, LUC09, FLA05, MAT16) — Implementado (02/10/2026)
+## Experiencias desde la bienvenida, pruebas pendientes, avisos del registro y subida de la foto (LUC01, LUC09, FLA05, MAT16) — Implementado (02/10/2026)
 
 La pantalla de bienvenida muestra ahora las experiencias del usuario en una rejilla. La primera casilla es un «+» grande para crear una experiencia; al guardarla aparece justo detrás del «+». Al pulsar una tarjeta se abre el mismo formulario con sus datos para editarla.
 
@@ -595,6 +595,10 @@ La pantalla de bienvenida muestra ahora las experiencias del usuario en una reji
   - `tests/registroPantalla.test.js` (nuevo) — prueba la pantalla en un navegador simulado (jsdom) con el servidor (`fetch`) y Turnstile simulados: registro correcto, envío en curso sin envíos duplicados, datos inválidos, email y nombre duplicados, CAPTCHA rechazado, fallo de red con reintento y los casos de CAPTCHA no disponible. El registro en el backend ya lo probaban `auth.test.js` y `captcha.test.js`.
   - `backend/package.json` — nueva dependencia de desarrollo `jest-environment-jsdom`. El archivo de pruebas lo activa con el comentario `@jest-environment jsdom` de su cabecera; el resto de pruebas siguen en el entorno de Node.
   - `documentacion/arquitectura.md` y `README.md` — jsdom en la tabla de herramientas y en la sección de pruebas.
+- Foto de perfil (FLA05): ahora se sube en cuanto se elige. Antes solo se subía con el botón «Subir foto»: si se elegía el archivo y se pulsaba «Guardar cambios», la foto no se enviaba y aun así aparecía «Perfil actualizado.». El backend no cambia.
+  - `frontend/perfil.html` — sin el botón «Subir foto»; debajo del campo, la ayuda «Se guarda en cuanto la eliges.».
+  - `frontend/js/perfil.js` — al elegir el archivo (evento `change`) se envía a `PUT /api/perfil/foto`. Mientras se sube, el campo se desactiva y la ayuda dice «Subiendo foto...»; después se vacía el campo, así que volver a elegir el mismo archivo también lo sube.
+  - `tests/perfilPantalla.test.js` (nuevo, jsdom) — al cargar se ve la foto guardada; al elegir una foto se sube sola y se ve la nueva; mientras se sube el campo está desactivado; si el servidor la rechaza se muestra el motivo y se queda la anterior.
 - `customer-stories/Customer_Stories_PlanB.xlsx` — seguimiento actualizado. LUC09: objetivos 6 y 7 hechos y objetivo 8 nuevo (pantalla de edición). LUC01: objetivos 1 a 7 marcados como hechos (ya tenían su tiempo real) y objetivo 8 nuevo (pantalla de creación). FLA05: objetivo 10 hecho. MAT16: objetivos 5, 6 y 7 hechos. Las tareas cerradas hoy llevan 5 min de tiempo estimado. FLA05, LUC01 y MAT16 tienen ahora una columna «Tiempo Estimado (h)» en E, como la que ya tenía LUC09; «Tiempo Real (h)» no se ha movido. LUC09 objetivo 4 sigue pendiente de LUC02.
 
 ### Cómo probarlo
@@ -602,7 +606,7 @@ La pantalla de bienvenida muestra ahora las experiencias del usuario en una reji
 ```bash
 cd backend
 npm install       # instala jest-environment-jsdom
-npm test          # 178 pruebas, todas en verde
+npm test          # 182 pruebas, todas en verde
 npm run dev
 ```
 
@@ -619,6 +623,8 @@ Con curl (sesión iniciada con `-c cookies.txt` en el login):
 curl -b cookies.txt http://localhost:3000/api/experiencias/mias
 curl http://localhost:3000/api/ciudades
 ```
+
+Foto de perfil: en «Mi perfil», elegir una foto. Se sube sola («Subiendo foto...» y después «Foto actualizada.») y se mantiene al recargar.
 
 Registro: en http://localhost:3000/registro.html, con las herramientas del navegador bloquear `challenges.cloudflare.com` (pestaña *Network* → *Block request URL*) y recargar: aparece «No se ha podido cargar el CAPTCHA...». Al enviar el formulario, el botón muestra «Creando cuenta...» hasta que responde el servidor.
 

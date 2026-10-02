@@ -1,4 +1,4 @@
-// Página de mi perfil (perfil.html): muestra y permite editar nombreUsuario y ciudad.
+// Página de mi perfil (perfil.html): muestra y permite editar nombreUsuario, ciudad y foto.
 // Se ejecuta nada más cargar la página. Usa `api` de shared/api.js.
 
 const formulario = document.getElementById('form-perfil');
@@ -60,30 +60,31 @@ formulario.addEventListener('submit', async (e) => {
 
 cargarPerfil();
 
-// Subida de la foto de perfil (formulario aparte, con un archivo en lugar de JSON)
-const formularioFoto = document.getElementById('form-foto');
+// Subida de la foto de perfil: se envía en cuanto se elige el archivo, con su propia petición
+// (un archivo en lugar de JSON). «Guardar cambios» solo guarda el nombre y la ciudad.
+const campoFoto = document.getElementById('foto');
+const ayudaFoto = document.getElementById('ayuda-foto');
+const textoAyudaFoto = ayudaFoto.textContent;
 const cajaErrorFoto = document.getElementById('error-foto');
 const cajaExitoFoto = document.getElementById('exito-foto');
-const botonFoto = formularioFoto.querySelector('button[type="submit"]');
 
-// Al pulsar «Subir foto» se envía el archivo elegido al backend
-formularioFoto.addEventListener('submit', async (e) => {
-  // Evita que el navegador envíe el formulario por su cuenta y recargue la página
-  e.preventDefault();
-  // Se ocultan los mensajes del intento anterior y se desactiva el botón para no enviar dos veces
+campoFoto.addEventListener('change', async () => {
+  // Si se cierra el selector sin elegir nada, no hay nada que subir
+  if (!campoFoto.files.length) return;
+  // Se ocultan los mensajes del intento anterior y se desactiva el campo mientras se sube
   cajaErrorFoto.classList.add('d-none');
   cajaExitoFoto.classList.add('d-none');
-  botonFoto.disabled = true;
+  campoFoto.disabled = true;
+  ayudaFoto.textContent = 'Subiendo foto...';
 
   // FormData = formulario multipart; el backend espera el archivo en el campo `foto`
   const datos = new FormData();
-  datos.append('foto', document.getElementById('foto').files[0]);
+  datos.append('foto', campoFoto.files[0]);
 
   try {
     // El backend valida formato y tamaño, la sube a Cloudinary y devuelve el perfil con la URL nueva
     const perfil = await api('/perfil/foto', { method: 'PUT', body: datos });
     mostrarPerfil(perfil);
-    formularioFoto.reset();
     cajaExitoFoto.textContent = 'Foto actualizada.';
     cajaExitoFoto.classList.remove('d-none');
   } catch (err) {
@@ -91,6 +92,8 @@ formularioFoto.addEventListener('submit', async (e) => {
     cajaErrorFoto.textContent = err.message;
     cajaErrorFoto.classList.remove('d-none');
   }
-  // Se vuelve a habilitar el botón, haya ido bien o mal
-  botonFoto.disabled = false;
+  // Se vacía el campo (así elegir otra vez el mismo archivo también lo sube) y se reactiva
+  campoFoto.value = '';
+  campoFoto.disabled = false;
+  ayudaFoto.textContent = textoAyudaFoto;
 });
