@@ -609,6 +609,7 @@ La pantalla de bienvenida muestra ahora las experiencias del usuario en una reji
   - Hoja «Plantilla», la última: la página vacía de la que salen las nuevas.
 - `documentacion/office-scripts/crearPaginas.ts` (nuevo) — script del botón «Crear páginas» del Excel. Recorre el índice y, a cada fila con título, le pone la siguiente referencia libre si no la tiene, crea su página copiando «Plantilla» (con la referencia y la fecha de hoy) y enlaza el título. Es un Office Script: un programa en TypeScript que Excel para la web ejecuta dentro del libro desde la pestaña «Automatizar». Las fórmulas no pueden crear hojas, por eso este paso necesita el script.
 - `documentacion/metodologia.md` — apartados 3.1 a 3.4 nuevos con la estructura del Excel, el esquema de colores y formatos, cómo añadir historias y objetivos y las precauciones para no romper las fórmulas. La introducción del apartado 3 indica que la reestructuración ya está hecha y que el traslado a OneDrive sigue pendiente.
+- `documentacion/prompts/joaquin.md` — primera entrada del registro: el prompt de la reestructuración del Excel y las respuestas y aclaraciones que la concretaron.
 
 ### Cómo probarlo
 
