@@ -273,7 +273,7 @@ Esta sección debe completarla cada persona en primera persona. No debe describi
 | Integrante | Identificador habitual | Forma de trabajo documentada |
 |---|---|---|
 | Matthew Puente Villegas Michavil | MAT / Matthew-PV | Completada en la sección 6.1 |
-| Flavia Méndez Tsutsumi | FLA / flaviamendez | Pendiente de completar por la integrante |
+| Flavia Méndez Tsutsumi | FLA / flaviamendez | Completada en la sección 6.2 |
 | Jorge Delgado Castellanos | JOR / jorjonudo | Pendiente de completar por el integrante |
 | Lucía Alexandra Guzmán Álvarez | LUC | Pendiente de completar por la integrante |
 | Joaquín de Vicente Abad | JOA | Pendiente de completar por el integrante |
@@ -311,6 +311,36 @@ Limitaciones o precauciones personales:
 **Actualización y entrega.** Antes de empezar sigo el procedimiento de Windows descrito en la sección 4.1. Mantengo el `.env` fuera de Git, reviso las migraciones y dependencias recibidas y ejecuto la batería de pruebas. Al terminar, actualizo la historia de usuario cuando corresponda, añado la interacción relevante a `documentacion/prompts/matthew.md` y preparo un commit comprensible.
 
 **Precauciones personales.** No incorporo secretos ni credenciales al repositorio o a los prompts. Evito aceptar tecnologías o abstracciones que no pueda justificar. Si el agente y la documentación se contradicen, detengo la decisión hasta comprobar el código, las pruebas y el criterio de la historia.
+
+### 6.2. Flavia Méndez Tsutsumi
+
+**Sistema operativo y entorno.** Trabajo en macOS (MacBook Air) con Visual Studio Code. Utilizo la terminal integrada de Visual Studio Code (zsh) y Docker Desktop para la base de datos MySQL. Como agente de IA utilizo Claude Code.
+
+**Uso de los agentes.** Los utilizo para entender el estado del proyecto y el trabajo del resto del equipo, revisar mis tareas, detectar qué no cumple el criterio de validación y preparar los comandos paso a paso. El agente no modifica archivos por su cuenta: me propone los cambios y los comandos, y yo los ejecuto en mi terminal.
+
+**Preparación del contexto.** Pido al agente que revise el repositorio, la documentación y el historial de commits para distinguir mi trabajo del de mis compañeros. Le indico la historia de usuario en la que trabajo y le pido que no modifique trabajo ajeno. Si un cambio afecta a un archivo de otra persona, se lo comunico.
+
+**Revisión y corrección.** Trabajo por pasos: compruebo el resultado de cada cambio con `git diff` antes de continuar y pregunto todo lo que no entiendo, por ejemplo para qué sirve un comando antes de ejecutarlo. Si la propuesta no se ajusta a lo que necesito, la corrijo o la reduzco.
+
+**Pruebas antes de aceptar cambios.** Ejecuto `npm test` desde `backend/` y, cuando cambia una pantalla, la pruebo manualmente en el navegador con casos correctos y de error. Si algo no se ha podido comprobar, lo indico como pendiente.
+
+**Actualización y entrega.** Antes de empezar, ejecuto estos comandos desde la carpeta `ISW-Practica`, en la terminal de Visual Studio Code:
+
+```bash
+git status
+git pull origin main
+docker compose up -d
+cd backend
+npm install
+npx prisma migrate deploy
+npx prisma generate
+npm test
+npm run dev
+```
+
+Para subir mi trabajo, compruebo con `git status` que solo aparecen mis archivos y después ejecuto `git add`, `git commit` con un mensaje que indica la historia de usuario y `git push origin main`. Al terminar, actualizo el Excel de la historia, la entrada correspondiente de `documentacion/modificaciones.md` y mi registro en `documentacion/prompts/flavia.md`.
+
+**Precauciones personales.** No subo mi archivo `.env`, `cookies.txt` ni los archivos temporales `~$` de Excel; cierro Excel antes de hacer un commit. No utilizo `docker compose down -v`, porque borra los datos locales. Antes de `git add -A`, compruebo con `git status` que no se incluye nada ajeno.
 
 ## 7. Reparto de responsabilidades
 
