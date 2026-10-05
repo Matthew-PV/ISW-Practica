@@ -694,11 +694,6 @@ Abrir los enlaces de la sección «Documentación» del `README.md` y comprobar 
 
 Se añade `documentacion/hoja-ruta-aprendizaje.md` y se enlaza desde el README. Organiza dos semanas de aprendizaje con cuatro horas principales por semana y ampliaciones opcionales hasta doce. Incluye fundamentos de programación desde Java, seguimiento de una funcionalidad por las capas, preparación de la revisión, HTTP, seguridad, MySQL, Prisma, pruebas, TDD y un ejercicio de desarrollo frontend con Bootstrap en un archivo personal de práctica. Las actividades se basan en archivos y comandos existentes del proyecto. El prompt que motivó la guía se registra en `documentacion/prompts/matthew.md`.
 
-<<<<<<< HEAD
-# Libro de historias en OneDrive — Documentado (05/10/2026)
-
-`Customer_Stories_PlanB.xlsx` ya tiene su versión oficial en el OneDrive compartido y deja de mantenerse en Git. Cada tarea registra responsable voluntario, tiempo estimado y tiempo real. El integrante facilita una copia actual para consulta y traslada manualmente al libro online las tareas acordadas. Se actualizan `README.md`, `AGENTS.md`, la metodología y `.gitignore` para reflejar este flujo.
-=======
 ## Nuevas historias en el Excel (CS-61 a CS-64) — Documentado (05/10/2026)
 
 `documentacion/customer-stories/Customer_Stories_PlanB.xlsx` se sustituye por la versión más reciente, que añade cuatro historias, todavía sin propietario y en espera:
@@ -707,4 +702,7 @@ Se añade `documentacion/hoja-ruta-aprendizaje.md` y se enlaza desde el README. 
 - CS-62 — Perfil de otro usuario.
 - CS-63 — Pantalla de valoraciones y comentarios.
 - CS-64 — Contraseña segura.
->>>>>>> 1cef900760ce2d8d6ecebf82399d01f066318783
+
+# Libro de historias en OneDrive — Documentado (05/10/2026)
+
+`Customer_Stories_PlanB.xlsx` ya tiene su versión oficial en el OneDrive compartido y deja de mantenerse en Git. Cada tarea registra responsable voluntario, tiempo estimado y tiempo real. El integrante facilita una copia actual para consulta y traslada manualmente al libro online las tareas acordadas. Se actualizan `README.md`, `AGENTS.md`, la metodología y `.gitignore` para reflejar este flujo.

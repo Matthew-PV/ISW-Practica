@@ -19,15 +19,15 @@ Su uso no elimina la responsabilidad del equipo. Cada integrante sigue siendo re
 9. **La seguridad tiene prioridad.** No se comparten secretos, credenciales, cookies, datos personales innecesarios ni archivos `.env` con el agente o en Git.
 10. **El uso de IA se registra con criterio.** Se conservan los prompts que influyen en el resultado, la verificación realizada y las decisiones humanas; no es necesario copiar cada mensaje incidental.
 
-## 3\. Gestión de las historias de usuario
+## 3. Gestión de las historias de usuario
 
-Desde el 05/10/2026, `Customer\_Stories\_PlanB.xlsx` se mantiene en el OneDrive compartido del equipo como única versión oficial. La copia de trabajo se ha retirado del repositorio para evitar versiones divergentes.
+Desde el 05/10/2026, `Customer_Stories_PlanB.xlsx` se mantiene en el OneDrive compartido del equipo como única versión oficial. La copia de trabajo se ha retirado del repositorio para evitar versiones divergentes.
 
-# Cada fila de tarea incluye:
+Cada fila de tarea incluye:
 
-* **Responsable:** integrante que se ofrece voluntariamente para realizarla.
-* **Tiempo estimado:** previsión indicada por ese responsable antes de empezar.
-* **Tiempo total:** tiempo real empleado, completado al terminar.
+- **Responsable:** integrante que se ofrece voluntariamente para realizarla.
+- **Tiempo estimado:** previsión indicada por ese responsable antes de empezar.
+- **Tiempo total:** tiempo real empleado, completado al terminar.
 
 Para trabajar con una historia:
 
