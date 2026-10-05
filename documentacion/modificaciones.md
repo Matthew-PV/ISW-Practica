@@ -693,3 +693,12 @@ Abrir los enlaces de la sección «Documentación» del `README.md` y comprobar 
 # Hoja de ruta de aprendizaje de Matthew — Documentada (02/10/2026)
 
 Se añade `documentacion/hoja-ruta-aprendizaje.md` y se enlaza desde el README. Organiza dos semanas de aprendizaje con cuatro horas principales por semana y ampliaciones opcionales hasta doce. Incluye fundamentos de programación desde Java, seguimiento de una funcionalidad por las capas, preparación de la revisión, HTTP, seguridad, MySQL, Prisma, pruebas, TDD y un ejercicio de desarrollo frontend con Bootstrap en un archivo personal de práctica. Las actividades se basan en archivos y comandos existentes del proyecto. El prompt que motivó la guía se registra en `documentacion/prompts/matthew.md`.
+
+## Nuevas historias en el Excel (CS-61 a CS-64) — Documentado (05/10/2026)
+
+`documentacion/customer-stories/Customer_Stories_PlanB.xlsx` se sustituye por la versión más reciente, que añade cuatro historias, todavía sin propietario y en espera:
+
+- CS-61 — Amistades y seguidores.
+- CS-62 — Perfil de otro usuario.
+- CS-63 — Pantalla de valoraciones y comentarios.
+- CS-64 — Contraseña segura.
