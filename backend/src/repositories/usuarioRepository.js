@@ -31,6 +31,20 @@ async function buscarPorId(id) {
   return prisma.usuario.findUnique({ where: { id } });
 }
 
+// Busca como máximo 20 usuarios cuyo nombre contiene el texto indicado. La
+// intercalación utf8mb4_unicode_ci de MySQL no distingue mayúsculas y minúsculas.
+// Solo selecciona campos seguros para que la búsqueda nunca devuelva emails.
+async function buscarPorNombre(texto, usuarioExcluidoId) {
+  return prisma.usuario.findMany({
+    where: {
+      nombreUsuario: { contains: texto },
+      id: { not: usuarioExcluidoId },
+    },
+    select: { id: true, nombreUsuario: true, foto: true },
+    take: 20,
+  });
+}
+
 // Devuelve solo los campos seguros de mostrar (nunca la contraseña).
 async function obtenerPerfil(id) {
   return prisma.usuario.findUnique({
@@ -58,4 +72,4 @@ async function actualizarFoto(id, foto) {
   });
 }
 
-module.exports = { crear, buscarPorEmail, buscarPorId, obtenerPerfil, actualizarPerfil, actualizarFoto };
+module.exports = { crear, buscarPorEmail, buscarPorId, buscarPorNombre, obtenerPerfil, actualizarPerfil, actualizarFoto };

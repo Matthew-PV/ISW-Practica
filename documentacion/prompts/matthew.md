@@ -26,6 +26,24 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
+## 2026-10-05 — Implementar la búsqueda de usuarios de CS-61
+
+- **Historia u objetivo:** CS-61, objetivo 5: buscar usuarios por texto en `usuarioRepository`, con coincidencia contenida, máximo 20 resultados y sin exponer el email.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell, Jest, Prisma y MySQL.
+- **Contexto aportado:** Matthew indicó continuar con el objetivo 5 de CS-61 siguiendo el mismo proceso y registro automático de los objetivos anteriores.
+- **Prompt inicial:**
+
+  > Perfecto, ahora pasaremos al objetivo 5, de igual manera que los anteriores.
+
+- **Resultado propuesto por la IA:** añadir `buscarPorNombre` a `usuarioRepository`, con filtro de nombre contenido, exclusión del usuario solicitante, límite de 20 resultados y selección exclusiva de id, nombre de usuario y foto.
+- **Decisiones y alcance:** MySQL usa la intercalación `utf8mb4_unicode_ci`, por lo que la búsqueda no distingue mayúsculas y minúsculas sin introducir operadores específicos de otro motor. No se añadieron ruta, servicio ni pantalla.
+- **TDD:** primero se añadió una prueba con Prisma simulado; falló porque la función no existía. Tras añadir la consulta mínima, pasó. No fue necesaria una refactorización adicional.
+- **Comprensión humana de las pruebas:** la prueba simula una búsqueda y comprueba que Prisma recibe el texto contenido, la exclusión de la propia persona, el límite de 20 y solo los campos seguros, sin email.
+- **Intervención humana:** Matthew delimitó la tarea al objetivo 5 y autorizó mantener el mismo flujo de registro automático.
+- **Comprobación final:** `npm test -- --runInBand tests/usuarioBusquedaRepository.test.js` completó una prueba correcta; la batería completa terminó con 22 suites y 194 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
 ## 2026-10-05 — Implementar el repositorio de seguimiento de CS-61
 
 - **Historia u objetivo:** CS-61, objetivo 4: `seguimientoRepository` para seguir, dejar de seguir y comprobar si una persona sigue a otra.
