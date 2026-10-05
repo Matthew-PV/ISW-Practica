@@ -47,7 +47,7 @@ Toda la documentación detallada vive en [`documentacion/`](documentacion/):
 * [Registro de prompts](documentacion/prompts/README.md) — índice, plantilla y un archivo por integrante para las interacciones con IA que hayan influido en el proyecto.
 * [Hoja de ruta de aprendizaje](documentacion/hoja-ruta-aprendizaje.md) — plan de dos semanas con ejercicios para comprender la arquitectura, las herramientas y el frontend con Bootstrap.
 
-Las historias de usuario del equipo están actualmente en [`customer-stories/`](customer-stories/). El equipo tiene pendiente reestructurar el Excel y trasladarlo a OneDrive para trabajar sobre una versión sincronizada. Hasta que se publique aquí el enlace y la fecha de migración, el archivo del repositorio sigue siendo la referencia disponible.
+Desde el 05/10/2026, el libro oficial de historias de usuario está en el OneDrive compartido del equipo y ya no se conserva una copia activa en el repositorio. Para cada sesión, el integrante responsable facilita una copia actualizada para consulta y traslada manualmente al libro online las tareas acordadas. Cada tarea registra su responsable voluntario, su tiempo estimado y su tiempo real de desarrollo.
 
 Las instrucciones comunes para los agentes que colaboren en el repositorio están en [`AGENTS.md`](AGENTS.md).
 
@@ -57,7 +57,7 @@ Las instrucciones comunes para los agentes que colaboren en el repositorio está
 * `frontend/` — páginas HTML, CSS y JavaScript con Bootstrap.
 * `docker-compose.yml` — MySQL para desarrollo local.
 * `documentacion/` — documentación del proyecto (propuesta, arquitectura, modificaciones, metodología y registro de prompts).
-* `customer-stories/` — historias de usuario del equipo, en formato hoja de cálculo (una hoja por historia) y los documentos individuales de partida de cada miembro.
+* `customer-stories/` — documentos individuales e históricos de partida; el libro central de historias se mantiene únicamente en OneDrive.
 
 ## Licencia
 

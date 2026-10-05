@@ -21,22 +21,22 @@ Su uso no elimina la responsabilidad del equipo. Cada integrante sigue siendo re
 
 ## 3. Gestión de las historias de usuario
 
-El equipo externalizará `customer-stories/Customer_Stories_PlanB.xlsx` a OneDrive y reestructurará el libro para que todos trabajen sobre una versión única y sincronizada en tiempo real.
+Desde el 05/10/2026, `Customer_Stories_PlanB.xlsx` se mantiene en el OneDrive compartido del equipo como única versión oficial. La copia de trabajo se ha retirado del repositorio para evitar versiones divergentes.
 
-Este cambio está **pendiente**. Mientras no se complete:
+Cada fila de tarea incluye:
 
-- el Excel del repositorio sigue siendo la referencia disponible;
-- no se debe borrar, ignorar ni declarar obsoleto todavía;
-- no se deben mantener dos versiones activas con cambios diferentes.
+- **Responsable:** integrante que se ofrece voluntariamente para realizarla.
+- **Tiempo estimado:** previsión indicada por ese responsable antes de empezar.
+- **Tiempo total:** tiempo real empleado, completado al terminar.
 
-Cuando se complete la migración, el equipo debe:
+Para trabajar con una historia:
 
-1. Añadir en el README el enlace de OneDrive y la fecha desde la que esa versión es la oficial.
-2. Decidir si el Excel del repositorio se elimina o se conserva como una copia histórica claramente fechada y de solo lectura.
-3. Actualizar `.gitignore` si fuese necesario para evitar que vuelva a añadirse una copia de trabajo.
-4. Actualizar `AGENTS.md` y esta metodología para indicar que los criterios se consultan en OneDrive.
+1. El integrante facilita una copia actualizada del libro al agente cuando necesite consultarla.
+2. La copia se usa como referencia de solo lectura, salvo petición expresa de editarla.
+3. El integrante traslada manualmente al libro online las tareas o cambios acordados.
+4. No se guarda ni se vuelve a añadir a Git una copia activa del libro.
 
-Hasta entonces, cualquier agente debe informar si encuentra diferencias entre el Excel local y la descripción de una tarea recibida del equipo.
+Si la copia facilitada, el código y la documentación se contradicen, se informa de la diferencia antes de decidir qué actualizar. Una copia conservada de una sesión anterior no se considera vigente.
 
 ## 4. Flujo de una tarea
 
@@ -57,13 +57,15 @@ Si la ficha de esa persona todavía está incompleta, el agente pregunta primero
 El integrante responsable:
 
 1. Actualiza su copia del repositorio siguiendo el procedimiento de su entorno y comprueba que no tiene cambios ajenos sin guardar.
-2. Selecciona una tarea concreta de `customer-stories/Customer_Stories_PlanB.xlsx`.
+2. Selecciona una tarea concreta en el libro oficial de OneDrive y, si el agente debe consultarla, le facilita una copia actualizada.
 3. Lee sus criterios de validación y localiza las capas que probablemente se verán afectadas.
 4. Explica al agente el objetivo, las restricciones y el estado conocido. Si la tarea parte de trabajo de otra persona, lo indica expresamente.
 
 #### Procedimiento actual de Matthew en Windows
 
 Matthew trabaja actualmente con la aplicación Codex de ChatGPT y prevé usar también un agente integrado en Visual Studio. Mantendrá Codex para consultas, documentación y tareas sencillas o que no requieran modificar código.
+
+Cuando planifique historias de usuario con un agente, Matthew le pasa una copia actual del libro, revisa las tareas propuestas una a una y las copia manualmente a la versión online. Esa copia no se incorpora al repositorio.
 
 Desde PowerShell o la terminal integrada de Visual Studio:
 

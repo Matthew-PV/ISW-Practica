@@ -4,6 +4,24 @@ Identificador habitual: MAT / Matthew-PV.
 
 Las interacciones siguientes proceden de la conversación conservada en Codex. Cuando no consta la fecha exacta de la interacción, `2026-10-02` indica la fecha en la que se incorporó al registro, no necesariamente la fecha en que se escribió el prompt original. Se omiten mensajes de cortesía y confirmaciones que no influyeron en el trabajo.
 
+## 2026-10-05 — Externalizar el libro y planificar nuevas historias
+
+- **Historia u objetivo:** actualizar la gestión de historias y preparar, una a una, CS-22, CS-61, CS-45, CS-62, CS-01, CS-63 y CS-48.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, repositorio local y copia actual del libro compartido en OneDrive.
+- **Contexto aportado:** el Excel ya no forma parte del repositorio; su versión online es la oficial y cada tarea incorpora responsable voluntario, tiempo estimado por esa persona y tiempo real.
+- **Prompt inicial:**
+
+  > Ya hemos externalizado el Excel y lo hemos sacado del repositorio. Además, hemos cambiado su formato para incluir propietario, tiempo estimado y tiempo real por cada tarea. A partir de ahora trabajaré con la versión online, pasándote una copia cada vez que trabajemos. Refleja estos cambios en mi documentación. Después, lista de una en una las tareas de CS-22, CS-61, CS-45, CS-62, CS-01, CS-63 y CS-48 para copiarlas manualmente al Excel remoto.
+
+- **Restricciones relevantes:** CS-22 se limita al campo y selector de visibilidad; CS-62 incluirá el listado de CS-44; CS-01 excluye avisos y valoración media; CS-63 excluye «Útil» y reportes.
+- **Resultado propuesto por la IA:** actualizar la documentación y la protección de Git, consultar la copia sin modificarla y comenzar la planificación únicamente por CS-22.
+- **TDD:** no aplicable a esta actualización documental y de planificación. La implementación posterior de cada tarea deberá comenzar por una prueba que falle.
+- **Comprensión humana de las pruebas:** no se incorporan pruebas de software en esta sesión de planificación.
+- **Intervención humana:** Matthew decidió mantener la edición del libro en manos del equipo, aportar una copia vigente en cada sesión y revisar las tareas de cada historia antes de pasar a la siguiente.
+- **Comprobación final:** estructura y criterios de CS-22 consultados en la copia sin modificarla; documentación contrastada con el estado del repositorio.
+- **Resultado en Git:** pendiente.
+
 ## 2026-10-02 — Planificar el aprendizaje de PlanB y Bootstrap
 
 - **Historia u objetivo:** comprender y explicar las herramientas de PlanB y preparar la próxima revisión.

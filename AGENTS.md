@@ -47,7 +47,7 @@ Consulta únicamente la documentación necesaria para la tarea y usa este orden 
 
 `README.md` resume el estado actual y la puesta en marcha. Si la documentación, las historias y el código se contradicen, indícalo antes de decidir cuál actualizar. Distingue siempre entre funcionalidad implementada, trabajo pendiente y diseño futuro.
 
-El equipo está preparando el traslado de `Customer_Stories_PlanB.xlsx` a OneDrive para disponer de una única versión sincronizada. Hasta que el README indique que la migración ha terminado y contenga el enlace acordado, el archivo del repositorio sigue siendo la referencia disponible. Después del traslado, consulta la versión de OneDrive indicada por el equipo y no des por actualizada la copia antigua del repositorio.
+Desde el 05/10/2026, `Customer_Stories_PlanB.xlsx` se mantiene únicamente en el OneDrive compartido del equipo y su copia antigua se ha retirado del repositorio. Para cada trabajo, consulta la copia actualizada que facilite el integrante responsable y no la añadas a Git. Las filas de tareas registran descripción, estado, responsable voluntario, tiempo estimado por esa persona y tiempo total empleado. Si no se dispone de una copia actual, no reconstruyas los criterios desde documentos antiguos: solicita la versión vigente al integrante.
 
 ## 4. Arquitectura obligatoria
 
