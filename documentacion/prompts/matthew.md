@@ -26,6 +26,24 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
+## 2026-10-05 — Implementar el envío de solicitudes de amistad de CS-61
+
+- **Historia u objetivo:** CS-61, objetivo 6: servicio para enviar una solicitud solo a un usuario existente, distinto de la persona solicitante y sin relación pendiente o aceptada previa en ningún sentido.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell y Jest.
+- **Contexto aportado:** Matthew pidió continuar con el objetivo 6 de CS-61 y, al terminar, actualizar tanto el registro de prompts como el registro resumido de modificaciones.
+- **Prompt inicial:**
+
+  > Ahora pasemos con el objetivo 6. Una vez lo termines y registres el prompt, me gustaría que modificaras el documento de modificaciones con los cambios del repositorio desde la última vez que se actualizo ese documento, incluyendo esta conversación.
+
+- **Resultado propuesto por la IA:** crear `amistadService.enviarSolicitud`, que comprueba la sesión, la existencia del destinatario, que no sea la misma persona y que no exista una relación pendiente o aceptada en ninguno de los sentidos antes de delegar la creación al repositorio.
+- **Decisiones y alcance:** el servicio contiene las reglas de negocio y el repositorio conserva el acceso a Prisma. No se añadieron rutas ni interfaz. Las solicitudes o amistades ya existentes se rechazan con error 400 y un destinatario inexistente con 404.
+- **TDD:** primero se escribió una prueba con repositorios simulados; falló porque el servicio no existía. Tras implementar la validación mínima, las seis pruebas específicas pasaron. No fue necesaria una refactorización adicional.
+- **Comprensión humana de las pruebas:** la preparación simula usuarios y una relación previa; la acción intenta enviar la solicitud; el resultado esperado es crearla solo en el caso válido y rechazarla sin guardar en los demás casos.
+- **Intervención humana:** Matthew delimitó el objetivo y autorizó el registro automático y la posterior actualización resumida de modificaciones.
+- **Comprobación final:** `npm test -- --runInBand tests/amistadService.test.js` completó 6 pruebas correctas; la batería completa terminó con 23 suites y 200 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
 ## 2026-10-05 — Implementar la búsqueda de usuarios de CS-61
 
 - **Historia u objetivo:** CS-61, objetivo 5: buscar usuarios por texto en `usuarioRepository`, con coincidencia contenida, máximo 20 resultados y sin exponer el email.

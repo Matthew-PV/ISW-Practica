@@ -2,6 +2,33 @@
 
 Registro de los cambios realizados en el proyecto, en orden cronológico.
 
+# CS-61: base de amistades y seguidores — En progreso (05/10/2026)
+
+Se ha completado la base de datos y la lógica inicial de amistades y seguimientos. La historia no está terminada: faltan las rutas, la interfaz y los objetivos de aceptación, rechazo y eliminación.
+
+### Cambios realizados
+
+- **Datos:** nuevos modelos `Amistad` y `Seguimiento`, con sus migraciones de Prisma. Las relaciones guardan quién inicia cada acción, la fecha y las claves foráneas a Usuario. Las restricciones únicas impiden repetir la misma solicitud o seguimiento.
+- **Repositorios:** `amistadRepository` crea, busca en ambos sentidos, acepta, borra y lista solicitudes pendientes recibidas. `seguimientoRepository` permite seguir, dejar de seguir y comprobar un seguimiento. La búsqueda de usuarios en `usuarioRepository` encuentra nombres que contienen el texto, excluye a quien busca, limita a 20 resultados y no devuelve emails.
+- **Servicio de amistad:** `enviarSolicitud` comprueba que la sesión y el destinatario existen, impide enviarse una solicitud a uno mismo y rechaza cualquier solicitud o amistad previa en ambos sentidos antes de guardar.
+- **Pruebas:** se añadieron pruebas de esquema, repositorios, búsqueda y servicio siguiendo el ciclo rojo-verde. La batería actual tiene 200 pruebas en 23 suites, todas correctas.
+- **Registro de IA:** `documentacion/prompts/matthew.md` incorpora las entradas de los objetivos 1 a 6 de CS-61.
+
+### Para quien continúe
+
+- En otra copia del repositorio, aplicar las migraciones desde `backend/` con `npx prisma migrate deploy` y después ejecutar `npx prisma generate`.
+- La restricción de solicitud inversa se valida en el servicio. Mantener esa comprobación al añadir rutas para que no se creen relaciones duplicadas entre las mismas personas.
+- Las funciones nuevas todavía no se exponen por HTTP ni tienen pantalla; los siguientes objetivos deben conservar la separación rutas → servicios → repositorios.
+
+### Cómo comprobarlo
+
+```powershell
+cd backend
+npm test
+```
+
+Resultado esperado: 23 suites y 200 pruebas correctas.
+
 
 
 ## Arquitectura y estructura base — Implementado (25/09/2026)
