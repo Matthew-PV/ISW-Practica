@@ -4,6 +4,56 @@ Identificador habitual: MAT / Matthew-PV.
 
 Las interacciones siguientes proceden de la conversación conservada en Codex. Cuando no consta la fecha exacta de la interacción, `2026-10-02` indica la fecha en la que se incorporó al registro, no necesariamente la fecha en que se escribió el prompt original. Se omiten mensajes de cortesía y confirmaciones que no influyeron en el trabajo.
 
+## 2026-10-05 — Completar la planificación y resolver dependencias entre historias
+
+- **Historia u objetivo:** definir las tareas de CS-45, CS-01 y CS-48; revisar las dependencias de CS-22, CS-61, CS-45, CS-62, CS-01, CS-63 y CS-48; y preparar el control de acceso de CS-30.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, repositorio local y copia vigente de `Customer_Stories_PlanB.xlsx` facilitada desde OneDrive.
+- **Contexto aportado:** CS-22 y CS-61 ya tenían sus tareas; CS-62 debía incorporar el listado de CS-44; CS-01 no incluiría avisos ni valoración media; y CS-63 no incluiría «Útil» ni reportes.
+- **Prompt inicial:**
+
+  > Están hechas la 22 y la 61. Pasemos a la 45.
+
+- **Correcciones relevantes:**
+
+  > Ahora hagamos las tareas de la CS-01. Te adjunto una copia local del Excel para ser más ágiles.
+
+  > Ya están todas las CS de la lista definidas, excepto CS-48. Definamos sus tareas.
+
+  > Revisemos dependencias de toda la lista que te he compartido antes.
+
+  > Plantéame dos opciones. Una en la que no definamos las dependencias externas (CS-44 y CS-02) y avancemos sin ellas; y otra en la que incluyamos CS-44 y CS-02 dentro de la planificación de esta semana (junto con las dependencias de estas). Para ello te adjunto la última copia del Excel.
+
+  > Haremos la opción 1, no tenemos tiempo suficiente para la 2. Ayúdame a asignarle tareas a CS-30.
+
+  > Por favor, recoge todo lo hablado hoy en mi registro de prompts. Mantendré este chat para la creación de nuevas tareas de CS y resolución de dependencias, y crearé un chat nuevo únicamente para el desarrollo de tareas. ¿Algún contexto que deba darle al nuevo chat?
+
+- **Resultado propuesto por la IA:** definir tareas pequeñas y ordenadas para las historias pendientes, construir el mapa de dependencias y comparar una planificación parcial con otra que añadía CS-44 y CS-02. Tras la decisión de Matthew, se mantuvo la opción reducida y se propusieron diez tareas para CS-30, centradas en una comprobación compartida de visibilidad y amistad que puedan reutilizar CS-01 y CS-48.
+- **Decisiones y alcance:** CS-62 y CS-63 podrán avanzar, pero no se considerarán completas mientras falten CS-44 y CS-02. CS-30 reutilizará CS-22 y CS-61, no añadirá modelos propios y deberá ocultar por igual las experiencias inexistentes y aquellas que el solicitante no pueda consultar. Este chat se conservará para planificación y dependencias; la implementación se realizará en chats separados y acotados por tarea.
+- **TDD:** no aplicable a la planificación. Para CS-30 se acordó comenzar por pruebas que cubran autor, visibilidad pública, privada y para amigos, solicitud pendiente, amistad aceptada o eliminada y seguimiento sin amistad.
+- **Comprensión humana de las pruebas:** la preparación crea una experiencia, su autor, otro usuario y distintos estados de relación; la acción consulta la experiencia; el resultado esperado es devolverla solo cuando la visibilidad y la relación actuales lo permitan, sin filtrar datos en los demás casos.
+- **Intervención humana:** Matthew decidió no ampliar la semana con CS-44 y CS-02 por falta de tiempo, aceptó que CS-62 y CS-63 queden parciales y separó la conversación de planificación de las futuras conversaciones de desarrollo.
+- **Comprobación final:** criterios y tareas contrastados con la copia vigente del Excel, utilizada únicamente en modo de lectura. No se modificó código ni se ejecutaron pruebas de software.
+- **Resultado en Git:** pendiente.
+
+## 2026-10-05 — Recuperar la documentación de trabajo del equipo
+
+- **Historia u objetivo:** restaurar la documentación metodológica que se había perdido al volver accidentalmente a una versión anterior.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows y repositorio local.
+- **Contexto aportado:** cambios acordados previamente sobre el libro oficial en OneDrive, la metodología por integrante, las instrucciones comunes, el registro de modificaciones y los registros de prompts.
+- **Prompt inicial:**
+
+  > Sin querer he vuelto a una versión anterior de la documentación. ¿Puedes volver a modificar el README, la metodología, las instrucciones comunes, el registro de modificaciones y el registro de prompts con lo que habías modificado antes?
+
+- **Correcciones relevantes:** ninguna.
+- **Resultado propuesto por la IA:** recuperar en `README.md`, `AGENTS.md` y `documentacion/` las reglas acordadas sobre el Excel externo, las nuevas columnas por tarea, la puesta en contexto de los integrantes, TDD, seguridad y registro del uso de IA.
+- **TDD:** no aplicable; fue una recuperación documental.
+- **Comprensión humana de las pruebas:** no se incorporaron pruebas de software.
+- **Intervención humana:** Matthew detectó la pérdida y pidió reconstruir únicamente los cambios documentales previamente acordados.
+- **Comprobación final:** documentación revisada contra las decisiones conservadas en la conversación; sin cambios de código de aplicación.
+- **Resultado en Git:** pendiente.
+
 ## 2026-10-05 — Externalizar el libro y planificar nuevas historias
 
 - **Historia u objetivo:** actualizar la gestión de historias y preparar, una a una, CS-22, CS-61, CS-45, CS-62, CS-01, CS-63 y CS-48.

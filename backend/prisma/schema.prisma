@@ -17,14 +17,16 @@ datasource db {
 // - foto: URL de la foto en Cloudinary; null mientras no suba ninguna.
 // - ciudad: texto libre del perfil, distinto del catálogo Ciudad de las experiencias.
 model Usuario {
-  id            Int      @id @default(autoincrement())
-  nombreUsuario String   @unique
-  email         String   @unique
-  passwordHash  String
-  foto          String?
-  ciudad        String?
-  creadoEn      DateTime @default(now())
-  experiencias  Experiencia[]
+  id                   Int           @id @default(autoincrement())
+  nombreUsuario        String        @unique
+  email                String        @unique
+  passwordHash         String
+  foto                 String?
+  ciudad               String?
+  creadoEn             DateTime      @default(now())
+  experiencias         Experiencia[]
+  solicitudesEnviadas  Amistad[]     @relation("Solicitante")
+  solicitudesRecibidas Amistad[]     @relation("Destinatario")
 }
 
 // Una ciudad puede tener varias experiencias. El nombre no es único:
@@ -42,11 +44,11 @@ model Ciudad {
 
 // Cada experiencia pertenece obligatoriamente a una única ciudad existente.
 model Experiencia {
-  id              Int     @id @default(autoincrement())
+  id              Int      @id @default(autoincrement())
   titulo          String
-  descripcion     String  @db.Text
+  descripcion     String   @db.Text
   ciudadId        Int
-  ciudad          Ciudad  @relation(fields: [ciudadId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  ciudad          Ciudad   @relation(fields: [ciudadId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   tipo            String?
   momentoAdecuado String?
   // Solo nullable para conservar experiencias anteriores sin autor conocido.
@@ -56,6 +58,29 @@ model Experiencia {
 
   @@index([ciudadId])
   @@index([autorId])
+}
+
+// Una solicitud de amistad identifica quién la envía y quién la recibe.
+// El servicio comprobará también la dirección inversa antes de crearla, para que
+// dos usuarios no puedan tener dos solicitudes entre sí.
+enum EstadoAmistad {
+  PENDIENTE
+  ACEPTADA
+}
+
+model Amistad {
+  id             Int           @id @default(autoincrement())
+  solicitanteId  Int
+  destinatarioId Int
+  estado         EstadoAmistad @default(PENDIENTE)
+  fecha          DateTime      @default(now())
+  solicitante    Usuario       @relation("Solicitante", fields: [solicitanteId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  destinatario   Usuario       @relation("Destinatario", fields: [destinatarioId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  // Evita repetir exactamente la misma solicitud. La relación inversa se valida
+  // en el servicio cuando se implemente el envío de solicitudes.
+  @@unique([solicitanteId, destinatarioId])
+  @@index([destinatarioId])
 }
 
 // Sesiones de express-session, guardadas por @quixo3/prisma-session-store
