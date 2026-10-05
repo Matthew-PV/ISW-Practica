@@ -571,7 +571,7 @@ npm test          # 147 pruebas, todas en verde
 npm run dev
 ```
 
-## Experiencias desde la bienvenida, pruebas pendientes, avisos del registro y subida de la foto (LUC01, LUC09, FLA05, MAT16) — Implementado (02/10/2026)
+## Experiencias desde la bienvenida, pruebas pendientes, avisos del registro, subida de la foto y nuevo formato del Excel de historias (LUC01, LUC09, FLA05, MAT16) — Implementado (02/10/2026)
 
 La pantalla de bienvenida muestra ahora las experiencias del usuario en una rejilla. La primera casilla es un «+» grande para crear una experiencia; al guardarla aparece justo detrás del «+». Al pulsar una tarjeta se abre el mismo formulario con sus datos para editarla.
 
@@ -600,6 +600,16 @@ La pantalla de bienvenida muestra ahora las experiencias del usuario en una reji
   - `frontend/js/perfil.js` — al elegir el archivo (evento `change`) se envía a `PUT /api/perfil/foto`. Mientras se sube, el campo se desactiva y la ayuda dice «Subiendo foto...»; después se vacía el campo, así que volver a elegir el mismo archivo también lo sube.
   - `tests/perfilPantalla.test.js` (nuevo, jsdom) — al cargar se ve la foto guardada; al elegir una foto se sube sola y se ve la nueva; mientras se sube el campo está desactivado; si el servidor la rechaza se muestra el motivo y se queda la anterior.
 - `customer-stories/Customer_Stories_PlanB.xlsx` — seguimiento actualizado. LUC09: objetivos 6 y 7 hechos y objetivo 8 nuevo (pantalla de edición). LUC01: objetivos 1 a 7 marcados como hechos (ya tenían su tiempo real) y objetivo 8 nuevo (pantalla de creación). FLA05: objetivo 10 hecho. MAT16: objetivos 5, 6 y 7 hechos. Las tareas cerradas hoy llevan 5 min de tiempo estimado. FLA05, LUC01 y MAT16 tienen ahora una columna «Tiempo Estimado (h)» en E, como la que ya tenía LUC09; «Tiempo Real (h)» no se ha movido. LUC09 objetivo 4 sigue pendiente de LUC02.
+- Excel de customer stories con formato nuevo (`customer-stories/Customer_Stories_PlanB.xlsx`), preparado para usarse en Excel para la web desde OneDrive:
+  - Referencias: todas las stories se llaman ahora `CS-XX`, numeradas desde `CS-01` en el orden que tenía el índice (JOA01–21 → CS-01–21, MAT01–15 → CS-22–36, JOR01–06 → CS-37–42, FLA01–06 → CS-43–48, LUC01–10 → CS-49–58, MAT16 → CS-59 y US60 → CS-60). Cada página se llama igual que su referencia, y las menciones dentro de los textos (HJ-07, FLA05...) usan ya la referencia nueva.
+  - Índice: es una tabla de Excel («Historias») con Ref, Título (enlace a su página), Riesgo, Prioridad, Tiempo estimado, Tiempo total y Estado, sin la numeración ni la columna Propietario. Riesgo y Prioridad tienen desplegable y color (Prioridad: I = la más importante, N = media, M = poco importante). Tiempo estimado se escribe a mano, en horas.
+  - Tiempo total y Estado se calculan solos a partir de los objetivos de cada página. Tiempo total es la suma de sus tiempos totales, en horas. Estado vale «En espera» si nadie ha cogido ningún objetivo, «En progreso» en cuanto un objetivo tiene responsable o está terminado, «Finalizada» cuando todos están en «Sí» y «Sin página» si la fila aún no tiene página. Las filas en progreso se resaltan en amarillo y negrita, y las finalizadas en gris. Cada columna tiene su filtro.
+  - Páginas: arriba, los datos de la story (Ref, Título, Estado, Prioridad, Riesgo, Tiempo estimado, Tiempo total, Propietario, Fecha, Prior Reference, Task Description y Criterio de Validación); las celdas grises se rellenan solas desde el índice. Abajo, la tabla de objetivos: Objetivo (número automático), Descripción, Finalizado (Sí en verde, No en rojo), Responsable (desplegable con el equipo, admite otros nombres), Tiempo estimado y Tiempo total, los dos en minutos. La columna de notas desaparece.
+  - Objetivos migrados de FLA05, LUC01, LUC09, MAT16 y US60: «Y» y «Hecho» pasan a «Sí» y los tiempos a minutos («30 min» → 30; los números sueltos estaban en horas, así que 0,5 → 30). En LUC01 (CS-49) el antiguo «Objetivo 4.1» pasa a ser el 5 y los siguientes suben uno. El objetivo 4 de LUC09 (CS-57), que estaba sin marcar, queda en «No». Riesgo unificado: «Baja» y «Alta» pasan a «Bajo» y «Alto».
+  - Hoja «Plantilla», la última: la página vacía de la que salen las nuevas.
+- `documentacion/office-scripts/crearPaginas.ts` (nuevo) — script del botón «Crear páginas» del Excel. Recorre el índice y, a cada fila con título, le pone la siguiente referencia libre si no la tiene, crea su página copiando «Plantilla» (con la referencia y la fecha de hoy) y enlaza el título. Es un Office Script: un programa en TypeScript que Excel para la web ejecuta dentro del libro desde la pestaña «Automatizar». Las fórmulas no pueden crear hojas, por eso este paso necesita el script.
+- `documentacion/metodologia.md` — apartados 3.1 a 3.4 nuevos con la estructura del Excel, el esquema de colores y formatos, cómo añadir historias y objetivos y las precauciones para no romper las fórmulas. La introducción del apartado 3 indica que la reestructuración ya está hecha y que el traslado a OneDrive sigue pendiente.
+- `documentacion/prompts/joaquin.md` — primera entrada del registro: el prompt de la reestructuración del Excel y las respuestas y aclaraciones que la concretaron.
 
 ### Cómo probarlo
 
@@ -628,12 +638,24 @@ Foto de perfil: en «Mi perfil», elegir una foto. Se sube sola («Subiendo foto
 
 Registro: en http://localhost:3000/registro.html, con las herramientas del navegador bloquear `challenges.cloudflare.com` (pestaña *Network* → *Block request URL*) y recargar: aparece «No se ha podido cargar el CAPTCHA...». Al enviar el formulario, el botón muestra «Creando cuenta...» hasta que responde el servidor.
 
+Excel de customer stories, en Excel de escritorio o para la web:
+
+1. En una página, poner un responsable en un objetivo sin terminar: en el índice la story pasa a «En progreso» y su fila se resalta. Con todos los objetivos en «Sí», pasa a «Finalizada».
+2. Escribir una descripción en la fila vacía de debajo de la tabla de objetivos: la tabla crece, el número del objetivo aparece solo y su tiempo total se suma en la cabecera y en el índice.
+3. Escribir un título en la fila vacía de debajo del índice: su estado es «Sin página». Con el botón instalado, pulsar «Crear páginas»: la fila recibe la referencia de «Próxima ref.» (arriba a la derecha) y aparece su página.
+
 ### Para quien siga trabajando en esto
 
 - La política de contenido de helmet solo deja cargar scripts propios, así que el JavaScript de Bootstrap (modales, desplegables...) no está disponible. El formulario usa el elemento `<dialog>` del navegador con `showModal()`.
 - Las tarjetas se construyen con `textContent`, nunca metiendo el texto del usuario como HTML. Mantenerlo así en las tarjetas nuevas.
 - `GET /api/experiencias/mias` sirve también para FLA02 (mis experiencias publicadas en el perfil).
 - Las pruebas de pantallas cargan el HTML y los scripts de `frontend/` tal cual (ver la cabecera de `tests/registroPantalla.test.js`). Para probar otra pantalla, copiar ese esquema: `@jest-environment jsdom`, `fetch` simulado y el HTML cargado en `beforeEach`. Turnstile real no se puede automatizar (Cloudflare rechaza los navegadores automatizados), así que en las pruebas siempre va simulado.
+- Botón «Crear páginas» del Excel: se instala una vez, con el libro ya en OneDrive y abierto en Excel para la web. Automatizar → Nuevo script → pegar `documentacion/office-scripts/crearPaginas.ts` → guardar como «Crear páginas» → en el panel del script, «…» → «Agregar en el libro». El botón queda en el libro para todos los que pueden editarlo. Necesita una cuenta de Microsoft 365 con Office Scripts: si no aparece la pestaña «Automatizar», no están disponibles.
+- Sin el botón, una página nueva se crea a mano: clic derecho en «Plantilla» → Duplicar, renombrar la copia con la referencia de «Próxima ref.», escribirla en B2 de la página nueva y en la columna Ref de su fila del índice.
+- El índice lee de cada página las columnas A (número de objetivo), C (Finalizado), D (Responsable) y F (Tiempo total) por su posición: no insertar ni mover columnas en las páginas. Tampoco insertar filas en la cabecera de «Plantilla»: el botón escribe la referencia en B2 y la fecha en B10. El índice se puede ordenar y filtrar sin problema.
+- En Excel para la web, un filtro aplicado en el índice lo ven todos los que tienen el libro abierto. Para filtrar solo para uno mismo: Vista → Vista de hoja → Nueva.
+- CS-06 tiene la prioridad «IM», que no es I, N ni M. Se ha dejado tal cual, sin color, para que la revise su propietario.
+- Los documentos, pruebas y commits del repositorio siguen usando los códigos antiguos (FLA05, LUC09...).
 
 # Metodología y registro del trabajo con IA — Documentado (02/10/2026)
 
@@ -672,6 +694,17 @@ Abrir los enlaces de la sección «Documentación» del `README.md` y comprobar 
 
 Se añade `documentacion/hoja-ruta-aprendizaje.md` y se enlaza desde el README. Organiza dos semanas de aprendizaje con cuatro horas principales por semana y ampliaciones opcionales hasta doce. Incluye fundamentos de programación desde Java, seguimiento de una funcionalidad por las capas, preparación de la revisión, HTTP, seguridad, MySQL, Prisma, pruebas, TDD y un ejercicio de desarrollo frontend con Bootstrap en un archivo personal de práctica. Las actividades se basan en archivos y comandos existentes del proyecto. El prompt que motivó la guía se registra en `documentacion/prompts/matthew.md`.
 
+<<<<<<< HEAD
 # Libro de historias en OneDrive — Documentado (05/10/2026)
 
 `Customer_Stories_PlanB.xlsx` ya tiene su versión oficial en el OneDrive compartido y deja de mantenerse en Git. Cada tarea registra responsable voluntario, tiempo estimado y tiempo real. El integrante facilita una copia actual para consulta y traslada manualmente al libro online las tareas acordadas. Se actualizan `README.md`, `AGENTS.md`, la metodología y `.gitignore` para reflejar este flujo.
+=======
+## Nuevas historias en el Excel (CS-61 a CS-64) — Documentado (05/10/2026)
+
+`documentacion/customer-stories/Customer_Stories_PlanB.xlsx` se sustituye por la versión más reciente, que añade cuatro historias, todavía sin propietario y en espera:
+
+- CS-61 — Amistades y seguidores.
+- CS-62 — Perfil de otro usuario.
+- CS-63 — Pantalla de valoraciones y comentarios.
+- CS-64 — Contraseña segura.
+>>>>>>> 1cef900760ce2d8d6ecebf82399d01f066318783
