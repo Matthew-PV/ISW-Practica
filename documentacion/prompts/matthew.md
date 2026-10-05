@@ -26,6 +26,60 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
+## 2026-10-05 — Implementar el repositorio de seguimiento de CS-61
+
+- **Historia u objetivo:** CS-61, objetivo 4: `seguimientoRepository` para seguir, dejar de seguir y comprobar si una persona sigue a otra.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell y Jest.
+- **Contexto aportado:** Matthew pidió trabajar el objetivo 4 con el mismo ciclo TDD del objetivo 3 y registrar el resultado automáticamente.
+- **Prompt inicial:**
+
+  > ¡Vamos a muy buen ritmo! Ahora pasaremos al objetivo 4. Trabaja igual que con el objetivo 3, registrándolo automáticamente.
+
+- **Resultado propuesto por la IA:** crear `backend/src/repositories/seguimientoRepository.js` con operaciones para crear y borrar un seguimiento mediante la clave única de seguidor y seguido, y para devolver si existe.
+- **Decisiones y alcance:** `sigueA` devuelve un booleano para simplificar al futuro servicio. No se añadieron rutas, interfaz, control de sesión ni la validación de que una persona no se siga a sí misma.
+- **TDD:** primero se escribió una prueba con Prisma simulado; falló porque el repositorio no existía. Tras implementar las tres operaciones, las cuatro pruebas específicas pasaron. No fue necesaria una refactorización adicional.
+- **Comprensión humana de las pruebas:** cada prueba simula la llamada a Prisma y comprueba que se consulta o modifica exactamente el seguimiento formado por los dos identificadores. Se comprueban tanto la existencia como la ausencia de un registro.
+- **Intervención humana:** Matthew eligió continuar con el objetivo 4 y autorizó documentar automáticamente esta interacción.
+- **Comprobación final:** `npm test -- --runInBand tests/seguimientoRepository.test.js` completó 4 pruebas correctas; la batería completa terminó con 21 suites y 193 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
+## 2026-10-05 — Implementar el repositorio de amistad de CS-61
+
+- **Historia u objetivo:** CS-61, objetivo 3: `amistadRepository` para crear solicitudes, buscar una relación entre dos usuarios en ambos sentidos, aceptarla, borrarla y listar solicitudes recibidas.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell, Jest y Prisma.
+- **Contexto aportado:** tras pedir el registro del objetivo 2, Matthew facilitó la descripción del objetivo 3 y solicitó que su resultado se registrara automáticamente.
+- **Prompt inicial:**
+
+  > Perfecto, registra el prompt del objetivo 2 también. Pasemos ahora al objetivo 3. Una vez realizado el objetivo 3, actualiza automáticamente el registro de prompts.
+
+- **Resultado propuesto por la IA:** crear `backend/src/repositories/amistadRepository.js` con las cinco operaciones de persistencia. La lista muestra solo solicitudes pendientes y expone del solicitante únicamente id, nombre de usuario y foto.
+- **Decisiones y alcance:** el repositorio no decide permisos, estados válidos ni respuestas HTTP; esas reglas corresponderán al servicio. La búsqueda consulta las dos direcciones para que el servicio pueda detectar una relación existente entre las mismas personas.
+- **TDD:** primero se escribió una prueba con Prisma simulado; falló porque el repositorio no existía. Tras implementar las consultas mínimas, las cinco pruebas específicas pasaron. No fue necesario refactorizar más allá de comentarios que explican la responsabilidad de cada consulta.
+- **Comprensión humana de las pruebas:** cada prueba prepara una función simulada de Prisma, llama a una operación del repositorio y comprueba la consulta enviada. Se cubren creación, búsqueda A-B y B-A, aceptación, borrado y listado de solicitudes pendientes sin email ni contraseña.
+- **Intervención humana:** Matthew autorizó el registro automático de esta tarea y delimitó el trabajo a la capa de repositorio.
+- **Comprobación final:** `npm test -- --runInBand tests/amistadRepository.test.js` completó 5 pruebas correctas; la batería completa terminó con 20 suites y 189 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
+## 2026-10-05 — Implementar el modelo de seguimiento de CS-61
+
+- **Historia u objetivo:** CS-61, objetivo 2: modelo Seguimiento con seguidor, seguido, fecha, un único registro por seguimiento y migración.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell, Prisma y MySQL local en Docker.
+- **Contexto aportado:** tras completar el objetivo 1 de CS-61, Matthew indicó continuar con el objetivo 2 de la copia vigente del libro en OneDrive.
+- **Prompt inicial:**
+
+  > ¿Puedes añadir tú la entrada del registro de prompts? Cuando termines, pasemos al objetivo 2.
+
+- **Resultado propuesto por la IA:** añadir el modelo `Seguimiento`, las relaciones direccionales con Usuario, la restricción única para seguidor y seguido, el índice de seguidores y la migración aplicada en MySQL.
+- **Decisiones y alcance:** seguir no requiere aceptación y permite que dos personas se sigan mutuamente. La prohibición de seguirse a uno mismo y las rutas se implementarán en objetivos posteriores.
+- **TDD:** la prueba del contrato de esquema falló primero porque el modelo no existía. Tras añadirlo, pasó; Prisma validó el esquema y aplicó la migración.
+- **Comprensión humana de las pruebas:** la prueba comprueba que el esquema declara quién sigue, quién es seguido, la fecha y la unicidad de cada seguimiento. La migración confirmó la tabla, las claves foráneas y el índice en MySQL.
+- **Intervención humana:** Matthew pidió registrar el resultado del objetivo 1 y avanzar inmediatamente con el objetivo 2.
+- **Comprobación final:** prueba específica correcta; la base de datos quedó al día y `npm test -- --runInBand` completó 19 suites y 184 pruebas correctas.
+- **Resultado en Git:** incorporado después en el commit `cd0c569 CS-61 Tarea 2 Modelo Seguimiento`.
+
 ## 2026-10-05 — Completar la planificación y resolver dependencias entre historias
 
 - **Historia u objetivo:** definir las tareas de CS-45, CS-01 y CS-48; revisar las dependencias de CS-22, CS-61, CS-45, CS-62, CS-01, CS-63 y CS-48; y preparar el control de acceso de CS-30.
