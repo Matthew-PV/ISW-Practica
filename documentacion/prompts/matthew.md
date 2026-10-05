@@ -4,6 +4,28 @@ Identificador habitual: MAT / Matthew-PV.
 
 Las interacciones siguientes proceden de la conversación conservada en Codex. Cuando no consta la fecha exacta de la interacción, `2026-10-02` indica la fecha en la que se incorporó al registro, no necesariamente la fecha en que se escribió el prompt original. Se omiten mensajes de cortesía y confirmaciones que no influyeron en el trabajo.
 
+## 2026-10-05 — Implementar el modelo de amistad de CS-61
+
+- **Historia u objetivo:** CS-61, objetivo 1: modelo Amistad con solicitante, destinatario, estado pendiente o aceptada, fecha, un registro por solicitud y migración.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell, Prisma y MySQL local en Docker; copia vigente de `Customer_Stories_PlanB.xlsx` facilitada desde OneDrive como referencia de solo lectura.
+- **Contexto aportado:** tarea 1 de CS-61 y decisión de no desarrollar todavía CS-44 ni CS-02; CS-62 y CS-63 solo podrán quedar parcialmente avanzadas.
+- **Prompt inicial:**
+
+  > He aquí la última copia del Excel. Empecemos por CS-61. Ahora haremos la tarea 1
+
+- **Correcciones relevantes:**
+
+  > ¿Puedes añadir tú la entrada del registro de prompts? Cuando termines, pasemos al objetivo 2.
+
+- **Resultado propuesto por la IA:** añadir `EstadoAmistad` con los valores `PENDIENTE` y `ACEPTADA`, el modelo `Amistad`, sus relaciones con Usuario, la restricción única de solicitud en la misma dirección y un índice para solicitudes recibidas. Se generó y aplicó la migración correspondiente.
+- **Decisiones y alcance:** no se añadieron rutas, servicios ni interfaz. La comprobación de que no exista una solicitud en sentido inverso se implementará en el servicio de envío, pues requiere consultar relaciones existentes en ambos sentidos.
+- **TDD:** se añadió primero una prueba de contrato del esquema; falló porque el modelo y el estado no existían. Tras el cambio pasó, se formateó el esquema con Prisma y se validó la migración en MySQL.
+- **Comprensión humana de las pruebas:** la prueba lee el esquema de Prisma y comprueba que declara los dos estados permitidos, solicitante, destinatario, fecha y la restricción de unicidad de una solicitud. La aplicación real de la migración confirmó la tabla, claves foráneas e índice en MySQL.
+- **Intervención humana:** Matthew delimitó el objetivo a la primera tarea de CS-61 y pidió que se registrara esta interacción antes de continuar con el objetivo 2.
+- **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
 ## 2026-10-05 — Completar la planificación y resolver dependencias entre historias
 
 - **Historia u objetivo:** definir las tareas de CS-45, CS-01 y CS-48; revisar las dependencias de CS-22, CS-61, CS-45, CS-62, CS-01, CS-63 y CS-48; y preparar el control de acceso de CS-30.

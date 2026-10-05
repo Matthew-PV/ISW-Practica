@@ -17,16 +17,18 @@ datasource db {
 // - foto: URL de la foto en Cloudinary; null mientras no suba ninguna.
 // - ciudad: texto libre del perfil, distinto del catálogo Ciudad de las experiencias.
 model Usuario {
-  id                   Int           @id @default(autoincrement())
-  nombreUsuario        String        @unique
-  email                String        @unique
-  passwordHash         String
-  foto                 String?
-  ciudad               String?
-  creadoEn             DateTime      @default(now())
-  experiencias         Experiencia[]
-  solicitudesEnviadas  Amistad[]     @relation("Solicitante")
-  solicitudesRecibidas Amistad[]     @relation("Destinatario")
+  id                     Int           @id @default(autoincrement())
+  nombreUsuario          String        @unique
+  email                  String        @unique
+  passwordHash           String
+  foto                   String?
+  ciudad                 String?
+  creadoEn               DateTime      @default(now())
+  experiencias           Experiencia[]
+  solicitudesEnviadas    Amistad[]     @relation("Solicitante")
+  solicitudesRecibidas   Amistad[]     @relation("Destinatario")
+  seguimientosRealizados Seguimiento[] @relation("Seguidor")
+  seguidores             Seguimiento[] @relation("Seguido")
 }
 
 // Una ciudad puede tener varias experiencias. El nombre no es único:
@@ -81,6 +83,20 @@ model Amistad {
   // en el servicio cuando se implemente el envío de solicitudes.
   @@unique([solicitanteId, destinatarioId])
   @@index([destinatarioId])
+}
+
+// Seguir es una relación direccional: cada usuario puede seguir al otro sin
+// necesidad de que este le siga de vuelta.
+model Seguimiento {
+  id         Int      @id @default(autoincrement())
+  seguidorId Int
+  seguidoId  Int
+  fecha      DateTime @default(now())
+  seguidor   Usuario  @relation("Seguidor", fields: [seguidorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  seguido    Usuario  @relation("Seguido", fields: [seguidoId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([seguidorId, seguidoId])
+  @@index([seguidoId])
 }
 
 // Sesiones de express-session, guardadas por @quixo3/prisma-session-store
