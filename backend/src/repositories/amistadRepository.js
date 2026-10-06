@@ -55,4 +55,36 @@ async function listarSolicitudesRecibidas(destinatarioId) {
   });
 }
 
-module.exports = { crear, buscarEntreUsuarios, buscarPorId, aceptar, borrar, listarSolicitudesRecibidas };
+// Devuelve los identificadores de todos los amigos aceptados de un usuario.
+// Una amistad puede haberse iniciado en cualquiera de los dos sentidos.
+async function listarAmigosIds(usuarioId) {
+  const amistades = await prisma.amistad.findMany({
+    where: {
+      estado: 'ACEPTADA',
+      OR: [
+        { solicitanteId: usuarioId },
+        { destinatarioId: usuarioId },
+      ],
+    },
+    select: {
+      solicitanteId: true,
+      destinatarioId: true,
+    },
+  });
+
+  return amistades.map((amistad) =>
+    amistad.solicitanteId === usuarioId
+      ? amistad.destinatarioId
+      : amistad.solicitanteId
+  );
+}
+
+module.exports = {
+  crear,
+  buscarEntreUsuarios,
+  buscarPorId,
+  aceptar,
+  borrar,
+  listarSolicitudesRecibidas,
+  listarAmigosIds,
+};
