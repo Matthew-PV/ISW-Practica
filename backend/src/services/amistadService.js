@@ -79,4 +79,15 @@ async function sonAmigos(usuarioAId, usuarioBId) {
   return amistad?.estado === 'ACEPTADA';
 }
 
-module.exports = { enviarSolicitud, responderSolicitud, eliminarAmistad, sonAmigos };
+// Devuelve las solicitudes pendientes que el usuario de la sesión debe responder.
+async function listarSolicitudesRecibidas(usuarioId) {
+  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
+      !(await usuarioRepository.buscarPorId(usuarioId))) {
+    throw crearError('No hay sesión iniciada', 401);
+  }
+  return amistadRepository.listarSolicitudesRecibidas(usuarioId);
+}
+
+module.exports = {
+  enviarSolicitud, responderSolicitud, eliminarAmistad, sonAmigos, listarSolicitudesRecibidas,
+};

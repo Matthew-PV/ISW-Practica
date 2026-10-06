@@ -26,6 +26,24 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
+## 2026-10-06 — Exponer la API de amistades y seguimientos de CS-61
+
+- **Historia u objetivo:** CS-61, objetivo 10: rutas protegidas para búsqueda de usuarios, amistades y seguimientos.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell, Express, Supertest y Jest.
+- **Contexto aportado:** Matthew pidió avanzar al objetivo 10 después de completar la función compartida `sonAmigos`.
+- **Prompt inicial:**
+
+  > Avancemos con el objetivo 10
+
+- **Resultado propuesto por la IA:** crear rutas bajo `/api/usuarios`, `/api/amistades` y `/api/seguimientos`, además de `usuarioService` para mantener la separación entre rutas y repositorios. Se exponen búsqueda, envío, listado, respuesta y borrado de amistades, y seguir o dejar de seguir.
+- **Decisiones y alcance:** todos los grupos usan `requiereSesion`. Las bajas responden 204, las creaciones 201 y las consultas o respuestas 200. Se añadió `GET /api/amistades/solicitudes` para exponer el listado pendiente ya disponible en el repositorio. No se añadió interfaz.
+- **TDD:** las pruebas fallaron inicialmente porque faltaban el servicio y las rutas. Tras implementar las delegaciones mínimas pasaron. La batería completa detectó que el simulador de búsqueda dependía del orden de pruebas; se corrigió para aislarlo y volvió a pasar completa.
+- **Comprensión humana de las pruebas:** sin sesión, cada ruta devuelve 401; con sesión, cada prueba simula su servicio y comprueba que la ruta pasa el id de sesión y los parámetros correctos, junto con el estado HTTP esperado.
+- **Intervención humana:** Matthew seleccionó el objetivo 10 y continuó con el flujo TDD y registro aplicado a CS-61.
+- **Comprobación final:** las pruebas nuevas de búsqueda, servicio de amistad y rutas pasaron; la batería completa terminó con 26 suites y 229 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
 ## 2026-10-06 — Crear la comprobación compartida de amistad de CS-61
 
 - **Historia u objetivo:** CS-61, objetivo 9: función `sonAmigos(a, b)` que cuenta únicamente amistades aceptadas y se podrá reutilizar en CS-30, CS-44 y CS-48.

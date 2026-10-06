@@ -2,12 +2,12 @@
 jest.mock('../src/repositories/usuarioRepository', () => ({ buscarPorId: jest.fn() }));
 jest.mock('../src/repositories/amistadRepository', () => ({
   buscarEntreUsuarios: jest.fn(), buscarPorId: jest.fn(), crear: jest.fn(),
-  aceptar: jest.fn(), borrar: jest.fn(),
+  aceptar: jest.fn(), borrar: jest.fn(), listarSolicitudesRecibidas: jest.fn(),
 }));
 
 const usuarioRepository = require('../src/repositories/usuarioRepository');
 const amistadRepository = require('../src/repositories/amistadRepository');
-const { enviarSolicitud, responderSolicitud, eliminarAmistad, sonAmigos } = require('../src/services/amistadService');
+const { enviarSolicitud, responderSolicitud, eliminarAmistad, sonAmigos, listarSolicitudesRecibidas } = require('../src/services/amistadService');
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -104,4 +104,11 @@ test.each([
 
   await expect(sonAmigos(1, 2)).resolves.toBe(esperado);
   expect(amistadRepository.buscarEntreUsuarios).toHaveBeenCalledWith(1, 2);
+});
+
+test('lista las solicitudes recibidas por el usuario de la sesión', async () => {
+  amistadRepository.listarSolicitudesRecibidas.mockResolvedValue([]);
+
+  await expect(listarSolicitudesRecibidas(2)).resolves.toEqual([]);
+  expect(amistadRepository.listarSolicitudesRecibidas).toHaveBeenCalledWith(2);
 });
