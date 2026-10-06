@@ -26,6 +26,24 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
+## 2026-10-06 — Enlazar la búsqueda de personas desde la navegación
+
+- **Historia u objetivo:** CS-61, objetivo 14: enlace «Buscar personas» en la barra de navegación.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell y Jest con jsdom.
+- **Contexto aportado:** Matthew pidió continuar con el objetivo 14 tras completar la gestión de solicitudes recibidas.
+- **Prompt inicial:**
+
+  > Perfecto, pasemos al objetivo 14
+
+- **Resultado propuesto por la IA:** añadir el enlace a `personas.html` en las barras de las pantallas autenticadas: bienvenida, perfil propio y perfil público. Se preservaron los enlaces ya presentes.
+- **Decisiones y alcance:** no se añadió un enlace a la propia pantalla `personas.html` ni se modificaron las páginas públicas de inicio de sesión y registro. Al no existir un componente de navegación compartido, se aplicó el mismo cambio pequeño en cada HTML afectado.
+- **TDD:** la prueba de navegación se creó antes y falló en las tres páginas porque el enlace no existía. Tras añadirlo pasó; no fue necesaria refactorización adicional.
+- **Comprensión humana de las pruebas:** cada caso carga el HTML de una pantalla autenticada y comprueba que su barra contiene exactamente un enlace a `personas.html` con el texto «Buscar personas».
+- **Intervención humana:** Matthew seleccionó el objetivo 14 para continuar la terminación de CS-61.
+- **Comprobación final:** `npm test -- --runInBand tests/navegacionPersonas.test.js` completó 1 suite y 3 pruebas correctas; la batería completa terminó con 43 suites y 354 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
 ## 2026-10-06 — Gestionar solicitudes recibidas desde el perfil
 
 - **Historia u objetivo:** CS-61, objetivo 13: sección «Solicitudes recibidas» en `perfil.html` con botones para aceptar o rechazar.
