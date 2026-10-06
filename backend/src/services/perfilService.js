@@ -119,7 +119,8 @@ async function actualizarFotoPropia(id, archivo) {
 // - `usuarioId`: el usuario de la sesión, que consulta el perfil.
 // - `nombreUsuario`: el usuario cuyo perfil se consulta.
 // Devuelve { id, nombreUsuario, foto, ciudad, amigos, seguidores, relacion }, o error 404.
-// `relacion.amistad` es 'ninguna', 'enviada' (la envié yo), 'recibida' o 'amigos'.
+// `relacion.amistad` es 'ninguna', 'enviada' (la envié yo), 'recibida' o 'amigos'; `relacion.amistadId`
+// es el id de esa solicitud o amistad (null si no hay), que las pantallas necesitan para responderla.
 async function obtenerPerfilPublico(usuarioId, nombreUsuario) {
   const perfil = await usuarioRepository.obtenerPerfilPublico(nombreUsuario);
   if (!perfil) {
@@ -138,7 +139,12 @@ async function obtenerPerfilPublico(usuarioId, nombreUsuario) {
     estadoAmistad = amistad.solicitanteId === usuarioId ? 'enviada' : 'recibida';
   }
 
-  return { ...conFotoPorDefecto(perfil), amigos, seguidores, relacion: { amistad: estadoAmistad, siguiendo } };
+  return {
+    ...conFotoPorDefecto(perfil),
+    amigos,
+    seguidores,
+    relacion: { amistad: estadoAmistad, amistadId: amistad?.id ?? null, siguiendo },
+  };
 }
 
 module.exports = { obtenerPerfilPropio, actualizarPerfilPropio, actualizarFotoPropia, obtenerPerfilPublico, FOTO_POR_DEFECTO };

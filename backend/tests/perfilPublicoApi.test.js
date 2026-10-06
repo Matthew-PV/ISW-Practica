@@ -54,7 +54,7 @@ test('muestra nombre, foto por defecto, ciudad y contadores, y nunca el email', 
   expect(res.body).toEqual({
     id: 2, nombreUsuario: 'ana', foto: FOTO_POR_DEFECTO, ciudad: 'Madrid',
     amigos: 3, seguidores: 5,
-    relacion: { amistad: 'ninguna', siguiendo: false },
+    relacion: { amistad: 'ninguna', amistadId: null, siguiendo: false },
   });
   expect(res.body).not.toHaveProperty('email');
   expect(JSON.stringify(res.body)).not.toContain('@');
@@ -75,37 +75,37 @@ describe('relación con quien consulta', () => {
 
     const res = await agente.get('/api/usuarios/ana');
 
-    expect(res.body.relacion).toEqual({ amistad: 'ninguna', siguiendo: false });
+    expect(res.body.relacion).toEqual({ amistad: 'ninguna', amistadId: null, siguiendo: false });
   });
 
   test('enviada: le envié una solicitud que sigue pendiente', async () => {
-    amistadRepository.buscarEntreUsuarios.mockResolvedValue({ solicitanteId: 1, destinatarioId: 2, estado: 'PENDIENTE' });
+    amistadRepository.buscarEntreUsuarios.mockResolvedValue({ id: 10, solicitanteId: 1, destinatarioId: 2, estado: 'PENDIENTE' });
     const agente = await agenteConSesion();
 
     const res = await agente.get('/api/usuarios/ana');
 
-    expect(res.body.relacion.amistad).toBe('enviada');
+    expect(res.body.relacion).toEqual({ amistad: 'enviada', amistadId: 10, siguiendo: false });
   });
 
   test('recibida: ella me envió una solicitud pendiente', async () => {
-    amistadRepository.buscarEntreUsuarios.mockResolvedValue({ solicitanteId: 2, destinatarioId: 1, estado: 'PENDIENTE' });
+    amistadRepository.buscarEntreUsuarios.mockResolvedValue({ id: 10, solicitanteId: 2, destinatarioId: 1, estado: 'PENDIENTE' });
     const agente = await agenteConSesion();
 
     const res = await agente.get('/api/usuarios/ana');
 
-    expect(res.body.relacion.amistad).toBe('recibida');
+    expect(res.body.relacion).toEqual({ amistad: 'recibida', amistadId: 10, siguiendo: false });
   });
 
   test.each([
     ['la envié yo', { solicitanteId: 1, destinatarioId: 2 }],
     ['la envió ella', { solicitanteId: 2, destinatarioId: 1 }],
   ])('amigos: la amistad está aceptada (%s)', async (_quien, quien) => {
-    amistadRepository.buscarEntreUsuarios.mockResolvedValue({ ...quien, estado: 'ACEPTADA' });
+    amistadRepository.buscarEntreUsuarios.mockResolvedValue({ id: 10, ...quien, estado: 'ACEPTADA' });
     const agente = await agenteConSesion();
 
     const res = await agente.get('/api/usuarios/ana');
 
-    expect(res.body.relacion.amistad).toBe('amigos');
+    expect(res.body.relacion).toEqual({ amistad: 'amigos', amistadId: 10, siguiendo: false });
   });
 
   test('siguiendo: la sigo, aunque no seamos amigos', async () => {
@@ -114,6 +114,6 @@ describe('relación con quien consulta', () => {
 
     const res = await agente.get('/api/usuarios/ana');
 
-    expect(res.body.relacion).toEqual({ amistad: 'ninguna', siguiendo: true });
+    expect(res.body.relacion).toEqual({ amistad: 'ninguna', amistadId: null, siguiendo: true });
   });
 });

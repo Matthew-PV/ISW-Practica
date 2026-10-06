@@ -28,7 +28,7 @@ test('devuelve los datos públicos y los contadores, sin email', async () => {
   expect(perfil).toEqual({
     id: 2, nombreUsuario: 'ana', foto: ANA.foto, ciudad: 'Madrid',
     amigos: 3, seguidores: 5,
-    relacion: { amistad: 'ninguna', siguiendo: false },
+    relacion: { amistad: 'ninguna', amistadId: null, siguiendo: false },
   });
   expect(perfil).not.toHaveProperty('email');
 });
@@ -42,28 +42,28 @@ test('muestra la imagen por defecto si no tiene foto', async () => {
 });
 
 test('relación «enviada»: yo le envié una solicitud pendiente', async () => {
-  amistadRepository.buscarEntreUsuarios.mockResolvedValue({ solicitanteId: 1, destinatarioId: 2, estado: 'PENDIENTE' });
+  amistadRepository.buscarEntreUsuarios.mockResolvedValue({ id: 10, solicitanteId: 1, destinatarioId: 2, estado: 'PENDIENTE' });
 
   const perfil = await obtenerPerfilPublico(1, 'ana');
 
   expect(amistadRepository.buscarEntreUsuarios).toHaveBeenCalledWith(1, 2);
-  expect(perfil.relacion.amistad).toBe('enviada');
+  expect(perfil.relacion).toEqual({ amistad: 'enviada', amistadId: 10, siguiendo: false });
 });
 
 test('relación «recibida»: ella me envió una solicitud pendiente', async () => {
-  amistadRepository.buscarEntreUsuarios.mockResolvedValue({ solicitanteId: 2, destinatarioId: 1, estado: 'PENDIENTE' });
+  amistadRepository.buscarEntreUsuarios.mockResolvedValue({ id: 10, solicitanteId: 2, destinatarioId: 1, estado: 'PENDIENTE' });
 
   const perfil = await obtenerPerfilPublico(1, 'ana');
 
-  expect(perfil.relacion.amistad).toBe('recibida');
+  expect(perfil.relacion).toEqual({ amistad: 'recibida', amistadId: 10, siguiendo: false });
 });
 
 test('relación «amigos»: la amistad está aceptada', async () => {
-  amistadRepository.buscarEntreUsuarios.mockResolvedValue({ solicitanteId: 2, destinatarioId: 1, estado: 'ACEPTADA' });
+  amistadRepository.buscarEntreUsuarios.mockResolvedValue({ id: 10, solicitanteId: 2, destinatarioId: 1, estado: 'ACEPTADA' });
 
   const perfil = await obtenerPerfilPublico(1, 'ana');
 
-  expect(perfil.relacion.amistad).toBe('amigos');
+  expect(perfil.relacion).toEqual({ amistad: 'amigos', amistadId: 10, siguiendo: false });
 });
 
 test('indica si la sigo', async () => {
