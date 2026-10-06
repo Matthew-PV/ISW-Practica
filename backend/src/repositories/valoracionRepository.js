@@ -29,4 +29,43 @@ async function guardar({ usuarioId, experienciaId, puntuacion, comentario }) {
   }
 }
 
-module.exports = { guardar };
+// Devuelve las valoraciones de una experiencia hechas por los usuarios indicados.
+// La consulta está paginada y solo incluye datos públicos del autor de la valoración.
+// Los identificadores de experiencia, usuarios, página y límite llegan ya validados
+// desde el servicio.
+async function listarDeUsuarios(experienciaId, usuarioIds, pagina, limite) {
+  if (usuarioIds.length === 0) {
+    return { valoraciones: [], total: 0 };
+  }
+
+  const where = {
+    experienciaId,
+    usuarioId: { in: usuarioIds },
+  };
+
+  const [valoraciones, total] = await Promise.all([
+    prisma.valoracion.findMany({
+      where,
+      include: {
+        usuario: {
+          select: {
+            id: true,
+            nombreUsuario: true,
+            foto: true,
+          },
+        },
+      },
+      orderBy: [
+        { actualizadaEn: 'desc' },
+        { id: 'desc' },
+      ],
+      skip: (pagina - 1) * limite,
+      take: limite,
+    }),
+    prisma.valoracion.count({ where }),
+  ]);
+
+  return { valoraciones, total };
+}
+
+module.exports = { guardar, listarDeUsuarios };
