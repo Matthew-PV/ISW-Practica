@@ -2,6 +2,28 @@
 
 Identificador habitual: JOA.
 
+## 2026-10-06 — CS-01 Valorar una experiencia (con la parte necesaria de CS-22)
+
+- **Historia u objetivo:** CS-01 «Valorar una experiencia». Como prerrequisito, el objetivo de CS-22 que añade el campo de visibilidad a `Experiencia`.
+- **Agente/herramienta:** Claude Code en Visual Studio Code, con el modelo Claude Opus 5.5.
+- **Entorno:** Linux, Visual Studio Code y terminal fish; MySQL en Docker.
+- **Contexto aportado:** `AGENTS.md`, el repositorio actualizado y la copia local de `Customer_Stories_PlanB.xlsx`.
+- **Prompt inicial:**
+
+  > migra a la ultima version todo (BBDD etc..). Vamos a hacer 01. Quiero que, tarea a tarea me des un planteamiento. Y luego yo te doy el ok. Ademas de una evaluacion de como de intrusivo es con las estructuras de datos y partes de codigo. Lee Agents.MD antes de empezar
+
+- **Correcciones relevantes:**
+  - Tras el planteamiento, que detectó que la visibilidad (CS-22) aún no existía:
+
+    > Cuantos objetivos tendria que hacer de la CS-22?
+
+- **Resultado propuesto por la IA:** pendiente.
+- **TDD:** pendiente.
+- **Comprensión humana de las pruebas:** pendiente.
+- **Intervención humana:** pendiente.
+- **Comprobación final:** pendiente.
+- **Resultado en Git:** pendiente.
+
 ## 2026-10-02 — Reestructurar el Excel de customer stories
 
 - **Historia u objetivo:** sin historia asociada; reestructuración de `customer-stories/Customer_Stories_PlanB.xlsx` antes de su traslado a OneDrive.

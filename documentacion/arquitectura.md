@@ -90,6 +90,7 @@ model Experiencia {
   ciudad          Ciudad  @relation(fields: [ciudadId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   tipo            String?
   momentoAdecuado String?
+  visibilidad     Visibilidad @default(PUBLICA)
   autorId         Int?
   autor           Usuario? @relation(fields: [autorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
@@ -105,7 +106,7 @@ const experiencias = await prisma.experiencia.findMany({
 });
 ```
 
-El ejemplo de consulta pertenece a un repositorio. El modelo `Usuario` incluye la relación inversa `experiencias Experiencia[]` (ver el esquema completo en `backend/prisma/schema.prisma`). `autorId` admite ausencia de valor únicamente para conservar registros anteriores sin autor conocido; la creación desde la API siempre asigna al usuario de la sesión. `ciudadId` identifica una ciudad registrada: cada experiencia tiene una sola y una ciudad puede tener muchas experiencias. La clave foránea (restricción de MySQL que comprueba esta relación) impide usar ciudades inexistentes y borrar ciudades con experiencias. El nombre por sí solo no es único; la combinación de código de país y nombre sí lo es. País y código admiten ausencia de valor para conservar ciudades anteriores pendientes de revisión.
+El ejemplo de consulta pertenece a un repositorio. El modelo `Usuario` incluye la relación inversa `experiencias Experiencia[]` (ver el esquema completo en `backend/prisma/schema.prisma`). `autorId` admite ausencia de valor únicamente para conservar registros anteriores sin autor conocido; la creación desde la API siempre asigna al usuario de la sesión. `ciudadId` identifica una ciudad registrada: cada experiencia tiene una sola y una ciudad puede tener muchas experiencias. La clave foránea (restricción de MySQL que comprueba esta relación) impide usar ciudades inexistentes y borrar ciudades con experiencias. El nombre por sí solo no es único; la combinación de código de país y nombre sí lo es. País y código admiten ausencia de valor para conservar ciudades anteriores pendientes de revisión. `visibilidad` es un enum (`PRIVADA`, `AMIGOS` o `PUBLICA`) que vale `PUBLICA` por defecto, de modo que las experiencias anteriores y las creadas sin indicarla siguen visibles.
 
 El catálogo inicial de capitales y sedes se guarda en `backend/data/capitales.json` y se carga desde `backend/` con `npm run db:seed`, después de aplicar las migraciones. La carga pasa por un servicio y un repositorio, funciona sin internet y puede repetirse sin duplicar sus entradas. Incluye 195 países y 201 entradas; alcance, fuentes, licencia y excepciones están en el registro de modificaciones. En la interfaz, la ciudad se elige en un desplegable que se rellena con `GET /api/ciudades`; la relación de MySQL no verifica por sí sola la existencia geográfica de una ciudad.
 

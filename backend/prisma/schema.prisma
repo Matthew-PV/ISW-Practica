@@ -44,19 +44,28 @@ model Ciudad {
   @@unique([codigoPais, nombre])
 }
 
+// Quién puede ver una experiencia (CS-22): solo su autor, sus amigos o cualquiera.
+enum Visibilidad {
+  PRIVADA
+  AMIGOS
+  PUBLICA
+}
+
 // Cada experiencia pertenece obligatoriamente a una única ciudad existente.
 model Experiencia {
-  id              Int      @id @default(autoincrement())
+  id              Int         @id @default(autoincrement())
   titulo          String
-  descripcion     String   @db.Text
+  descripcion     String      @db.Text
   ciudadId        Int
-  ciudad          Ciudad   @relation(fields: [ciudadId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  ciudad          Ciudad      @relation(fields: [ciudadId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   tipo            String?
   momentoAdecuado String?
+  // Pública por defecto: las experiencias anteriores y las creadas sin elegirla siguen visibles.
+  visibilidad     Visibilidad @default(PUBLICA)
   // Solo nullable para conservar experiencias anteriores sin autor conocido.
   // La creación desde la aplicación siempre exige el usuario de la sesión.
   autorId         Int?
-  autor           Usuario? @relation(fields: [autorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  autor           Usuario?    @relation(fields: [autorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   @@index([ciudadId])
   @@index([autorId])

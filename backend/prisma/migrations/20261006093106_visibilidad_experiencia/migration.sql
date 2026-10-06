@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Experiencia` ADD COLUMN `visibilidad` ENUM('PRIVADA', 'AMIGOS', 'PUBLICA') NOT NULL DEFAULT 'PUBLICA';

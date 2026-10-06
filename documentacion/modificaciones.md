@@ -2,6 +2,31 @@
 
 Registro de los cambios realizados en el proyecto, en orden cronológico.
 
+# CS-01: valorar una experiencia — En progreso (06/10/2026)
+
+Se ha empezado CS-01. Como necesita saber si quien valora puede ver la experiencia, primero se ha añadido la visibilidad de las experiencias, que es el único objetivo de CS-22 imprescindible para CS-01 (acordado con Matthew, propietario de CS-22).
+
+### Cambios realizados
+
+- **Datos (CS-22, objetivo 1):** nuevo enum `Visibilidad` (`PRIVADA`, `AMIGOS`, `PUBLICA`) y campo `visibilidad` en `Experiencia`, con valor por defecto `PUBLICA`. La migración `visibilidad_experiencia` añade la columna y las experiencias que ya existían quedan públicas.
+- **Pruebas:** `tests/visibilidadModelo.test.js` comprueba el enum y el valor por defecto en el esquema.
+
+### Para quien continúe
+
+- Aplicar la migración desde `backend/` con `npx prisma migrate deploy` y después `npx prisma generate`.
+- Del resto de CS-22 todavía no hay nada: crear y editar no aceptan `visibilidad` y el formulario no tiene selector, así que toda experiencia nueva es pública.
+
+### Cómo comprobarlo
+
+```bash
+cd backend
+npm test
+```
+
+Resultado esperado: 25 suites y 219 pruebas correctas.
+
+
+
 # CS-61: base de amistades y seguidores — En progreso (05/10/2026)
 
 Se ha completado la base de datos, la API y la lógica de amistades y seguimientos. La historia no está terminada: falta la interfaz de búsqueda y gestión de personas.
