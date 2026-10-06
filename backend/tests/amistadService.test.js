@@ -1,16 +1,17 @@
 // CS-61, objetivo 6: reglas para enviar solicitudes de amistad.
 jest.mock('../src/repositories/usuarioRepository', () => ({ buscarPorId: jest.fn() }));
 jest.mock('../src/repositories/amistadRepository', () => ({
-  buscarEntreUsuarios: jest.fn(), crear: jest.fn(),
+  buscarEntreUsuarios: jest.fn(), buscarPorId: jest.fn(), crear: jest.fn(),
+  aceptar: jest.fn(), borrar: jest.fn(),
 }));
 
 const usuarioRepository = require('../src/repositories/usuarioRepository');
 const amistadRepository = require('../src/repositories/amistadRepository');
-const { enviarSolicitud } = require('../src/services/amistadService');
+const { enviarSolicitud, responderSolicitud, eliminarAmistad } = require('../src/services/amistadService');
 
 beforeEach(() => {
   jest.resetAllMocks();
-  usuarioRepository.buscarPorId.mockImplementation(async (id) => (id === 1 || id === 2 ? { id } : null));
+  usuarioRepository.buscarPorId.mockImplementation(async (id) => (id === 1 || id === 2 || id === 3 ? { id } : null));
   amistadRepository.buscarEntreUsuarios.mockResolvedValue(null);
 });
 
@@ -43,4 +44,53 @@ test.each(['PENDIENTE', 'ACEPTADA'])('rechaza una relación previa en estado %s,
 
   await expect(enviarSolicitud(1, 2)).rejects.toMatchObject({ status: 400 });
   expect(amistadRepository.crear).not.toHaveBeenCalled();
+});
+
+const SOLICITUD = { id: 10, solicitanteId: 1, destinatarioId: 2, estado: 'PENDIENTE' };
+const AMISTAD = { ...SOLICITUD, estado: 'ACEPTADA' };
+
+test('el destinatario puede aceptar una solicitud pendiente', async () => {
+  amistadRepository.buscarPorId.mockResolvedValue(SOLICITUD);
+  amistadRepository.aceptar.mockResolvedValue(AMISTAD);
+
+  await expect(responderSolicitud(2, 10, true)).resolves.toEqual(AMISTAD);
+  expect(amistadRepository.aceptar).toHaveBeenCalledWith(10);
+});
+
+test('el destinatario puede rechazar una solicitud pendiente', async () => {
+  amistadRepository.buscarPorId.mockResolvedValue(SOLICITUD);
+  amistadRepository.borrar.mockResolvedValue(SOLICITUD);
+
+  await expect(responderSolicitud(2, 10, false)).resolves.toEqual(SOLICITUD);
+  expect(amistadRepository.borrar).toHaveBeenCalledWith(10);
+});
+
+test('nadie salvo el destinatario puede responder una solicitud', async () => {
+  amistadRepository.buscarPorId.mockResolvedValue(SOLICITUD);
+
+  await expect(responderSolicitud(1, 10, true)).rejects.toMatchObject({ status: 403 });
+  expect(amistadRepository.aceptar).not.toHaveBeenCalled();
+  expect(amistadRepository.borrar).not.toHaveBeenCalled();
+});
+
+test('no permite responder una relación que ya no está pendiente', async () => {
+  amistadRepository.buscarPorId.mockResolvedValue(AMISTAD);
+
+  await expect(responderSolicitud(2, 10, true)).rejects.toMatchObject({ status: 400 });
+  expect(amistadRepository.aceptar).not.toHaveBeenCalled();
+});
+
+test.each([1, 2])('cualquiera de los participantes puede eliminar una amistad', async (usuarioId) => {
+  amistadRepository.buscarPorId.mockResolvedValue(AMISTAD);
+  amistadRepository.borrar.mockResolvedValue(AMISTAD);
+
+  await expect(eliminarAmistad(usuarioId, 10)).resolves.toEqual(AMISTAD);
+  expect(amistadRepository.borrar).toHaveBeenCalledWith(10);
+});
+
+test('un tercero no puede eliminar una amistad', async () => {
+  amistadRepository.buscarPorId.mockResolvedValue(AMISTAD);
+
+  await expect(eliminarAmistad(3, 10)).rejects.toMatchObject({ status: 403 });
+  expect(amistadRepository.borrar).not.toHaveBeenCalled();
 });

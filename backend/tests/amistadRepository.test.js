@@ -3,6 +3,7 @@ jest.mock('../src/repositories/shared/prisma', () => ({
   amistad: {
     create: jest.fn(),
     findFirst: jest.fn(),
+    findUnique: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
     findMany: jest.fn(),
@@ -37,6 +38,14 @@ test('busca la relación entre dos usuarios en ambos sentidos', async () => {
       ],
     },
   });
+});
+
+test('busca una solicitud por su identificador', async () => {
+  prisma.amistad.findUnique.mockResolvedValue({ id: 10 });
+
+  await amistadRepository.buscarPorId(10);
+
+  expect(prisma.amistad.findUnique).toHaveBeenCalledWith({ where: { id: 10 } });
 });
 
 test('acepta una solicitud', async () => {

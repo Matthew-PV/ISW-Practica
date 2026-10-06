@@ -27,6 +27,11 @@ async function buscarEntreUsuarios(usuarioAId, usuarioBId) {
   });
 }
 
+// Busca una solicitud o amistad por su identificador.
+async function buscarPorId(id) {
+  return prisma.amistad.findUnique({ where: { id } });
+}
+
 // Cambia una solicitud pendiente a amistad aceptada.
 async function aceptar(id) {
   return prisma.amistad.update({
@@ -50,4 +55,4 @@ async function listarSolicitudesRecibidas(destinatarioId) {
   });
 }
 
-module.exports = { crear, buscarEntreUsuarios, aceptar, borrar, listarSolicitudesRecibidas };
+module.exports = { crear, buscarEntreUsuarios, buscarPorId, aceptar, borrar, listarSolicitudesRecibidas };

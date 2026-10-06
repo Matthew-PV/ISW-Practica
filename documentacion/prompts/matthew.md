@@ -26,6 +26,24 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
+## 2026-10-06 — Responder solicitudes y eliminar amistades de CS-61
+
+- **Historia u objetivo:** CS-61, objetivo 7: aceptar o rechazar una solicitud solo por su destinatario y permitir que cualquiera de las dos personas elimine una amistad aceptada.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell y Jest.
+- **Contexto aportado:** Matthew facilitó la tarea 7 de la copia vigente del libro de historias y pidió mantener el mismo flujo de trabajo y registro automático.
+- **Prompt inicial:**
+
+  > Buenos días. Trabajemos en el objetivo 7 de la misma manera que antes.
+
+- **Resultado propuesto por la IA:** ampliar `amistadRepository` con la búsqueda por identificador y `amistadService` con `responderSolicitud` y `eliminarAmistad`.
+- **Decisiones y alcance:** solo una solicitud en estado pendiente puede aceptarse o rechazarse, y solo la persona destinataria puede hacerlo. Solo una amistad aceptada puede eliminarse, y cualquiera de sus dos participantes puede hacerlo. No se añadieron rutas ni interfaz.
+- **TDD:** primero se añadieron pruebas que fallaron porque las funciones no existían. Tras implementar las consultas y validaciones mínimas, pasaron las pruebas específicas y la batería completa. No fue necesaria una refactorización adicional.
+- **Comprensión humana de las pruebas:** la preparación simula solicitudes pendientes, amistades aceptadas y usuarios participantes o ajenos; la acción responde o elimina; el resultado esperado permite solo a quien corresponde y evita cambios en los demás casos.
+- **Intervención humana:** Matthew seleccionó el objetivo 7 y pidió continuar con el proceso aplicado anteriormente.
+- **Comprobación final:** las pruebas de repositorio completaron 6 casos y las de servicio 13; la batería completa se ejecutó correctamente.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
 ## 2026-10-05 — Implementar el envío de solicitudes de amistad de CS-61
 
 - **Historia u objetivo:** CS-61, objetivo 6: servicio para enviar una solicitud solo a un usuario existente, distinto de la persona solicitante y sin relación pendiente o aceptada previa en ningún sentido.
