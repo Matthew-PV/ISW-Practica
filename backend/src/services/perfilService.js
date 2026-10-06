@@ -3,12 +3,15 @@
 // Lo usa: routes/perfilRoutes.js.
 // Usa: repositories/usuarioRepository.js (leer y guardar el perfil),
 //      repositories/fotoRepository.js (subir la foto a Cloudinary),
+//      repositories/amistadRepository.js y repositories/seguimientoRepository.js (perfil público),
 //      services/shared/nombreUsuario.js (reglas del nombre) y errores.js.
 //
 // Todas las funciones reciben el `id` del usuario de la sesión: un usuario solo puede
 // ver y cambiar su propio perfil.
 const usuarioRepository = require('../repositories/usuarioRepository');
 const fotoRepository = require('../repositories/fotoRepository');
+const amistadRepository = require('../repositories/amistadRepository');
+const seguimientoRepository = require('../repositories/seguimientoRepository');
 const { crearError } = require('../errores');
 const { validarNombreUsuario } = require('./shared/nombreUsuario');
 
@@ -111,5 +114,31 @@ async function actualizarFotoPropia(id, archivo) {
   return conFotoPorDefecto(perfil);
 }
 
+// Devuelve el perfil público de otro usuario (nunca su email), con sus contadores de amigos y
+// seguidores y la relación de quien consulta con él.
+// - `usuarioId`: el usuario de la sesión, que consulta el perfil.
+// - `nombreUsuario`: el usuario cuyo perfil se consulta.
+// Devuelve { id, nombreUsuario, foto, ciudad, amigos, seguidores, relacion }, o error 404.
+// `relacion.amistad` es 'ninguna', 'enviada' (la envié yo), 'recibida' o 'amigos'.
+async function obtenerPerfilPublico(usuarioId, nombreUsuario) {
+  const perfil = await usuarioRepository.obtenerPerfilPublico(nombreUsuario);
+  if (!perfil) {
+    throw crearError('Usuario no encontrado', 404);
+  }
 
-module.exports = { obtenerPerfilPropio, actualizarPerfilPropio, actualizarFotoPropia, FOTO_POR_DEFECTO };
+  const amigos = await amistadRepository.contarAmigos(perfil.id);
+  const seguidores = await seguimientoRepository.contarSeguidores(perfil.id);
+  const amistad = await amistadRepository.buscarEntreUsuarios(usuarioId, perfil.id);
+  const siguiendo = await seguimientoRepository.sigueA(usuarioId, perfil.id);
+
+  let estadoAmistad = 'ninguna';
+  if (amistad?.estado === 'ACEPTADA') {
+    estadoAmistad = 'amigos';
+  } else if (amistad?.estado === 'PENDIENTE') {
+    estadoAmistad = amistad.solicitanteId === usuarioId ? 'enviada' : 'recibida';
+  }
+
+  return { ...conFotoPorDefecto(perfil), amigos, seguidores, relacion: { amistad: estadoAmistad, siguiendo } };
+}
+
+module.exports = { obtenerPerfilPropio, actualizarPerfilPropio, actualizarFotoPropia, obtenerPerfilPublico, FOTO_POR_DEFECTO };

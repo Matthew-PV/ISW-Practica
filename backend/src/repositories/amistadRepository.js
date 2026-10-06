@@ -55,4 +55,15 @@ async function listarSolicitudesRecibidas(destinatarioId) {
   });
 }
 
-module.exports = { crear, buscarEntreUsuarios, buscarPorId, aceptar, borrar, listarSolicitudesRecibidas };
+// Cuenta las amistades aceptadas de un usuario, sea quien sea el que envió la solicitud.
+// Las pendientes no cuentan.
+async function contarAmigos(usuarioId) {
+  return prisma.amistad.count({
+    where: {
+      estado: 'ACEPTADA',
+      OR: [{ solicitanteId: usuarioId }, { destinatarioId: usuarioId }],
+    },
+  });
+}
+
+module.exports = { crear, buscarEntreUsuarios, buscarPorId, aceptar, borrar, listarSolicitudesRecibidas, contarAmigos };
