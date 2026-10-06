@@ -16,8 +16,11 @@
   </nav>
 
   <main class="container contenedor-formulario py-5">
+    <!-- Se muestra solo si el usuario no existe (js/usuario.js) -->
+    <div id="no-encontrado" class="alert alert-warning text-center d-none">Usuario no encontrado</div>
+
     <!-- Los datos se rellenan desde js/usuario.js con el perfil que devuelve el backend -->
-    <div class="text-center">
+    <div id="perfil-usuario" class="text-center">
       <img id="foto-usuario" src="img/foto-por-defecto.svg" alt="Foto de perfil" class="rounded-circle mb-3" width="120" height="120">
       <h1 id="nombre-usuario" class="h3"></h1>
       <p id="ciudad" class="text-secondary"></p>
@@ -27,6 +30,8 @@
       </p>
       <!-- Los botones de amistad los crea js/usuario.js según la relación con este usuario -->
       <div id="botones-amistad" class="d-flex justify-content-center gap-2 mb-3"></div>
+      <!-- El botón de seguir lo crea js/usuario.js; seguir no depende de la amistad -->
+      <div id="boton-seguir" class="d-flex justify-content-center mb-3"></div>
       <div id="error-usuario" class="alert alert-danger d-none"></div>
     </div>
   </main>

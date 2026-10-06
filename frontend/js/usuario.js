@@ -1,23 +1,25 @@
 // Página del perfil de otro usuario (usuario.html): muestra su foto, nombre, ciudad, el número de
-// amigos y seguidores, y el botón de amistad que corresponde a la relación con él.
-// Se abre con usuario.html?nombre=ana. Usa `api` de shared/api.js.
+// amigos y seguidores, el botón de amistad que corresponde a la relación con él y el de seguir.
+// Se abre con usuario.html?nombre=ana. Si el usuario no existe lo indica, y si es el propio usuario
+// va a perfil.html. Usa `api` de shared/api.js.
 
 const nombre = new URLSearchParams(window.location.search).get('nombre');
 const botonesAmistad = document.getElementById('botones-amistad');
+const botonSeguir = document.getElementById('boton-seguir');
 const cajaError = document.getElementById('error-usuario');
 
-// Crea un botón con su texto y lo añade a la zona de botones de amistad
-function crearBoton(texto, clase, alPulsar) {
+// Crea un botón con su texto y lo añade a la zona indicada
+function crearBoton(zona, texto, clase, alPulsar) {
   const boton = document.createElement('button');
   boton.type = 'button';
   boton.className = `btn ${clase}`;
   boton.textContent = texto;
   boton.addEventListener('click', alPulsar);
-  botonesAmistad.append(boton);
+  zona.append(boton);
   return boton;
 }
 
-// Hace una petición de amistad y, si sale bien, vuelve a pedir el perfil para actualizar
+// Hace una petición de amistad o de seguimiento y, si sale bien, vuelve a pedir el perfil para actualizar
 // los botones y los contadores sin recargar la página. Si falla, se muestra el mensaje del backend.
 async function actuar(ruta, opciones) {
   cajaError.classList.add('d-none');
@@ -38,15 +40,15 @@ function mostrarBotonesAmistad(perfil) {
   const responder = (aceptar) => actuar(ruta, { method: 'PATCH', body: JSON.stringify({ aceptar }) });
 
   if (amistad === 'ninguna') {
-    crearBoton('Añadir amigo', 'btn-primary', () =>
+    crearBoton(botonesAmistad, 'Añadir amigo', 'btn-primary', () =>
       actuar('/amistades', { method: 'POST', body: JSON.stringify({ destinatarioId: perfil.id }) }));
   } else if (amistad === 'enviada') {
-    crearBoton('Solicitud enviada', 'btn-secondary', () => {}).disabled = true;
+    crearBoton(botonesAmistad, 'Solicitud enviada', 'btn-secondary', () => {}).disabled = true;
   } else if (amistad === 'recibida') {
-    crearBoton('Aceptar', 'btn-success', () => responder(true));
-    crearBoton('Rechazar', 'btn-outline-danger', () => responder(false));
+    crearBoton(botonesAmistad, 'Aceptar', 'btn-success', () => responder(true));
+    crearBoton(botonesAmistad, 'Rechazar', 'btn-outline-danger', () => responder(false));
   } else if (amistad === 'amigos') {
-    crearBoton('Eliminar amigo', 'btn-outline-danger', () => {
+    crearBoton(botonesAmistad, 'Eliminar amigo', 'btn-outline-danger', () => {
       if (window.confirm(`¿Seguro que quieres eliminar a ${perfil.nombreUsuario} de tus amigos?`)) {
         actuar(ruta, { method: 'DELETE' });
       }
@@ -54,23 +56,46 @@ function mostrarBotonesAmistad(perfil) {
   }
 }
 
+// Muestra «Seguir» o «Dejar de seguir» según si ya sigo a este usuario
+function mostrarBotonSeguir(perfil) {
+  botonSeguir.replaceChildren();
+  if (perfil.relacion.siguiendo) {
+    crearBoton(botonSeguir, 'Dejar de seguir', 'btn-outline-secondary', () =>
+      actuar(`/seguimientos/${perfil.id}`, { method: 'DELETE' }));
+  } else {
+    crearBoton(botonSeguir, 'Seguir', 'btn-outline-primary', () =>
+      actuar('/seguimientos', { method: 'POST', body: JSON.stringify({ seguidoId: perfil.id }) }));
+  }
+}
+
 // Pone en la página los datos del perfil público que devuelve el backend
 function mostrarPerfil(perfil) {
+  // Si el perfil es el mío, la pantalla de otro usuario no tiene sentido: se va a «Mi perfil»
+  if (perfil.esPropio) {
+    window.location.href = 'perfil.html';
+    return;
+  }
   document.getElementById('nombre-usuario').textContent = perfil.nombreUsuario;
   document.getElementById('ciudad').textContent = perfil.ciudad ?? '';
   document.getElementById('foto-usuario').src = perfil.foto;
   document.getElementById('amigos').textContent = perfil.amigos;
   document.getElementById('seguidores').textContent = perfil.seguidores;
   mostrarBotonesAmistad(perfil);
+  mostrarBotonSeguir(perfil);
 }
 
 // Pide el perfil del usuario indicado en la dirección (?nombre=...)
 async function cargarPerfil() {
   try {
     mostrarPerfil(await api(`/usuarios/${encodeURIComponent(nombre)}`));
-  } catch {
-    // Sin sesión (o el servidor no responde): se vuelve al login
-    window.location.href = '/';
+  } catch (err) {
+    if (err.message === 'Usuario no encontrado') {
+      document.getElementById('perfil-usuario').classList.add('d-none');
+      document.getElementById('no-encontrado').classList.remove('d-none');
+    } else {
+      // Sin sesión (o el servidor no responde): se vuelve al login
+      window.location.href = '/';
+    }
   }
 }
 

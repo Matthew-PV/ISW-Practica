@@ -13,7 +13,7 @@ const SCRIPTS = leer('js/shared/api.js') + leer('js/usuario.js');
 const FOTO = 'https://res.cloudinary.com/demo/image/upload/v1/planb/perfiles/usuario-2.png';
 const PERFIL = {
   id: 2, nombreUsuario: 'ana', foto: FOTO, ciudad: 'Madrid',
-  amigos: 3, seguidores: 5, relacion: { amistad: 'ninguna', siguiendo: false },
+  amigos: 3, seguidores: 5, esPropio: false, relacion: { amistad: 'ninguna', siguiendo: false },
 };
 
 // Respuesta de fetch con el código y el JSON indicados
@@ -187,5 +187,128 @@ describe('botón de amistad', () => {
     expect($('#error-usuario').classList.contains('d-none')).toBe(false);
     expect($('#error-usuario').textContent).toBe('Ya existe una solicitud o amistad entre estos usuarios');
     expect($('#nombre-usuario').textContent).toBe('ana');
+  });
+});
+
+// ---- Objetivo 7: botón Seguir / Dejar de seguir ----
+const conSeguimiento = (siguiendo, extra = {}) =>
+  ({ ...PERFIL, ...extra, relacion: { amistad: 'ninguna', amistadId: null, siguiendo } });
+const textoSeguir = () => [...document.querySelectorAll('#boton-seguir button')].map((b) => b.textContent);
+const botonSeguir = () => document.querySelector('#boton-seguir button');
+
+describe('botón de seguir', () => {
+  test('si no la sigo muestra «Seguir»', async () => {
+    await abrirPagina('ana', conSeguimiento(false));
+
+    expect(textoSeguir()).toEqual(['Seguir']);
+  });
+
+  test('si ya la sigo muestra «Dejar de seguir»', async () => {
+    await abrirPagina('ana', conSeguimiento(true));
+
+    expect(textoSeguir()).toEqual(['Dejar de seguir']);
+  });
+
+  test('«Seguir» la sigue, sube el contador de seguidores y pasa a «Dejar de seguir»', async () => {
+    await abrirPagina('ana', conSeguimiento(false), [
+      respuesta(201, { id: 1 }),
+      respuesta(200, conSeguimiento(true, { seguidores: 6 })),
+    ]);
+
+    botonSeguir().click();
+    await terminar();
+
+    const [ruta, opciones] = window.fetch.mock.calls[1];
+    expect(ruta).toBe('/api/seguimientos');
+    expect(opciones.method).toBe('POST');
+    expect(JSON.parse(opciones.body)).toEqual({ seguidoId: 2 });
+    expect(window.fetch.mock.calls[2][0]).toBe('/api/usuarios/ana');
+    expect($('#seguidores').textContent).toBe('6');
+    expect(textoSeguir()).toEqual(['Dejar de seguir']);
+  });
+
+  test('«Dejar de seguir» deja de seguirla, baja el contador y vuelve a «Seguir»', async () => {
+    await abrirPagina('ana', conSeguimiento(true), [
+      respuesta(204, null),
+      respuesta(200, conSeguimiento(false, { seguidores: 4 })),
+    ]);
+
+    botonSeguir().click();
+    await terminar();
+
+    const [ruta, opciones] = window.fetch.mock.calls[1];
+    expect(ruta).toBe('/api/seguimientos/2');
+    expect(opciones.method).toBe('DELETE');
+    expect($('#seguidores').textContent).toBe('4');
+    expect(textoSeguir()).toEqual(['Seguir']);
+  });
+
+  test('si el servidor rechaza la acción se muestra su mensaje', async () => {
+    await abrirPagina('ana', conSeguimiento(false), [respuesta(400, { error: 'Ya sigues a este usuario' })]);
+
+    botonSeguir().click();
+    await terminar();
+
+    expect($('#error-usuario').classList.contains('d-none')).toBe(false);
+    expect($('#error-usuario').textContent).toBe('Ya sigues a este usuario');
+  });
+
+  test('seguir es independiente de la amistad: siendo amigos se ven los dos botones', async () => {
+    await abrirPagina('ana', { ...PERFIL, relacion: { amistad: 'amigos', amistadId: 10, siguiendo: false } });
+
+    expect(textosBotones()).toEqual(['Eliminar amigo']);
+    expect(textoSeguir()).toEqual(['Seguir']);
+  });
+});
+
+// ---- Objetivo 9: usuario inexistente y perfil propio ----
+const locationReal = window.location;
+afterEach(() => {
+  Object.defineProperty(window, 'location', { value: locationReal, configurable: true, writable: true });
+});
+
+// Abre la página con un `location` simple, para ver a qué dirección intenta ir sin que jsdom navegue
+async function abrirVigilandoRedireccion(nombre, primeraRespuesta) {
+  window.history.pushState({}, '', `/usuario.html?nombre=${encodeURIComponent(nombre)}`);
+  document.documentElement.innerHTML = HTML;
+  Object.defineProperty(window, 'location', {
+    value: { search: locationReal.search, href: locationReal.href },
+    configurable: true,
+    writable: true,
+  });
+  window.fetch = jest.fn().mockReturnValueOnce(primeraRespuesta);
+  (0, eval)(SCRIPTS);
+  await terminar();
+}
+const oculto = (selector) => $(selector).classList.contains('d-none');
+
+describe('usuario inexistente y perfil propio', () => {
+  test('un usuario que existe muestra su perfil y no redirige', async () => {
+    await abrirVigilandoRedireccion('ana', respuesta(200, PERFIL));
+
+    expect(oculto('#perfil-usuario')).toBe(false);
+    expect(oculto('#no-encontrado')).toBe(true);
+    expect(window.location.href).toBe(locationReal.href);
+  });
+
+  test('si el usuario no existe se muestra «Usuario no encontrado» y no el perfil', async () => {
+    await abrirVigilandoRedireccion('nadie', respuesta(404, { error: 'Usuario no encontrado' }));
+
+    expect(oculto('#no-encontrado')).toBe(false);
+    expect($('#no-encontrado').textContent).toBe('Usuario no encontrado');
+    expect(oculto('#perfil-usuario')).toBe(true);
+    expect(window.location.href).toBe(locationReal.href);
+  });
+
+  test('si el perfil es el mío, se va a perfil.html', async () => {
+    await abrirVigilandoRedireccion('ana', respuesta(200, { ...PERFIL, esPropio: true }));
+
+    expect(window.location.href).toBe('perfil.html');
+  });
+
+  test('sin sesión se sigue yendo al login', async () => {
+    await abrirVigilandoRedireccion('ana', respuesta(401, { error: 'No hay sesión iniciada' }));
+
+    expect(window.location.href).toBe('/');
   });
 });
