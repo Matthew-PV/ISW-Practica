@@ -401,7 +401,9 @@ Scripts de `backend/package.json`:
 |---|---|
 | `npm run dev` | Arranca el servidor y lo reinicia al cambiar el código |
 | `npm start` | Arranca el servidor sin reinicio automático |
-| `npm test` | Ejecuta las pruebas con Jest |
+| `npm test` | Ejecuta las pruebas con Jest, sin base de datos (todo simulado) |
+| `npm run test:mysql` | Ejecuta las pruebas de `tests/mysql/` contra la base de datos del `.env` (Docker en marcha) |
+| `npm run test:todo` | Ejecuta `npm test` y después `npm run test:mysql` |
 | `npm run db:migrate` | Aplica los cambios de `schema.prisma` a la base de datos y genera la migración |
 | `npm run db:studio` | Abre Prisma Studio, una interfaz web para ver y editar los datos |
 
@@ -414,4 +416,5 @@ Scripts de `backend/package.json`:
 * **Tests unitarios (Jest)** de la lógica de negocio: validaciones, permisos, cálculos.
 * **Tests de endpoints (Jest + Supertest)** de la API: cada criterio de validación de una tarjeta se traduce en al menos un test.
 * **Tests de pantallas (Jest + jsdom)** del frontend, con el servidor y el CAPTCHA simulados: por ejemplo, el registro (`tests/registroPantalla.test.js`).
+* **Tests con MySQL real (`tests/mysql/`)** para lo que solo la base de datos puede demostrar, como que una restricción única impide duplicados con peticiones simultáneas (`valoracionConcurrencia.test.js`). No simulan nada, crean sus propios datos y los borran al terminar. `npm test` no los incluye, para que funcione sin Docker; se ejecutan con `npm run test:mysql`, o junto al resto con `npm run test:todo`.
 * **Frontend en el navegador:** se prueba manualmente, tanto en tamaño de ordenador como de móvil.

@@ -34,6 +34,8 @@ npm install
 npm run db:migrate
 npm run db:seed               # catálogo inicial de capitales (se puede repetir)
 npm run dev                   # http://localhost:3000
+npm test                      # pruebas sin base de datos
+npm run test:todo             # además, las pruebas con MySQL real (Docker en marcha)
 ```
 
 ## Documentación

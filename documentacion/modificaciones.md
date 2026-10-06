@@ -14,6 +14,7 @@ Se ha empezado CS-01. Como necesita saber si quien valora puede ver la experienc
 - **Validaciones de la valoración:** si algo falla no se guarda nada. 401 si el usuario de la sesión ya no existe; 400 si el id no es válido, la puntuación no es un entero del 1 al 5 o el comentario no es texto; 404 «La experiencia no existe» tanto si no existe como si quien valora no puede verla (así no se revela su existencia); 403 si el autor intenta valorar su propia experiencia.
 - **Regla de visibilidad compartida:** `services/shared/visibilidad.js` (`puedeVerExperiencia`): el autor siempre; pública, cualquiera; amigos, solo con amistad aceptada (`sonAmigos` de CS-61); privada, nadie más. Pensada para reutilizarse en CS-02, CS-30 y CS-63.
 - **Pruebas:** `tests/visibilidadModelo.test.js` comprueba el enum y el valor por defecto en el esquema; `tests/valoracionModelo.test.js`, los campos de `Valoracion` y su restricción única; `tests/valoracionService.test.js` y `tests/valoraciones.test.js`, crear, modificar y cada rechazo en el servicio y por HTTP, incluido que seguir al autor no da acceso a sus experiencias de amigos; `tests/visibilidad.test.js`, la regla de visibilidad; `tests/valoracionRepository.test.js`, que el repositorio crea, pasa a actualizar ante un duplicado y relanza cualquier otro error.
+- **Prueba con MySQL real (objetivo 10):** `tests/mysql/valoracionConcurrencia.test.js` comprueba en la base de datos que la restricción única rechaza un duplicado y que 20 peticiones simultáneas del mismo usuario dejan una sola valoración (una respuesta 201 y diecinueve 200, sin errores). Crea sus propios datos y los borra al terminar. Nuevos comandos: `npm run test:mysql` (solo estas pruebas) y `npm run test:todo` (`npm test` y después estas). `npm test` no las incluye, así que sigue funcionando sin Docker.
 
 ### Para quien continúe
 
@@ -29,6 +30,8 @@ npm test
 ```
 
 Resultado esperado: 33 suites y 277 pruebas correctas.
+
+Con Docker en marcha, `npm run test:todo` ejecuta además las pruebas con MySQL real: 1 suite y 2 pruebas correctas.
 
 
 

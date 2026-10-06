@@ -8,6 +8,8 @@
     "dev": "node --watch --env-file=.env src/server.js",
     "start": "node --env-file=.env src/server.js",
     "test": "jest",
+    "test:mysql": "node --env-file=.env node_modules/jest/bin/jest.js --testPathIgnorePatterns=/node_modules/ --runInBand tests/mysql",
+    "test:todo": "npm test && npm run test:mysql",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "node --env-file=.env prisma/seed.js"
@@ -35,6 +37,10 @@
   "jest": {
     "setupFiles": [
       "./tests/setup.js"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/tests/mysql/"
     ]
   },
   "allowScripts": {
