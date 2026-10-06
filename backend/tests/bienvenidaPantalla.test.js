@@ -3,7 +3,7 @@
  */
 
 // CS-48: las valoraciones de amigos y seguidores aparecen en una sección
-// propia dentro del detalle de una experiencia.
+// propia dentro del detalle de una experiencia y se pueden paginar.
 // Se simula el navegador con jsdom y el servidor con fetch.
 
 const fs = require('node:fs');
@@ -75,7 +75,6 @@ beforeEach(async () => {
   document.documentElement.innerHTML = HTML;
 
   // jsdom no implementa completamente <dialog>.
-  // Simulamos únicamente los métodos que usa bienvenida.js.
   for (const dialogo of document.querySelectorAll('dialog')) {
     dialogo.showModal = jest.fn();
     dialogo.close = jest.fn();
@@ -124,7 +123,10 @@ beforeEach(async () => {
         );
       }
 
-      if (ruta === '/api/experiencias/10/valoracion') {
+      if (
+        ruta === '/api/experiencias/10/valoracion' ||
+        ruta === '/api/experiencias/10/valoracion?pagina=2&limite=10'
+      ) {
         return respuesta(
           200,
           respuestaValoraciones
@@ -140,7 +142,6 @@ beforeEach(async () => {
   // Ejecuta api.js y bienvenida.js como lo haría el navegador.
   (0, eval)(SCRIPTS);
 
-  // Esperamos a que termine la carga inicial.
   await terminar();
   await terminar();
 });
@@ -166,11 +167,6 @@ test('al pulsar Ver detalle muestra las valoraciones de amigos y seguidores', as
   expect(
     $('#descripcion-detalle').textContent
   ).toBe('Visita a varios museos');
-
-  expect(window.fetch).toHaveBeenCalledWith(
-    '/api/experiencias/10/valoracion',
-    expect.anything()
-  );
 
   expect(
     $('#lista-valoraciones strong').textContent
@@ -214,6 +210,10 @@ test('si no hay valoraciones relacionadas muestra la sección vacía sin error',
   expect(
     visible('#error-valoraciones')
   ).toBeNull();
+
+  expect(
+    visible('#paginacion-valoraciones')
+  ).toBeNull();
 });
 
 test('el botón Editar sigue abriendo el formulario de edición', () => {
@@ -234,4 +234,143 @@ test('el botón Editar sigue abriendo el formulario de edición', () => {
   expect(
     $('#descripcion').value
   ).toBe('Visita a varios museos');
+});
+
+test('permite avanzar a la página siguiente y volver a la anterior', async () => {
+  // Primera página: hay 12 valoraciones en total,
+  // por tanto existen 2 páginas con límite 10.
+  respuestaValoraciones = {
+    valoraciones: [
+      {
+        id: 20,
+        usuarioId: 3,
+        experienciaId: 10,
+        puntuacion: 5,
+        comentario: 'Primera página',
+        usuario: {
+          id: 3,
+          nombreUsuario: 'carlos',
+          foto: null,
+        },
+      },
+    ],
+    total: 12,
+    pagina: 1,
+    limite: 10,
+  };
+
+  $('.tarjeta-experiencia .boton-ver').click();
+
+  await terminar();
+
+  expect(
+    visible('#paginacion-valoraciones')
+  ).not.toBeNull();
+
+  expect(
+    $('#pagina-valoraciones').textContent
+  ).toBe('Página 1 de 2');
+
+  expect(
+    $('#boton-pagina-anterior').disabled
+  ).toBe(true);
+
+  expect(
+    $('#boton-pagina-siguiente').disabled
+  ).toBe(false);
+
+  // Preparamos la respuesta que devolverá el servidor para la página 2.
+  respuestaValoraciones = {
+    valoraciones: [
+      {
+        id: 30,
+        usuarioId: 4,
+        experienciaId: 10,
+        puntuacion: 4,
+        comentario: 'Segunda página',
+        usuario: {
+          id: 4,
+          nombreUsuario: 'lucia',
+          foto: null,
+        },
+      },
+    ],
+    total: 12,
+    pagina: 2,
+    limite: 10,
+  };
+
+  $('#boton-pagina-siguiente').click();
+
+  await terminar();
+
+  expect(window.fetch).toHaveBeenCalledWith(
+    '/api/experiencias/10/valoracion?pagina=2&limite=10',
+    expect.anything()
+  );
+
+  expect(
+    $('#pagina-valoraciones').textContent
+  ).toBe('Página 2 de 2');
+
+  expect(
+    $('#lista-valoraciones strong').textContent
+  ).toBe('lucia');
+
+  expect(
+    $('#lista-valoraciones p').textContent
+  ).toBe('Segunda página');
+
+  expect(
+    $('#boton-pagina-anterior').disabled
+  ).toBe(false);
+
+  expect(
+    $('#boton-pagina-siguiente').disabled
+  ).toBe(true);
+
+  // Ahora volvemos a preparar la primera página.
+  respuestaValoraciones = {
+    valoraciones: [
+      {
+        id: 20,
+        usuarioId: 3,
+        experienciaId: 10,
+        puntuacion: 5,
+        comentario: 'Primera página',
+        usuario: {
+          id: 3,
+          nombreUsuario: 'carlos',
+          foto: null,
+        },
+      },
+    ],
+    total: 12,
+    pagina: 1,
+    limite: 10,
+  };
+
+  $('#boton-pagina-anterior').click();
+
+  await terminar();
+
+  expect(
+    $('#pagina-valoraciones').textContent
+  ).toBe('Página 1 de 2');
+
+  expect(
+    $('#lista-valoraciones strong').textContent
+  ).toBe('carlos');
+
+  expect(
+    $('#lista-valoraciones p').textContent
+  ).toBe('Primera página');
+
+  expect(
+    $('#boton-pagina-anterior').disabled
+  ).toBe(true);
+
+  expect(
+    $('#boton-pagina-siguiente').disabled
+  ).toBe(false);
 });

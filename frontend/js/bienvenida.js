@@ -1,7 +1,7 @@
 // Página de bienvenida (bienvenida.html): saluda al usuario con sesión,
 // muestra sus experiencias y permite crearlas, editarlas y consultar su detalle.
 // CS-48: en el detalle se muestran en una sección propia las valoraciones
-// realizadas por amigos y seguidores.
+// realizadas por amigos y seguidores, con paginación.
 //
 // Usa `api` de shared/api.js.
 
@@ -30,9 +30,29 @@ const listaValoraciones = document.getElementById('lista-valoraciones');
 const sinValoraciones = document.getElementById('sin-valoraciones');
 const errorValoraciones = document.getElementById('error-valoraciones');
 
+// Elementos de paginación de las valoraciones.
+const paginacionValoraciones =
+  document.getElementById('paginacion-valoraciones');
+
+const botonPaginaAnterior =
+  document.getElementById('boton-pagina-anterior');
+
+const botonPaginaSiguiente =
+  document.getElementById('boton-pagina-siguiente');
+
+const textoPaginaValoraciones =
+  document.getElementById('pagina-valoraciones');
+
 // Experiencia que se está editando.
 // Es null cuando el formulario sirve para crear una nueva.
 let editando = null;
+
+// Experiencia cuyo detalle está abierto.
+let experienciaDetalle = null;
+
+// Estado de la paginación de valoraciones.
+let paginaActualValoraciones = 1;
+const LIMITE_VALORACIONES = 10;
 
 // Crea visualmente una valoración.
 // Todos los datos del usuario se asignan con textContent para evitar ejecutar HTML.
@@ -53,7 +73,6 @@ function crearValoracion(valoracion) {
   puntuacion.textContent = `${valoracion.puntuacion}/5`;
 
   cabecera.append(usuario, puntuacion);
-
   elemento.appendChild(cabecera);
 
   if (valoracion.comentario) {
@@ -67,27 +86,52 @@ function crearValoracion(valoracion) {
   return elemento;
 }
 
-// Abre el detalle de una experiencia y consulta las valoraciones
-// de amigos y seguidores del usuario de la sesión.
-async function abrirDetalle(experiencia) {
-  tituloDetalle.textContent = experiencia.titulo;
-  descripcionDetalle.textContent = experiencia.descripcion;
+// Actualiza los botones y el texto de la paginación.
+function actualizarPaginacion(total) {
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(total / LIMITE_VALORACIONES)
+  );
 
+  if (totalPaginas <= 1) {
+    paginacionValoraciones.classList.add('d-none');
+    return;
+  }
+
+  paginacionValoraciones.classList.remove('d-none');
+
+  textoPaginaValoraciones.textContent =
+    `Página ${paginaActualValoraciones} de ${totalPaginas}`;
+
+  botonPaginaAnterior.disabled =
+    paginaActualValoraciones <= 1;
+
+  botonPaginaSiguiente.disabled =
+    paginaActualValoraciones >= totalPaginas;
+}
+
+// Consulta y muestra una página de valoraciones.
+async function cargarValoracionesDetalle() {
   listaValoraciones.replaceChildren();
 
   sinValoraciones.classList.add('d-none');
   errorValoraciones.classList.add('d-none');
-
-  dialogoDetalle.showModal();
+  paginacionValoraciones.classList.add('d-none');
 
   try {
-    const resultado = await api(
-      `/experiencias/${experiencia.id}/valoracion`
-    );
+    // La primera página puede usar los valores por defecto del backend.
+    // Para las siguientes se envían página y límite expresamente.
+    const ruta =
+      paginaActualValoraciones === 1
+        ? `/experiencias/${experienciaDetalle.id}/valoracion`
+        : `/experiencias/${experienciaDetalle.id}/valoracion?pagina=${paginaActualValoraciones}&limite=${LIMITE_VALORACIONES}`;
+
+    const resultado = await api(ruta);
 
     const valoraciones = resultado.valoraciones ?? [];
+    const total = resultado.total ?? valoraciones.length;
 
-    if (valoraciones.length === 0) {
+    if (valoraciones.length === 0 && total === 0) {
       sinValoraciones.classList.remove('d-none');
       return;
     }
@@ -95,10 +139,32 @@ async function abrirDetalle(experiencia) {
     listaValoraciones.append(
       ...valoraciones.map(crearValoracion)
     );
+
+    actualizarPaginacion(total);
   } catch (err) {
     errorValoraciones.textContent = err.message;
     errorValoraciones.classList.remove('d-none');
   }
+}
+
+// Abre el detalle de una experiencia y carga la primera página
+// de valoraciones de amigos y seguidores.
+async function abrirDetalle(experiencia) {
+  experienciaDetalle = experiencia;
+  paginaActualValoraciones = 1;
+
+  tituloDetalle.textContent = experiencia.titulo;
+  descripcionDetalle.textContent = experiencia.descripcion;
+
+  listaValoraciones.replaceChildren();
+
+  sinValoraciones.classList.add('d-none');
+  errorValoraciones.classList.add('d-none');
+  paginacionValoraciones.classList.add('d-none');
+
+  dialogoDetalle.showModal();
+
+  await cargarValoracionesDetalle();
 }
 
 // Crea la columna con la tarjeta de una experiencia.
@@ -206,6 +272,30 @@ document
     'click',
     () => dialogoDetalle.close()
   );
+
+// Página anterior de valoraciones.
+botonPaginaAnterior.addEventListener(
+  'click',
+  async () => {
+    if (paginaActualValoraciones <= 1) {
+      return;
+    }
+
+    paginaActualValoraciones -= 1;
+
+    await cargarValoracionesDetalle();
+  }
+);
+
+// Página siguiente de valoraciones.
+botonPaginaSiguiente.addEventListener(
+  'click',
+  async () => {
+    paginaActualValoraciones += 1;
+
+    await cargarValoracionesDetalle();
+  }
+);
 
 // Al pulsar Guardar se crea o se edita la experiencia.
 formulario.addEventListener('submit', async (e) => {
