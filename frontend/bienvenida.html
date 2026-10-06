@@ -16,54 +16,151 @@
   </nav>
 
   <main class="container py-4">
-    <!-- El nombre lo rellena js/bienvenida.js -->
     <h1 class="h3 mb-4">¡Bienvenido, <span id="nombre-usuario"></span>!</h1>
 
     <h2 class="h5 mb-3">Mis experiencias</h2>
     <div id="error-lista" class="alert alert-danger d-none"></div>
 
-    <!-- Rejilla: primero el botón «+» y detrás las experiencias, de la más nueva a la más antigua.
-         Las tarjetas las añade js/bienvenida.js -->
     <div id="rejilla" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
       <div class="col" id="columna-nueva">
-        <button type="button" id="boton-nueva" class="tarjeta-nueva" aria-label="Nueva experiencia">+</button>
+        <button
+          type="button"
+          id="boton-nueva"
+          class="tarjeta-nueva"
+          aria-label="Nueva experiencia"
+        >
+          +
+        </button>
       </div>
     </div>
   </main>
 
-  <!-- Formulario para crear o editar una experiencia. Se abre encima de la página (<dialog>) -->
-  <dialog id="dialogo-experiencia" class="dialogo-experiencia" aria-labelledby="titulo-dialogo">
+  <!-- Formulario para crear o editar una experiencia -->
+  <dialog
+    id="dialogo-experiencia"
+    class="dialogo-experiencia"
+    aria-labelledby="titulo-dialogo"
+  >
     <form id="form-experiencia" class="p-4">
       <h2 id="titulo-dialogo" class="h5 mb-3">Nueva experiencia</h2>
+
       <div class="mb-3">
         <label for="titulo" class="form-label">Título</label>
-        <input type="text" class="form-control" id="titulo" maxlength="191" required>
+        <input
+          type="text"
+          class="form-control"
+          id="titulo"
+          maxlength="191"
+          required
+        >
       </div>
+
       <div class="mb-3">
         <label for="descripcion" class="form-label">Descripción</label>
-        <textarea class="form-control" id="descripcion" rows="4" required></textarea>
+        <textarea
+          class="form-control"
+          id="descripcion"
+          rows="4"
+          required
+        ></textarea>
       </div>
+
       <div class="mb-3">
         <label for="ciudadId" class="form-label">Ciudad</label>
-        <!-- Las opciones salen del catálogo de ciudades (GET /api/ciudades) -->
         <select class="form-select" id="ciudadId" required>
           <option value="">Elige una ciudad</option>
         </select>
       </div>
+
       <div class="mb-3">
         <label for="tipo" class="form-label">Tipo (opcional)</label>
-        <input type="text" class="form-control" id="tipo" maxlength="191" placeholder="Cultural, gastronómica...">
+        <input
+          type="text"
+          class="form-control"
+          id="tipo"
+          maxlength="191"
+          placeholder="Cultural, gastronómica..."
+        >
       </div>
+
       <div class="mb-3">
-        <label for="momentoAdecuado" class="form-label">Momento adecuado (opcional)</label>
-        <input type="text" class="form-control" id="momentoAdecuado" maxlength="191" placeholder="Por la tarde, en primavera...">
+        <label for="momentoAdecuado" class="form-label">
+          Momento adecuado (opcional)
+        </label>
+        <input
+          type="text"
+          class="form-control"
+          id="momentoAdecuado"
+          maxlength="191"
+          placeholder="Por la tarde, en primavera..."
+        >
       </div>
-      <div id="error-experiencia" class="alert alert-danger d-none"></div>
+
+      <div
+        id="error-experiencia"
+        class="alert alert-danger d-none"
+      ></div>
+
       <div class="d-flex justify-content-end gap-2">
-        <button type="button" id="boton-cancelar" class="btn btn-outline-secondary">Cancelar</button>
-        <button type="submit" class="btn btn-primary">Guardar</button>
+        <button
+          type="button"
+          id="boton-cancelar"
+          class="btn btn-outline-secondary"
+        >
+          Cancelar
+        </button>
+
+        <button type="submit" class="btn btn-primary">
+          Guardar
+        </button>
       </div>
     </form>
+  </dialog>
+
+  <!-- Detalle de una experiencia y valoraciones destacadas de amigos/seguidores -->
+  <dialog
+    id="dialogo-detalle"
+    class="dialogo-experiencia"
+    aria-labelledby="titulo-detalle"
+  >
+    <div class="p-4">
+      <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+        <h2 id="titulo-detalle" class="h5 mb-0"></h2>
+
+        <button
+          type="button"
+          id="boton-cerrar-detalle"
+          class="btn btn-outline-secondary btn-sm"
+        >
+          Cerrar
+        </button>
+      </div>
+
+      <p
+        id="descripcion-detalle"
+        class="mb-4"
+      ></p>
+
+      <hr>
+
+      <h3 class="h6 mb-3">
+        Valoraciones de amigos y seguidores
+      </h3>
+
+      <div
+        id="error-valoraciones"
+        class="alert alert-danger d-none"
+      ></div>
+
+      <div id="lista-valoraciones"></div>
+
+      <p
+        id="sin-valoraciones"
+        class="text-body-secondary d-none"
+      >
+        Ningún amigo o seguidor ha valorado esta experiencia.
+      </p>
+    </div>
   </dialog>
 
   <script src="js/shared/api.js"></script>
