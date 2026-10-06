@@ -72,4 +72,11 @@ async function eliminarAmistad(usuarioId, amistadId) {
   return amistadRepository.borrar(amistadId);
 }
 
-module.exports = { enviarSolicitud, responderSolicitud, eliminarAmistad };
+// Devuelve true solo cuando existe una amistad aceptada entre ambos usuarios.
+// La usan otros servicios para decidir visibilidad y permisos sin duplicar esta regla.
+async function sonAmigos(usuarioAId, usuarioBId) {
+  const amistad = await amistadRepository.buscarEntreUsuarios(usuarioAId, usuarioBId);
+  return amistad?.estado === 'ACEPTADA';
+}
+
+module.exports = { enviarSolicitud, responderSolicitud, eliminarAmistad, sonAmigos };

@@ -7,7 +7,7 @@ jest.mock('../src/repositories/amistadRepository', () => ({
 
 const usuarioRepository = require('../src/repositories/usuarioRepository');
 const amistadRepository = require('../src/repositories/amistadRepository');
-const { enviarSolicitud, responderSolicitud, eliminarAmistad } = require('../src/services/amistadService');
+const { enviarSolicitud, responderSolicitud, eliminarAmistad, sonAmigos } = require('../src/services/amistadService');
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -93,4 +93,15 @@ test('un tercero no puede eliminar una amistad', async () => {
 
   await expect(eliminarAmistad(3, 10)).rejects.toMatchObject({ status: 403 });
   expect(amistadRepository.borrar).not.toHaveBeenCalled();
+});
+
+test.each([
+  ['una amistad aceptada', { ...AMISTAD }, true],
+  ['una solicitud pendiente', { ...SOLICITUD }, false],
+  ['ninguna relación', null, false],
+])('sonAmigos devuelve %s solo cuando la relación está aceptada', async (_, relacion, esperado) => {
+  amistadRepository.buscarEntreUsuarios.mockResolvedValue(relacion);
+
+  await expect(sonAmigos(1, 2)).resolves.toBe(esperado);
+  expect(amistadRepository.buscarEntreUsuarios).toHaveBeenCalledWith(1, 2);
 });

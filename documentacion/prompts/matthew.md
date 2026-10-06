@@ -26,6 +26,24 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
+## 2026-10-06 — Crear la comprobación compartida de amistad de CS-61
+
+- **Historia u objetivo:** CS-61, objetivo 9: función `sonAmigos(a, b)` que cuenta únicamente amistades aceptadas y se podrá reutilizar en CS-30, CS-44 y CS-48.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell y Jest.
+- **Contexto aportado:** Matthew facilitó el objetivo 9 de CS-61 y pidió seguir el mismo procedimiento que en los objetivos anteriores.
+- **Prompt inicial:**
+
+  > Ahora haremos el objetivo 9
+
+- **Resultado propuesto por la IA:** añadir `sonAmigos` a `amistadService`; busca la relación en ambos sentidos mediante el repositorio y devuelve true exclusivamente si su estado es `ACEPTADA`.
+- **Decisiones y alcance:** es una consulta interna reutilizable, por lo que no comprueba sesión ni expone una ruta. Las solicitudes pendientes y la ausencia de relación devuelven false.
+- **TDD:** primero se añadieron pruebas para amistad aceptada, solicitud pendiente y ausencia de relación; fallaron porque la función no existía. Tras implementarla, pasaron las tres pruebas y la batería completa.
+- **Comprensión humana de las pruebas:** la preparación simula el estado de la relación entre dos usuarios; la acción consulta `sonAmigos`; el resultado esperado solo es true para una relación aceptada.
+- **Intervención humana:** Matthew seleccionó el objetivo 9 y mantuvo el flujo de TDD y registro aplicado previamente.
+- **Comprobación final:** `npm test -- --runInBand tests/amistadService.test.js` completó 16 pruebas correctas; la batería completa terminó con 24 suites y 217 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
 ## 2026-10-06 — Seguir y dejar de seguir en CS-61
 
 - **Historia u objetivo:** CS-61, objetivo 8: servicio para seguir y dejar de seguir sin permitirse a uno mismo ni duplicar seguimientos.
