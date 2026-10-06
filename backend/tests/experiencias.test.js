@@ -2,6 +2,7 @@
 jest.mock('../src/repositories/usuarioRepository');
 jest.mock('../src/repositories/ciudadRepository');
 jest.mock('../src/repositories/experienciaRepository');
+jest.mock('../src/services/shared/visibilidad');
 
 const request = require('supertest');
 const bcrypt = require('bcrypt');
@@ -9,6 +10,8 @@ const app = require('../src/app');
 const usuarioRepository = require('../src/repositories/usuarioRepository');
 const ciudadRepository = require('../src/repositories/ciudadRepository');
 const experienciaRepository = require('../src/repositories/experienciaRepository');
+const prisma = require('../src/repositories/shared/prisma'); // Ajusta la ruta a tu instancia de Prisma
+const visibilidad = require('../src/services/shared/visibilidad');
 
 const CIUDAD = { id: 1, nombre: 'Madrid' };
 const DATOS = { titulo: 'Tarde cultural', descripcion: 'Museo y paseo', ciudadId: 1 };
@@ -138,4 +141,60 @@ test('un fallo inesperado al guardar responde 500 sin revelar detalles internos'
   expect(res.status).toBe(500);
   expect(res.body).toEqual({ error: 'Error interno del servidor' });
   expect(registro).toHaveBeenCalledWith(error);
+});
+
+describe('GET /api/experiencias/:id (CS-63)', () => {
+  // 1. Datos simulados
+  const expVisible = {
+    id: 1,
+    titulo: 'Experiencia Visible',
+    visibilidad: 'PUBLICA',
+    autorId: 1, // Coincide con el id del usuario simulado en el archivo
+    autor: { id: 1, nombreUsuario: 'autor_publico' },
+    ciudad: CIUDAD
+  };
+
+  const expPrivada = {
+    id: 2,
+    titulo: 'Experiencia Privada',
+    visibilidad: 'PRIVADA',
+    autorId: 2, // ID diferente al usuario logueado, por lo que no tendrá permiso
+    autor: { id: 2, nombreUsuario: 'autor_privado' },
+    ciudad: CIUDAD
+  };
+
+  // 2. Pruebas completas
+  it('debe devolver la experiencia si es visible', async () => {
+      const agente = await agenteConSesion();
+      experienciaRepository.buscarPorId.mockResolvedValue(expVisible);
+      // Simulamos que la comprobación de visibilidad es correcta
+      visibilidad.puedeVerExperiencia.mockResolvedValue(true);
+
+      const response = await agente.get(`/api/experiencias/${expVisible.id}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.id).toBe(expVisible.id);
+      expect(response.body.autor).toBeDefined();
+      expect(response.body.ciudad).toBeDefined();
+    });
+
+    it('debe devolver un error si la experiencia no es visible', async () => {
+      const agente = await agenteConSesion();
+      experienciaRepository.buscarPorId.mockResolvedValue(expPrivada);
+      // Simulamos que la comprobación de visibilidad falla
+      visibilidad.puedeVerExperiencia.mockResolvedValue(false);
+
+      const response = await agente.get(`/api/experiencias/${expPrivada.id}`);
+
+      expect(response.status).toBe(403);
+    });
+
+    it('debe devolver un error 404 si la experiencia es inexistente', async () => {
+      const agente = await agenteConSesion();
+      experienciaRepository.buscarPorId.mockResolvedValue(null);
+
+      const response = await agente.get('/api/experiencias/9999999');
+
+      expect(response.status).toBe(404);
+    });
 });

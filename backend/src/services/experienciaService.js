@@ -11,7 +11,9 @@
 const ciudadRepository = require('../repositories/ciudadRepository');
 const experienciaRepository = require('../repositories/experienciaRepository');
 const usuarioRepository = require('../repositories/usuarioRepository');
+const visibilidad =  require('./shared/visibilidad')
 const { crearError } = require('../errores');
+const { NotFoundError, ForbiddenError } = require('../errores')
 
 const TEXTO_CORTO_MAX = 191; // Columnas VARCHAR(191) de MySQL.
 const DESCRIPCION_MAX_BYTES = 65535; // Capacidad de la columna TEXT en UTF-8.
@@ -90,7 +92,7 @@ async function validarCreacion(datos) {
 // Valida los campos que se pueden modificar de una experiencia.
 // En una edición no es obligatorio enviar todos los campos,
 // solo aquellos que se quieran cambiar.
-async function validarEdicion(datos) {  
+async function validarEdicion(datos) {
   if (!datos || typeof datos !== 'object' || Array.isArray(datos)) {
     throw crearError('Los datos de la experiencia deben ser un objeto', 400);
   }
@@ -229,10 +231,33 @@ async function listarExperienciasPropias(usuarioId) {
   return experienciaRepository.listarPorAutor(usuarioId);
 }
 
+//Devuelve
+async function obtenerExperiencia(experienciaId, usuarioId) {
+  const experiencia = await experienciaRepository.buscarPorId(experienciaId);
+
+  if (!experiencia) {
+    const error = new Error('La experiencia no existe');
+    error.status = 404;
+    throw error;
+  }
+
+  // Le pasamos el ID a visibilidad, ya que hace su propia consulta interna
+  const esVisible = await visibilidad.puedeVerExperiencia(experienciaId, usuarioId);
+
+  if (!esVisible) {
+    const error = new Error('No tienes permiso para ver esta experiencia');
+    error.status = 403;
+    throw error;
+  }
+
+  return experiencia;
+}
+
 module.exports = {
   listarExperienciasPropias,
   validarCreacion,
   validarEdicion,
   crearExperiencia,
-  editarExperiencia
+  editarExperiencia,
+  obtenerExperiencia
 };

@@ -39,4 +39,14 @@ router.patch('/:id', requiereSesion, async (req, res) => {
   res.status(200).json(experiencia);
 });
 
+router.get('/:id', requiereSesion, async (req, res, next) => {
+  try {
+    const usuarioId = req.usuario ? req.usuario.id : null;
+    const experiencia = await experienciaService.obtenerExperiencia(req.params.id, usuarioId);
+    res.json(experiencia);
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;
