@@ -44,7 +44,8 @@ Se ha sustituido el libro de `documentacion/customer-stories/` por la copia actu
 - **Estado:** en CS-01, CS-22, CS-30, CS-45, CS-48 y CS-60 el número de objetivo estaba escrito a mano y el Índice no contaba esos objetivos, así que esas historias no podían llegar a «Finalizada». Se ha vuelto a poner la fórmula que los numera. CS-01 pasa a «Finalizada», porque tiene todos sus objetivos en «Sí».
 - **Cómo añadir objetivos:** la ayuda de cada página y la sección 3.3 de `metodologia.md` explican el método nuevo: pulsar Tab en la última celda de la tabla, encima de «Total».
 - **José** se ha añadido a la lista de responsables de todas las páginas y a `metodologia.md`.
-- **Datos:** títulos de CS-37 a CS-42 en mayúsculas, como el resto; prioridad de CS-06 corregida de «IM» a «M»; Tiempo estimado de CS-60 en 3 h, y su página vuelve a copiarlo del Índice.
+- **Cambios hechos en OneDrive después de la primera descarga, incorporados:** tiempos de CS-48 (objetivo 3) y CS-62 (objetivos 9 y 10, ahora finalizados).
+- **Datos:** títulos de CS-37 a CS-42 en mayúsculas, como el resto; prioridad de CS-06 corregida de «IM» a «N»; Tiempo estimado de CS-60 en 3 h, y su página vuelve a copiarlo del Índice.
 
 ### Para quien use el libro
 
