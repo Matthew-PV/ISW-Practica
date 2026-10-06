@@ -68,7 +68,7 @@ El estado se calcula a partir de los objetivos de la página:
 **Páginas.** Cada página tiene dos niveles:
 
 1. **Cabecera de la historia:** Ref, Título, Estado, Prioridad, Riesgo, Tiempo estimado, Tiempo total, Propietario, Fecha, Prior Reference, Task Description y Criterio de Validación. Las celdas con fondo gris se calculan solas: Título, Estado, Prioridad, Riesgo y Tiempo estimado se copian del Índice, y Tiempo total suma los objetivos. Para cambiarlas se edita el Índice. El enlace «↑ Índice» de la banda superior vuelve al Índice.
-2. **Task Tracking:** tabla de objetivos con las columnas Objetivo (número automático), Descripción, Finalizado (Sí o No), Responsable, Tiempo estimado y Tiempo total. Responsable ofrece la lista del equipo (Joaquin, Matthew, Jorge, Flavia y Lucia) y admite otros nombres tras un aviso.
+2. **Task Tracking:** tabla de objetivos con las columnas Objetivo (número automático), Descripción, Finalizado (Sí o No), Responsable, Tiempo estimado y Tiempo total. Responsable ofrece la lista del equipo (Joaquin, Matthew, Jorge, Flavia, Lucia y José) y admite otros nombres tras un aviso. La última fila, «Total», suma el Tiempo estimado y el Tiempo total de los objetivos en minutos; no cuenta como objetivo y el Índice no la incluye en sus cálculos.
 
 **Unidades.** Los tiempos de la historia (Índice y cabecera de la página) están en horas y los de los objetivos, en minutos. Se escribe solo el número, por ejemplo `0,5` horas o `30` minutos: la unidad la añade el formato de la celda, y los campos de tiempo no aceptan texto ni números negativos. La fecha se muestra como `DD/MM/AAAA`.
 
@@ -121,13 +121,14 @@ Los desplegables y los colores cubren hasta la fila 500 del Índice y hasta 300 
 
 Si el botón no está disponible, la página se crea a mano: clic derecho en «Plantilla» → «Duplicar», renombrar la copia con la referencia que indica «Próxima ref.» y escribir esa referencia en la celda B2 de la página y en la columna Ref de su fila del Índice.
 
-**Objetivo nuevo.** Escribir la descripción en la fila vacía que hay justo debajo de la tabla de objetivos. La tabla crece y el número, los desplegables y los colores se aplican solos. Al poner un responsable o marcar «Sí», el estado y el tiempo total del Índice se actualizan.
+**Objetivo nuevo.** Hacer clic en la última celda de la tabla de objetivos (columna Tiempo total, justo encima de la fila «Total») y pulsar Tab: aparece una fila nueva encima del total. También sirve clic derecho en una fila de la tabla → Insertar → Filas de tabla encima. Después se escribe la descripción, y el número, los desplegables y los colores se aplican solos. Escribir debajo de la fila «Total» no añade el objetivo a la tabla. Al poner un responsable o marcar «Sí», el estado y el tiempo total del Índice se actualizan.
 
 **Instalación del botón (una sola vez).** Con el libro en OneDrive y abierto en Excel para la web: Automatizar → Nuevo script → pegar `documentacion/office-scripts/crearPaginas.ts` → guardar como «Crear páginas» → en el panel del script, «…» → «Agregar en el libro». El botón queda en el libro para todas las personas con permiso de edición. Requiere una cuenta de Microsoft 365 con Office Scripts: si no aparece la pestaña «Automatizar», no están disponibles.
 
 ### 3.4. Precauciones
 
 * No escribir en las celdas grises de las páginas ni en las columnas Tiempo total y Estado del Índice: contienen fórmulas y se perderían.
+* No escribir a mano en la columna Objetivo de las páginas: el número lo pone una fórmula, y el Índice cuenta los objetivos por ese número. Un «Objetivo 3» escrito a mano no cuenta, y la historia no llega a «Finalizada».
 * No renombrar las páginas: el Índice las encuentra por su nombre, que debe coincidir con la referencia.
 * No insertar ni mover columnas en las páginas. El Índice lee de cada página las columnas A (número de objetivo), C (Finalizado), D (Responsable) y F (Tiempo total).
 * No insertar filas en la cabecera de «Plantilla»: el botón escribe la referencia en B2 y la fecha en B10.

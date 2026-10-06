@@ -2,7 +2,7 @@
 
 Registro de los cambios realizados en el proyecto, en orden cronológico.
 
-# CS-01: valorar una experiencia — En progreso (06/10/2026)
+# CS-01: valorar una experiencia — En progreso; Excel de historias corregido (06/10/2026)
 
 Se ha empezado CS-01. Como necesita saber si quien valora puede ver la experiencia, primero se ha añadido la visibilidad de las experiencias, que es el único objetivo de CS-22 imprescindible para CS-01 (acordado con Matthew, propietario de CS-22).
 
@@ -34,6 +34,22 @@ Resultado esperado: 33 suites y 277 pruebas correctas.
 Con Docker en marcha, `npm run test:todo` ejecuta además las pruebas con MySQL real: 1 suite y 2 pruebas correctas.
 
 
+
+### Excel de historias (`Customer_Stories_PlanB.xlsx`)
+
+Se ha sustituido el libro de `documentacion/customer-stories/` por la copia actual de OneDrive con estas correcciones:
+
+- **Fila «Total» en todas las páginas y en la Plantilla:** suma el Tiempo estimado y el Tiempo total de los objetivos. Las páginas nuevas creadas con «Crear páginas» ya la traen.
+- **Tiempo total sin duplicar:** el Tiempo total del Índice y de la cabecera de cada página suma solo las filas con número de objetivo. Antes también sumaba la fila «Total», y en CS-01, CS-22, CS-48, CS-61 y CS-62 el tiempo salía doble (CS-01 pasa de 1,7 h a 0,85 h).
+- **Estado:** en CS-01, CS-22, CS-30, CS-45, CS-48 y CS-60 el número de objetivo estaba escrito a mano y el Índice no contaba esos objetivos, así que esas historias no podían llegar a «Finalizada». Se ha vuelto a poner la fórmula que los numera. CS-01 pasa a «Finalizada», porque tiene todos sus objetivos en «Sí».
+- **Cómo añadir objetivos:** la ayuda de cada página y la sección 3.3 de `metodologia.md` explican el método nuevo: pulsar Tab en la última celda de la tabla, encima de «Total».
+- **José** se ha añadido a la lista de responsables de todas las páginas y a `metodologia.md`.
+- **Datos:** títulos de CS-37 a CS-42 en mayúsculas, como el resto; prioridad de CS-06 corregida de «IM» a «M»; Tiempo estimado de CS-60 en 3 h, y su página vuelve a copiarlo del Índice.
+
+### Para quien use el libro
+
+- El libro oficial sigue en OneDrive: hay que subir allí esta versión para que el equipo la use.
+- El botón «Crear páginas» se conserva. Al abrir el libro, Excel recalcula todas las fórmulas.
 
 # CS-61: base de amistades y seguidores — En progreso (05/10/2026)
 
