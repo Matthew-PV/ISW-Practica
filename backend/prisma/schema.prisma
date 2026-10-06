@@ -75,7 +75,7 @@ model Experiencia {
 
 // Valoración de una experiencia por un usuario (CS-01). Cada usuario tiene como
 // máximo una por experiencia: volver a valorar actualiza la existente.
-// El rango de la puntuación se valida en el servicio.
+// La puntuación es un entero del 1 al 5, sin decimales; el rango se valida en el servicio.
 model Valoracion {
   id            Int         @id @default(autoincrement())
   usuarioId     Int
