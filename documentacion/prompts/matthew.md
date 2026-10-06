@@ -26,6 +26,27 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
+## 2026-10-06 — Comprobar manualmente la interfaz de CS-61
+
+- **Historia u objetivo:** CS-61, objetivo 16: comprobación manual en escritorio y móvil.
+- **Agente/herramienta:** Codex de ChatGPT, navegador local integrado y control de interfaz.
+- **Entorno:** aplicación Codex en Windows, servidor de desarrollo local de PlanB y navegador integrado.
+- **Contexto aportado:** Matthew pidió terminar CS-61 con la comprobación visual y autorizó crear dos cuentas ficticias locales para probar el flujo autenticado. Tras el bloqueo inicial, confirmó que completó manualmente con éxito las comprobaciones pendientes.
+- **Prompts relevantes:**
+
+  > Perfecto, terminemos con el objetivo 16
+
+  > Sí, autorizado
+
+  > He probado manualmente lo que faltaba con éxito. Recoge todas estas modificaciones en "modificaciones.md"
+
+- **Resultado de la comprobación:** `personas.html` se visualizó correctamente en escritorio y con ancho móvil de 375 px: título, campo y botón quedan accesibles y sin desbordamiento. El registro automatizado quedó bloqueado por el CAPTCHA, pero Matthew completó después con éxito la comprobación manual autenticada que faltaba.
+- **Decisiones y alcance:** no se intentó eludir el CAPTCHA ni insertar usuarios directamente en MySQL. La validación posterior de Matthew permite cerrar la comprobación manual de escritorio y móvil sin alterar las protecciones del proyecto.
+- **TDD:** no aplica: es una tarea de verificación manual; las comprobaciones automáticas correspondientes ya se ejecutaron en el objetivo 15.
+- **Intervención humana:** Matthew autorizó expresamente crear datos ficticios locales y, tras el bloqueo inicial del CAPTCHA, confirmó que verificó manualmente con éxito los flujos pendientes.
+- **Comprobación final:** la comprobación manual queda completada. La última batería automática disponible terminó con 43 suites y 354 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
 ## 2026-10-06 — Verificar las pruebas de pantalla de amistades
 
 - **Historia u objetivo:** CS-61, objetivo 15: pruebas con jsdom de búsqueda, ausencia de resultados, aceptación y rechazo.

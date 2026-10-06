@@ -35,9 +35,9 @@ Con Docker en marcha, `npm run test:todo` ejecuta además las pruebas con MySQL 
 
 
 
-# CS-61: base de amistades y seguidores — En progreso (05/10/2026)
+# CS-61: base de amistades y seguidores — Finalizada (06/10/2026)
 
-Se ha completado la base de datos, la API y la lógica de amistades y seguimientos. La historia no está terminada: falta la interfaz de búsqueda y gestión de personas.
+Se ha completado la base de datos, la API y la interfaz de búsqueda, solicitudes, amistades y seguimientos. La historia cumple sus criterios de validación y ha sido comprobada manualmente por Matthew en escritorio y móvil.
 
 ### Cambios realizados
 
@@ -45,14 +45,15 @@ Se ha completado la base de datos, la API y la lógica de amistades y seguimient
 - **Repositorios:** `amistadRepository` crea, busca en ambos sentidos o por identificador, acepta, borra y lista solicitudes pendientes recibidas. `seguimientoRepository` permite seguir, dejar de seguir y comprobar un seguimiento. La búsqueda de usuarios en `usuarioRepository` encuentra nombres que contienen el texto, excluye a quien busca, limita a 20 resultados y no devuelve emails.
 - **Servicios:** las solicitudes solo se envían a otro usuario existente y sin relación previa; solo el destinatario puede aceptarlas o rechazarlas; cualquiera de los dos puede eliminar una amistad aceptada. Los seguimientos no permiten seguirse a uno mismo ni duplicarse. `sonAmigos` devuelve true exclusivamente para amistades aceptadas, de modo reutilizable para otras historias.
 - **API:** nuevas rutas protegidas por sesión para búsqueda de usuarios, solicitudes recibidas, enviar/responder/eliminar amistades y seguir/dejar de seguir. Las creaciones responden 201, las eliminaciones 204 y las consultas o respuestas 200.
-- **Pruebas:** se añadieron pruebas de esquema, repositorios, servicios, rutas y una prueba de integración HTTP de todo el criterio. La batería actual tiene 237 pruebas en 27 suites, todas correctas.
-- **Registro de IA:** `documentacion/prompts/matthew.md` incorpora las entradas de los objetivos 1 a 11 de CS-61.
+- **Interfaz:** `personas.html` permite buscar usuarios y enlaza cada resultado a `usuario.html` sin exponer emails ni insertar nombres como HTML. `perfil.html` muestra las solicitudes recibidas y permite aceptarlas o rechazarlas sin recargar. Las barras de bienvenida, perfil propio y perfil público incluyen «Buscar personas».
+- **Pruebas:** se añadieron pruebas de esquema, repositorios, servicios, rutas, API y pantallas con jsdom. Cubren búsqueda, ausencia de resultados, solicitudes pendientes, duplicados, permisos de respuesta, rechazo, eliminación, seguimiento y navegación. La batería actual tiene 354 pruebas en 43 suites, todas correctas.
+- **Comprobación manual:** Matthew confirmó en escritorio y móvil la búsqueda, los enlaces al perfil, el envío y la respuesta de solicitudes y la navegación.
+- **Registro de IA:** `documentacion/prompts/matthew.md` incorpora las entradas de los objetivos 1 a 16 de CS-61.
 
 ### Para quien continúe
 
-- En otra copia del repositorio, aplicar las migraciones desde `backend/` con `npx prisma migrate deploy` y después ejecutar `npx prisma generate`.
-- La restricción de solicitud inversa se valida en el servicio. Mantener esa comprobación al añadir rutas para que no se creen relaciones duplicadas entre las mismas personas.
-- Las funciones ya se exponen por HTTP, pero todavía no tienen interfaz. Las pantallas futuras deben reutilizar `js/shared/api.js` y conservar la separación rutas → servicios → repositorios.
+- Al reutilizar las amistades, conservar la comprobación de relación en ambos sentidos del servicio para no crear duplicados.
+- Las pantallas que necesiten estas funciones deben reutilizar `js/shared/api.js` y mantener la separación rutas → servicios → repositorios.
 
 ### Cómo comprobarlo
 
@@ -61,7 +62,7 @@ cd backend
 npm test
 ```
 
-Resultado esperado: 27 suites y 237 pruebas correctas.
+Resultado esperado: 43 suites y 354 pruebas correctas.
 
 
 
