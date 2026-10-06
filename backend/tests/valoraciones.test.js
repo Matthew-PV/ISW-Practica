@@ -6,6 +6,7 @@ jest.mock('../src/repositories/experienciaRepository');
 jest.mock('../src/repositories/valoracionRepository', () => ({ guardar: jest.fn() }));
 // Sin amistades guardadas: sonAmigos responde false para cualquier pareja
 jest.mock('../src/repositories/amistadRepository');
+jest.mock('../src/repositories/seguimientoRepository');
 
 const request = require('supertest');
 const bcrypt = require('bcrypt');
@@ -13,10 +14,13 @@ const app = require('../src/app');
 const usuarioRepository = require('../src/repositories/usuarioRepository');
 const experienciaRepository = require('../src/repositories/experienciaRepository');
 const valoracionRepository = require('../src/repositories/valoracionRepository');
+const seguimientoRepository = require('../src/repositories/seguimientoRepository');
 
 let usuario;
 // Valoraciones «guardadas», con la clave `usuarioId-experienciaId` (como el índice único)
 let valoraciones;
+// Seguimientos «guardados», con la clave `seguidorId-seguidoId`
+let seguimientos;
 
 beforeAll(async () => {
   usuario = {
@@ -28,6 +32,12 @@ beforeAll(async () => {
 beforeEach(() => {
   jest.resetAllMocks();
   valoraciones = new Map();
+  seguimientos = new Set();
+  seguimientoRepository.sigueA.mockImplementation(async (a, b) => seguimientos.has(`${a}-${b}`));
+  seguimientoRepository.seguir.mockImplementation(async (a, b) => {
+    seguimientos.add(`${a}-${b}`);
+    return { id: seguimientos.size, seguidorId: a, seguidoId: b };
+  });
   usuarioRepository.buscarPorEmail.mockResolvedValue(usuario);
   usuarioRepository.buscarPorId.mockResolvedValue(usuario);
   // 10: pública de otro autor (ana puede valorarla); 11: privada de otro autor;
@@ -144,6 +154,20 @@ describe('peticiones rechazadas: no se guarda nada', () => {
 
     expect(res.status).toBe(403);
     expect(res.body.error).toBe('No puedes valorar tu propia experiencia');
+    expect(valoraciones.size).toBe(0);
+  });
+});
+
+describe('seguir a alguien no da acceso a sus experiencias de amigos (objetivo 6)', () => {
+  test('ana sigue al autor, pero no es su amiga: valorar su experiencia de amigos responde 404', async () => {
+    const agente = await agenteConSesion();
+    const seguir = await agente.post('/api/seguimientos').send({ seguidoId: 2 });
+    expect(seguir.status).toBe(201);
+
+    const res = await agente.put('/api/experiencias/12/valoracion').send({ puntuacion: 4 });
+
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe('La experiencia no existe');
     expect(valoraciones.size).toBe(0);
   });
 });

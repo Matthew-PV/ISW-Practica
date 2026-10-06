@@ -13,7 +13,7 @@ Se ha empezado CS-01. Como necesita saber si quien valora puede ver la experienc
 - **Crear y modificar una valoración:** `PUT /api/experiencias/:id/valoracion` (con sesión), cuerpo `{ puntuacion, comentario? }`. Si el usuario aún no había valorado la experiencia se crea (201); si ya la había valorado se actualiza la misma (200), nunca se crea una segunda. El usuario sale siempre de la sesión. Capas: `valoracionRoutes.js` → `valoracionService.js` → `valoracionRepository.js`. El repositorio intenta crear la valoración y, si MySQL la rechaza por duplicada (error `P2002` de la restricción única), actualiza la existente. Como la comprobación la hace MySQL dentro del propio INSERT, con peticiones simultáneas solo una la crea y las demás la actualizan: nunca hay duplicados ni errores.
 - **Validaciones de la valoración:** si algo falla no se guarda nada. 401 si el usuario de la sesión ya no existe; 400 si el id no es válido, la puntuación no es un entero del 1 al 5 o el comentario no es texto; 404 «La experiencia no existe» tanto si no existe como si quien valora no puede verla (así no se revela su existencia); 403 si el autor intenta valorar su propia experiencia.
 - **Regla de visibilidad compartida:** `services/shared/visibilidad.js` (`puedeVerExperiencia`): el autor siempre; pública, cualquiera; amigos, solo con amistad aceptada (`sonAmigos` de CS-61); privada, nadie más. Pensada para reutilizarse en CS-02, CS-30 y CS-63.
-- **Pruebas:** `tests/visibilidadModelo.test.js` comprueba el enum y el valor por defecto en el esquema; `tests/valoracionModelo.test.js`, los campos de `Valoracion` y su restricción única; `tests/valoracionService.test.js` y `tests/valoraciones.test.js`, crear, modificar y cada rechazo en el servicio y por HTTP; `tests/visibilidad.test.js`, la regla de visibilidad; `tests/valoracionRepository.test.js`, que el repositorio crea, pasa a actualizar ante un duplicado y relanza cualquier otro error.
+- **Pruebas:** `tests/visibilidadModelo.test.js` comprueba el enum y el valor por defecto en el esquema; `tests/valoracionModelo.test.js`, los campos de `Valoracion` y su restricción única; `tests/valoracionService.test.js` y `tests/valoraciones.test.js`, crear, modificar y cada rechazo en el servicio y por HTTP, incluido que seguir al autor no da acceso a sus experiencias de amigos; `tests/visibilidad.test.js`, la regla de visibilidad; `tests/valoracionRepository.test.js`, que el repositorio crea, pasa a actualizar ante un duplicado y relanza cualquier otro error.
 
 ### Para quien continúe
 
@@ -28,7 +28,7 @@ cd backend
 npm test
 ```
 
-Resultado esperado: 33 suites y 276 pruebas correctas.
+Resultado esperado: 33 suites y 277 pruebas correctas.
 
 
 
