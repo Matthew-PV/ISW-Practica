@@ -257,7 +257,7 @@ Middleware que **limita cuántas peticiones** puede hacer una misma IP en un per
 Los permisos se comprueban **siempre en el backend**. El frontend puede ocultar botones, pero eso no protege nada por sí solo.
 
 * **Roles:** `usuario` y `moderador`, guardados en la entidad Usuario. Los endpoints del panel de moderación (JOA05, JOA06) exigen el rol `moderador`.
-* **Visibilidad de experiencias:** cualquier consulta que devuelva experiencias (búsqueda, perfil, inicio, detalle, comentarios) filtra según su visibilidad (privada / amigos / pública) y según quién la pide (MAT01, MAT09).
+* **Visibilidad de experiencias:** cualquier consulta que devuelva experiencias (búsqueda, perfil, inicio, detalle, comentarios) filtra según su visibilidad (privada / amigos / pública) y según quién la pide (MAT01, MAT09). La regla está en un solo sitio, `puedeVerExperiencia` de `services/shared/visibilidad.js`: el autor la ve siempre, la pública cualquiera, la de amigos solo quien tiene una amistad aceptada con el autor (`sonAmigos`) y la privada nadie más.
 * **Propiedad:** solo el autor puede editar o borrar su contenido (LUC09).
 
 

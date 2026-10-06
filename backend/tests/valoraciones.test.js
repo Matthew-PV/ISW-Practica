@@ -4,6 +4,8 @@
 jest.mock('../src/repositories/usuarioRepository');
 jest.mock('../src/repositories/experienciaRepository');
 jest.mock('../src/repositories/valoracionRepository', () => ({ buscar: jest.fn(), guardar: jest.fn() }));
+// Sin amistades guardadas: sonAmigos responde false para cualquier pareja
+jest.mock('../src/repositories/amistadRepository');
 
 const request = require('supertest');
 const bcrypt = require('bcrypt');
@@ -28,10 +30,15 @@ beforeEach(() => {
   valoraciones = new Map();
   usuarioRepository.buscarPorEmail.mockResolvedValue(usuario);
   usuarioRepository.buscarPorId.mockResolvedValue(usuario);
-  // Experiencia pública de otro autor: ana puede verla y valorarla
-  experienciaRepository.buscarPorId.mockImplementation(async (id) => (
-    id === 10 ? { id: 10, titulo: 'Tarde cultural', autorId: 2, visibilidad: 'PUBLICA' } : null
-  ));
+  // 10: pública de otro autor (ana puede valorarla); 11: privada de otro autor;
+  // 12: de amigos de otro autor (ana no es su amiga); 13: pública de la propia ana
+  const experiencias = {
+    10: { id: 10, titulo: 'Tarde cultural', autorId: 2, visibilidad: 'PUBLICA' },
+    11: { id: 11, titulo: 'Ruta secreta', autorId: 2, visibilidad: 'PRIVADA' },
+    12: { id: 12, titulo: 'Cena entre amigos', autorId: 2, visibilidad: 'AMIGOS' },
+    13: { id: 13, titulo: 'Mi paseo', autorId: 1, visibilidad: 'PUBLICA' },
+  };
+  experienciaRepository.buscarPorId.mockImplementation(async (id) => (experiencias[id] ? { ...experiencias[id] } : null));
   valoracionRepository.buscar.mockImplementation(async (usuarioId, experienciaId) => (
     valoraciones.get(`${usuarioId}-${experienciaId}`) ?? null
   ));
@@ -84,5 +91,62 @@ describe('modificar una valoración', () => {
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({ id: primera.body.id, puntuacion: 2, comentario: 'Ha empeorado' });
     expect(valoraciones.size).toBe(1);
+  });
+});
+
+describe('peticiones rechazadas: no se guarda nada', () => {
+  test('sin sesión responde 401', async () => {
+    const res = await request(app).put('/api/experiencias/10/valoracion').send({ puntuacion: 4 });
+
+    expect(res.status).toBe(401);
+    expect(valoraciones.size).toBe(0);
+  });
+
+  test('una puntuación fuera del rango 1-5 responde 400', async () => {
+    const agente = await agenteConSesion();
+
+    const res = await agente.put('/api/experiencias/10/valoracion').send({ puntuacion: 6 });
+
+    expect(res.status).toBe(400);
+    expect(valoraciones.size).toBe(0);
+  });
+
+  test('una experiencia inexistente responde 404', async () => {
+    const agente = await agenteConSesion();
+
+    const res = await agente.put('/api/experiencias/999/valoracion').send({ puntuacion: 4 });
+
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe('La experiencia no existe');
+    expect(valoraciones.size).toBe(0);
+  });
+
+  test('una experiencia privada de otro usuario responde 404 con el mismo mensaje que una inexistente', async () => {
+    const agente = await agenteConSesion();
+
+    const res = await agente.put('/api/experiencias/11/valoracion').send({ puntuacion: 4 });
+
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe('La experiencia no existe');
+    expect(valoraciones.size).toBe(0);
+  });
+
+  test('una experiencia de amigos sin ser amigo del autor responde 404', async () => {
+    const agente = await agenteConSesion();
+
+    const res = await agente.put('/api/experiencias/12/valoracion').send({ puntuacion: 4 });
+
+    expect(res.status).toBe(404);
+    expect(valoraciones.size).toBe(0);
+  });
+
+  test('el autor no puede valorar su propia experiencia: 403', async () => {
+    const agente = await agenteConSesion();
+
+    const res = await agente.put('/api/experiencias/13/valoracion').send({ puntuacion: 5 });
+
+    expect(res.status).toBe(403);
+    expect(res.body.error).toBe('No puedes valorar tu propia experiencia');
+    expect(valoraciones.size).toBe(0);
   });
 });

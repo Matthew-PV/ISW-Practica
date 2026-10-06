@@ -11,12 +11,14 @@ Se ha empezado CS-01. Como necesita saber si quien valora puede ver la experienc
 - **Datos (CS-22, objetivo 1):** nuevo enum `Visibilidad` (`PRIVADA`, `AMIGOS`, `PUBLICA`) y campo `visibilidad` en `Experiencia`, con valor por defecto `PUBLICA`. La migración `visibilidad_experiencia` añade la columna y las experiencias que ya existían quedan públicas.
 - **Datos (CS-01, objetivo 1):** nuevo modelo `Valoracion` (usuario, experiencia, puntuación entera, comentario opcional, fechas de creación y de última modificación). La restricción única por usuario y experiencia garantiza una sola valoración por pareja; el índice por experiencia acelera listar sus valoraciones. La migración `crear_valoracion` solo crea la tabla nueva.
 - **Crear y modificar una valoración:** `PUT /api/experiencias/:id/valoracion` (con sesión), cuerpo `{ puntuacion, comentario? }`. Si el usuario aún no había valorado la experiencia se crea (201); si ya la había valorado se actualiza la misma (200), nunca se crea una segunda. El usuario sale siempre de la sesión. Capas: `valoracionRoutes.js` → `valoracionService.js` → `valoracionRepository.js`, que guarda con un *upsert* de Prisma (crear o actualizar en una sola operación, apoyado en la restricción única).
-- **Pruebas:** `tests/visibilidadModelo.test.js` comprueba el enum y el valor por defecto en el esquema; `tests/valoracionModelo.test.js`, los campos de `Valoracion` y su restricción única; `tests/valoracionService.test.js` y `tests/valoraciones.test.js`, crear y modificar una valoración en el servicio y por HTTP.
+- **Validaciones de la valoración:** si algo falla no se guarda nada. 401 si el usuario de la sesión ya no existe; 400 si el id no es válido, la puntuación no es un entero del 1 al 5 o el comentario no es texto; 404 «La experiencia no existe» tanto si no existe como si quien valora no puede verla (así no se revela su existencia); 403 si el autor intenta valorar su propia experiencia.
+- **Regla de visibilidad compartida:** `services/shared/visibilidad.js` (`puedeVerExperiencia`): el autor siempre; pública, cualquiera; amigos, solo con amistad aceptada (`sonAmigos` de CS-61); privada, nadie más. Pensada para reutilizarse en CS-02, CS-30 y CS-63.
+- **Pruebas:** `tests/visibilidadModelo.test.js` comprueba el enum y el valor por defecto en el esquema; `tests/valoracionModelo.test.js`, los campos de `Valoracion` y su restricción única; `tests/valoracionService.test.js` y `tests/valoraciones.test.js`, crear, modificar y cada rechazo en el servicio y por HTTP; `tests/visibilidad.test.js`, la regla de visibilidad.
 
 ### Para quien continúe
 
 - Aplicar las migraciones desde `backend/` con `npx prisma migrate deploy` y después `npx prisma generate`.
-- La valoración todavía no valida nada: faltan el rango de la puntuación, que la experiencia exista y sea visible para quien valora, y el evento para CS-12 y CS-07. Se añadirán en los siguientes objetivos de CS-01.
+- Falta el evento de valoración creada o modificada para CS-12 y CS-07. La longitud máxima y el saneado del comentario son de CS-02.
 - Del resto de CS-22 todavía no hay nada: crear y editar no aceptan `visibilidad` y el formulario no tiene selector, así que toda experiencia nueva es pública.
 
 ### Cómo comprobarlo
@@ -26,7 +28,7 @@ cd backend
 npm test
 ```
 
-Resultado esperado: 31 suites y 246 pruebas correctas.
+Resultado esperado: 32 suites y 273 pruebas correctas.
 
 
 
