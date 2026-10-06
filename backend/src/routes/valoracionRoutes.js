@@ -1,4 +1,6 @@
-// Rutas de la valoración de una experiencia, bajo /api/experiencias/:id/valoracion (CS-01).
+// Rutas de la valoración de una experiencia.
+// CS-01: crear o modificar una valoración.
+// CS-48: consultar valoraciones de amigos y seguidores.
 // Capa: rutas (routes).
 // Lo usa: routes/index.js.
 // Usa: services/valoracionService.js y middlewares/sesionMiddleware.js.
@@ -11,6 +13,32 @@ const router = express.Router({ mergeParams: true });
 
 router.use(requiereSesion);
 
+// GET /api/experiencias/:id/valoracion
+// Devuelve las valoraciones hechas por amigos o seguidores del usuario de la sesión.
+// Query opcional: ?pagina=1&limite=10
+router.get('/', async (req, res) => {
+  const pagina = req.query.pagina === undefined
+    ? 1
+    : Number(req.query.pagina);
+
+  const limite = req.query.limite === undefined
+    ? 10
+    : Number(req.query.limite);
+
+  const resultado = await valoracionService.listarValoracionesRelacionadas(
+    req.session.usuarioId,
+    Number(req.params.id),
+    pagina,
+    limite
+  );
+
+  res.status(200).json({
+    ...resultado,
+    pagina,
+    limite,
+  });
+});
+
 // PUT /api/experiencias/:id/valoracion — crea la valoración del usuario de la sesión (201)
 // o actualiza la que ya tenía (200). Cuerpo: { puntuacion, comentario? }.
 router.put('/', async (req, res) => {
@@ -19,6 +47,7 @@ router.put('/', async (req, res) => {
     Number(req.params.id),
     req.body
   );
+
   res.status(creada ? 201 : 200).json(valoracion);
 });
 
