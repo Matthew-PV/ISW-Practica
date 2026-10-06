@@ -10,12 +10,13 @@ Se ha empezado CS-01. Como necesita saber si quien valora puede ver la experienc
 
 - **Datos (CS-22, objetivo 1):** nuevo enum `Visibilidad` (`PRIVADA`, `AMIGOS`, `PUBLICA`) y campo `visibilidad` en `Experiencia`, con valor por defecto `PUBLICA`. La migración `visibilidad_experiencia` añade la columna y las experiencias que ya existían quedan públicas.
 - **Datos (CS-01, objetivo 1):** nuevo modelo `Valoracion` (usuario, experiencia, puntuación entera, comentario opcional, fechas de creación y de última modificación). La restricción única por usuario y experiencia garantiza una sola valoración por pareja; el índice por experiencia acelera listar sus valoraciones. La migración `crear_valoracion` solo crea la tabla nueva.
-- **Pruebas:** `tests/visibilidadModelo.test.js` comprueba el enum y el valor por defecto en el esquema; `tests/valoracionModelo.test.js`, los campos de `Valoracion` y su restricción única.
+- **Crear y modificar una valoración:** `PUT /api/experiencias/:id/valoracion` (con sesión), cuerpo `{ puntuacion, comentario? }`. Si el usuario aún no había valorado la experiencia se crea (201); si ya la había valorado se actualiza la misma (200), nunca se crea una segunda. El usuario sale siempre de la sesión. Capas: `valoracionRoutes.js` → `valoracionService.js` → `valoracionRepository.js`, que guarda con un *upsert* de Prisma (crear o actualizar en una sola operación, apoyado en la restricción única).
+- **Pruebas:** `tests/visibilidadModelo.test.js` comprueba el enum y el valor por defecto en el esquema; `tests/valoracionModelo.test.js`, los campos de `Valoracion` y su restricción única; `tests/valoracionService.test.js` y `tests/valoraciones.test.js`, crear y modificar una valoración en el servicio y por HTTP.
 
 ### Para quien continúe
 
 - Aplicar las migraciones desde `backend/` con `npx prisma migrate deploy` y después `npx prisma generate`.
-- La valoración aún no tiene repositorio, servicio ni ruta: se añadirán en los siguientes objetivos de CS-01, incluida la validación del rango de la puntuación.
+- La valoración todavía no valida nada: faltan el rango de la puntuación, que la experiencia exista y sea visible para quien valora, y el evento para CS-12 y CS-07. Se añadirán en los siguientes objetivos de CS-01.
 - Del resto de CS-22 todavía no hay nada: crear y editar no aceptan `visibilidad` y el formulario no tiene selector, así que toda experiencia nueva es pública.
 
 ### Cómo comprobarlo
@@ -25,7 +26,7 @@ cd backend
 npm test
 ```
 
-Resultado esperado: 26 suites y 220 pruebas correctas.
+Resultado esperado: 31 suites y 246 pruebas correctas.
 
 
 

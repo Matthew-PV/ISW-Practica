@@ -3,6 +3,7 @@
 // Lo usa: app.js, que lo monta en /api.
 // Usa: authRoutes.js, perfilRoutes.js, experienciaRoutes.js, ciudadRoutes.js, usuarioRoutes.js,
 //      amistadRoutes.js y seguimientoRoutes.js.
+// También: valoracionRoutes.js.
 //
 // Aquí solo se decide qué archivo atiende cada prefijo. Por ejemplo, una petición a
 // /api/perfil/foto llega a perfilRoutes.js, que la ve como /foto.
@@ -15,6 +16,7 @@ const ciudadRoutes = require('./ciudadRoutes');
 const usuarioRoutes = require('./usuarioRoutes');
 const amistadRoutes = require('./amistadRoutes');
 const seguimientoRoutes = require('./seguimientoRoutes');
+const valoracionRoutes = require('./valoracionRoutes');
 
 const router = express.Router();
 
@@ -25,5 +27,6 @@ router.use('/ciudades', ciudadRoutes); // /api/ciudades: catálogo de ciudades
 router.use('/usuarios', usuarioRoutes); // /api/usuarios: búsqueda de usuarios
 router.use('/amistades', amistadRoutes); // /api/amistades: solicitudes y amistades
 router.use('/seguimientos', seguimientoRoutes); // /api/seguimientos: seguir y dejar de seguir
+router.use('/experiencias/:id/valoracion', valoracionRoutes); // /api/experiencias/:id/valoracion: valorar una experiencia
 
 module.exports = router;
