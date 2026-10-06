@@ -50,7 +50,15 @@ async function borrar(id) {
 async function listarSolicitudesRecibidas(destinatarioId) {
   return prisma.amistad.findMany({
     where: { destinatarioId, estado: 'PENDIENTE' },
-    include: { solicitante: { select: { id: true, nombreUsuario: true, foto: true } } },
+    include: {
+      solicitante: {
+        select: {
+          id: true,
+          nombreUsuario: true,
+          foto: true,
+        },
+      },
+    },
     orderBy: { fecha: 'desc' },
   });
 }
@@ -79,6 +87,20 @@ async function listarAmigosIds(usuarioId) {
   );
 }
 
+// Cuenta las amistades aceptadas de un usuario, sea quien sea el que envió la solicitud.
+// Las pendientes no cuentan.
+async function contarAmigos(usuarioId) {
+  return prisma.amistad.count({
+    where: {
+      estado: 'ACEPTADA',
+      OR: [
+        { solicitanteId: usuarioId },
+        { destinatarioId: usuarioId },
+      ],
+    },
+  });
+}
+
 module.exports = {
   crear,
   buscarEntreUsuarios,
@@ -87,4 +109,5 @@ module.exports = {
   borrar,
   listarSolicitudesRecibidas,
   listarAmigosIds,
+  contarAmigos,
 };

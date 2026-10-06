@@ -39,9 +39,17 @@ async function listarSeguidoresIds(usuarioId) {
   return seguimientos.map((seguimiento) => seguimiento.seguidorId);
 }
 
+// Cuenta cuántas personas siguen a un usuario.
+async function contarSeguidores(seguidoId) {
+  return prisma.seguimiento.count({
+    where: { seguidoId },
+  });
+}
+
 module.exports = {
   seguir,
   dejarDeSeguir,
   sigueA,
   listarSeguidoresIds,
+  contarSeguidores,
 };
