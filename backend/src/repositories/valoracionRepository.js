@@ -7,21 +7,26 @@
 // modifica la tabla Valoracion.
 const prisma = require('./shared/prisma');
 
-// Devuelve la valoración de un usuario sobre una experiencia, o null si aún no la ha valorado.
-async function buscar(usuarioId, experienciaId) {
-  return prisma.valoracion.findUnique({
-    where: { usuarioId_experienciaId: { usuarioId, experienciaId } },
-  });
-}
-
 // Crea la valoración o, si el usuario ya había valorado esa experiencia, sustituye su
-// puntuación y comentario (upsert). La restricción única impide que existan dos.
+// puntuación y comentario. Devuelve { valoracion, creada }.
+// Se intenta crear primero: la restricción única [usuarioId, experienciaId] la comprueba
+// MySQL dentro del propio INSERT, así que con peticiones simultáneas solo una crea la fila.
+// Las demás reciben el error P2002 (duplicado) y pasan a actualizarla: nunca hay dos.
 async function guardar({ usuarioId, experienciaId, puntuacion, comentario }) {
-  return prisma.valoracion.upsert({
-    where: { usuarioId_experienciaId: { usuarioId, experienciaId } },
-    create: { usuarioId, experienciaId, puntuacion, comentario },
-    update: { puntuacion, comentario },
-  });
+  try {
+    const valoracion = await prisma.valoracion.create({
+      data: { usuarioId, experienciaId, puntuacion, comentario },
+    });
+    return { valoracion, creada: true };
+  } catch (err) {
+    // Cualquier otro error es inesperado: se relanza y app.js responde 500
+    if (err.code !== 'P2002') throw err;
+    const valoracion = await prisma.valoracion.update({
+      where: { usuarioId_experienciaId: { usuarioId, experienciaId } },
+      data: { puntuacion, comentario },
+    });
+    return { valoracion, creada: false };
+  }
 }
 
-module.exports = { buscar, guardar };
+module.exports = { guardar };

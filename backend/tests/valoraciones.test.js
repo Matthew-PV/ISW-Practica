@@ -3,7 +3,7 @@
 // para comprobar que volver a valorar actualiza la misma valoración y no crea otra.
 jest.mock('../src/repositories/usuarioRepository');
 jest.mock('../src/repositories/experienciaRepository');
-jest.mock('../src/repositories/valoracionRepository', () => ({ buscar: jest.fn(), guardar: jest.fn() }));
+jest.mock('../src/repositories/valoracionRepository', () => ({ guardar: jest.fn() }));
 // Sin amistades guardadas: sonAmigos responde false para cualquier pareja
 jest.mock('../src/repositories/amistadRepository');
 
@@ -39,16 +39,13 @@ beforeEach(() => {
     13: { id: 13, titulo: 'Mi paseo', autorId: 1, visibilidad: 'PUBLICA' },
   };
   experienciaRepository.buscarPorId.mockImplementation(async (id) => (experiencias[id] ? { ...experiencias[id] } : null));
-  valoracionRepository.buscar.mockImplementation(async (usuarioId, experienciaId) => (
-    valoraciones.get(`${usuarioId}-${experienciaId}`) ?? null
-  ));
-  // Igual que el upsert de Prisma: crea si no existe y si existe sustituye sus datos
+  // Igual que el repositorio real: crea si no existe y si existe sustituye sus datos
   valoracionRepository.guardar.mockImplementation(async (datos) => {
     const clave = `${datos.usuarioId}-${datos.experienciaId}`;
     const anterior = valoraciones.get(clave);
     const guardada = { id: anterior?.id ?? valoraciones.size + 1, ...datos };
     valoraciones.set(clave, guardada);
-    return { ...guardada };
+    return { valoracion: { ...guardada }, creada: !anterior };
   });
 });
 

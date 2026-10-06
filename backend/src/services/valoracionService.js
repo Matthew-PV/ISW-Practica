@@ -1,7 +1,7 @@
 // Reglas de las valoraciones de experiencias (CS-01).
 // Capa: servicios (services).
 // Lo usa: routes/valoracionRoutes.js.
-// Usa: repositories/valoracionRepository.js (consultar y guardar la valoración),
+// Usa: repositories/valoracionRepository.js (guardar la valoración),
 //      repositories/usuarioRepository.js (comprobar que quien valora existe),
 //      repositories/experienciaRepository.js (comprobar que la experiencia existe),
 //      services/shared/visibilidad.js (comprobar que puede verla) y errores.js.
@@ -52,9 +52,8 @@ async function valorarExperiencia(usuarioId, experienciaId, datos) {
     throw crearError('No puedes valorar tu propia experiencia', 403);
   }
 
-  const anterior = await valoracionRepository.buscar(usuarioId, experienciaId);
-  const valoracion = await valoracionRepository.guardar({ usuarioId, experienciaId, puntuacion, comentario });
-  return { valoracion, creada: anterior === null };
+  // El repositorio decide si la crea o actualiza la existente, incluso con peticiones simultáneas
+  return valoracionRepository.guardar({ usuarioId, experienciaId, puntuacion, comentario });
 }
 
 module.exports = { valorarExperiencia };
