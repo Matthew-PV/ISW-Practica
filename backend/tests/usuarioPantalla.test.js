@@ -189,3 +189,74 @@ describe('botón de amistad', () => {
     expect($('#nombre-usuario').textContent).toBe('ana');
   });
 });
+
+// ---- Objetivo 7: botón Seguir / Dejar de seguir ----
+const conSeguimiento = (siguiendo, extra = {}) =>
+  ({ ...PERFIL, ...extra, relacion: { amistad: 'ninguna', amistadId: null, siguiendo } });
+const textoSeguir = () => [...document.querySelectorAll('#boton-seguir button')].map((b) => b.textContent);
+const botonSeguir = () => document.querySelector('#boton-seguir button');
+
+describe('botón de seguir', () => {
+  test('si no la sigo muestra «Seguir»', async () => {
+    await abrirPagina('ana', conSeguimiento(false));
+
+    expect(textoSeguir()).toEqual(['Seguir']);
+  });
+
+  test('si ya la sigo muestra «Dejar de seguir»', async () => {
+    await abrirPagina('ana', conSeguimiento(true));
+
+    expect(textoSeguir()).toEqual(['Dejar de seguir']);
+  });
+
+  test('«Seguir» la sigue, sube el contador de seguidores y pasa a «Dejar de seguir»', async () => {
+    await abrirPagina('ana', conSeguimiento(false), [
+      respuesta(201, { id: 1 }),
+      respuesta(200, conSeguimiento(true, { seguidores: 6 })),
+    ]);
+
+    botonSeguir().click();
+    await terminar();
+
+    const [ruta, opciones] = window.fetch.mock.calls[1];
+    expect(ruta).toBe('/api/seguimientos');
+    expect(opciones.method).toBe('POST');
+    expect(JSON.parse(opciones.body)).toEqual({ seguidoId: 2 });
+    expect(window.fetch.mock.calls[2][0]).toBe('/api/usuarios/ana');
+    expect($('#seguidores').textContent).toBe('6');
+    expect(textoSeguir()).toEqual(['Dejar de seguir']);
+  });
+
+  test('«Dejar de seguir» deja de seguirla, baja el contador y vuelve a «Seguir»', async () => {
+    await abrirPagina('ana', conSeguimiento(true), [
+      respuesta(204, null),
+      respuesta(200, conSeguimiento(false, { seguidores: 4 })),
+    ]);
+
+    botonSeguir().click();
+    await terminar();
+
+    const [ruta, opciones] = window.fetch.mock.calls[1];
+    expect(ruta).toBe('/api/seguimientos/2');
+    expect(opciones.method).toBe('DELETE');
+    expect($('#seguidores').textContent).toBe('4');
+    expect(textoSeguir()).toEqual(['Seguir']);
+  });
+
+  test('si el servidor rechaza la acción se muestra su mensaje', async () => {
+    await abrirPagina('ana', conSeguimiento(false), [respuesta(400, { error: 'Ya sigues a este usuario' })]);
+
+    botonSeguir().click();
+    await terminar();
+
+    expect($('#error-usuario').classList.contains('d-none')).toBe(false);
+    expect($('#error-usuario').textContent).toBe('Ya sigues a este usuario');
+  });
+
+  test('seguir es independiente de la amistad: siendo amigos se ven los dos botones', async () => {
+    await abrirPagina('ana', { ...PERFIL, relacion: { amistad: 'amigos', amistadId: 10, siguiendo: false } });
+
+    expect(textosBotones()).toEqual(['Eliminar amigo']);
+    expect(textoSeguir()).toEqual(['Seguir']);
+  });
+});
