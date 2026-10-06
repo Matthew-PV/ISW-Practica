@@ -118,7 +118,8 @@ async function actualizarFotoPropia(id, archivo) {
 // seguidores y la relación de quien consulta con él.
 // - `usuarioId`: el usuario de la sesión, que consulta el perfil.
 // - `nombreUsuario`: el usuario cuyo perfil se consulta.
-// Devuelve { id, nombreUsuario, foto, ciudad, amigos, seguidores, relacion }, o error 404.
+// Devuelve { id, nombreUsuario, foto, ciudad, amigos, seguidores, esPropio, relacion }, o error 404.
+// `esPropio` es true cuando el perfil consultado es el del propio usuario de la sesión.
 // `relacion.amistad` es 'ninguna', 'enviada' (la envié yo), 'recibida' o 'amigos'; `relacion.amistadId`
 // es el id de esa solicitud o amistad (null si no hay), que las pantallas necesitan para responderla.
 async function obtenerPerfilPublico(usuarioId, nombreUsuario) {
@@ -143,6 +144,7 @@ async function obtenerPerfilPublico(usuarioId, nombreUsuario) {
     ...conFotoPorDefecto(perfil),
     amigos,
     seguidores,
+    esPropio: perfil.id === usuarioId,
     relacion: { amistad: estadoAmistad, amistadId: amistad?.id ?? null, siguiendo },
   };
 }

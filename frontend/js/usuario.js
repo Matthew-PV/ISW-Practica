@@ -1,6 +1,7 @@
 // Página del perfil de otro usuario (usuario.html): muestra su foto, nombre, ciudad, el número de
 // amigos y seguidores, el botón de amistad que corresponde a la relación con él y el de seguir.
-// Se abre con usuario.html?nombre=ana. Usa `api` de shared/api.js.
+// Se abre con usuario.html?nombre=ana. Si el usuario no existe lo indica, y si es el propio usuario
+// va a perfil.html. Usa `api` de shared/api.js.
 
 const nombre = new URLSearchParams(window.location.search).get('nombre');
 const botonesAmistad = document.getElementById('botones-amistad');
@@ -69,6 +70,11 @@ function mostrarBotonSeguir(perfil) {
 
 // Pone en la página los datos del perfil público que devuelve el backend
 function mostrarPerfil(perfil) {
+  // Si el perfil es el mío, la pantalla de otro usuario no tiene sentido: se va a «Mi perfil»
+  if (perfil.esPropio) {
+    window.location.href = 'perfil.html';
+    return;
+  }
   document.getElementById('nombre-usuario').textContent = perfil.nombreUsuario;
   document.getElementById('ciudad').textContent = perfil.ciudad ?? '';
   document.getElementById('foto-usuario').src = perfil.foto;
@@ -82,9 +88,14 @@ function mostrarPerfil(perfil) {
 async function cargarPerfil() {
   try {
     mostrarPerfil(await api(`/usuarios/${encodeURIComponent(nombre)}`));
-  } catch {
-    // Sin sesión (o el servidor no responde): se vuelve al login
-    window.location.href = '/';
+  } catch (err) {
+    if (err.message === 'Usuario no encontrado') {
+      document.getElementById('perfil-usuario').classList.add('d-none');
+      document.getElementById('no-encontrado').classList.remove('d-none');
+    } else {
+      // Sin sesión (o el servidor no responde): se vuelve al login
+      window.location.href = '/';
+    }
   }
 }
 

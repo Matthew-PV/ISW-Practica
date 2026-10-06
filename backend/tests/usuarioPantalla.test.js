@@ -13,7 +13,7 @@ const SCRIPTS = leer('js/shared/api.js') + leer('js/usuario.js');
 const FOTO = 'https://res.cloudinary.com/demo/image/upload/v1/planb/perfiles/usuario-2.png';
 const PERFIL = {
   id: 2, nombreUsuario: 'ana', foto: FOTO, ciudad: 'Madrid',
-  amigos: 3, seguidores: 5, relacion: { amistad: 'ninguna', siguiendo: false },
+  amigos: 3, seguidores: 5, esPropio: false, relacion: { amistad: 'ninguna', siguiendo: false },
 };
 
 // Respuesta de fetch con el código y el JSON indicados
@@ -258,5 +258,57 @@ describe('botón de seguir', () => {
 
     expect(textosBotones()).toEqual(['Eliminar amigo']);
     expect(textoSeguir()).toEqual(['Seguir']);
+  });
+});
+
+// ---- Objetivo 9: usuario inexistente y perfil propio ----
+const locationReal = window.location;
+afterEach(() => {
+  Object.defineProperty(window, 'location', { value: locationReal, configurable: true, writable: true });
+});
+
+// Abre la página con un `location` simple, para ver a qué dirección intenta ir sin que jsdom navegue
+async function abrirVigilandoRedireccion(nombre, primeraRespuesta) {
+  window.history.pushState({}, '', `/usuario.html?nombre=${encodeURIComponent(nombre)}`);
+  document.documentElement.innerHTML = HTML;
+  Object.defineProperty(window, 'location', {
+    value: { search: locationReal.search, href: locationReal.href },
+    configurable: true,
+    writable: true,
+  });
+  window.fetch = jest.fn().mockReturnValueOnce(primeraRespuesta);
+  (0, eval)(SCRIPTS);
+  await terminar();
+}
+const oculto = (selector) => $(selector).classList.contains('d-none');
+
+describe('usuario inexistente y perfil propio', () => {
+  test('un usuario que existe muestra su perfil y no redirige', async () => {
+    await abrirVigilandoRedireccion('ana', respuesta(200, PERFIL));
+
+    expect(oculto('#perfil-usuario')).toBe(false);
+    expect(oculto('#no-encontrado')).toBe(true);
+    expect(window.location.href).toBe(locationReal.href);
+  });
+
+  test('si el usuario no existe se muestra «Usuario no encontrado» y no el perfil', async () => {
+    await abrirVigilandoRedireccion('nadie', respuesta(404, { error: 'Usuario no encontrado' }));
+
+    expect(oculto('#no-encontrado')).toBe(false);
+    expect($('#no-encontrado').textContent).toBe('Usuario no encontrado');
+    expect(oculto('#perfil-usuario')).toBe(true);
+    expect(window.location.href).toBe(locationReal.href);
+  });
+
+  test('si el perfil es el mío, se va a perfil.html', async () => {
+    await abrirVigilandoRedireccion('ana', respuesta(200, { ...PERFIL, esPropio: true }));
+
+    expect(window.location.href).toBe('perfil.html');
+  });
+
+  test('sin sesión se sigue yendo al login', async () => {
+    await abrirVigilandoRedireccion('ana', respuesta(401, { error: 'No hay sesión iniciada' }));
+
+    expect(window.location.href).toBe('/');
   });
 });

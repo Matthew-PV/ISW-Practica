@@ -53,7 +53,7 @@ test('muestra nombre, foto por defecto, ciudad y contadores, y nunca el email', 
   expect(res.status).toBe(200);
   expect(res.body).toEqual({
     id: 2, nombreUsuario: 'ana', foto: FOTO_POR_DEFECTO, ciudad: 'Madrid',
-    amigos: 3, seguidores: 5,
+    amigos: 3, seguidores: 5, esPropio: false,
     relacion: { amistad: 'ninguna', amistadId: null, siguiendo: false },
   });
   expect(res.body).not.toHaveProperty('email');
@@ -67,6 +67,16 @@ test('un usuario que no existe responde 404 «Usuario no encontrado»', async ()
 
   expect(res.status).toBe(404);
   expect(res.body).toEqual({ error: 'Usuario no encontrado' });
+});
+
+test('al consultar mi propio nombre, aunque sea con otras mayúsculas, el perfil se marca como propio', async () => {
+  usuarioRepository.obtenerPerfilPublico.mockResolvedValue({ id: 1, nombreUsuario: 'luis', foto: null, ciudad: null });
+  const agente = await agenteConSesion();
+
+  const res = await agente.get('/api/usuarios/LUIS');
+
+  expect(res.status).toBe(200);
+  expect(res.body.esPropio).toBe(true);
 });
 
 describe('relación con quien consulta', () => {

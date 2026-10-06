@@ -27,7 +27,7 @@ test('devuelve los datos públicos y los contadores, sin email', async () => {
   expect(seguimientoRepository.contarSeguidores).toHaveBeenCalledWith(2);
   expect(perfil).toEqual({
     id: 2, nombreUsuario: 'ana', foto: ANA.foto, ciudad: 'Madrid',
-    amigos: 3, seguidores: 5,
+    amigos: 3, seguidores: 5, esPropio: false,
     relacion: { amistad: 'ninguna', amistadId: null, siguiendo: false },
   });
   expect(perfil).not.toHaveProperty('email');
@@ -73,6 +73,12 @@ test('indica si la sigo', async () => {
 
   expect(seguimientoRepository.sigueA).toHaveBeenCalledWith(1, 2);
   expect(perfil.relacion.siguiendo).toBe(true);
+});
+
+test('esPropio es true cuando consulto mi propio perfil', async () => {
+  const perfil = await obtenerPerfilPublico(2, 'ana');
+
+  expect(perfil.esPropio).toBe(true);
 });
 
 test('si el usuario no existe lanza un error 404', async () => {
