@@ -26,6 +26,24 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
+## 2026-10-06 — Verificar las pruebas de pantalla de amistades
+
+- **Historia u objetivo:** CS-61, objetivo 15: pruebas con jsdom de búsqueda, ausencia de resultados, aceptación y rechazo.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell, Jest y jsdom.
+- **Contexto aportado:** Matthew pidió continuar con el objetivo 15 tras completar el enlace a la búsqueda desde la navegación.
+- **Prompt inicial:**
+
+  > Pasemos all 15
+
+- **Resultado propuesto por la IA:** comprobar las pruebas de pantalla existentes: `personasPantalla.test.js` cubre buscar y no encontrar resultados; `solicitudesPantalla.test.js` cubre aceptar y rechazar solicitudes.
+- **Decisiones y alcance:** no se añadieron pruebas duplicadas ni se modificó código. Las pruebas de este objetivo ya se crearon mediante TDD al implementar los objetivos 12 y 13, por lo que la tarea consiste en comprobar y reconocer esa cobertura conjunta.
+- **TDD:** no se repitió una fase roja artificial: las seis comprobaciones ya habían tenido su fase roja al incorporarse sus comportamientos. Esta ejecución las caracteriza como cobertura del objetivo 15.
+- **Comprensión humana de las pruebas:** se simulan las respuestas de la API y se interactúa con el DOM; se verifica la consulta de búsqueda, el aviso vacío, los cuerpos `{ aceptar: true }` y `{ aceptar: false }`, y la actualización de la lista.
+- **Intervención humana:** Matthew seleccionó el objetivo 15 para verificar la cobertura de interfaz ya construida durante los objetivos anteriores.
+- **Comprobación final:** `npm test -- --runInBand tests/personasPantalla.test.js tests/solicitudesPantalla.test.js` completó 2 suites y 6 pruebas correctas; la batería completa terminó con 43 suites y 354 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
 ## 2026-10-06 — Enlazar la búsqueda de personas desde la navegación
 
 - **Historia u objetivo:** CS-61, objetivo 14: enlace «Buscar personas» en la barra de navegación.
