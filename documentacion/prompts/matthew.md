@@ -26,6 +26,24 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
+## 2026-10-06 — Buscar personas y enlazarlas a su perfil público
+
+- **Historia u objetivo:** CS-61, objetivo 12: pantalla `personas.html` con buscador y resultados que enlazan al perfil de cada usuario de CS-62.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell y Jest con jsdom.
+- **Contexto aportado:** Matthew pidió terminar CS-61 empezando por el objetivo 12 y registrar la interacción.
+- **Prompt inicial:**
+
+  > Perfecto. Acabemos con CS-61. Avanza con el objetivo 12 y recógelo en el registro de prompts
+
+- **Resultado propuesto por la IA:** crear `frontend/personas.html` y `frontend/js/personas.js`. La pantalla consulta `GET /api/usuarios?texto=…`, muestra los usuarios encontrados sin email y enlaza cada uno a `usuario.html?nombre=…` usando un nombre codificado.
+- **Decisiones y alcance:** los resultados se crean con el DOM y `textContent`, no con HTML generado a partir de nombres de usuario. Se incluyen mensajes para búsquedas sin resultados y errores del servidor. El enlace de navegación general se deja para el objetivo 14.
+- **TDD:** primero se añadió la prueba de pantalla. Falló porque no existían `personas.html` ni `js/personas.js`; tras crear ambos pasó. No fue necesaria una refactorización adicional porque la implementación mínima quedó clara.
+- **Comprensión humana de las pruebas:** la preparación simula las respuestas de la búsqueda; la acción envía el formulario; el resultado esperado verifica la ruta consultada, los enlaces codificados, que no se muestra el email, que un nombre no se interpreta como HTML y los mensajes vacío y de error.
+- **Intervención humana:** Matthew eligió completar CS-61 por sus objetivos pendientes y solicitó el registro automático de esta interacción.
+- **Comprobación final:** `npm test -- --runInBand tests/personasPantalla.test.js` completó 3 pruebas correctas; la batería completa terminó con 40 suites y 345 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
 ## 2026-10-06 — Probar el criterio completo de CS-61 por API
 
 - **Historia u objetivo:** CS-61, objetivo 11: pruebas de API para búsqueda, solicitudes pendientes y duplicadas, permisos de respuesta, rechazo, eliminación y seguimientos.
