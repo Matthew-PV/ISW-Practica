@@ -78,7 +78,6 @@ beforeEach(() => {
 
   amistadService.sonAmigos.mockResolvedValue(false);
 
-  // Por defecto el repositorio crea una valoración nueva.
   valoracionRepository.guardar.mockImplementation(
     async (datos) => ({
       valoracion: {
@@ -89,11 +88,9 @@ beforeEach(() => {
     })
   );
 
-  // Por defecto el usuario no tiene amigos ni seguidores.
   amistadRepository.listarAmigosIds.mockResolvedValue([]);
   seguimientoRepository.listarSeguidoresIds.mockResolvedValue([]);
 
-  // Por defecto no hay valoraciones relacionadas.
   valoracionRepository.listarDeUsuarios.mockResolvedValue({
     valoraciones: [],
     total: 0,
@@ -325,8 +322,13 @@ describe('quién puede valorar', () => {
       status: 404,
     });
 
-    expect(amistadService.sonAmigos).toHaveBeenCalledWith(1, 2);
-    expect(valoracionRepository.guardar).not.toHaveBeenCalled();
+    expect(
+      amistadService.sonAmigos
+    ).toHaveBeenCalledWith(1, 2);
+
+    expect(
+      valoracionRepository.guardar
+    ).not.toHaveBeenCalled();
   });
 
   test('una experiencia de amigos siendo amigo del autor sí se puede valorar', async () => {
@@ -355,7 +357,9 @@ describe('quién puede valorar', () => {
       message: 'No puedes valorar tu propia experiencia',
     });
 
-    expect(valoracionRepository.guardar).not.toHaveBeenCalled();
+    expect(
+      valoracionRepository.guardar
+    ).not.toHaveBeenCalled();
   });
 });
 
@@ -483,5 +487,54 @@ describe('valoraciones de amigos y seguidores - CS-48', () => {
     expect(
       valoracionRepository.listarDeUsuarios
     ).not.toHaveBeenCalled();
+  });
+
+  test('no incluye valoraciones de usuarios que no son amigos ni seguidores', async () => {
+    // El usuario 3 es amigo y el 4 es seguidor.
+    // El usuario 99 no tiene ninguna relación con el solicitante.
+    amistadRepository.listarAmigosIds.mockResolvedValue([3]);
+    seguimientoRepository.listarSeguidoresIds.mockResolvedValue([4]);
+
+    valoracionRepository.listarDeUsuarios.mockResolvedValue({
+      valoraciones: [
+        {
+          id: 20,
+          usuarioId: 3,
+          puntuacion: 5,
+          comentario: 'Valoración de un amigo',
+        },
+        {
+          id: 21,
+          usuarioId: 4,
+          puntuacion: 4,
+          comentario: 'Valoración de un seguidor',
+        },
+      ],
+      total: 2,
+    });
+
+    const resultado = await listarValoracionesRelacionadas(
+      1,
+      10,
+      1,
+      10
+    );
+
+    expect(
+      valoracionRepository.listarDeUsuarios
+    ).toHaveBeenCalledWith(
+      10,
+      [3, 4],
+      1,
+      10
+    );
+
+    expect(resultado.valoraciones).toHaveLength(2);
+
+    expect(
+      resultado.valoraciones.some(
+        (valoracion) => valoracion.usuarioId === 99
+      )
+    ).toBe(false);
   });
 });
