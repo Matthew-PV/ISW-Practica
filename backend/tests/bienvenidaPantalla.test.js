@@ -374,3 +374,79 @@ test('permite avanzar a la página siguiente y volver a la anterior', async () =
     $('#boton-pagina-siguiente').disabled
   ).toBe(false);
 });
+
+test('una valoración nueva aparece al volver a cargar el detalle', async () => {
+  // Primera consulta: todavía nadie relacionado ha valorado la experiencia.
+  respuestaValoraciones = {
+    valoraciones: [],
+    total: 0,
+    pagina: 1,
+    limite: 10,
+  };
+
+  $('.tarjeta-experiencia .boton-ver').click();
+
+  await terminar();
+
+  expect(
+    visible('#sin-valoraciones')
+  ).toContain(
+    'Ningún amigo o seguidor ha valorado esta experiencia.'
+  );
+
+  expect(
+    $('#lista-valoraciones').children.length
+  ).toBe(0);
+
+  // Después un amigo/seguidor añade una valoración.
+  respuestaValoraciones = {
+    valoraciones: [
+      {
+        id: 40,
+        usuarioId: 5,
+        experienciaId: 10,
+        puntuacion: 4,
+        comentario: 'La acabo de valorar',
+        usuario: {
+          id: 5,
+          nombreUsuario: 'maria',
+          foto: null,
+        },
+      },
+    ],
+    total: 1,
+    pagina: 1,
+    limite: 10,
+  };
+
+  // Cerramos y volvemos a abrir el detalle:
+  // debe hacerse una nueva petición al backend.
+  $('#boton-cerrar-detalle').click();
+  $('.tarjeta-experiencia .boton-ver').click();
+
+  await terminar();
+
+  expect(
+    $('#lista-valoraciones strong').textContent
+  ).toBe('maria');
+
+  expect(
+    $('#lista-valoraciones span').textContent
+  ).toBe('4/5');
+
+  expect(
+    $('#lista-valoraciones p').textContent
+  ).toBe('La acabo de valorar');
+
+  expect(
+    visible('#sin-valoraciones')
+  ).toBeNull();
+
+  const peticionesValoraciones =
+    window.fetch.mock.calls.filter(
+      ([ruta]) =>
+        ruta === '/api/experiencias/10/valoracion'
+    );
+
+  expect(peticionesValoraciones).toHaveLength(2);
+});
