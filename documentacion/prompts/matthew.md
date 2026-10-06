@@ -26,6 +26,24 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
+## 2026-10-06 — Probar el criterio completo de CS-61 por API
+
+- **Historia u objetivo:** CS-61, objetivo 11: pruebas de API para búsqueda, solicitudes pendientes y duplicadas, permisos de respuesta, rechazo, eliminación y seguimientos.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell, Jest y Supertest.
+- **Contexto aportado:** Matthew pidió completar el último objetivo de CS-61 y actualizar después el registro de modificaciones con estos cambios finales.
+- **Prompt inicial:**
+
+  > Finalmente, haremos la 11. Cuando la termines, registra estos últimos cambios en modificaciones
+
+- **Resultado propuesto por la IA:** añadir una prueba de integración HTTP que usa rutas y servicios reales, con repositorios simulados en memoria. Cubre sin sesión, búsqueda limitada y segura, solicitudes, duplicados, aceptación, rechazo, eliminación y seguimiento.
+- **Decisiones y alcance:** al ser una tarea de pruebas sobre comportamientos ya implementados, se aplicó caracterización: la prueba pasó desde su primera ejecución. Los repositorios se simulan para que la prueba no dependa de MySQL, pero se ejecutan las rutas y los servicios reales.
+- **TDD:** no aplica una fase roja forzada porque no se añadió comportamiento nuevo; los ocho casos caracterizan el criterio existente y habrían detectado cualquier regresión. La batería completa se ejecutó después en verde.
+- **Comprensión humana de las pruebas:** la preparación crea usuarios y relaciones en memoria; la acción hace peticiones HTTP con o sin sesión; el resultado esperado reproduce los casos del criterio de validación y comprueba los estados 200, 201, 204, 400, 403 y 401 pertinentes.
+- **Intervención humana:** Matthew eligió terminar CS-61 con la comprobación de criterio y pidió actualizar el registro resumido de modificaciones.
+- **Comprobación final:** `npm test -- --runInBand tests/interaccionesCriterio.test.js` completó 8 pruebas correctas; la batería completa terminó con 27 suites y 237 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
 ## 2026-10-06 — Exponer la API de amistades y seguimientos de CS-61
 
 - **Historia u objetivo:** CS-61, objetivo 10: rutas protegidas para búsqueda de usuarios, amistades y seguimientos.

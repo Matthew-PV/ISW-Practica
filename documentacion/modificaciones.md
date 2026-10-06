@@ -4,21 +4,22 @@ Registro de los cambios realizados en el proyecto, en orden cronológico.
 
 # CS-61: base de amistades y seguidores — En progreso (05/10/2026)
 
-Se ha completado la base de datos y la lógica inicial de amistades y seguimientos. La historia no está terminada: faltan las rutas, la interfaz y los objetivos de aceptación, rechazo y eliminación.
+Se ha completado la base de datos, la API y la lógica de amistades y seguimientos. La historia no está terminada: falta la interfaz de búsqueda y gestión de personas.
 
 ### Cambios realizados
 
 - **Datos:** nuevos modelos `Amistad` y `Seguimiento`, con sus migraciones de Prisma. Las relaciones guardan quién inicia cada acción, la fecha y las claves foráneas a Usuario. Las restricciones únicas impiden repetir la misma solicitud o seguimiento.
-- **Repositorios:** `amistadRepository` crea, busca en ambos sentidos, acepta, borra y lista solicitudes pendientes recibidas. `seguimientoRepository` permite seguir, dejar de seguir y comprobar un seguimiento. La búsqueda de usuarios en `usuarioRepository` encuentra nombres que contienen el texto, excluye a quien busca, limita a 20 resultados y no devuelve emails.
-- **Servicio de amistad:** `enviarSolicitud` comprueba que la sesión y el destinatario existen, impide enviarse una solicitud a uno mismo y rechaza cualquier solicitud o amistad previa en ambos sentidos antes de guardar.
-- **Pruebas:** se añadieron pruebas de esquema, repositorios, búsqueda y servicio siguiendo el ciclo rojo-verde. La batería actual tiene 200 pruebas en 23 suites, todas correctas.
-- **Registro de IA:** `documentacion/prompts/matthew.md` incorpora las entradas de los objetivos 1 a 6 de CS-61.
+- **Repositorios:** `amistadRepository` crea, busca en ambos sentidos o por identificador, acepta, borra y lista solicitudes pendientes recibidas. `seguimientoRepository` permite seguir, dejar de seguir y comprobar un seguimiento. La búsqueda de usuarios en `usuarioRepository` encuentra nombres que contienen el texto, excluye a quien busca, limita a 20 resultados y no devuelve emails.
+- **Servicios:** las solicitudes solo se envían a otro usuario existente y sin relación previa; solo el destinatario puede aceptarlas o rechazarlas; cualquiera de los dos puede eliminar una amistad aceptada. Los seguimientos no permiten seguirse a uno mismo ni duplicarse. `sonAmigos` devuelve true exclusivamente para amistades aceptadas, de modo reutilizable para otras historias.
+- **API:** nuevas rutas protegidas por sesión para búsqueda de usuarios, solicitudes recibidas, enviar/responder/eliminar amistades y seguir/dejar de seguir. Las creaciones responden 201, las eliminaciones 204 y las consultas o respuestas 200.
+- **Pruebas:** se añadieron pruebas de esquema, repositorios, servicios, rutas y una prueba de integración HTTP de todo el criterio. La batería actual tiene 237 pruebas en 27 suites, todas correctas.
+- **Registro de IA:** `documentacion/prompts/matthew.md` incorpora las entradas de los objetivos 1 a 11 de CS-61.
 
 ### Para quien continúe
 
 - En otra copia del repositorio, aplicar las migraciones desde `backend/` con `npx prisma migrate deploy` y después ejecutar `npx prisma generate`.
 - La restricción de solicitud inversa se valida en el servicio. Mantener esa comprobación al añadir rutas para que no se creen relaciones duplicadas entre las mismas personas.
-- Las funciones nuevas todavía no se exponen por HTTP ni tienen pantalla; los siguientes objetivos deben conservar la separación rutas → servicios → repositorios.
+- Las funciones ya se exponen por HTTP, pero todavía no tienen interfaz. Las pantallas futuras deben reutilizar `js/shared/api.js` y conservar la separación rutas → servicios → repositorios.
 
 ### Cómo comprobarlo
 
@@ -27,7 +28,7 @@ cd backend
 npm test
 ```
 
-Resultado esperado: 23 suites y 200 pruebas correctas.
+Resultado esperado: 27 suites y 237 pruebas correctas.
 
 
 
