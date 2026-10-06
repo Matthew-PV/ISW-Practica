@@ -13,6 +13,9 @@ const prisma = require('./shared/prisma');
 // Campos del perfil que se pueden mostrar (nunca la contraseña cifrada)
 const CAMPOS_PERFIL = { id: true, nombreUsuario: true, email: true, foto: true, ciudad: true };
 
+// Campos del perfil que puede ver otra persona: nunca el email
+const CAMPOS_PERFIL_PUBLICO = { id: true, nombreUsuario: true, foto: true, ciudad: true };
+
 // Crea un usuario. La contraseña debe llegar ya cifrada.
 // Si el email o el nombre ya existen, Prisma lanza un error con código P2002.
 async function crear({ nombreUsuario, email, passwordHash }) {
@@ -53,6 +56,15 @@ async function obtenerPerfil(id) {
   });
 }
 
+// Devuelve el perfil público de un usuario (sin email) buscándolo por su nombre de usuario,
+// o null si no existe.
+async function obtenerPerfilPublico(nombreUsuario) {
+  return prisma.usuario.findUnique({
+    where: { nombreUsuario },
+    select: CAMPOS_PERFIL_PUBLICO,
+  });
+}
+
 // Actualiza nombreUsuario y/o ciudad. Devuelve solo los campos seguros de mostrar.
 // Un campo que llega como undefined no se modifica.
 async function actualizarPerfil(id, { nombreUsuario, ciudad }) {
@@ -72,4 +84,4 @@ async function actualizarFoto(id, foto) {
   });
 }
 
-module.exports = { crear, buscarPorEmail, buscarPorId, buscarPorNombre, obtenerPerfil, actualizarPerfil, actualizarFoto };
+module.exports = { crear, buscarPorEmail, buscarPorId, buscarPorNombre, obtenerPerfil, obtenerPerfilPublico, actualizarPerfil, actualizarFoto };
