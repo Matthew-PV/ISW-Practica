@@ -9,11 +9,13 @@ Se ha empezado CS-01. Como necesita saber si quien valora puede ver la experienc
 ### Cambios realizados
 
 - **Datos (CS-22, objetivo 1):** nuevo enum `Visibilidad` (`PRIVADA`, `AMIGOS`, `PUBLICA`) y campo `visibilidad` en `Experiencia`, con valor por defecto `PUBLICA`. La migración `visibilidad_experiencia` añade la columna y las experiencias que ya existían quedan públicas.
-- **Pruebas:** `tests/visibilidadModelo.test.js` comprueba el enum y el valor por defecto en el esquema.
+- **Datos (CS-01, objetivo 1):** nuevo modelo `Valoracion` (usuario, experiencia, puntuación entera, comentario opcional, fechas de creación y de última modificación). La restricción única por usuario y experiencia garantiza una sola valoración por pareja; el índice por experiencia acelera listar sus valoraciones. La migración `crear_valoracion` solo crea la tabla nueva.
+- **Pruebas:** `tests/visibilidadModelo.test.js` comprueba el enum y el valor por defecto en el esquema; `tests/valoracionModelo.test.js`, los campos de `Valoracion` y su restricción única.
 
 ### Para quien continúe
 
-- Aplicar la migración desde `backend/` con `npx prisma migrate deploy` y después `npx prisma generate`.
+- Aplicar las migraciones desde `backend/` con `npx prisma migrate deploy` y después `npx prisma generate`.
+- La valoración aún no tiene repositorio, servicio ni ruta: se añadirán en los siguientes objetivos de CS-01, incluida la validación del rango de la puntuación.
 - Del resto de CS-22 todavía no hay nada: crear y editar no aceptan `visibilidad` y el formulario no tiene selector, así que toda experiencia nueva es pública.
 
 ### Cómo comprobarlo
@@ -23,7 +25,7 @@ cd backend
 npm test
 ```
 
-Resultado esperado: 25 suites y 219 pruebas correctas.
+Resultado esperado: 26 suites y 220 pruebas correctas.
 
 
 

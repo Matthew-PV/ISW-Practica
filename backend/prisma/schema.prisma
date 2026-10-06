@@ -29,6 +29,7 @@ model Usuario {
   solicitudesRecibidas   Amistad[]     @relation("Destinatario")
   seguimientosRealizados Seguimiento[] @relation("Seguidor")
   seguidores             Seguimiento[] @relation("Seguido")
+  valoraciones           Valoracion[]
 }
 
 // Una ciudad puede tener varias experiencias. El nombre no es único:
@@ -53,22 +54,41 @@ enum Visibilidad {
 
 // Cada experiencia pertenece obligatoriamente a una única ciudad existente.
 model Experiencia {
-  id              Int         @id @default(autoincrement())
+  id              Int          @id @default(autoincrement())
   titulo          String
-  descripcion     String      @db.Text
+  descripcion     String       @db.Text
   ciudadId        Int
-  ciudad          Ciudad      @relation(fields: [ciudadId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  ciudad          Ciudad       @relation(fields: [ciudadId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   tipo            String?
   momentoAdecuado String?
   // Pública por defecto: las experiencias anteriores y las creadas sin elegirla siguen visibles.
-  visibilidad     Visibilidad @default(PUBLICA)
+  visibilidad     Visibilidad  @default(PUBLICA)
   // Solo nullable para conservar experiencias anteriores sin autor conocido.
   // La creación desde la aplicación siempre exige el usuario de la sesión.
   autorId         Int?
-  autor           Usuario?    @relation(fields: [autorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  autor           Usuario?     @relation(fields: [autorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  valoraciones    Valoracion[]
 
   @@index([ciudadId])
   @@index([autorId])
+}
+
+// Valoración de una experiencia por un usuario (CS-01). Cada usuario tiene como
+// máximo una por experiencia: volver a valorar actualiza la existente.
+// El rango de la puntuación se valida en el servicio.
+model Valoracion {
+  id            Int         @id @default(autoincrement())
+  usuarioId     Int
+  experienciaId Int
+  puntuacion    Int
+  comentario    String?     @db.Text
+  creadaEn      DateTime    @default(now())
+  actualizadaEn DateTime    @updatedAt
+  usuario       Usuario     @relation(fields: [usuarioId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  experiencia   Experiencia @relation(fields: [experienciaId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([usuarioId, experienciaId])
+  @@index([experienciaId])
 }
 
 // Una solicitud de amistad identifica quién la envía y quién la recibe.
