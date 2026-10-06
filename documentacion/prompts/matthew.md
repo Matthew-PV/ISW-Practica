@@ -26,6 +26,24 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
+## 2026-10-06 — Seguir y dejar de seguir en CS-61
+
+- **Historia u objetivo:** CS-61, objetivo 8: servicio para seguir y dejar de seguir sin permitirse a uno mismo ni duplicar seguimientos.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell y Jest.
+- **Contexto aportado:** Matthew pidió continuar con el objetivo 8 aplicando el mismo proceso TDD y de registro automático que en los objetivos anteriores.
+- **Prompt inicial:**
+
+  > Ahora hagamos la 8
+
+- **Resultado propuesto por la IA:** crear `seguimientoService` con `seguirUsuario` y `dejarDeSeguir`, que comprueban sesión, existencia del destino, que no sea la misma persona y existencia o ausencia previa del seguimiento según la acción.
+- **Decisiones y alcance:** seguir un usuario ya seguido se rechaza con 400; dejar de seguir una relación inexistente se rechaza con 404. No se añadieron rutas, interfaz ni controles de acceso adicionales.
+- **TDD:** primero se escribió una prueba con repositorios simulados; falló porque el servicio no existía. Tras implementar las reglas mínimas, las seis pruebas específicas pasaron. No fue necesaria una refactorización adicional.
+- **Comprensión humana de las pruebas:** la preparación simula dos usuarios y el estado de su seguimiento; la acción intenta seguir o dejar de seguir; el resultado esperado solo modifica el repositorio cuando la relación es válida.
+- **Intervención humana:** Matthew seleccionó el objetivo 8 y pidió mantener el mismo flujo de trabajo que los objetivos previos.
+- **Comprobación final:** `npm test -- --runInBand tests/seguimientoService.test.js` completó 6 pruebas correctas; la batería completa terminó con 24 suites y 214 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
 ## 2026-10-06 — Responder solicitudes y eliminar amistades de CS-61
 
 - **Historia u objetivo:** CS-61, objetivo 7: aceptar o rechazar una solicitud solo por su destinatario y permitir que cualquiera de las dos personas elimine una amistad aceptada.
