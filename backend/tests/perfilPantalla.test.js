@@ -33,7 +33,9 @@ beforeEach(async () => {
   // Página nueva en cada prueba: el HTML de perfil.html (sus <script> no se ejecutan así)
   // y después api.js y perfil.js en el ámbito global, como los carga el navegador
   document.documentElement.innerHTML = HTML;
-  window.fetch = jest.fn().mockReturnValueOnce(respuesta(200, PERFIL)); // GET /api/perfil al cargar
+  window.fetch = jest.fn()
+    .mockReturnValueOnce(respuesta(200, PERFIL)) // GET /api/perfil al cargar
+    .mockReturnValueOnce(respuesta(200, [])); // GET /api/amistades/solicitudes al cargar
   (0, eval)(SCRIPTS);
   await terminar();
 });
@@ -49,7 +51,7 @@ test('al elegir una foto se sube sola, sin pulsar ningún botón, y se ve la nue
   elegirFoto(archivo);
   await terminar();
 
-  const [ruta, opciones] = window.fetch.mock.calls[1];
+  const [ruta, opciones] = window.fetch.mock.calls[2];
   expect(ruta).toBe('/api/perfil/foto');
   expect(opciones.method).toBe('PUT');
   expect(opciones.body.get('foto')).toBe(archivo);

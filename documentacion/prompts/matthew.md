@@ -26,6 +26,24 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
+## 2026-10-06 — Gestionar solicitudes recibidas desde el perfil
+
+- **Historia u objetivo:** CS-61, objetivo 13: sección «Solicitudes recibidas» en `perfil.html` con botones para aceptar o rechazar.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell y Jest con jsdom.
+- **Contexto aportado:** Matthew pidió continuar con el objetivo 13 después de integrar la pantalla de búsqueda de personas.
+- **Prompt inicial:**
+
+  > Perfecto, pasemos al objetivo 13
+
+- **Resultado propuesto por la IA:** incorporar en el perfil propio una lista de solicitudes pendientes, con los botones «Aceptar» y «Rechazar». La carga usa `GET /api/amistades/solicitudes`; cada acción usa `PATCH /api/amistades/:id` y retira la solicitud respondida de la vista sin recargar.
+- **Decisiones y alcance:** la nueva sección es independiente del formulario de perfil y de las futuras zonas de CS-45. Los nombres se muestran con `textContent`. Se ajustó la simulación de la prueba existente de la foto porque el perfil realiza ahora una segunda consulta inicial legítima.
+- **TDD:** primero se añadieron las pruebas de pantalla; fallaron porque el perfil no consultaba ni representaba las solicitudes. Tras añadir la sección y su comportamiento pasaron. Una prueba previa de foto señaló la nueva consulta inicial y se actualizó su expectativa, sin cambiar lo que comprobaba.
+- **Comprensión humana de las pruebas:** la preparación simula perfil y solicitudes recibidas; la acción carga la página o pulsa Aceptar/Rechazar; el resultado esperado verifica la consulta, los botones, el cuerpo `{ aceptar }` y que la lista se vacía al responder.
+- **Intervención humana:** Matthew seleccionó el objetivo 13 para continuar la terminación de CS-61.
+- **Comprobación final:** `npm test -- --runInBand tests/solicitudesPantalla.test.js tests/perfilPantalla.test.js` completó 2 suites y 7 pruebas correctas; la batería completa terminó con 42 suites y 351 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
 ## 2026-10-06 — Buscar personas y enlazarlas a su perfil público
 
 - **Historia u objetivo:** CS-61, objetivo 12: pantalla `personas.html` con buscador y resultados que enlazan al perfil de cada usuario de CS-62.

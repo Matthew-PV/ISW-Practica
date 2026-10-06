@@ -48,6 +48,14 @@
       <div id="exito-perfil" class="alert alert-success d-none"></div>
       <button type="submit" class="btn btn-primary w-100">Guardar cambios</button>
     </form>
+
+    <!-- Solicitudes de amistad pendientes. js/perfil.js las obtiene desde /api/amistades/solicitudes. -->
+    <section class="mt-5" aria-labelledby="titulo-solicitudes">
+      <h2 id="titulo-solicitudes" class="h4">Solicitudes recibidas</h2>
+      <div id="error-solicitudes" class="alert alert-danger d-none" role="alert"></div>
+      <p id="sin-solicitudes" class="text-secondary d-none">No tienes solicitudes pendientes.</p>
+      <div id="solicitudes-recibidas" class="list-group"></div>
+    </section>
   </main>
 
   <script src="js/shared/api.js"></script>

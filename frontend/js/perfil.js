@@ -60,6 +60,79 @@ formulario.addEventListener('submit', async (e) => {
 
 cargarPerfil();
 
+// Solicitudes pendientes que ha recibido la persona de la sesión. Se cargan por separado del
+// formulario para que un error al responder no afecte a la edición del perfil.
+const solicitudesRecibidas = document.getElementById('solicitudes-recibidas');
+const sinSolicitudes = document.getElementById('sin-solicitudes');
+const cajaErrorSolicitudes = document.getElementById('error-solicitudes');
+
+function actualizarEstadoSolicitudes() {
+  sinSolicitudes.classList.toggle('d-none', solicitudesRecibidas.children.length !== 0);
+}
+
+// Crea una solicitud con sus dos acciones. El nombre se incorpora como texto para que nunca se
+// interprete como HTML aportado por otra persona.
+function crearSolicitud(solicitud) {
+  const fila = document.createElement('div');
+  fila.className = 'list-group-item d-flex justify-content-between align-items-center gap-2';
+
+  const nombre = document.createElement('span');
+  nombre.textContent = solicitud.solicitante.nombreUsuario;
+
+  const acciones = document.createElement('div');
+  acciones.className = 'd-flex gap-2';
+  for (const [texto, clase, aceptar] of [
+    ['Aceptar', 'btn-success', true],
+    ['Rechazar', 'btn-outline-danger', false],
+  ]) {
+    const botonRespuesta = document.createElement('button');
+    botonRespuesta.type = 'button';
+    botonRespuesta.className = `btn btn-sm ${clase}`;
+    botonRespuesta.textContent = texto;
+    botonRespuesta.addEventListener('click', () => responderSolicitud(solicitud.id, aceptar, fila));
+    acciones.append(botonRespuesta);
+  }
+
+  fila.append(nombre, acciones);
+  return fila;
+}
+
+function mostrarSolicitudes(solicitudes) {
+  solicitudesRecibidas.replaceChildren(...solicitudes.map(crearSolicitud));
+  actualizarEstadoSolicitudes();
+}
+
+async function cargarSolicitudesRecibidas() {
+  cajaErrorSolicitudes.classList.add('d-none');
+  try {
+    mostrarSolicitudes(await api('/amistades/solicitudes'));
+  } catch (err) {
+    cajaErrorSolicitudes.textContent = err.message;
+    cajaErrorSolicitudes.classList.remove('d-none');
+  }
+}
+
+async function responderSolicitud(solicitudId, aceptar, fila) {
+  cajaErrorSolicitudes.classList.add('d-none');
+  const botonesRespuesta = fila.querySelectorAll('button');
+  botonesRespuesta.forEach((botonRespuesta) => { botonRespuesta.disabled = true; });
+
+  try {
+    await api(`/amistades/${solicitudId}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ aceptar }),
+    });
+    fila.remove();
+    actualizarEstadoSolicitudes();
+  } catch (err) {
+    cajaErrorSolicitudes.textContent = err.message;
+    cajaErrorSolicitudes.classList.remove('d-none');
+    botonesRespuesta.forEach((botonRespuesta) => { botonRespuesta.disabled = false; });
+  }
+}
+
+cargarSolicitudesRecibidas();
+
 // Subida de la foto de perfil: se envía en cuanto se elige el archivo, con su propia petición
 // (un archivo en lugar de JSON). «Guardar cambios» solo guarda el nombre y la ciudad.
 const campoFoto = document.getElementById('foto');
