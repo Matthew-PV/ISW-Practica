@@ -100,6 +100,35 @@ async function contarAmigos(usuarioId) {
     },
   });
 }
+// Devuelve una página de los amigos aceptados de un usuario, con sus datos públicos (nunca el email), de la amistad más reciente a la más antigua.
+//limite: personas por página.
+// El desempate por id mantiene el orden fijo entre páginas, para que nadie salga repetido.
+async function listarAmigos(usuarioId, pagina, limite) {
+  const datosPublicos = { id: true, nombreUsuario: true, foto: true };
+  const amistades = await prisma.amistad.findMany({
+    where: {
+      estado: 'ACEPTADA',
+      OR: [
+        { solicitanteId: usuarioId },
+        { destinatarioId: usuarioId },
+      ],
+    },
+    select: {
+      solicitanteId: true,
+      solicitante: { select: datosPublicos },
+      destinatario: { select: datosPublicos },
+    },
+    orderBy: [{ fecha: 'desc' }, { id: 'desc' }],
+    skip: (pagina - 1) * limite,
+    take: limite,
+  });
+
+  // El amigo es «la otra persona» de cada amistad
+  return amistades.map((amistad) =>
+    amistad.solicitanteId === usuarioId ? amistad.destinatario : amistad.solicitante
+  );
+}
+
 
 module.exports = {
   crear,
@@ -110,4 +139,5 @@ module.exports = {
   listarSolicitudesRecibidas,
   listarAmigosIds,
   contarAmigos,
+  listarAmigos,
 };
