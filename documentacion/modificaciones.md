@@ -62,14 +62,42 @@ npm.cmd test -- --runInBand
 
 Para la comprobación manual, arrancar MySQL y PlanB, iniciar sesión, abrir «Ver detalle» en una experiencia y revisar la sección de valoraciones. Comprobar también la vista móvil desde las herramientas de desarrollo del navegador.
 
+# CS-22: visibilidad de experiencias — Finalizada (07/10/2026)
+
+Se ha completado la historia CS-22: cada experiencia puede declararse como `PRIVADA`, `AMIGOS` o `PUBLICA`, el valor por defecto queda en `PUBLICA` para conservar las experiencias existentes y la pantalla de creación/edición refleja y guarda ese valor.
+
+### Cambios realizados
+
+- **Datos y migración (objetivo 3):** el enum `Visibilidad` y el campo `visibilidad` en `Experiencia` quedaron añadidos en el esquema de Prisma y la migración `20261006093106_visibilidad_experiencia` usa `DEFAULT 'PUBLICA'`, así que las experiencias ya creadas siguen visibles sin necesidad de limpieza manual.
+- **Validación y persistencia (objetivo 4):** `validarCreacion` y `validarEdicion` de `experienciaService.js` aceptan solo los tres valores permitidos, normalizan a mayúsculas, devuelven 400 si el valor no es válido y el repositorio persiste `visibilidad` al crear o actualizar la experiencia.
+- **Pruebas de pantalla (objetivo 5):** `bienvenidaPantalla.test.js` comprueba que el formulario de experiencia incluye el selector de visibilidad, con las tres opciones y el valor por defecto `PUBLICA`, y que al editar mantiene el valor actual.
+- **Formulario y envío (objetivo 6):** el selector se añadió en `frontend/bienvenida.html` y el formulario envía el valor elegido en la petición `POST`/`PATCH`.
+- **Edición y conservación (objetivo 7):** `abrirFormulario` en `frontend/js/bienvenida.js` rellena el selector con la visibilidad actual de la experiencia y conserva el valor al volver a abrir el formulario.
+- **Pruebas automáticas:** `experienciaValidacion.test.js` cubre la validación del campo y `bienvenidaPantalla.test.js` cubre el flujo de pantalla; la batería final del backend queda en verde.
+
+### TDD y comprobación
+
+Se siguió un flujo de prueba con rojo → verde:
+
+- La validación inicial fallaba porque el servicio no aceptaba ni normalizaba `visibilidad`.
+- La pantalla fallaba porque el selector no existía ni se rellenaba al editar.
+- Tras los cambios, la suite completa del backend quedó en verde con 49 suites y 408 pruebas correctas.
+
+### Cómo comprobarlo
+
+Desde `backend/`:
+
+```powershell
+npm test -- --runInBand
+```
+
 # CS-01: valorar una experiencia — En progreso; Excel de historias corregido (06/10/2026)
 
 Se ha empezado CS-01. Como necesita saber si quien valora puede ver la experiencia, primero se ha añadido la visibilidad de las experiencias, que es el único objetivo de CS-22 imprescindible para CS-01 (acordado con Matthew, propietario de CS-22).
 
 ### Cambios realizados
 
-- **Datos (CS-22, objetivo 1):** nuevo enum `Visibilidad` (`PRIVADA`, `AMIGOS`, `PUBLICA`) y campo `visibilidad` en `Experiencia`, con valor por defecto `PUBLICA`. La migración `visibilidad_experiencia` añade la columna y las experiencias que ya existían quedan públicas.
-- **Datos (CS-01, objetivo 1):** nuevo modelo `Valoracion` (usuario, experiencia, puntuación entera, comentario opcional, fechas de creación y de última modificación). La restricción única por usuario y experiencia garantiza una sola valoración por pareja; el índice por experiencia acelera listar sus valoraciones. La migración `crear_valoracion` solo crea la tabla nueva.
+- **Datos (CS-22, objetivo 1):** nuevo enum `Visibilidad` (`PRIVADA`, `AMIGOS`, `PUBLICA`) y campo `visibilidad` en `Experiencia`, con valor por defecto `PUBLICA`. La migración `visibilidad_experiencia` añade la columna y las experiencias que ya existían quedan públicas.- **Datos (CS-01, objetivo 1):** nuevo modelo `Valoracion` (usuario, experiencia, puntuación entera, comentario opcional, fechas de creación y de última modificación). La restricción única por usuario y experiencia garantiza una sola valoración por pareja; el índice por experiencia acelera listar sus valoraciones. La migración `crear_valoracion` solo crea la tabla nueva.
 - **Crear y modificar una valoración:** `PUT /api/experiencias/:id/valoracion` (con sesión), cuerpo `{ puntuacion, comentario? }`. Si el usuario aún no había valorado la experiencia se crea (201); si ya la había valorado se actualiza la misma (200), nunca se crea una segunda. El usuario sale siempre de la sesión. Capas: `valoracionRoutes.js` → `valoracionService.js` → `valoracionRepository.js`. El repositorio intenta crear la valoración y, si MySQL la rechaza por duplicada (error `P2002` de la restricción única), actualiza la existente. Como la comprobación la hace MySQL dentro del propio INSERT, con peticiones simultáneas solo una la crea y las demás la actualizan: nunca hay duplicados ni errores.
 - **Validaciones de la valoración:** si algo falla no se guarda nada. 401 si el usuario de la sesión ya no existe; 400 si el id no es válido, la puntuación no es un entero del 1 al 5 o el comentario no es texto; 404 «La experiencia no existe» tanto si no existe como si quien valora no puede verla (así no se revela su existencia); 403 si el autor intenta valorar su propia experiencia.
 - **Regla de visibilidad compartida:** `services/shared/visibilidad.js` (`puedeVerExperiencia`): el autor siempre; pública, cualquiera; amigos, solo con amistad aceptada (`sonAmigos` de CS-61); privada, nadie más. Pensada para reutilizarse en CS-02, CS-30 y CS-63.
