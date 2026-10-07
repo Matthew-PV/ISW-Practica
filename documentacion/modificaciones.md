@@ -2,6 +2,18 @@
 
 Registro de los cambios realizados en el proyecto, en orden cronológico.
 
+# Excel de historias: cambios de OneDrive y CS-64 para José — Documentado (07/10/2026)
+
+La copia de OneDrive descargada hoy no tenía las correcciones del 06/10 (fila «Total», números de objetivo con fórmula, tiempo total sin duplicar). Se ha partido del libro corregido del repositorio y se le han añadido los cambios que el equipo hizo en OneDrive desde la última descarga:
+
+- **CS-45:** objetivos 1 a 5 finalizados, objetivo 2 a nombre de Flavia y sus tiempos.
+- **CS-48:** objetivos 3 a 10 finalizados, objetivos 7 a 10 a nombre de Jorge y sus tiempos.
+- **CS-61:** objetivos 12 a 16 finalizados y sus tiempos.
+- **CS-62:** objetivo 12 finalizado, objetivos 8 y 11 marcados «No» y tiempos corregidos de los objetivos 5 y 12.
+- **CS-64:** los 15 objetivos, a nombre de José, con su tiempo estimado (340 min en total). El Tiempo estimado de la historia en el Índice pasa de 0,5 h a 6 h. Aún no tienen tiempo real, porque ninguno está empezado.
+
+Hay que subir esta versión a OneDrive para sustituir la actual.
+
 # CS-48: valoraciones de amigos y seguidores — Finalizada (06/10/2026)
 
 Se ha implementado la consulta y presentación diferenciada de las valoraciones realizadas por amigos o seguidores del usuario que consulta una experiencia. La funcionalidad reutiliza las relaciones de CS-61 y la regla compartida de visibilidad de experiencias.
