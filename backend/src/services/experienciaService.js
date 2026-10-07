@@ -11,6 +11,7 @@
 const ciudadRepository = require('../repositories/ciudadRepository');
 const experienciaRepository = require('../repositories/experienciaRepository');
 const usuarioRepository = require('../repositories/usuarioRepository');
+const { puedeVerExperiencia } = require('./shared/visibilidad');
 const { crearError } = require('../errores');
 
 const TEXTO_CORTO_MAX = 191; // Columnas VARCHAR(191) de MySQL.
@@ -243,6 +244,32 @@ async function editarExperiencia(usuarioId, experienciaId, datos) {
   }
 }
 
+// Devuelve una experiencia concreta si el usuario de la sesión puede verla.
+// Requiere sesión y valida el identificador primero; si no existe o no es visible,
+// devuelve errores explícitos sin filtrar la causa final.
+async function obtenerExperiencia(usuarioId, experienciaId) {
+  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
+      !(await usuarioRepository.buscarPorId(usuarioId))) {
+    throw crearError('No hay sesión iniciada', 401);
+  }
+
+  if (!Number.isInteger(experienciaId) || experienciaId <= 0) {
+    throw crearError('El identificador de la experiencia no es válido', 400);
+  }
+
+  const experiencia = await experienciaRepository.buscarPorId(experienciaId);
+
+  if (!experiencia) {
+    throw crearError('La experiencia no existe', 404);
+  }
+
+  if (!(await puedeVerExperiencia(usuarioId, experiencia))) {
+    throw crearError('No tienes permiso para ver esta experiencia', 403);
+  }
+
+  return experiencia;
+}
+
 // Devuelve las experiencias del usuario de la sesión, de la más nueva a la más antigua.
 // Error 401 si el usuario ya no existe.
 async function listarExperienciasPropias(usuarioId) {
@@ -255,6 +282,7 @@ async function listarExperienciasPropias(usuarioId) {
 
 module.exports = {
   listarExperienciasPropias,
+  obtenerExperiencia,
   validarCreacion,
   validarEdicion,
   crearExperiencia,

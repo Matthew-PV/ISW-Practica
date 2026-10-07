@@ -685,3 +685,21 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Intervención humana:** Matthew pidió cerrar esta parte de la historia y seguir la secuencia de objetivos definida por el Excel.
 - **Comprobación final:** la suite `tests/bienvenidaPantalla.test.js` quedó en verde y cubre la carga y conservación del valor de visibilidad al editar.
 - **Resultado en Git:** cambios en `frontend/js/bienvenida.js`, `frontend/bienvenida.html` y el registro de prompts.
+
+## 2026-10-07 — Recuperar una experiencia por id con visibilidad y autorización (CS-30, objetivo 4)
+
+- **Historia u objetivo:** CS-30, objetivo 4: añadir la búsqueda por id de experiencia y comprobar que el usuario de la sesión puede verla antes de devolverla.
+- **Agente/herramienta:** Copilot SDK en VS Code.
+- **Entorno:** Windows, PowerShell, Jest y el backend de PlanB.
+- **Contexto aportado:** CS-22 ya dejaba la regla compartida de visibilidad y CS-30 era la siguiente pieza pendiente: consultar una experiencia concreta y bloquear el acceso si no existe o si la visibilidad no lo permite.
+- **Prompt inicial:**
+
+  > Sigue con el objetivo 4.
+
+- **Correcciones relevantes:** se mantuvo el alcance al objetivo 4 y no se implementó todavía el mensaje común de "Contenido no disponible"; la validación de la experiencia se centró en la consulta por id y los permisos.
+- **Resultado propuesto por la IA:** añadir `obtenerExperiencia` en `experienciaService.js`, reutilizar `puedeVerExperiencia` y exponer `GET /api/experiencias/:id` con sesión requerida.
+- **TDD:** se añadieron pruebas para el caso visible, el caso inexistente y el caso no autorizado; la fase inicial falló porque la función aún no existía, y tras la implementación la suite quedó en verde.
+- **Comprensión humana de las pruebas:** cada caso simula sesión válida, búsqueda por id y comprobación final de la regla de visibilidad antes de devolver la experiencia.
+- **Intervención humana:** Matthew siguió la secuencia de un objetivo a la vez y dejó el objetivo 5 para una siguiente llamada.
+- **Comprobación final:** `npm test -- --runInBand tests/experienciaObjetivos.test.js` quedó en verde con 9 pruebas correctas.
+- **Resultado en Git:** cambios en `backend/src/services/experienciaService.js`, `backend/src/routes/experienciaRoutes.js`, `backend/tests/experienciaObjetivos.test.js` y el registro de prompts.

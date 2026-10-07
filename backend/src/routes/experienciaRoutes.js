@@ -16,6 +16,16 @@ router.get('/mias', requiereSesion, async (req, res) => {
   res.json(await experienciaService.listarExperienciasPropias(req.session.usuarioId));
 });
 
+// GET /api/experiencias/:id — una experiencia concreta si el usuario de la sesión puede verla.
+router.get('/:id', requiereSesion, async (req, res) => {
+  const experienciaId = Number(req.params.id);
+  const experiencia = await experienciaService.obtenerExperiencia(
+    req.session.usuarioId,
+    experienciaId
+  );
+  res.json(experiencia);
+});
+
 // POST /api/experiencias — crea una experiencia cuyo autor es el usuario de la sesión (201),
 // o 400 si los datos no son válidos.
 // Cuerpo: { titulo, descripcion, ciudadId, tipo?, momentoAdecuado? }.

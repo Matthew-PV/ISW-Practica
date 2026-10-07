@@ -1,11 +1,16 @@
 const ciudadRepository = require('../src/repositories/ciudadRepository');
 const experienciaRepository = require('../src/repositories/experienciaRepository');
 const usuarioRepository = require('../src/repositories/usuarioRepository');
-const { crearExperiencia } = require('../src/services/experienciaService');
+const { crearExperiencia, obtenerExperiencia } = require('../src/services/experienciaService');
 
 jest.mock('../src/repositories/ciudadRepository');
 jest.mock('../src/repositories/experienciaRepository');
 jest.mock('../src/repositories/usuarioRepository');
+jest.mock('../src/services/shared/visibilidad', () => ({
+  puedeVerExperiencia: jest.fn(),
+}));
+
+const { puedeVerExperiencia } = require('../src/services/shared/visibilidad');
 
 const USUARIO_ID = 1;
 const CIUDAD_ID = 10;
@@ -23,6 +28,7 @@ beforeEach(() => {
   usuarioRepository.buscarPorId.mockResolvedValue({ id: USUARIO_ID });
   ciudadRepository.buscarPorId.mockResolvedValue({ id: CIUDAD_ID });
   experienciaRepository.crear.mockImplementation(async (d) => ({ id: 99, ...d }));
+  puedeVerExperiencia.mockResolvedValue(true);
 });
 
 describe('Objetivo 5 - rechazar si falta un campo obligatorio', () => {
@@ -54,5 +60,51 @@ describe('Objetivo 7 - creación con datos válidos', () => {
     const resultado = await crearExperiencia(USUARIO_ID, datosValidos);
     expect(experienciaRepository.crear).toHaveBeenCalledWith({ ...datosValidos, visibilidad: 'PUBLICA', autorId: USUARIO_ID });
     expect(resultado).toMatchObject({ id: 99, autorId: USUARIO_ID, visibilidad: 'PUBLICA' });
+  });
+});
+
+describe('Objetivo 4 - leer una experiencia por su id', () => {
+  test('devuelve la experiencia si el usuario puede verla', async () => {
+    const experiencia = {
+      id: 7,
+      autorId: 2,
+      visibilidad: 'PUBLICA',
+      titulo: 'Ruta por el río',
+      descripcion: 'Un paseo tranquilo.',
+      ciudad: { id: 10, nombre: 'Sevilla' },
+    };
+
+    experienciaRepository.buscarPorId.mockResolvedValue(experiencia);
+
+    await expect(obtenerExperiencia(USUARIO_ID, 7)).resolves.toMatchObject(experiencia);
+    expect(puedeVerExperiencia).toHaveBeenCalledWith(USUARIO_ID, experiencia);
+  });
+
+  test('rechaza una experiencia que no existe', async () => {
+    experienciaRepository.buscarPorId.mockResolvedValue(null);
+
+    await expect(obtenerExperiencia(USUARIO_ID, 999)).rejects.toMatchObject({
+      status: 404,
+      message: 'La experiencia no existe',
+    });
+  });
+
+  test('rechaza una experiencia invisible para ese usuario', async () => {
+    const experiencia = {
+      id: 8,
+      autorId: 2,
+      visibilidad: 'PRIVADA',
+      titulo: 'Experiencia privada',
+      descripcion: 'No debe verse.',
+      ciudad: { id: 10, nombre: 'Sevilla' },
+    };
+
+    experienciaRepository.buscarPorId.mockResolvedValue(experiencia);
+    puedeVerExperiencia.mockResolvedValue(false);
+
+    await expect(obtenerExperiencia(USUARIO_ID, 8)).rejects.toMatchObject({
+      status: 403,
+      message: 'No tienes permiso para ver esta experiencia',
+    });
   });
 });

@@ -22,6 +22,20 @@ Al subirla, Excel para la web reparó el libro («Removed Part: Data store»): q
 
 Se ha borrado `documentacion/customer-stories/~$Customer_Stories_PlanB.xlsx`. Era un archivo de bloqueo del 25/09: Excel lo crea mientras alguien tiene el libro abierto y lo borra al cerrarlo, pero este se había subido a Git y hacía parecer que el libro seguía abierto. `.gitignore` ignora ahora cualquier archivo de bloqueo de Office (`~$*`) o de LibreOffice (`.~lock.*#`) en cualquier carpeta. La regla anterior apuntaba a la ruta antigua `customer-stories/` y ya no tenía efecto.
 
+# CS-30: acceso a experiencias según visibilidad — objetivo 4 (07/10/2026)
+
+Se ha añadido la consulta por id de una experiencia con comprobación de sesión y de visibilidad antes de devolver el dato. La ruta real requiere autenticación y reutiliza la regla compartida de `puedeVerExperiencia` sin duplicar la lógica de negocio.
+
+### Cambios realizados
+
+- **Servicio:** `backend/src/services/experienciaService.js` incorpora `obtenerExperiencia(usuarioId, experienciaId)`, validando la sesión, el identificador y la existencia de la experiencia; si no se puede ver, responde 403 y si no existe, 404.
+- **Ruta:** `backend/src/routes/experienciaRoutes.js` añade `GET /api/experiencias/:id` protegido por `requiereSesion` y devuelve la experiencia solo cuando pasa la autorización.
+- **Pruebas:** `backend/tests/experienciaObjetivos.test.js` añade la regresión para una experiencia visible, una inexistente y una no autorizada.
+
+### TDD y comprobación
+
+Se escribió primero la prueba que fallaba porque la función de detalle no existía. Tras implantar la consulta y la comprobación de visibilidad, `npm test -- --runInBand tests/experienciaObjetivos.test.js` quedó en verde.
+
 # CS-48: valoraciones de amigos y seguidores — Finalizada (06/10/2026)
 
 Se ha implementado la consulta y presentación diferenciada de las valoraciones realizadas por amigos o seguidores del usuario que consulta una experiencia. La funcionalidad reutiliza las relaciones de CS-61 y la regla compartida de visibilidad de experiencias.
