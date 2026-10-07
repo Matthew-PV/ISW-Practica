@@ -5,6 +5,8 @@ jest.mock('../src/repositories/shared/prisma', () => ({
   valoracion: {
     create: jest.fn(),
     update: jest.fn(),
+    findMany: jest.fn(),
+    count: jest.fn(),
   },
 }));
 
@@ -44,4 +46,81 @@ test('cualquier otro error al crear se relanza sin intentar actualizar', async (
 
   await expect(valoracionRepository.guardar(DATOS)).rejects.toBe(error);
   expect(prisma.valoracion.update).not.toHaveBeenCalled();
+});
+test('listarDeUsuarios devuelve solo las valoraciones indicadas con paginación', async () => {
+  const valoraciones = [
+    {
+      id: 1,
+      usuarioId: 2,
+      experienciaId: 10,
+      puntuacion: 5,
+      comentario: 'Genial',
+      usuario: {
+        id: 2,
+        nombreUsuario: 'ana',
+        foto: null,
+      },
+    },
+  ];
+
+  prisma.valoracion.findMany.mockResolvedValue(valoraciones);
+  prisma.valoracion.count.mockResolvedValue(3);
+
+  const resultado = await valoracionRepository.listarDeUsuarios(
+    10,
+    [2, 3, 4],
+    2,
+    1
+  );
+
+  expect(resultado).toEqual({
+    valoraciones,
+    total: 3,
+  });
+
+  expect(prisma.valoracion.findMany).toHaveBeenCalledWith({
+    where: {
+      experienciaId: 10,
+      usuarioId: { in: [2, 3, 4] },
+    },
+    include: {
+      usuario: {
+        select: {
+          id: true,
+          nombreUsuario: true,
+          foto: true,
+        },
+      },
+    },
+    orderBy: [
+      { actualizadaEn: 'desc' },
+      { id: 'desc' },
+    ],
+    skip: 1,
+    take: 1,
+  });
+
+  expect(prisma.valoracion.count).toHaveBeenCalledWith({
+    where: {
+      experienciaId: 10,
+      usuarioId: { in: [2, 3, 4] },
+    },
+  });
+});
+
+test('listarDeUsuarios devuelve una lista vacía si no hay usuarios relacionados', async () => {
+  const resultado = await valoracionRepository.listarDeUsuarios(
+    10,
+    [],
+    1,
+    10
+  );
+
+  expect(resultado).toEqual({
+    valoraciones: [],
+    total: 0,
+  });
+
+  expect(prisma.valoracion.findMany).not.toHaveBeenCalled();
+  expect(prisma.valoracion.count).not.toHaveBeenCalled();
 });

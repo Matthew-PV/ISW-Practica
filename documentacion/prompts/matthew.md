@@ -26,6 +26,99 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
+## 2026-10-06 — Comprobar manualmente la interfaz de CS-61
+
+- **Historia u objetivo:** CS-61, objetivo 16: comprobación manual en escritorio y móvil.
+- **Agente/herramienta:** Codex de ChatGPT, navegador local integrado y control de interfaz.
+- **Entorno:** aplicación Codex en Windows, servidor de desarrollo local de PlanB y navegador integrado.
+- **Contexto aportado:** Matthew pidió terminar CS-61 con la comprobación visual y autorizó crear dos cuentas ficticias locales para probar el flujo autenticado. Tras el bloqueo inicial, confirmó que completó manualmente con éxito las comprobaciones pendientes.
+- **Prompts relevantes:**
+
+  > Perfecto, terminemos con el objetivo 16
+
+  > Sí, autorizado
+
+  > He probado manualmente lo que faltaba con éxito. Recoge todas estas modificaciones en "modificaciones.md"
+
+- **Resultado de la comprobación:** `personas.html` se visualizó correctamente en escritorio y con ancho móvil de 375 px: título, campo y botón quedan accesibles y sin desbordamiento. El registro automatizado quedó bloqueado por el CAPTCHA, pero Matthew completó después con éxito la comprobación manual autenticada que faltaba.
+- **Decisiones y alcance:** no se intentó eludir el CAPTCHA ni insertar usuarios directamente en MySQL. La validación posterior de Matthew permite cerrar la comprobación manual de escritorio y móvil sin alterar las protecciones del proyecto.
+- **TDD:** no aplica: es una tarea de verificación manual; las comprobaciones automáticas correspondientes ya se ejecutaron en el objetivo 15.
+- **Intervención humana:** Matthew autorizó expresamente crear datos ficticios locales y, tras el bloqueo inicial del CAPTCHA, confirmó que verificó manualmente con éxito los flujos pendientes.
+- **Comprobación final:** la comprobación manual queda completada. La última batería automática disponible terminó con 43 suites y 354 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
+## 2026-10-06 — Verificar las pruebas de pantalla de amistades
+
+- **Historia u objetivo:** CS-61, objetivo 15: pruebas con jsdom de búsqueda, ausencia de resultados, aceptación y rechazo.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell, Jest y jsdom.
+- **Contexto aportado:** Matthew pidió continuar con el objetivo 15 tras completar el enlace a la búsqueda desde la navegación.
+- **Prompt inicial:**
+
+  > Pasemos all 15
+
+- **Resultado propuesto por la IA:** comprobar las pruebas de pantalla existentes: `personasPantalla.test.js` cubre buscar y no encontrar resultados; `solicitudesPantalla.test.js` cubre aceptar y rechazar solicitudes.
+- **Decisiones y alcance:** no se añadieron pruebas duplicadas ni se modificó código. Las pruebas de este objetivo ya se crearon mediante TDD al implementar los objetivos 12 y 13, por lo que la tarea consiste en comprobar y reconocer esa cobertura conjunta.
+- **TDD:** no se repitió una fase roja artificial: las seis comprobaciones ya habían tenido su fase roja al incorporarse sus comportamientos. Esta ejecución las caracteriza como cobertura del objetivo 15.
+- **Comprensión humana de las pruebas:** se simulan las respuestas de la API y se interactúa con el DOM; se verifica la consulta de búsqueda, el aviso vacío, los cuerpos `{ aceptar: true }` y `{ aceptar: false }`, y la actualización de la lista.
+- **Intervención humana:** Matthew seleccionó el objetivo 15 para verificar la cobertura de interfaz ya construida durante los objetivos anteriores.
+- **Comprobación final:** `npm test -- --runInBand tests/personasPantalla.test.js tests/solicitudesPantalla.test.js` completó 2 suites y 6 pruebas correctas; la batería completa terminó con 43 suites y 354 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
+## 2026-10-06 — Enlazar la búsqueda de personas desde la navegación
+
+- **Historia u objetivo:** CS-61, objetivo 14: enlace «Buscar personas» en la barra de navegación.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell y Jest con jsdom.
+- **Contexto aportado:** Matthew pidió continuar con el objetivo 14 tras completar la gestión de solicitudes recibidas.
+- **Prompt inicial:**
+
+  > Perfecto, pasemos al objetivo 14
+
+- **Resultado propuesto por la IA:** añadir el enlace a `personas.html` en las barras de las pantallas autenticadas: bienvenida, perfil propio y perfil público. Se preservaron los enlaces ya presentes.
+- **Decisiones y alcance:** no se añadió un enlace a la propia pantalla `personas.html` ni se modificaron las páginas públicas de inicio de sesión y registro. Al no existir un componente de navegación compartido, se aplicó el mismo cambio pequeño en cada HTML afectado.
+- **TDD:** la prueba de navegación se creó antes y falló en las tres páginas porque el enlace no existía. Tras añadirlo pasó; no fue necesaria refactorización adicional.
+- **Comprensión humana de las pruebas:** cada caso carga el HTML de una pantalla autenticada y comprueba que su barra contiene exactamente un enlace a `personas.html` con el texto «Buscar personas».
+- **Intervención humana:** Matthew seleccionó el objetivo 14 para continuar la terminación de CS-61.
+- **Comprobación final:** `npm test -- --runInBand tests/navegacionPersonas.test.js` completó 1 suite y 3 pruebas correctas; la batería completa terminó con 43 suites y 354 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
+## 2026-10-06 — Gestionar solicitudes recibidas desde el perfil
+
+- **Historia u objetivo:** CS-61, objetivo 13: sección «Solicitudes recibidas» en `perfil.html` con botones para aceptar o rechazar.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell y Jest con jsdom.
+- **Contexto aportado:** Matthew pidió continuar con el objetivo 13 después de integrar la pantalla de búsqueda de personas.
+- **Prompt inicial:**
+
+  > Perfecto, pasemos al objetivo 13
+
+- **Resultado propuesto por la IA:** incorporar en el perfil propio una lista de solicitudes pendientes, con los botones «Aceptar» y «Rechazar». La carga usa `GET /api/amistades/solicitudes`; cada acción usa `PATCH /api/amistades/:id` y retira la solicitud respondida de la vista sin recargar.
+- **Decisiones y alcance:** la nueva sección es independiente del formulario de perfil y de las futuras zonas de CS-45. Los nombres se muestran con `textContent`. Se ajustó la simulación de la prueba existente de la foto porque el perfil realiza ahora una segunda consulta inicial legítima.
+- **TDD:** primero se añadieron las pruebas de pantalla; fallaron porque el perfil no consultaba ni representaba las solicitudes. Tras añadir la sección y su comportamiento pasaron. Una prueba previa de foto señaló la nueva consulta inicial y se actualizó su expectativa, sin cambiar lo que comprobaba.
+- **Comprensión humana de las pruebas:** la preparación simula perfil y solicitudes recibidas; la acción carga la página o pulsa Aceptar/Rechazar; el resultado esperado verifica la consulta, los botones, el cuerpo `{ aceptar }` y que la lista se vacía al responder.
+- **Intervención humana:** Matthew seleccionó el objetivo 13 para continuar la terminación de CS-61.
+- **Comprobación final:** `npm test -- --runInBand tests/solicitudesPantalla.test.js tests/perfilPantalla.test.js` completó 2 suites y 7 pruebas correctas; la batería completa terminó con 42 suites y 351 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
+## 2026-10-06 — Buscar personas y enlazarlas a su perfil público
+
+- **Historia u objetivo:** CS-61, objetivo 12: pantalla `personas.html` con buscador y resultados que enlazan al perfil de cada usuario de CS-62.
+- **Agente/herramienta:** Codex de ChatGPT; modelo exacto no registrado.
+- **Entorno:** aplicación Codex en Windows, PowerShell y Jest con jsdom.
+- **Contexto aportado:** Matthew pidió terminar CS-61 empezando por el objetivo 12 y registrar la interacción.
+- **Prompt inicial:**
+
+  > Perfecto. Acabemos con CS-61. Avanza con el objetivo 12 y recógelo en el registro de prompts
+
+- **Resultado propuesto por la IA:** crear `frontend/personas.html` y `frontend/js/personas.js`. La pantalla consulta `GET /api/usuarios?texto=…`, muestra los usuarios encontrados sin email y enlaza cada uno a `usuario.html?nombre=…` usando un nombre codificado.
+- **Decisiones y alcance:** los resultados se crean con el DOM y `textContent`, no con HTML generado a partir de nombres de usuario. Se incluyen mensajes para búsquedas sin resultados y errores del servidor. El enlace de navegación general se deja para el objetivo 14.
+- **TDD:** primero se añadió la prueba de pantalla. Falló porque no existían `personas.html` ni `js/personas.js`; tras crear ambos pasó. No fue necesaria una refactorización adicional porque la implementación mínima quedó clara.
+- **Comprensión humana de las pruebas:** la preparación simula las respuestas de la búsqueda; la acción envía el formulario; el resultado esperado verifica la ruta consultada, los enlaces codificados, que no se muestra el email, que un nombre no se interpreta como HTML y los mensajes vacío y de error.
+- **Intervención humana:** Matthew eligió completar CS-61 por sus objetivos pendientes y solicitó el registro automático de esta interacción.
+- **Comprobación final:** `npm test -- --runInBand tests/personasPantalla.test.js` completó 3 pruebas correctas; la batería completa terminó con 40 suites y 345 pruebas correctas.
+- **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
+
 ## 2026-10-06 — Probar el criterio completo de CS-61 por API
 
 - **Historia u objetivo:** CS-61, objetivo 11: pruebas de API para búsqueda, solicitudes pendientes y duplicadas, permisos de respuesta, rechazo, eliminación y seguimientos.

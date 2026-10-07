@@ -45,16 +45,22 @@ test('busca una solicitud por su identificador', async () => {
 
   await amistadRepository.buscarPorId(10);
 
-  expect(prisma.amistad.findUnique).toHaveBeenCalledWith({ where: { id: 10 } });
+  expect(prisma.amistad.findUnique).toHaveBeenCalledWith({
+    where: { id: 10 },
+  });
 });
 
 test('acepta una solicitud', async () => {
-  prisma.amistad.update.mockResolvedValue({ id: 10, estado: 'ACEPTADA' });
+  prisma.amistad.update.mockResolvedValue({
+    id: 10,
+    estado: 'ACEPTADA',
+  });
 
   await amistadRepository.aceptar(10);
 
   expect(prisma.amistad.update).toHaveBeenCalledWith({
-    where: { id: 10 }, data: { estado: 'ACEPTADA' },
+    where: { id: 10 },
+    data: { estado: 'ACEPTADA' },
   });
 });
 
@@ -63,7 +69,9 @@ test('borra una relación por su identificador', async () => {
 
   await amistadRepository.borrar(10);
 
-  expect(prisma.amistad.delete).toHaveBeenCalledWith({ where: { id: 10 } });
+  expect(prisma.amistad.delete).toHaveBeenCalledWith({
+    where: { id: 10 },
+  });
 });
 
 test('lista las solicitudes pendientes recibidas con datos seguros del solicitante', async () => {
@@ -72,8 +80,52 @@ test('lista las solicitudes pendientes recibidas con datos seguros del solicitan
   await amistadRepository.listarSolicitudesRecibidas(2);
 
   expect(prisma.amistad.findMany).toHaveBeenCalledWith({
-    where: { destinatarioId: 2, estado: 'PENDIENTE' },
-    include: { solicitante: { select: { id: true, nombreUsuario: true, foto: true } } },
-    orderBy: { fecha: 'desc' },
+    where: {
+      destinatarioId: 2,
+      estado: 'PENDIENTE',
+    },
+    include: {
+      solicitante: {
+        select: {
+          id: true,
+          nombreUsuario: true,
+          foto: true,
+        },
+      },
+    },
+    orderBy: {
+      fecha: 'desc',
+    },
+  });
+});
+
+test('lista los identificadores de los amigos aceptados en ambos sentidos', async () => {
+  prisma.amistad.findMany.mockResolvedValue([
+    {
+      solicitanteId: 1,
+      destinatarioId: 2,
+    },
+    {
+      solicitanteId: 3,
+      destinatarioId: 1,
+    },
+  ]);
+
+  const resultado = await amistadRepository.listarAmigosIds(1);
+
+  expect(resultado).toEqual([2, 3]);
+
+  expect(prisma.amistad.findMany).toHaveBeenCalledWith({
+    where: {
+      estado: 'ACEPTADA',
+      OR: [
+        { solicitanteId: 1 },
+        { destinatarioId: 1 },
+      ],
+    },
+    select: {
+      solicitanteId: true,
+      destinatarioId: true,
+    },
   });
 });

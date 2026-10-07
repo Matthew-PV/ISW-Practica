@@ -50,9 +50,94 @@ async function borrar(id) {
 async function listarSolicitudesRecibidas(destinatarioId) {
   return prisma.amistad.findMany({
     where: { destinatarioId, estado: 'PENDIENTE' },
-    include: { solicitante: { select: { id: true, nombreUsuario: true, foto: true } } },
+    include: {
+      solicitante: {
+        select: {
+          id: true,
+          nombreUsuario: true,
+          foto: true,
+        },
+      },
+    },
     orderBy: { fecha: 'desc' },
   });
 }
 
-module.exports = { crear, buscarEntreUsuarios, buscarPorId, aceptar, borrar, listarSolicitudesRecibidas };
+// Devuelve los identificadores de todos los amigos aceptados de un usuario.
+// Una amistad puede haberse iniciado en cualquiera de los dos sentidos.
+async function listarAmigosIds(usuarioId) {
+  const amistades = await prisma.amistad.findMany({
+    where: {
+      estado: 'ACEPTADA',
+      OR: [
+        { solicitanteId: usuarioId },
+        { destinatarioId: usuarioId },
+      ],
+    },
+    select: {
+      solicitanteId: true,
+      destinatarioId: true,
+    },
+  });
+
+  return amistades.map((amistad) =>
+    amistad.solicitanteId === usuarioId
+      ? amistad.destinatarioId
+      : amistad.solicitanteId
+  );
+}
+
+// Cuenta las amistades aceptadas de un usuario, sea quien sea el que envió la solicitud.
+// Las pendientes no cuentan.
+async function contarAmigos(usuarioId) {
+  return prisma.amistad.count({
+    where: {
+      estado: 'ACEPTADA',
+      OR: [
+        { solicitanteId: usuarioId },
+        { destinatarioId: usuarioId },
+      ],
+    },
+  });
+}
+// Devuelve una página de los amigos aceptados de un usuario, con sus datos públicos (nunca el email), de la amistad más reciente a la más antigua.
+//limite: personas por página.
+// El desempate por id mantiene el orden fijo entre páginas, para que nadie salga repetido.
+async function listarAmigos(usuarioId, pagina, limite) {
+  const datosPublicos = { id: true, nombreUsuario: true, foto: true };
+  const amistades = await prisma.amistad.findMany({
+    where: {
+      estado: 'ACEPTADA',
+      OR: [
+        { solicitanteId: usuarioId },
+        { destinatarioId: usuarioId },
+      ],
+    },
+    select: {
+      solicitanteId: true,
+      solicitante: { select: datosPublicos },
+      destinatario: { select: datosPublicos },
+    },
+    orderBy: [{ fecha: 'desc' }, { id: 'desc' }],
+    skip: (pagina - 1) * limite,
+    take: limite,
+  });
+
+  // El amigo es «la otra persona» de cada amistad
+  return amistades.map((amistad) =>
+    amistad.solicitanteId === usuarioId ? amistad.destinatario : amistad.solicitante
+  );
+}
+
+
+module.exports = {
+  crear,
+  buscarEntreUsuarios,
+  buscarPorId,
+  aceptar,
+  borrar,
+  listarSolicitudesRecibidas,
+  listarAmigosIds,
+  contarAmigos,
+  listarAmigos,
+};

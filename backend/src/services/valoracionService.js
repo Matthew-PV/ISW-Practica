@@ -13,6 +13,8 @@ const usuarioRepository = require('../repositories/usuarioRepository');
 const experienciaRepository = require('../repositories/experienciaRepository');
 const { puedeVerExperiencia } = require('./shared/visibilidad');
 const { crearError } = require('../errores');
+const amistadRepository = require('../repositories/amistadRepository');
+const seguimientoRepository = require('../repositories/seguimientoRepository');
 
 const PUNTUACION_MIN = 1;
 const PUNTUACION_MAX = 5;
@@ -56,4 +58,58 @@ async function valorarExperiencia(usuarioId, experienciaId, datos) {
   return valoracionRepository.guardar({ usuarioId, experienciaId, puntuacion, comentario });
 }
 
-module.exports = { valorarExperiencia };
+// Devuelve las valoraciones de una experiencia hechas por amigos o seguidores
+// del usuario que la consulta. Las relaciones duplicadas se cuentan una sola vez.
+// Respeta la visibilidad de la experiencia y devuelve los resultados paginados.
+async function listarValoracionesRelacionadas(
+  usuarioId,
+  experienciaId,
+  pagina = 1,
+  limite = 10
+) {
+  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
+      !(await usuarioRepository.buscarPorId(usuarioId))) {
+    throw crearError('No hay sesión iniciada', 401);
+  }
+
+  if (!Number.isInteger(experienciaId) || experienciaId <= 0) {
+    throw crearError('El identificador de la experiencia no es válido', 400);
+  }
+
+  if (!Number.isInteger(pagina) || pagina <= 0 ||
+      !Number.isInteger(limite) || limite <= 0) {
+    throw crearError('La paginación no es válida', 400);
+  }
+
+  const experiencia = await experienciaRepository.buscarPorId(experienciaId);
+
+  if (!experiencia) {
+    throw crearError('La experiencia no existe', 404);
+  }
+
+  if (!(await puedeVerExperiencia(usuarioId, experiencia))) {
+    throw crearError('No tienes permiso para ver esta experiencia', 403);
+  }
+
+  const [amigosIds, seguidoresIds] = await Promise.all([
+    amistadRepository.listarAmigosIds(usuarioId),
+    seguimientoRepository.listarSeguidoresIds(usuarioId),
+  ]);
+
+  // Un usuario puede ser a la vez amigo y seguidor.
+  const usuariosRelacionadosIds = [
+    ...new Set([...amigosIds, ...seguidoresIds]),
+  ];
+
+  return valoracionRepository.listarDeUsuarios(
+    experienciaId,
+    usuariosRelacionadosIds,
+    pagina,
+    limite
+  );
+}
+
+module.exports = {
+  valorarExperiencia,
+  listarValoracionesRelacionadas,
+};

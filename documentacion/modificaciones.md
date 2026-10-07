@@ -2,6 +2,46 @@
 
 Registro de los cambios realizados en el proyecto, en orden cronológico.
 
+# CS-48: valoraciones de amigos y seguidores — Finalizada (06/10/2026)
+
+Se ha implementado la consulta y presentación diferenciada de las valoraciones realizadas por amigos o seguidores del usuario que consulta una experiencia. La funcionalidad reutiliza las relaciones de CS-61 y la regla compartida de visibilidad de experiencias.
+
+### Cambios realizados
+
+- **Consulta de valoraciones:** `valoracionRepository.listarDeUsuarios(experienciaId, usuarioIds, pagina, limite)` filtra por experiencia y por los usuarios relacionados, devuelve únicamente datos públicos del autor de cada valoración, calcula el total y pagina con un orden estable por última actualización e identificador. Si no hay usuarios relacionados devuelve una lista vacía sin consultar MySQL.
+- **Amigos y seguidores:** `amistadRepository.listarAmigosIds` obtiene solo amistades aceptadas, independientemente de quién inició la solicitud. `seguimientoRepository.listarSeguidoresIds` obtiene a quienes siguen al solicitante (registros donde el solicitante es el usuario seguido).
+- **Servicio:** `valoracionService.listarValoracionesRelacionadas` valida sesión, identificador de experiencia y paginación; devuelve 404 si la experiencia no existe y 403 si existe pero no es visible; obtiene amigos y seguidores en paralelo, elimina duplicados con un `Set` y delega la consulta paginada al repositorio.
+- **API:** `GET /api/experiencias/:id/valoracion`, protegido por sesión, acepta `pagina` y `limite` opcionales y devuelve `{ valoraciones, total, pagina, limite }`.
+- **Pantalla:** `frontend/bienvenida.html` y `frontend/js/bienvenida.js` incorporan «Ver detalle» junto a «Editar». El detalle abre un `<dialog>` con una sección propia «Valoraciones de amigos y seguidores», muestra nombre, puntuación y comentario, presenta un mensaje vacío cuando no hay resultados y permite avanzar o retroceder por páginas cuando existen más de diez valoraciones.
+- **Actualización al recargar:** cada vez que se vuelve a abrir el detalle se consulta de nuevo la API, por lo que una valoración recién añadida aparece sin conservar una copia obsoleta en el navegador.
+- **Pruebas:** se ampliaron las pruebas de repositorios, servicio y API; `bienvenidaPantalla.test.js` comprueba la sección, estado vacío, edición separada, paginación y recarga; `valoracionesRelacionadasCriterio.test.js` ejecuta rutas y servicios reales con repositorios en memoria y demuestra que aparecen amigos y seguidores, se excluyen terceros, se respeta el 403 de visibilidad, el vacío no da error, una nueva valoración aparece en la siguiente consulta y sin sesión se responde 401.
+- **Comprobación manual:** la sección se revisó en Chrome tanto en escritorio como en vista móvil de 375 px. Durante la primera ejecución real se detectó que el cliente Prisma local no estaba regenerado y `prisma.amistad` era `undefined`; tras `npx prisma generate` la pantalla funcionó sin modificar el código.
+
+### TDD y trazabilidad
+
+Las pruebas finales cubren los criterios de CS-48, pero durante esta implementación no se siguió de forma estricta el orden rojo → verde en todos los objetivos. En particular, algunos objetivos del Excel que indicaban «crear primero las pruebas» terminaron con pruebas añadidas después de la implementación. No se reconstruye una evidencia de fallo inicial que no se conservó. El detalle del trabajo asistido por IA y de esta desviación queda registrado en `documentacion/prompts/jorge.md`.
+
+Los commits principales son `8822291`, `1d3f216`, `e4db6d7`, `d715051`, `699f011`, `73313fd`, `90d93aa`, `667ef6c` y `9f4fb51`. Los dos primeros se hicieron antes de acordar la convención de incluir `CS-48 - Objetivo X` en el mensaje.
+
+### Para quien continúe
+
+- La unión considera **amigos aceptados** y **seguidores del solicitante**; un mismo usuario presente en ambos grupos solo se consulta una vez.
+- Mantener el filtrado y la autorización en backend. La sección del frontend no debe decidir por sí sola quién puede ver una experiencia.
+- La sección visual está integrada actualmente en el detalle abierto desde `bienvenida.html`. Si otra historia crea un detalle general de publicaciones o experiencias, debe reutilizar la misma API y no duplicar la regla de negocio.
+- Después de recibir cambios de Prisma mediante `git pull`, ejecutar desde `backend/` tanto `npx prisma migrate deploy` como `npx prisma generate` antes de probar la aplicación.
+- La configuración local utilizada por Jorge para evitar un conflicto de puerto MySQL no forma parte del repositorio ni debe trasladarse a `docker-compose.yml`.
+
+### Cómo comprobarlo
+
+Desde `backend/`:
+
+```powershell
+npm.cmd test -- bienvenidaPantalla.test.js valoracionesRelacionadasCriterio.test.js --runInBand
+npm.cmd test -- --runInBand
+```
+
+Para la comprobación manual, arrancar MySQL y PlanB, iniciar sesión, abrir «Ver detalle» en una experiencia y revisar la sección de valoraciones. Comprobar también la vista móvil desde las herramientas de desarrollo del navegador.
+
 # CS-01: valorar una experiencia — En progreso; Excel de historias corregido (06/10/2026)
 
 Se ha empezado CS-01. Como necesita saber si quien valora puede ver la experiencia, primero se ha añadido la visibilidad de las experiencias, que es el único objetivo de CS-22 imprescindible para CS-01 (acordado con Matthew, propietario de CS-22).
@@ -52,9 +92,9 @@ Se ha sustituido el libro de `documentacion/customer-stories/` por la copia actu
 - El libro oficial sigue en OneDrive: hay que subir allí esta versión para que el equipo la use.
 - El botón «Crear páginas» se conserva. Al abrir el libro, Excel recalcula todas las fórmulas.
 
-# CS-61: base de amistades y seguidores — En progreso (05/10/2026)
+# CS-61: base de amistades y seguidores — Finalizada (06/10/2026)
 
-Se ha completado la base de datos, la API y la lógica de amistades y seguimientos. La historia no está terminada: falta la interfaz de búsqueda y gestión de personas.
+Se ha completado la base de datos, la API y la interfaz de búsqueda, solicitudes, amistades y seguimientos. La historia cumple sus criterios de validación y ha sido comprobada manualmente por Matthew en escritorio y móvil.
 
 ### Cambios realizados
 
@@ -62,14 +102,15 @@ Se ha completado la base de datos, la API y la lógica de amistades y seguimient
 - **Repositorios:** `amistadRepository` crea, busca en ambos sentidos o por identificador, acepta, borra y lista solicitudes pendientes recibidas. `seguimientoRepository` permite seguir, dejar de seguir y comprobar un seguimiento. La búsqueda de usuarios en `usuarioRepository` encuentra nombres que contienen el texto, excluye a quien busca, limita a 20 resultados y no devuelve emails.
 - **Servicios:** las solicitudes solo se envían a otro usuario existente y sin relación previa; solo el destinatario puede aceptarlas o rechazarlas; cualquiera de los dos puede eliminar una amistad aceptada. Los seguimientos no permiten seguirse a uno mismo ni duplicarse. `sonAmigos` devuelve true exclusivamente para amistades aceptadas, de modo reutilizable para otras historias.
 - **API:** nuevas rutas protegidas por sesión para búsqueda de usuarios, solicitudes recibidas, enviar/responder/eliminar amistades y seguir/dejar de seguir. Las creaciones responden 201, las eliminaciones 204 y las consultas o respuestas 200.
-- **Pruebas:** se añadieron pruebas de esquema, repositorios, servicios, rutas y una prueba de integración HTTP de todo el criterio. La batería actual tiene 237 pruebas en 27 suites, todas correctas.
-- **Registro de IA:** `documentacion/prompts/matthew.md` incorpora las entradas de los objetivos 1 a 11 de CS-61.
+- **Interfaz:** `personas.html` permite buscar usuarios y enlaza cada resultado a `usuario.html` sin exponer emails ni insertar nombres como HTML. `perfil.html` muestra las solicitudes recibidas y permite aceptarlas o rechazarlas sin recargar. Las barras de bienvenida, perfil propio y perfil público incluyen «Buscar personas».
+- **Pruebas:** se añadieron pruebas de esquema, repositorios, servicios, rutas, API y pantallas con jsdom. Cubren búsqueda, ausencia de resultados, solicitudes pendientes, duplicados, permisos de respuesta, rechazo, eliminación, seguimiento y navegación. La batería actual tiene 354 pruebas en 43 suites, todas correctas.
+- **Comprobación manual:** Matthew confirmó en escritorio y móvil la búsqueda, los enlaces al perfil, el envío y la respuesta de solicitudes y la navegación.
+- **Registro de IA:** `documentacion/prompts/matthew.md` incorpora las entradas de los objetivos 1 a 16 de CS-61.
 
 ### Para quien continúe
 
-- En otra copia del repositorio, aplicar las migraciones desde `backend/` con `npx prisma migrate deploy` y después ejecutar `npx prisma generate`.
-- La restricción de solicitud inversa se valida en el servicio. Mantener esa comprobación al añadir rutas para que no se creen relaciones duplicadas entre las mismas personas.
-- Las funciones ya se exponen por HTTP, pero todavía no tienen interfaz. Las pantallas futuras deben reutilizar `js/shared/api.js` y conservar la separación rutas → servicios → repositorios.
+- Al reutilizar las amistades, conservar la comprobación de relación en ambos sentidos del servicio para no crear duplicados.
+- Las pantallas que necesiten estas funciones deben reutilizar `js/shared/api.js` y mantener la separación rutas → servicios → repositorios.
 
 ### Cómo comprobarlo
 
@@ -78,7 +119,7 @@ cd backend
 npm test
 ```
 
-Resultado esperado: 27 suites y 237 pruebas correctas.
+Resultado esperado: 43 suites y 354 pruebas correctas.
 
 
 
