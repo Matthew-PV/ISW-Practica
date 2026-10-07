@@ -149,4 +149,49 @@ async function obtenerPerfilPublico(usuarioId, nombreUsuario) {
   };
 }
 
-module.exports = { obtenerPerfilPropio, actualizarPerfilPropio, actualizarFotoPropia, obtenerPerfilPublico, FOTO_POR_DEFECTO };
+// Paginación de los listados de amigos y seguidores (CS-45).
+const LIMITE_POR_DEFECTO = 20;
+const LIMITE_MAXIMO = 50;
+
+// Lee la página y el límite de una petición. 
+// Devuelve { pagina, limite } como números enteros, o error 400 si no son válidos.
+function leerPaginacion(pagina, limite) {
+  const numeroPagina = pagina === undefined ? 1 : Number(pagina);
+  const numeroLimite = limite === undefined ? LIMITE_POR_DEFECTO : Number(limite);
+
+  if (!Number.isInteger(numeroPagina) || numeroPagina < 1) {
+    throw crearError('La página debe ser un número entero mayor que 0', 400);
+  }
+  if (!Number.isInteger(numeroLimite) || numeroLimite < 1 || numeroLimite > LIMITE_MAXIMO) {
+    throw crearError(`El límite debe ser un número entero entre 1 y ${LIMITE_MAXIMO}`, 400);
+  }
+  return { pagina: numeroPagina, limite: numeroLimite };
+}
+
+// Devuelve cuántos amigos y seguidores tiene el usuario de la sesión: { amigos, seguidores }.
+// Solo cuentan las amistades aceptadas; quien no tiene ninguna relación obtiene ceros.
+async function obtenerResumenRelaciones(usuarioId) {
+  const amigos = await amistadRepository.contarAmigos(usuarioId);
+  const seguidores = await seguimientoRepository.contarSeguidores(usuarioId);
+  return { amigos, seguidores };
+}
+
+// Devuelve una página de los amigos del usuario de la sesión:
+// { pagina, limite, total, personas }, donde `total` es su número de amigos y cada persona
+// es { id, nombreUsuario, foto }. Error 400 si la paginación no es válida.
+async function listarAmigosPropios(usuarioId, pagina, limite) {
+  const paginacion = leerPaginacion(pagina, limite);
+  const total = await amistadRepository.contarAmigos(usuarioId);
+  const amigos = await amistadRepository.listarAmigos(usuarioId, paginacion.pagina, paginacion.limite);
+  return { ...paginacion, total, personas: amigos.map((persona) => conFotoPorDefecto(persona)) };
+}
+
+// Igual que listarAmigosPropios, pero con las personas que siguen al usuario de la sesión.
+async function listarSeguidoresPropios(usuarioId, pagina, limite) {
+  const paginacion = leerPaginacion(pagina, limite);
+  const total = await seguimientoRepository.contarSeguidores(usuarioId);
+  const seguidores = await seguimientoRepository.listarSeguidores(usuarioId, paginacion.pagina, paginacion.limite);
+  return { ...paginacion, total, personas: seguidores.map((persona) => conFotoPorDefecto(persona)) };
+}
+
+module.exports = { obtenerPerfilPropio, actualizarPerfilPropio, actualizarFotoPropia, obtenerPerfilPublico, FOTO_POR_DEFECTO, obtenerResumenRelaciones, listarAmigosPropios, listarSeguidoresPropios};
