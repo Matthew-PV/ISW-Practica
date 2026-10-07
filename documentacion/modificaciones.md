@@ -845,3 +845,35 @@ Se añade `documentacion/hoja-ruta-aprendizaje.md` y se enlaza desde el README. 
 # Libro de historias en OneDrive — Documentado (05/10/2026)
 
 `Customer_Stories_PlanB.xlsx` ya tiene su versión oficial en el OneDrive compartido y deja de mantenerse en Git. Cada tarea registra responsable voluntario, tiempo estimado y tiempo real. El integrante facilita una copia actual para consulta y traslada manualmente al libro online las tareas acordadas. Se actualizan `README.md`, `AGENTS.md`, la metodología y `.gitignore` para reflejar este flujo.
+
+# CS-45: mi número de amigos y seguidores — Implementado (07/10/2026)
+
+El perfil propio muestra cuántos amigos y seguidores tiene el usuario y el listado paginado de ambos.
+
+### Cambios realizados
+
+- **Repositorios:** `amistadRepository.listarAmigos` y `seguimientoRepository.listarSeguidores` devuelven una página de personas con `id`, `nombreUsuario` y `foto`, sin email, ordenadas por fecha y, a igualdad, por `id`. Los contadores `contarAmigos` y `contarSeguidores` ya existían y se reutilizan.
+- **Servicio:** `perfilService` añade `obtenerResumenRelaciones`, `listarAmigosPropios` y `listarSeguidoresPropios`. La paginación usa página 1 y 20 personas por defecto, con un máximo de 50; un valor no válido responde 400.
+- **Rutas:** `GET /api/perfil/resumen` devuelve `{ amigos, seguidores }`; `GET /api/perfil/amigos` y `GET /api/perfil/seguidores` aceptan `pagina` y `limite` y devuelven `{ pagina, limite, total, personas }`. Las tres exigen sesión y usan siempre el usuario de la sesión.
+- **Pantalla:** `perfil.html` incorpora la sección «Amigos y seguidores» y `perfil.js` la rellena al abrir la página. «Cargar más» pide la página siguiente y no repite a nadie.
+- **Pruebas:** 40 pruebas nuevas en `relacionesListadoRepository`, `perfilRelacionesService`, `perfilRelacionesRoutes`, `perfilRelacionesCriterio` y `relacionesPantalla`. La batería tiene 49 suites y 402 pruebas, todas correctas.
+
+### Decisiones tomadas
+
+- El código de pantalla va en `perfil.js`, para mantener un único archivo JavaScript por página.
+- En `solicitudesPantalla.test.js` y `perfilPantalla.test.js`, tres comprobaciones pasan de `fetch.mock.calls[2]` a `fetch.mock.calls.at(-1)`: localizan la llamada por ser la última y no por su posición, porque el perfil hace ahora más llamadas al cargar. Acordado con Matthew y Joaquín.
+
+### Para quien continúe
+
+- Los contadores y las listas se piden al abrir la página. Después de aceptar una solicitud en «Solicitudes recibidas» no cambian hasta recargar. Queda como posible mejora.
+- Las personas de las listas todavía no enlazan a su perfil público.
+- «Cargar más» solo se ha comprobado con pruebas automáticas, no con más de 20 personas reales.
+
+### Cómo comprobarlo
+
+```bash
+cd backend
+npm test
+```
+
+Resultado esperado: 49 suites y 402 pruebas correctas. A mano, con dos cuentas (una en una ventana de incógnito): enviar una solicitud, aceptarla, seguir, dejar de seguir y eliminar la amistad, recargando «Mi perfil» tras cada paso para ver cambiar las cifras.

@@ -280,7 +280,7 @@ Esta sección debe completarla cada persona en primera persona. No debe describi
 |Matthew Puente Villegas Michavil|MAT / Matthew-PV|Completada en la sección 6.1|
 |Flavia Méndez Tsutsumi|FLA / flaviamendez|Completada en la sección 6.2|
 |Jorge Delgado Castellanos|JOR / jorjonudo|Pendiente de completar por el integrante|
-|Lucía Alexandra Guzmán Álvarez|LUC|Pendiente de completar por la integrante|
+|Lucía Alexandra Guzmán Álvarez|LUC|Completada en la sección 6.3|
 |Joaquín de Vicente Abad|JOA|Pendiente de completar por el integrante|
 |Integrante 6 — nombre pendiente|Código pendiente|Pendiente de completar cuando confirme su identidad|
 
@@ -346,6 +346,38 @@ npm run dev
 Para subir mi trabajo, compruebo con `git status` que solo aparecen mis archivos y después ejecuto `git add`, `git commit` con un mensaje que indica la historia de usuario y `git push origin main`. Al terminar, actualizo el Excel de la historia, la entrada correspondiente de `documentacion/modificaciones.md` y mi registro en `documentacion/prompts/flavia.md`.
 
 **Precauciones personales.** No subo mi archivo `.env`, `cookies.txt` ni los archivos temporales `\~$` de Excel; cierro Excel antes de hacer un commit. No utilizo `docker compose down -v`, porque borra los datos locales. Antes de `git add -A`, compruebo con `git status` que no se incluye nada ajeno.
+
+### 6.3. Lucía Alexandra Guzmán Álvarez
+
+**Sistema operativo y entorno.** Trabajo en macOS (MacBook Air) con Visual Studio Code y su terminal integrada (zsh). Uso Docker Desktop para la base de datos MySQL y Chrome para probar la aplicación. Como agente de IA utilizo Claude desde su aplicación de escritorio.
+
+**Uso de los agentes.** Los utilizo para ponerme en contexto, entender qué pide una historia y avanzar objetivo por objetivo. El agente me propone las pruebas, el código y los comandos; yo los copio, los ejecuto en mi terminal y le pego el resultado. No modifica archivos por su cuenta.
+
+**Preparación del contexto.** Le pido que lea `AGENTS.md`, le indico la historia en la que trabajo y le adjunto una copia actual del Excel. Cuando necesita ver el código vigente, le pego el contenido de los archivos o la salida de la terminal. Las decisiones que afectan a otros compañeros las consulto antes con ellos.
+
+**TDD y comprensión de las pruebas.** Escribo primero la prueba y compruebo que falla por el motivo esperado antes de añadir el código. Antes de aceptarla, pido que me explique qué prepara, qué acción ejecuta y qué resultado espera.
+
+**Revisión y corrección.** Trabajo en pasos pequeños. Si una explicación tiene demasiados pasos o no la entiendo, pido que la divida. Antes de cada commit reviso `git status` y `git diff`.
+
+**Pruebas antes de aceptar cambios.** Ejecuto `npm test` desde `backend/` y pruebo la pantalla en Chrome. Cuando el cambio depende de dos personas, uso mi cuenta en una ventana normal y una cuenta de prueba en una ventana de incógnito.
+
+**Actualización y entrega.** Antes de empezar, con Docker Desktop abierto, ejecuto desde la carpeta del repositorio:
+
+```bash
+git status
+git pull origin main
+docker compose up -d
+cd backend
+npm install
+npx prisma migrate deploy
+npx prisma generate
+npm test
+npm run dev
+```
+
+Hago un commit por objetivo, añadiendo los archivos uno a uno con `git add` y con un mensaje del tipo «CS-45 Tarea 5 …». Antes de `git push origin main` hago `git pull origin main`; si las ramas han divergido, las fusiono. Al terminar actualizo el Excel de OneDrive, `documentacion/modificaciones.md` y `documentacion/prompts/lucia.md`.
+
+**Precauciones personales.** Mi Mac tiene un MySQL propio que ocupa el puerto 3306: lo paro en Ajustes del Sistema antes de `docker compose up -d`. Pruebo en Chrome, porque Safari cambia `http://localhost:3000` a `https`. Ejecuto los comandos de `git` con rutas desde la carpeta del repositorio y los de `npm` desde `backend/`. No subo `.env` ni uso `docker compose down -v`. No subo pruebas que fallen.
 
 ## 7\. Reparto de responsabilidades
 
