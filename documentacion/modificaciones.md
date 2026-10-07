@@ -27,6 +27,42 @@ Se ha trabajado de forma incremental en la historia CS-30 y en la validación de
 - `backend/tests/visibilidad.test.js` quedó en verde con la matriz de acceso.
 - `backend/tests/experienciaObjetivos.test.js` quedó en verde con la validación del detalle de experiencia y el mensaje unificado de acceso.
 
+# CS-62: perfil de otro usuario — En progreso (07/10/2026)
+
+Se puede abrir el perfil de otra persona en `usuario.html?nombre=<nombreUsuario>`, ver su foto, nombre, ciudad y contadores de amigos y seguidores, y gestionar la amistad y el seguimiento sin recargar la página. Están hechos los objetivos 1 a 7, 9, 11 y 12. Quedan pendientes el objetivo 8 y la mitad del 10, que dependen de CS-44 (ver «Pendiente»).
+
+### Cambios realizados
+
+- **Repositorios:** `usuarioRepository.obtenerPerfilPublico` busca por nombre de usuario y devuelve solo `id`, `nombreUsuario`, `foto` y `ciudad`, nunca el email. `amistadRepository.contarAmigos` cuenta solo las amistades aceptadas, en cualquier sentido. `seguimientoRepository.contarSeguidores` cuenta quién sigue a un usuario.
+- **Servicio:** `perfilService.obtenerPerfilPublico(usuarioId, nombreUsuario)` devuelve `{ id, nombreUsuario, foto, ciudad, amigos, seguidores, esPropio, relacion }`. `foto` lleva la imagen por defecto si no hay ninguna. `esPropio` compara ids, así que escribir el propio nombre con otras mayúsculas también cuenta. `relacion.amistad` es `ninguna`, `enviada`, `recibida` o `amigos`; `relacion.amistadId` es el id de esa solicitud o amistad (`null` si no hay) y `relacion.siguiendo` indica si ya se sigue. Si el usuario no existe lanza un error 404 «Usuario no encontrado».
+- **API:** nueva ruta `GET /api/usuarios/:nombreUsuario` en `usuarioRoutes.js` (archivo de CS-61), protegida por `requiereSesion`. El id del usuario sale siempre de la sesión.
+- **Interfaz:** `usuario.html` y `js/usuario.js`. Según la relación muestra «Añadir amigo», «Solicitud enviada» (desactivado), «Aceptar» y «Rechazar», o «Eliminar amigo» (pide confirmación con `confirm()`), y aparte «Seguir» o «Dejar de seguir». Tras cada acción vuelve a pedir el perfil, por lo que botones y contadores se actualizan sin recargar. Los errores del servidor se muestran en una caja roja. Si el usuario no existe aparece «Usuario no encontrado» y, si es el propio usuario, se redirige a `perfil.html`. Los textos se insertan con `textContent`.
+- **Pruebas:** `perfilPublicoRepository`, `contadoresRepository`, `perfilPublicoService`, `perfilPublicoRoutes`, `perfilPublicoApi` y `usuarioPantalla` (esta con jsdom). Cubren los campos devueltos, la ausencia del email, el 404, cada estado de la relación, cada botón y su efecto, los errores del servidor, la confirmación cancelada o aceptada, el usuario inexistente y el perfil propio.
+- **Comprobación manual:** con servidor, MySQL y navegador reales, y dos usuarios de prueba, se comprobaron todos los estados de los botones en escritorio (1280 px), tablet (768 px) y móvil (375 px), la persistencia al recargar y el recorrido desde «Buscar personas» hasta el perfil.
+
+### Pendiente
+
+- **Objetivo 8** (listado de sus experiencias visibles para mí): depende de la función de CS-44, que todavía no existe. Se podrá construir con `experienciaRepository.listarPorAutor` y `puedeVerExperiencia`.
+- **Objetivo 10:** la mitad «desde la búsqueda de personas» ya está resuelta por CS-61 (`personas.js` enlaza a `usuario.html`). Falta el enlace «desde el autor de cada experiencia», porque aún no hay ninguna pantalla que muestre experiencias de otras personas.
+- Sin comprobar: el aspecto visual de la ventana de `confirm()`, que el navegador integrado de la herramienta no muestra.
+
+### Para quien continúe
+
+- `GET /api/usuarios/:nombreUsuario` captura cualquier segmento. Si se añaden más rutas `GET` bajo `/api/usuarios`, hay que declararlas antes que ella.
+- `js/shared/api.js` solo lanza el mensaje del error, no su código HTTP. `usuario.js` reconoce el 404 por el texto «Usuario no encontrado»; si se cambia el mensaje del servicio hay que cambiarlo también allí, o hacer que `api.js` añada el código al error.
+- `contarAmigos` y `contarSeguidores` se pueden reutilizar en CS-45.
+- Para añadir al perfil otras acciones, reutilizar `crearBoton` y `actuar` de `usuario.js`.
+- Tras un `git pull` que traiga migraciones hay que ejecutar `npx prisma migrate deploy` y `npx prisma generate` en `backend/`. Sin las migraciones de visibilidad y valoraciones, la bienvenida da «Error interno del servidor».
+
+### Cómo comprobarlo
+
+```bash
+cd backend
+npm test
+```
+
+Resultado esperado el 07/10/2026: 49 suites y 416 pruebas correctas. Para la comprobación manual: `docker compose up -d`, `npm run dev`, iniciar sesión, abrir «Buscar personas», buscar a otro usuario y pulsar su nombre.
+
 # Excel de historias: cambios de OneDrive y CS-64 para José — Documentado (07/10/2026)
 
 La copia de OneDrive descargada hoy no tenía las correcciones del 06/10 (fila «Total», números de objetivo con fórmula, tiempo total sin duplicar). Se ha partido del libro corregido del repositorio y se le han añadido los cambios que el equipo hizo en OneDrive desde la última descarga:
