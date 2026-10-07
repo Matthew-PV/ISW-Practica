@@ -704,6 +704,24 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** `npm test -- --runInBand tests/visibilidad.test.js` quedó en verde con 10 pruebas correctas.
 - **Resultado en Git:** cambios en `backend/tests/visibilidad.test.js` y el registro de prompts.
 
+## 2026-10-07 — Servicio compartido de visibilidad de experiencias (CS-30, objetivo 3)
+
+- **Historia u objetivo:** CS-30, objetivo 3: crear un servicio compartido de visibilidad de experiencias reutilizando la validación de amistad sin consultar Prisma directamente.
+- **Agente/herramienta:** Copilot SDK en VS Code.
+- **Entorno:** Windows, PowerShell, Jest y el backend de PlanB.
+- **Contexto aportado:** el objetivo 3 de CS-30 coincide con la regla ya implementada en CS-22: `puedeVerExperiencia` en `backend/src/services/shared/visibilidad.js` usa `amistadService.sonAmigos` y no accede a Prisma.
+- **Prompt inicial:**
+
+  > Pasemos al objetivo 3.
+
+- **Correcciones relevantes:** se confirmó que la implementación ya existía y no se duplicó la lógica ni se añadió acceso directo a repositorios. La tarea quedó en validar que el servicio compartido cumple el contrato de CS-30.
+- **Resultado propuesto por la IA:** confirmar que `puedeVerExperiencia` se reutiliza como servicio compartido y que el acceso a `PUBLICA`, `AMIGOS` y `PRIVADA` se decide solo con la visibilidad y la amistad aceptada.
+- **TDD:** la prueba de visibilidad ya cubre el contrato; se ejecutó con éxito y quedó en verde.
+- **Comprensión humana de las pruebas:** la prueba protege que la visibilidad se evalúa en un único punto y que la amistad se comprueba mediante `sonAmigos`, sin Prisma ni lógica separada en cada flujo.
+- **Intervención humana:** Matthew pidió seguir la historia a un objetivo y comprobar si la implementación ya estaba resuelta antes de tocar código nuevo.
+- **Comprobación final:** `npm test -- --runInBand tests/visibilidad.test.js` quedó en verde, validando que la regla compartida del servicio ya satisface el objetivo 3.
+- **Resultado en Git:** no hubo cambio funcional nuevo; la evidencia quedó registrada en la documentación y en la prueba del servicio compartido.
+
 ## 2026-10-07 — Recuperar una experiencia por id con visibilidad y autorización (CS-30, objetivo 4)
 
 - **Historia u objetivo:** CS-30, objetivo 4: añadir la búsqueda por id de experiencia y comprobar que el usuario de la sesión puede verla antes de devolverla.
@@ -721,6 +739,24 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Intervención humana:** Matthew siguió la secuencia de un objetivo a la vez y dejó el objetivo 5 para una siguiente llamada.
 - **Comprobación final:** `npm test -- --runInBand tests/experienciaObjetivos.test.js` quedó en verde con 9 pruebas correctas.
 - **Resultado en Git:** cambios en `backend/src/services/experienciaService.js`, `backend/src/routes/experienciaRoutes.js`, `backend/tests/experienciaObjetivos.test.js` y el registro de prompts.
+
+## 2026-10-07 — Mensaje unificado cuando la experiencia no existe o no es visible (CS-30, objetivo 5)
+
+- **Historia u objetivo:** CS-30, objetivo 5: devolver el mismo mensaje `Contenido no disponible` tanto si la experiencia no existe como si el usuario no puede verla.
+- **Agente/herramienta:** Copilot SDK en VS Code.
+- **Entorno:** Windows, PowerShell, Jest y el backend de PlanB.
+- **Contexto aportado:** el objetivo 4 ya habilitó el detalle por id, pero el mensaje que devolvía la API seguía distinguiendo entre inexistente y no visible. La nueva regla exige ocultar la causa real con un mensaje único y un estado 404.
+- **Prompt inicial:**
+
+  > Hagamos entonces el 5.
+
+- **Correcciones relevantes:** se mantuvo el alcance exacto al acceso por detalle de experiencia; no se añadieron rutas nuevas ni cambios de UI. La corrección se concentra en la capa de servicio y en la prueba que valida el mensaje unificado.
+- **Resultado propuesto por la IA:** cambiar la rama que detecta ausencia o visibilidad insuficiente para lanzar `crearError('Contenido no disponible', 404)` en ambos casos.
+- **TDD:** se actualizó la prueba del servicio para exigir el mismo mensaje y la misma respuesta 404 tanto para la experiencia que no existe como para la que no es visible, y la ejecución previa falló porque aún se devolvía `La experiencia no existe` o `No tienes permiso para ver esta experiencia`.
+- **Comprensión humana de las pruebas:** la comprobación protege que la API no revele si la experiencia no existe o si está protegida por visibilidad, manteniendo la respuesta homogénea para el usuario.
+- **Intervención humana:** Matthew pidió seguir la secuencia de pacientes objetivos y dejar el alcance restringido al comportamiento de acceso del detalle.
+- **Comprobación final:** `npm test -- --runInBand tests/experienciaObjetivos.test.js` quedó en verde con 9 pruebas correctas.
+- **Resultado en Git:** cambios en `backend/src/services/experienciaService.js` y `backend/tests/experienciaObjetivos.test.js`, además del registro de prompts.
 
 ## 2026-10-07 — Definir los casos de acceso a una experiencia (CS-30, objetivo 1)
 

@@ -80,16 +80,16 @@ describe('Objetivo 4 - leer una experiencia por su id', () => {
     expect(puedeVerExperiencia).toHaveBeenCalledWith(USUARIO_ID, experiencia);
   });
 
-  test('rechaza una experiencia que no existe', async () => {
+  test('rechaza una experiencia que no existe con el mensaje genérico', async () => {
     experienciaRepository.buscarPorId.mockResolvedValue(null);
 
     await expect(obtenerExperiencia(USUARIO_ID, 999)).rejects.toMatchObject({
       status: 404,
-      message: 'La experiencia no existe',
+      message: 'Contenido no disponible',
     });
   });
 
-  test('rechaza una experiencia invisible para ese usuario', async () => {
+  test('rechaza una experiencia invisible para ese usuario con el mismo mensaje', async () => {
     const experiencia = {
       id: 8,
       autorId: 2,
@@ -103,8 +103,8 @@ describe('Objetivo 4 - leer una experiencia por su id', () => {
     puedeVerExperiencia.mockResolvedValue(false);
 
     await expect(obtenerExperiencia(USUARIO_ID, 8)).rejects.toMatchObject({
-      status: 403,
-      message: 'No tienes permiso para ver esta experiencia',
+      status: 404,
+      message: 'Contenido no disponible',
     });
   });
 });

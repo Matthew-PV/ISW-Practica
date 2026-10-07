@@ -2,6 +2,27 @@
 
 Registro de los cambios realizados en el proyecto, en orden cronológico.
 
+# Cambios del día (07/10/2026)
+
+Se ha trabajado de forma incremental en la historia CS-30 y en la validación del cierre de CS-22, manteniendo el alcance de un objetivo a la vez y dejando constancia de cada paso en la documentación y en las pruebas.
+
+### CS-22: cierre de visibilidad de experiencias
+- **Objetivo 4:** se validó y persistió `visibilidad` en la creación y edición de experiencias, aceptando solo `PRIVADA`, `AMIGOS` y `PUBLICA` con valor por defecto `PUBLICA`.
+- **Objetivo 5:** se añadió el selector visual de visibilidad al formulario de experiencia y se comprobó en pantalla que incluye las tres opciones y conserva el valor al editar.
+- **Objetivo 6:** se validó que el valor seleccionado se envía junto con la petición de creación/edición.
+- **Objetivo 7:** se confirmó que al abrir una experiencia en edición el selector se rellena con la visibilidad actual y que el valor se conserva al guardar.
+
+### CS-30: acceso a experiencias según visibilidad
+- **Objetivo 1:** se fijó la matriz de acceso: la experiencia pública la ve cualquiera; la privada la ve solo el autor; la de amigos la ve solo quien tiene amistad aceptada.
+- **Objetivo 2:** se reforzó la prueba unitaria que cubre los casos clave del servicio compartido.
+- **Objetivo 3:** se verificó que la regla ya estaba implementada en `services/shared/visibilidad.js` y reutiliza `amistadService.sonAmigos` sin consultar Prisma directamente.
+- **Objetivo 4:** se añadió `obtenerExperiencia(usuarioId, experienciaId)` en el servicio y la ruta `GET /api/experiencias/:id` con sesión requerida, devolviendo la experiencia solo si existe y es visible.
+- **Objetivo 5:** se unificó el mensaje de respuesta para ocultar la causa real: si la experiencia no existe o no es visible, la API devuelve `Contenido no disponible` con estado 404.
+
+### Verificación
+- `backend/tests/visibilidad.test.js` quedó en verde con la matriz de acceso.
+- `backend/tests/experienciaObjetivos.test.js` quedó en verde con la validación del detalle de experiencia y el mensaje unificado de acceso.
+
 # Excel de historias: cambios de OneDrive y CS-64 para José — Documentado (07/10/2026)
 
 La copia de OneDrive descargada hoy no tenía las correcciones del 06/10 (fila «Total», números de objetivo con fórmula, tiempo total sin duplicar). Se ha partido del libro corregido del repositorio y se le han añadido los cambios que el equipo hizo en OneDrive desde la última descarga:
@@ -48,7 +69,45 @@ Se ha reforzado la especificación unitaria de la lógica de visibilidad con una
 
 Se añadió la prueba como contrato del comportamiento esperado y quedó en verde. `npm test -- --runInBand tests/visibilidad.test.js` pasó correctamente.
 
+# CS-30: acceso a experiencias según visibilidad — objetivo 3 (07/10/2026)
+
+El objetivo 3 ya estaba resuelto por la implementación compartida de CS-22. La lógica de acceso vive en `backend/src/services/shared/visibilidad.js` y delega la comprobación de amistad a `amistadService.sonAmigos`, sin tocar Prisma ni duplicar la regla en cada flujo.
+
+### Verificación realizada
+
+- **Servicio compartido:** `puedeVerExperiencia(usuarioId, experiencia)` decide entre autor, pública, privada y amistades aceptadas.
+- **Cobertura de prueba:** `backend/tests/visibilidad.test.js` sigue validando los mismos casos de acceso y quedó en verde con la suite actual.
+
+No se necesita cambio funcional adicional porque la regla ya está implementada y reutilizada.
+
 # CS-30: acceso a experiencias según visibilidad — objetivo 4 (07/10/2026)
+
+Se ha añadido la consulta por id de una experiencia con sesión validada y comprobación de visibilidad antes de devolver el dato. La ruta ya protegida reutiliza la regla compartida sin duplicar la lógica.
+
+### Cambios realizados
+
+- **Servicio:** `backend/src/services/experienciaService.js` incorpora `obtenerExperiencia(usuarioId, experienciaId)` y valida sesión, identificador y acceso visible.
+- **Ruta:** `backend/src/routes/experienciaRoutes.js` expone `GET /api/experiencias/:id` con `requiereSesion`.
+- **Pruebas:** `backend/tests/experienciaObjetivos.test.js` cubre caso visible, inexistente y sin permiso.
+
+### TDD y comprobación
+
+Se escribió primero la prueba que fallaba por la ausencia de la función; luego se implementó la comprobación y quedó en verde con `npm test -- --runInBand tests/experienciaObjetivos.test.js`.
+
+# CS-30: acceso a experiencias según visibilidad — objetivo 5 (07/10/2026)
+
+Se ha unificado el mensaje de respuesta cuando la experiencia no existe o el usuario no puede verla. En ambos casos la API responde con el mismo texto `Contenido no disponible` y el mismo estado 404 para no revelar la causa real del bloqueo.
+
+### Cambios realizados
+
+- **Servicio:** `backend/src/services/experienciaService.js` hace que la comprobación de ausencia o visibilidad insuficiente termine en `crearError('Contenido no disponible', 404)`.
+- **Pruebas:** `backend/tests/experienciaObjetivos.test.js` exige el mismo mensaje tanto para la experiencia inexistente como para la no visible.
+
+### TDD y comprobación
+
+Se actualizó la prueba de los casos de acceso para reflejar el contrato del objetivo 5 y se ejecutó con éxito. La suite queda en verde con `npm test -- --runInBand tests/experienciaObjetivos.test.js`.
+
+# CS-48: valoraciones de amigos y seguidores — Finalizada (06/10/2026)
 
 Se ha añadido la consulta por id de una experiencia con comprobación de sesión y de visibilidad antes de devolver el dato. La ruta real requiere autenticación y reutiliza la regla compartida de `puedeVerExperiencia` sin duplicar la lógica de negocio.
 

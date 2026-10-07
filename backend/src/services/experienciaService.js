@@ -259,12 +259,8 @@ async function obtenerExperiencia(usuarioId, experienciaId) {
 
   const experiencia = await experienciaRepository.buscarPorId(experienciaId);
 
-  if (!experiencia) {
-    throw crearError('La experiencia no existe', 404);
-  }
-
-  if (!(await puedeVerExperiencia(usuarioId, experiencia))) {
-    throw crearError('No tienes permiso para ver esta experiencia', 403);
+  if (!experiencia || !(await puedeVerExperiencia(usuarioId, experiencia))) {
+    throw crearError('Contenido no disponible', 404);
   }
 
   return experiencia;
