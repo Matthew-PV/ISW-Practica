@@ -59,6 +59,26 @@
       <p id="sin-solicitudes" class="text-secondary d-none">No tienes solicitudes pendientes.</p>
       <div id="solicitudes-recibidas" class="list-group"></div>
     </section>
+
+    <!-- Amigos y seguidores (CS-45). js/perfil.js los obtiene desde /api/perfil/resumen,
+         /api/perfil/amigos y /api/perfil/seguidores. -->
+    <section class="mt-5" aria-labelledby="titulo-relaciones">
+      <h2 id="titulo-relaciones" class="h4">Amigos y seguidores</h2>
+      <div id="error-relaciones" class="alert alert-danger d-none" role="alert"></div>
+      <p id="resumen-relaciones">
+        Amigos: <strong id="total-amigos">0</strong> · Seguidores: <strong id="total-seguidores">0</strong>
+      </p>
+
+      <h3 class="h5 mt-4">Amigos</h3>
+      <p id="sin-amigos" class="text-secondary d-none">Todavía no tienes amigos.</p>
+      <div id="lista-amigos" class="list-group"></div>
+      <button type="button" id="mas-amigos" class="btn btn-outline-secondary btn-sm mt-2 d-none">Cargar más amigos</button>
+
+      <h3 class="h5 mt-4">Seguidores</h3>
+      <p id="sin-seguidores" class="text-secondary d-none">Todavía no tienes seguidores.</p>
+      <div id="lista-seguidores" class="list-group"></div>
+      <button type="button" id="mas-seguidores" class="btn btn-outline-secondary btn-sm mt-2 d-none">Cargar más seguidores</button>
+    </section>
   </main>
 
   <script src="js/shared/api.js"></script>

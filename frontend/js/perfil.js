@@ -170,3 +170,106 @@ campoFoto.addEventListener('change', async () => {
   campoFoto.disabled = false;
   ayudaFoto.textContent = textoAyudaFoto;
 });
+
+// Amigos y seguidores (CS-45): contadores y listados paginados del perfil propio. Se cargan por
+// separado del formulario para que un error aquí no afecte a la edición del perfil.
+const cajaErrorRelaciones = document.getElementById('error-relaciones');
+const PERSONAS_POR_PAGINA = 20;
+
+// Elementos de cada listado y la última página que se ha mostrado (0 = todavía ninguna).
+const listados = {
+  amigos: {
+    lista: document.getElementById('lista-amigos'),
+    vacio: document.getElementById('sin-amigos'),
+    botonMas: document.getElementById('mas-amigos'),
+    pagina: 0,
+  },
+  seguidores: {
+    lista: document.getElementById('lista-seguidores'),
+    vacio: document.getElementById('sin-seguidores'),
+    botonMas: document.getElementById('mas-seguidores'),
+    pagina: 0,
+  },
+};
+
+// Crea la fila de una persona. El nombre se incorpora como texto para que nunca se interprete
+// como HTML aportado por otra persona.
+function crearPersona(persona) {
+  const fila = document.createElement('div');
+  fila.className = 'list-group-item d-flex align-items-center gap-2';
+  fila.dataset.usuarioId = persona.id;
+
+  const foto = document.createElement('img');
+  foto.src = persona.foto;
+  foto.alt = '';
+  foto.width = 32;
+  foto.height = 32;
+  foto.className = 'rounded-circle';
+
+  const nombre = document.createElement('span');
+  nombre.textContent = persona.nombreUsuario;
+
+  fila.append(foto, nombre);
+  return fila;
+}
+
+// Añade a un listado la página recibida del backend y actualiza el aviso de lista vacía y el
+// botón «Cargar más».
+function mostrarPagina(listado, respuesta) {
+  for (const persona of respuesta.personas) {
+    // Si alguien ya está en la lista (por ejemplo, porque llegó un seguidor nuevo entre una
+    // página y la siguiente), no se repite.
+    const yaMostrada = listado.lista.querySelector(`[data-usuario-id="${persona.id}"]`);
+    if (!yaMostrada) {
+      listado.lista.append(crearPersona(persona));
+    }
+  }
+  listado.pagina = respuesta.pagina;
+  listado.vacio.classList.toggle('d-none', listado.lista.children.length !== 0);
+  const quedanMas = respuesta.pagina * respuesta.limite < respuesta.total;
+  listado.botonMas.classList.toggle('d-none', !quedanMas);
+}
+
+// Pide al backend la página siguiente de un listado ('amigos' o 'seguidores') y la muestra.
+async function cargarPagina(tipo) {
+  const listado = listados[tipo];
+  const respuesta = await api(`/perfil/${tipo}?pagina=${listado.pagina + 1}&limite=${PERSONAS_POR_PAGINA}`);
+  mostrarPagina(listado, respuesta);
+}
+
+function mostrarErrorRelaciones(err) {
+  cajaErrorRelaciones.textContent = err.message;
+  cajaErrorRelaciones.classList.remove('d-none');
+}
+
+// Al abrir la página: los contadores y la primera página de cada listado.
+async function cargarRelaciones() {
+  cajaErrorRelaciones.classList.add('d-none');
+  try {
+    const resumen = await api('/perfil/resumen');
+    document.getElementById('total-amigos').textContent = resumen.amigos;
+    document.getElementById('total-seguidores').textContent = resumen.seguidores;
+    await cargarPagina('amigos');
+    await cargarPagina('seguidores');
+  } catch (err) {
+    mostrarErrorRelaciones(err);
+  }
+}
+
+// «Cargar más»: el botón se desactiva mientras llega la página para no pedirla dos veces.
+for (const tipo of ['amigos', 'seguidores']) {
+  const { botonMas } = listados[tipo];
+  botonMas.addEventListener('click', async () => {
+    cajaErrorRelaciones.classList.add('d-none');
+    botonMas.disabled = true;
+    try {
+      await cargarPagina(tipo);
+    } catch (err) {
+      mostrarErrorRelaciones(err);
+    }
+    botonMas.disabled = false;
+  });
+}
+
+cargarRelaciones();
+
