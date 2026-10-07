@@ -41,7 +41,9 @@ router.patch('/:id', requiereSesion, async (req, res) => {
 
 router.get('/:id', requiereSesion, async (req, res, next) => {
   try {
-    const usuarioId = req.usuario ? req.usuario.id : null;
+    // CORRECCIÓN: Leemos el usuario directamente de la sesión
+    const usuarioId = req.session.usuarioId;
+
     const experiencia = await experienciaService.obtenerExperiencia(req.params.id, usuarioId);
     res.json(experiencia);
   } catch (error) {
