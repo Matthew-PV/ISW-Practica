@@ -90,9 +90,14 @@ function main(workbook: ExcelScript.Workbook) {
 
 // Rehace el enlace «↑ Índice» (F1) de una página para volver al Índice.
 function enlazarIndice(hoja: ExcelScript.Worksheet, indice: string) {
-  hoja.getRange("F1").setHyperlink({
+  const celda = hoja.getRange("F1");
+  celda.setHyperlink({
     documentReference: `'${indice}'!A1`,
     textToDisplay: "↑ Índice",
     screenTip: "Volver al índice",
   });
+  // El enlace pone la letra azul, que no se lee sobre el fondo azul de la fila: se vuelve a blanco.
+  const fuente = celda.getFormat().getFont();
+  fuente.setColor("#FFFFFF");
+  fuente.setBold(true);
 }

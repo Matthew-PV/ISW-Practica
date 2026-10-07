@@ -16,7 +16,7 @@ Hay que subir esta versión a OneDrive para sustituir la actual.
 
 Al subirla, Excel para la web reparó el libro («Removed Part: Data store»): quitó el vínculo con el botón «Crear páginas» y los enlaces del Índice y de las páginas dejaron de responder. Por eso:
 
-- `documentacion/office-scripts/crearPaginas.ts` rehace ahora también el enlace «↑ Índice» de cada página y de la Plantilla, además de los del Índice. Pulsar el botón repara todos los enlaces.
+- `documentacion/office-scripts/crearPaginas.ts` rehace ahora también el enlace «↑ Índice» de cada página y de la Plantilla, además de los del Índice. Pulsar el botón repara todos los enlaces. Después de crear el enlace vuelve a poner la letra en blanco y negrita, porque Excel la pone azul y no se leía sobre el fondo azul de la fila. Para aplicarlo hay que sustituir el código del script «Crear páginas» en Excel para la web y pulsar el botón otra vez.
 - El enlace de CS-60 mostraba el título antiguo, «METODOLOGÍA». Ahora muestra el actual, «ORGANIZACIÓN INTERNA».
 - `metodologia.md` (sección 3.3) explica cómo reparar los enlaces.
 
