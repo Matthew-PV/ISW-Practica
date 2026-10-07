@@ -26,15 +26,27 @@ async function cargarPaginaExperiencia() {
       api('/auth/yo')
     ]);
 
+    console.log("Datos que llegan:", experiencia);
+
     miUsuarioId = yo.id;
 
     mensajeEstado.classList.add('d-none');
     contenidoExperiencia.classList.remove('d-none');
 
     tituloEl.textContent = experiencia.titulo;
-    autorEl.textContent = experiencia.autor.nombreUsuario;
-    ciudadEl.textContent = experiencia.ciudad.nombre;
-    descEl.textContent = experiencia.descripcion;
+
+        // Truco definitivo: Si el backend no trae el objeto autor, pero el autorId
+        // coincide con nuestro ID, usamos nuestro propio nombre de perfil.
+        let nombreAutor = 'Usuario anónimo';
+        if (experiencia.autor?.nombreUsuario) {
+          nombreAutor = experiencia.autor.nombreUsuario;
+        } else if (experiencia.autorId === yo.id) {
+          nombreAutor = yo.nombreUsuario;
+        }
+        autorEl.textContent = nombreAutor;
+
+        ciudadEl.textContent = experiencia.ciudad?.nombre || 'Ciudad desconocida';
+        descEl.textContent = experiencia.descripcion;
 
     await cargarComentarios();
 
