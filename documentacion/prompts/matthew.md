@@ -613,3 +613,21 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Intervención humana:** Matthew hizo explícita su necesidad de comprender el proyecto y después actualizó la decisión sobre la transparencia del uso de IA.
 - **Comprobación final:** estas preferencias se reflejan ahora en `AGENTS.md` y en la metodología.
 - **Resultado en Git:** incorporado posteriormente a la documentación metodológica.
+
+## 2026-10-07 — Validar visibilidad en creación y edición (CS-22, objetivo 4)
+
+- **Historia u objetivo:** CS-22, objetivo 4: validar y guardar la visibilidad en los servicios y repositorios de creación y edición.
+- **Agente/herramienta:** Copilot SDK en VS Code.
+- **Entorno:** Windows, PowerShell, Jest y el backend de PlanB.
+- **Contexto aportado:** el objetivo 3 ya dejaba la migración con `visibilidad` por defecto en `PUBLICA`, pero la capa de servicio aún no aceptaba ni validaba ese campo ni lo guardaba al crear o editar una experiencia.
+- **Prompt inicial:**
+
+  > Haz el objetivo 4 y regístralo en mi registro de prompts.
+
+- **Correcciones relevantes:** se restringió la tarea al objetivo 4, sin ampliar el alcance a formulario o interfaz. También se definió una validación con valores permitidos `PRIVADA`, `AMIGOS` y `PUBLICA` y valor por defecto `PUBLICA` cuando no se envía.
+- **Resultado propuesto por la IA:** añadir validación centralizada en `experienciaService.js`, normalizar el valor antes de guardarlo y hacer que el repositorio persista `visibilidad` en crear y editar.
+- **TDD:** se añadieron pruebas de validación para creación y edición con valores válidos e inválidos; la ejecución inicial falló porque `visibilidad` no estaba siendo validada ni devuelta.
+- **Comprensión humana de las pruebas:** la prueba cubre la creación con `AMIGOS`, la opción por defecto `PUBLICA` y la negación de valores fuera del enum, así como la edición con `visibilidad` validada.
+- **Intervención humana:** Matthew pidió cerrar este objetivo sin entrar en la parte visual del formulario.
+- **Comprobación final:** la prueba específica `tests/experienciaValidacion.test.js` se ejecutó y quedó en verde tras el cambio. La validación usa un error 400 con mensaje claro cuando el valor no pertenece a los tres niveles permitidos.
+- **Resultado en Git:** cambios en `backend/src/services/experienciaService.js`, `backend/src/repositories/experienciaRepository.js` y el registro de prompts.

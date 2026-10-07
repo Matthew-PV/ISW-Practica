@@ -16,6 +16,7 @@ const { crearError } = require('../errores');
 const TEXTO_CORTO_MAX = 191; // Columnas VARCHAR(191) de MySQL.
 const DESCRIPCION_MAX_BYTES = 65535; // Capacidad de la columna TEXT en UTF-8.
 const CIUDAD_ID_MAX = 2147483647; // Mayor entero positivo de una columna Int.
+const VISIBILIDADES_VALIDAS = new Set(['PRIVADA', 'AMIGOS', 'PUBLICA']);
 
 // Devuelve el texto limpio; si falta o está vacío, null cuando es opcional o error 400 cuando es obligatorio.
 // - `valor`: lo que llega en la petición (puede ser cualquier cosa).
@@ -46,6 +47,24 @@ function comprobarTextoCorto(texto, nombre) {
   }
 }
 
+function leerVisibilidad(valor) {
+  if (valor === undefined || valor === null) {
+    return 'PUBLICA';
+  }
+
+  if (typeof valor !== 'string') {
+    throw crearError('La visibilidad debe ser una de: PRIVADA, AMIGOS o PUBLICA', 400);
+  }
+
+  const visibilidad = valor.normalize('NFC').trim().toUpperCase();
+
+  if (!VISIBILIDADES_VALIDAS.has(visibilidad)) {
+    throw crearError('La visibilidad debe ser una de: PRIVADA, AMIGOS o PUBLICA', 400);
+  }
+
+  return visibilidad;
+}
+
 // Devuelve únicamente los campos admitidos y preparados para guardar.
 // No crea registros. La ciudad se consulta solo después de validar los datos locales.
 // - `datos`: el cuerpo de la petición { titulo, descripcion, ciudadId, tipo?, momentoAdecuado? }.
@@ -60,6 +79,7 @@ async function validarCreacion(datos) {
   const descripcion = leerTexto(datos.descripcion, 'La descripción', true);
   const tipo = leerTexto(datos.tipo, 'El tipo', false);
   const momentoAdecuado = leerTexto(datos.momentoAdecuado, 'El momento adecuado', false);
+  const visibilidad = leerVisibilidad(datos.visibilidad);
   const ciudadId = datos.ciudadId;
 
   comprobarTextoCorto(titulo, 'El título');
@@ -78,7 +98,7 @@ async function validarCreacion(datos) {
     throw crearError('La ciudad seleccionada no existe', 400);
   }
 
-  return { titulo, descripcion, ciudadId, tipo, momentoAdecuado };
+  return { titulo, descripcion, ciudadId, tipo, momentoAdecuado, visibilidad };
 }
 
 // El autor viene de la sesión, nunca del cuerpo de la petición.
@@ -131,6 +151,10 @@ async function validarEdicion(datos) {
 
     comprobarTextoCorto(momentoAdecuado, 'El momento adecuado');
     cambios.momentoAdecuado = momentoAdecuado;
+  }
+
+  if (datos.visibilidad !== undefined) {
+    cambios.visibilidad = leerVisibilidad(datos.visibilidad);
   }
 
   if (datos.ciudadId !== undefined) {

@@ -61,11 +61,11 @@ test('datos válidos: crea y devuelve 201 con una única ciudad y el autor de la
   const res = await agente.post('/api/experiencias').send(DATOS);
   expect(res.status).toBe(201);
   expect(res.body).toEqual({
-    id: 10, ...DATOS, tipo: null, momentoAdecuado: null, autorId: 1, ciudad: CIUDAD,
+    id: 10, ...DATOS, tipo: null, momentoAdecuado: null, visibilidad: 'PUBLICA', autorId: 1, ciudad: CIUDAD,
   });
   expect(experienciaRepository.crear).toHaveBeenCalledTimes(1);
   expect(experienciaRepository.crear).toHaveBeenCalledWith({
-    ...DATOS, tipo: null, momentoAdecuado: null, autorId: 1,
+    ...DATOS, tipo: null, momentoAdecuado: null, visibilidad: 'PUBLICA', autorId: 1,
   });
 });
 
@@ -77,7 +77,7 @@ test('normaliza textos y no permite elegir otro autor ni identificador', async (
   });
   expect(res.status).toBe(201);
   expect(experienciaRepository.crear).toHaveBeenCalledWith({
-    ...DATOS, titulo: 'Café', tipo: 'Cultural', momentoAdecuado: 'Tarde', autorId: 1,
+    ...DATOS, titulo: 'Café', tipo: 'Cultural', momentoAdecuado: 'Tarde', visibilidad: 'PUBLICA', autorId: 1,
   });
 });
 

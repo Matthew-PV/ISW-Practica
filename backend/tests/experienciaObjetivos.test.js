@@ -52,7 +52,7 @@ describe('Objetivo 6 - experiencia asociada solo a su ciudad', () => {
 describe('Objetivo 7 - creación con datos válidos', () => {
   test('crea la experiencia con el autor de la sesión', async () => {
     const resultado = await crearExperiencia(USUARIO_ID, datosValidos);
-    expect(experienciaRepository.crear).toHaveBeenCalledWith({ ...datosValidos, autorId: USUARIO_ID });
-    expect(resultado).toMatchObject({ id: 99, autorId: USUARIO_ID });
+    expect(experienciaRepository.crear).toHaveBeenCalledWith({ ...datosValidos, visibilidad: 'PUBLICA', autorId: USUARIO_ID });
+    expect(resultado).toMatchObject({ id: 99, autorId: USUARIO_ID, visibilidad: 'PUBLICA' });
   });
 });
