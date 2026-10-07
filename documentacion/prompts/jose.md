@@ -84,3 +84,14 @@ El archivo principal de la vista sufrió una reestructuración completa para cum
 * Si la carga inicial falla (ID inválido o falta de permisos), borra el contenedor principal y muestra un `alert-danger`.
 * Si falla la paginación de comentarios (caída de red), inyecta dinámicamente una alerta al final de la lista sin romper la interfaz.
 * Si falla el botón "Útil", deshace los cambios visuales del contador y emite una alerta nativa al usuario informando del problema de conexión.
+
+
+### Pruebas y Validación (Objetivos 10 y 11)
+
+- Objetivo 10 (Pruebas de pantalla con jsdom):
+  - Se implementó el archivo de pruebas automatizadas backend/tests/experienciaPantalla.test.js utilizando Jest y JSDOM.
+  - Simula el DOM de experiencia.html y la función global api() para verificar con éxito los casos de aceptación del frontend, tales como la ocultación automática del formulario de valoración cuando el usuario logueado coincide con el autor de la experiencia, o su visualización en caso contrario.
+
+- Objetivo 11 (Comprobación manual en escritorio y móvil):
+  - Se realizaron pruebas de control de calidad (QA) utilizando las herramientas de desarrollo del navegador (F12).   
+  - Se validó el diseño adaptativo (responsive) comprobando que las tarjetas de comentarios, los botones de interacción y el modal de reporte en JavaScript puro se despliegan correctamente tanto en pantallas de escritorio a ancho completo como en vistas móviles simuladas.
