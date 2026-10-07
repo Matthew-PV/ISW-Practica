@@ -47,6 +47,7 @@ const EXPERIENCIA = {
   },
   tipo: 'Cultural',
   momentoAdecuado: 'Por la tarde',
+  visibilidad: 'AMIGOS',
 };
 
 let respuestaValoraciones;
@@ -144,6 +145,29 @@ beforeEach(async () => {
 
   await terminar();
   await terminar();
+});
+
+test('el formulario de experiencia incluye el selector de visibilidad con las tres opciones', () => {
+  $('#boton-nueva').click();
+
+  const selector = $('#visibilidad');
+
+  expect(selector).not.toBeNull();
+  expect(selector.value).toBe('PUBLICA');
+  expect([...selector.options].map((op) => op.value)).toEqual([
+    'PRIVADA',
+    'AMIGOS',
+    'PUBLICA',
+  ]);
+});
+
+test('al editar una experiencia, el selector de visibilidad conserva su valor actual', () => {
+  $('.tarjeta-experiencia .boton-editar').click();
+
+  const selector = $('#visibilidad');
+
+  expect(selector).not.toBeNull();
+  expect(selector.value).toBe('AMIGOS');
 });
 
 test('al pulsar Ver detalle muestra las valoraciones de amigos y seguidores', async () => {

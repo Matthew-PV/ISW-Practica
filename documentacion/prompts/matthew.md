@@ -631,3 +631,21 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Intervención humana:** Matthew pidió cerrar este objetivo sin entrar en la parte visual del formulario.
 - **Comprobación final:** la prueba específica `tests/experienciaValidacion.test.js` se ejecutó y quedó en verde tras el cambio. La validación usa un error 400 con mensaje claro cuando el valor no pertenece a los tres niveles permitidos.
 - **Resultado en Git:** cambios en `backend/src/services/experienciaService.js`, `backend/src/repositories/experienciaRepository.js` y el registro de prompts.
+
+## 2026-10-07 — Pruebas de pantalla del selector de visibilidad (CS-22, objetivo 5)
+
+- **Historia u objetivo:** CS-22, objetivo 5: crear las pruebas de pantalla para el selector de visibilidad del formulario de experiencia.
+- **Agente/herramienta:** Copilot SDK en VS Code.
+- **Entorno:** Windows, PowerShell, Jest y jsdom.
+- **Contexto aportado:** el objetivo 4 ya validaba y guardaba la visibilidad en backend; todavía faltaba verificar en la pantalla que el formulario ofrece las opciones correctas y conserva el valor al editar.
+- **Prompt inicial:**
+
+  > Haz el objetivo 5 y regístralo igual.
+
+- **Correcciones relevantes:** se limitó la tarea a pruebas y UI del selector, sin tocar la lógica de guardado ni la API; la validación del formulario se mantiene para la siguiente parte del objetivo 6.
+- **Resultado propuesto por la IA:** añadir pruebas de pantalla en `bienvenidaPantalla.test.js` que comprueben la existencia del selector, sus tres opciones (`PRIVADA`, `AMIGOS`, `PUBLICA`) y su valor al editar.
+- **TDD:** se escribieron primero dos pruebas que fallaban porque el selector no existía; después se implementó el elemento en `bienvenida.html` y su relleno en `bienvenida.js`.
+- **Comprensión humana de las pruebas:** la prueba confirma que el formulario de nueva experiencia abre con `PUBLICA` por defecto y que al editar una experiencia con visibilidad `AMIGOS` el selector conserva ese valor.
+- **Intervención humana:** Matthew pidió dejar el objetivo acotado a las pruebas de pantalla y a la UI del selector.
+- **Comprobación final:** la suite `tests/bienvenidaPantalla.test.js` quedó en verde tras añadir el selector y enlazarlo con la lógica de edición.
+- **Resultado en Git:** cambios en `frontend/bienvenida.html`, `frontend/js/bienvenida.js` y el registro de prompts.

@@ -18,6 +18,7 @@ const campos = [
   'titulo',
   'descripcion',
   'ciudadId',
+  'visibilidad',
   'tipo',
   'momentoAdecuado',
 ].map((id) => document.getElementById(id));
@@ -244,6 +245,11 @@ function abrirFormulario(experiencia) {
       : 'Nueva experiencia';
 
   for (const campo of campos) {
+    if (campo.id === 'visibilidad') {
+      campo.value = experiencia?.visibilidad ?? 'PUBLICA';
+      continue;
+    }
+
     campo.value = experiencia?.[campo.id] ?? '';
   }
 
