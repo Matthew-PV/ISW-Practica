@@ -10,6 +10,8 @@ const tituloEl = document.getElementById('detalle-titulo');
 const autorEl = document.getElementById('detalle-autor');
 const ciudadEl = document.getElementById('detalle-ciudad');
 const descEl = document.getElementById('detalle-descripcion');
+// CORRECCIÓN: Faltaba capturar la caja del formulario para poder mostrarla/ocultarla
+const cajaFormulario = document.getElementById('caja-formulario-valoracion');
 
 async function cargarPaginaExperiencia() {
   if (!experienciaId) {
@@ -72,7 +74,6 @@ const btnCargarMas = document.getElementById('btn-cargar-mas');
 // Función que pide las valoraciones al backend y las dibuja
 async function cargarComentarios() {
   try {
-    // Usamos la ruta de valoraciones que ya tenías en tu backend
     const ruta = `/experiencias/${experienciaId}/valoracion?pagina=${paginaComentarios}&limite=${LIMITE_COMENTARIOS}`;
     const resultado = await api(ruta);
 
@@ -101,7 +102,7 @@ async function cargarComentarios() {
   }
 }
 
-// Crea la tarjeta del comentario usando textContent por seguridad (LUC01 / Criterio Validación)
+// Crea la tarjeta del comentario usando textContent por seguridad
 function crearElementoComentario(valoracion) {
   const tarjeta = document.createElement('div');
   tarjeta.className = 'card shadow-sm';
@@ -112,7 +113,7 @@ function crearElementoComentario(valoracion) {
   const cabecera = document.createElement('div');
   cabecera.className = 'd-flex justify-content-between mb-2';
 
-  // Autor enlazado a su perfil (CS-62)
+  // Autor enlazado a su perfil
   const autorEnlace = document.createElement('a');
   autorEnlace.href = `perfil.html?id=${valoracion.usuarioId || valoracion.usuario?.id}`;
   autorEnlace.className = 'text-decoration-none fw-bold';
@@ -136,63 +137,76 @@ function crearElementoComentario(valoracion) {
 
   // Fecha
   const fechaElemento = document.createElement('small');
-  fechaElemento.className = 'text-muted';
+  fechaElemento.className = 'text-muted d-block mb-2';
   const fechaValor = valoracion.creadoEn || valoracion.fecha;
   fechaElemento.textContent = fechaValor ? new Date(fechaValor).toLocaleDateString() : '';
+  cuerpo.appendChild(fechaElemento);
 
-  // --- OBJETIVO 7: Botón Útil ---
-    const contenedorUtil = document.createElement('div');
-    contenedorUtil.className = 'mt-3 mb-2';
+  // --- OBJETIVO 7: Botón Útil (Simulado visualmente) ---
+  const contenedorUtil = document.createElement('div');
+  contenedorUtil.className = 'mt-2';
 
-    const btnUtil = document.createElement('button');
-    btnUtil.className = 'btn btn-sm btn-outline-success';
+  const btnUtil = document.createElement('button');
+  btnUtil.className = 'btn btn-sm btn-outline-success';
 
-    // Comprobamos si el comentario es tuyo para desactivar el botón
-    const autorComentarioId = valoracion.usuarioId || valoracion.usuario?.id;
+  // Comprobamos si el comentario es tuyo para desactivar el botón
+  const autorComentarioId = valoracion.usuarioId || valoracion.usuario?.id;
+  if (autorComentarioId === miUsuarioId) {
+    btnUtil.disabled = true;
+    btnUtil.title = "No puedes votar tu propio comentario";
+  }
+
+  // Variables locales simuladas
+  let cantidadUtiles = valoracion.utiles || 0;
+  let leDiUtil = valoracion.leDiUtil || false;
+
+  if (leDiUtil) btnUtil.classList.replace('btn-outline-success', 'btn-success');
+  btnUtil.innerHTML = `👍 Útil <span class="badge text-bg-light ms-1">${cantidadUtiles}</span>`;
+
+  // Evento simulado para marcar/desmarcar útil
+  btnUtil.addEventListener('click', () => {
+    leDiUtil = !leDiUtil;
+    cantidadUtiles += leDiUtil ? 1 : -1;
+
+    if (leDiUtil) {
+      btnUtil.classList.replace('btn-outline-success', 'btn-success');
+    } else {
+      btnUtil.classList.replace('btn-success', 'btn-outline-success');
+    }
+    btnUtil.innerHTML = `👍 Útil <span class="badge text-bg-light ms-1">${cantidadUtiles}</span>`;
+  });
+
+  contenedorUtil.appendChild(btnUtil);
+
+  // --- OBJETIVO 8: Botón Reportar ---
+    const btnReportar = document.createElement('button');
+    btnReportar.className = 'btn btn-sm btn-outline-danger ms-2';
+    btnReportar.innerHTML = `🚨 Reportar`;
+
     if (autorComentarioId === miUsuarioId) {
-      btnUtil.disabled = true;
-      btnUtil.title = "No puedes votar tu propio comentario";
+      btnReportar.disabled = true;
     }
 
-    // Contador de utilidades (asumiendo que tu backend envía una propiedad 'utilidades' o similar)
-    // Si tu backend lo llama de otra forma (ej. 'likes'), cambia 'valoracion.utiles'
-    let cantidadUtiles = valoracion.utiles || 0;
+    btnReportar.addEventListener('click', () => {
+      valoracionReporteId = valoracion.id;
+      comentarioYaReportado = valoracion.yaReportado || false;
 
-    // Asumimos que el backend también te dice si TÚ ya le diste útil (ej. 'leDiUtil: true')
-    let leDiUtil = valoracion.leDiUtil || false;
-    if (leDiUtil) btnUtil.classList.replace('btn-outline-success', 'btn-success');
+      // Reseteamos el formulario
+      formReporte.reset();
+      mensajeReporte.classList.add('d-none');
+      btnEnviarReporte.disabled = false;
+      btnEnviarReporte.classList.remove('d-none');
 
-    btnUtil.innerHTML = `👍 Útil <span class="badge text-bg-light ms-1">${cantidadUtiles}</span>`;
-
-    // Evento para marcar/desmarcar útil
-    btnUtil.addEventListener('click', async () => {
-      btnUtil.disabled = true;
-      try {
-        // ⚠️ AQUÍ IRÁ LA LLAMADA AL BACKEND
-        console.log(`Clic en útil para la valoración ${valoracion.id}`);
-
-        // Simulamos visualmente el cambio hasta conectar el backend
-        leDiUtil = !leDiUtil;
-        cantidadUtiles += leDiUtil ? 1 : -1;
-
-        if (leDiUtil) {
-          btnUtil.classList.replace('btn-outline-success', 'btn-success');
-        } else {
-          btnUtil.classList.replace('btn-success', 'btn-outline-success');
-        }
-        btnUtil.innerHTML = `👍 Útil <span class="badge text-bg-light ms-1">${cantidadUtiles}</span>`;
-
-      } catch (error) {
-        console.error('Error al dar útil:', error);
-      } finally {
-        btnUtil.disabled = false;
-      }
+      // MAGIA PURA: Forzamos la apertura del modal modificando su CSS directamente
+      const modal = document.getElementById('modal-reporte');
+      modal.style.display = 'block';
+      modal.style.backgroundColor = 'rgba(0,0,0,0.5)'; // Fondo oscuro semitransparente
+      setTimeout(() => modal.classList.add('show'), 10);
     });
 
-    contenedorUtil.appendChild(btnUtil);
-  cuerpo.appendChild(contenedorUtil);
+    contenedorUtil.appendChild(btnReportar);
 
-  cuerpo.appendChild(fechaElemento);
+  cuerpo.appendChild(contenedorUtil);
 
   tarjeta.appendChild(cuerpo);
   listaComentarios.appendChild(tarjeta);
@@ -219,7 +233,7 @@ const errorValoracion = document.getElementById('error-valoracion');
 const btnGuardarValoracion = document.getElementById('btn-guardar-valoracion');
 
 const MAX_COMENTARIO = 255;
-let miValoracionId = null; // Guardará el ID si ya existe una valoración tuya
+let miValoracionId = null;
 
 // Actualiza el contador dinámicamente
 inputComentario.addEventListener('input', () => {
@@ -238,7 +252,6 @@ inputComentario.addEventListener('input', () => {
 // Comprueba si el usuario ya ha valorado esta experiencia
 async function cargarMiValoracion() {
   try {
-    // ⚠️ ATENCIÓN: Ajusta esta ruta si tu backend usa una diferente para "mi valoración"
     const miValoracion = await api(`/experiencias/${experienciaId}/valoracion/mia`);
 
     if (miValoracion && miValoracion.id) {
@@ -253,11 +266,10 @@ async function cargarMiValoracion() {
       btnGuardarValoracion.textContent = 'Actualizar valoración';
     }
   } catch (error) {
-    // Si da error (ej. 404 No encontrado), significa que no has valorado aún. Lo ignoramos.
+    // Silencioso: significa que no ha valorado aún
   }
 }
 
-// Guardar o actualizar la valoración
 // Guardar o actualizar la valoración
 formValoracion.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -265,7 +277,6 @@ formValoracion.addEventListener('submit', async (e) => {
   errorValoracion.classList.add('d-none');
   btnGuardarValoracion.disabled = true;
 
-  // Preparamos los datos tal y como los pide tu ruta PUT
   const datos = {
     puntuacion: Number(inputPuntuacion.value)
   };
@@ -274,18 +285,15 @@ formValoracion.addEventListener('submit', async (e) => {
   }
 
   try {
-    // Usamos PUT: tu backend ya es inteligente y decide si crear o actualizar
     await api(`/experiencias/${experienciaId}/valoracion`, {
       method: 'PUT',
       body: JSON.stringify(datos)
     });
 
-    // Refrescamos la lista de comentarios
     paginaComentarios = 1;
     listaComentarios.replaceChildren();
     await cargarComentarios();
 
-    // Feedback visual para el usuario
     btnGuardarValoracion.textContent = '¡Guardado!';
     setTimeout(() => {
       btnGuardarValoracion.textContent = 'Actualizar valoración';
@@ -296,5 +304,58 @@ formValoracion.addEventListener('submit', async (e) => {
     errorValoracion.classList.remove('d-none');
   } finally {
     btnGuardarValoracion.disabled = false;
+  }
+});
+// --- OBJETIVO 8: LÓGICA DEL MODAL DE REPORTE ---
+let valoracionReporteId = null;
+let comentarioYaReportado = false;
+
+const formReporte = document.getElementById('form-reporte');
+const mensajeReporte = document.getElementById('mensaje-reporte');
+const btnEnviarReporte = document.getElementById('btn-enviar-reporte');
+const modalReporteEl = document.getElementById('modal-reporte');
+
+// Función para cerrar el modal manualmente
+function cerrarModalManual() {
+  modalReporteEl.classList.remove('show');
+  setTimeout(() => {
+    modalReporteEl.style.display = 'none';
+  }, 300); // Esperamos a que acabe la animación
+}
+
+// Escuchamos los clics en la "X" y en el botón "Cancelar" para cerrarlo
+const botonesCerrar = modalReporteEl.querySelectorAll('[data-bs-dismiss="modal"]');
+botonesCerrar.forEach(btn => btn.addEventListener('click', cerrarModalManual));
+
+formReporte.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  btnEnviarReporte.disabled = true;
+
+  try {
+    // Simulamos un pequeño retraso de red
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    mensajeReporte.classList.remove('d-none', 'alert-success', 'alert-warning');
+
+    if (comentarioYaReportado) {
+      mensajeReporte.classList.add('alert-warning');
+      mensajeReporte.textContent = 'Ya habías reportado este comentario anteriormente.';
+    } else {
+      mensajeReporte.classList.add('alert-success');
+      mensajeReporte.textContent = 'Comentario reportado correctamente. Gracias por avisarnos.';
+      comentarioYaReportado = true;
+      btnEnviarReporte.classList.add('d-none');
+
+      // Cerramos tras 2 segundos de éxito
+      setTimeout(() => {
+        cerrarModalManual();
+      }, 2000);
+    }
+
+  } catch (error) {
+    mensajeReporte.classList.remove('d-none', 'alert-success', 'alert-warning');
+    mensajeReporte.classList.add('alert-danger');
+    mensajeReporte.textContent = 'Error al enviar el reporte.';
+    btnEnviarReporte.disabled = false;
   }
 });
