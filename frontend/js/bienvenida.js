@@ -147,26 +147,44 @@ async function cargarValoracionesDetalle() {
   }
 }
 
-// Abre el detalle de una experiencia y carga la primera página
-// de valoraciones de amigos y seguidores.
+// Abre el detalle de una experiencia, carga sus datos completos desde la API
+// y luego muestra la primera página de valoraciones.
 async function abrirDetalle(experiencia) {
   experienciaDetalle = experiencia;
   paginaActualValoraciones = 1;
 
-  tituloDetalle.textContent = experiencia.titulo;
-  descripcionDetalle.textContent = experiencia.descripcion;
-
+  // Mostramos el diálogo inmediatamente en estado de carga
+  tituloDetalle.textContent = 'Cargando...';
+  descripcionDetalle.textContent = '';
   listaValoraciones.replaceChildren();
-
   sinValoraciones.classList.add('d-none');
   errorValoraciones.classList.add('d-none');
   paginacionValoraciones.classList.add('d-none');
 
   dialogoDetalle.showModal();
 
-  await cargarValoracionesDetalle();
-}
+  try {
+    // LLAMADA A LA API (CS-63): Obtiene la experiencia si es visible
+    const datosCompletos = await api('/experiencias/' + experiencia.id);
 
+    // Inyectamos los datos validados
+    tituloDetalle.textContent = datosCompletos.titulo;
+    descripcionDetalle.textContent = datosCompletos.descripcion;
+
+    // Mostramos autor y ciudad
+    const autorDialogo = document.getElementById('autor-detalle');
+    const ciudadDialogo = document.getElementById('ciudad-detalle');
+    if (autorDialogo) autorDialogo.textContent = `Autor: ${datosCompletos.autor.nombreUsuario}`;
+    if (ciudadDialogo) ciudadDialogo.textContent = `Ciudad: ${datosCompletos.ciudad.nombre}`;
+
+    // Cargamos las valoraciones originales (CS-48)
+    await cargarValoracionesDetalle();
+  } catch (error) {
+    // Si la API devuelve error, mostramos el mensaje del backend
+    tituloDetalle.textContent = 'Aviso';
+    descripcionDetalle.textContent = error.message;
+  }
+}
 // Crea la columna con la tarjeta de una experiencia.
 // Los textos se ponen con textContent para que el contenido de usuario
 // nunca se ejecute como HTML.

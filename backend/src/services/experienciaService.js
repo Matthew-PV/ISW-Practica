@@ -233,7 +233,10 @@ async function listarExperienciasPropias(usuarioId) {
 
 //Devuelve
 async function obtenerExperiencia(experienciaId, usuarioId) {
-  const experiencia = await experienciaRepository.buscarPorId(experienciaId);
+  // Convertimos el ID a número por si viene como string desde la ruta
+  const idNumerico = Number(experienciaId);
+
+  const experiencia = await experienciaRepository.buscarPorId(idNumerico);
 
   if (!experiencia) {
     const error = new Error('La experiencia no existe');
@@ -241,8 +244,7 @@ async function obtenerExperiencia(experienciaId, usuarioId) {
     throw error;
   }
 
-  // Le pasamos el ID a visibilidad, ya que hace su propia consulta interna
-  const esVisible = await visibilidad.puedeVerExperiencia(experienciaId, usuarioId);
+  const esVisible = await visibilidad.puedeVerExperiencia(idNumerico, usuarioId);
 
   if (!esVisible) {
     const error = new Error('No tienes permiso para ver esta experiencia');
