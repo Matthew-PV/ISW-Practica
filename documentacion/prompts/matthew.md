@@ -667,3 +667,21 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Intervención humana:** Matthew continuó con la secuencia de objetivos de CS-22 y pidió dejar la comprobación centrada en la UI y la petición del formulario.
 - **Comprobación final:** la suite `tests/bienvenidaPantalla.test.js` quedó en verde con el caso adicional de envío del valor de visibilidad.
 - **Resultado en Git:** cambios en `backend/tests/bienvenidaPantalla.test.js` y el registro de prompts.
+
+## 2026-10-07 — Cargar y conservar la visibilidad al editar (CS-22, objetivo 7)
+
+- **Historia u objetivo:** CS-22, objetivo 7: cargar la visibilidad actual al abrir una experiencia en edición, enviarla al guardar y comprobar que se conserva al recargar la pantalla.
+- **Agente/herramienta:** Copilot SDK en VS Code.
+- **Entorno:** Windows, PowerShell, Jest y jsdom.
+- **Contexto aportado:** los objetivos anteriores dejaban el valor en backend y en el selector de la pantalla; faltaba cerrar la parte de edición para que el selector se rellene con la visibilidad actual y no se pierda al guardar ni al volver a abrir el formulario.
+- **Prompt inicial:**
+
+  > Sí, sigue con el 7.
+
+- **Correcciones relevantes:** se acotó la tarea a la edición y a la preservación del valor, sin ampliar el alcance a la validación del backend ni a nuevas rutas.
+- **Resultado propuesto por la IA:** al abrir el formulario de edición, rellenar el selector con `experiencia.visibilidad` y mantener ese campo en la serialización del submit, para que el valor se conserve tras recargar.
+- **TDD:** se añadió una prueba de pantalla para editar una experiencia con visibilidad `AMIGOS` y comprobar que el selector la conserva; la ejecución previa fallaba porque el selector no se rellenaba con el valor actual.
+- **Comprensión humana de las pruebas:** la comprobación protege que la UI refleja el estado real de la experiencia y que el cambio no se pierde entre la edición y la recarga.
+- **Intervención humana:** Matthew pidió cerrar esta parte de la historia y seguir la secuencia de objetivos definida por el Excel.
+- **Comprobación final:** la suite `tests/bienvenidaPantalla.test.js` quedó en verde y cubre la carga y conservación del valor de visibilidad al editar.
+- **Resultado en Git:** cambios en `frontend/js/bienvenida.js`, `frontend/bienvenida.html` y el registro de prompts.
