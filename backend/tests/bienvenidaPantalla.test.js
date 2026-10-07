@@ -124,6 +124,23 @@ beforeEach(async () => {
         );
       }
 
+      if (ruta === '/api/experiencias') {
+        return respuesta(
+          201,
+          {
+            id: 99,
+            titulo: 'Nueva experiencia',
+            descripcion: 'Creada desde el formulario',
+            ciudadId: 1,
+            tipo: null,
+            momentoAdecuado: null,
+            visibilidad: 'AMIGOS',
+            autorId: 1,
+            ciudad: CIUDADES[0],
+          }
+        );
+      }
+
       if (
         ruta === '/api/experiencias/10/valoracion' ||
         ruta === '/api/experiencias/10/valoracion?pagina=2&limite=10'
@@ -168,6 +185,29 @@ test('al editar una experiencia, el selector de visibilidad conserva su valor ac
 
   expect(selector).not.toBeNull();
   expect(selector.value).toBe('AMIGOS');
+});
+
+test('al enviar el formulario se incluye la visibilidad elegida', async () => {
+  $('#boton-nueva').click();
+
+  $('#titulo').value = 'Nueva experiencia';
+  $('#descripcion').value = 'Descripción de prueba';
+  $('#ciudadId').value = '1';
+  $('#visibilidad').value = 'AMIGOS';
+
+  $('#form-experiencia').dispatchEvent(
+    new Event('submit', { bubbles: true, cancelable: true })
+  );
+
+  await terminar();
+
+  expect(window.fetch).toHaveBeenCalledWith(
+    '/api/experiencias',
+    expect.objectContaining({
+      method: 'POST',
+      body: expect.stringContaining('"visibilidad":"AMIGOS"'),
+    })
+  );
 });
 
 test('al pulsar Ver detalle muestra las valoraciones de amigos y seguidores', async () => {

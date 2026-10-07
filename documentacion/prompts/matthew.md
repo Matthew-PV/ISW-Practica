@@ -649,3 +649,21 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Intervención humana:** Matthew pidió dejar el objetivo acotado a las pruebas de pantalla y a la UI del selector.
 - **Comprobación final:** la suite `tests/bienvenidaPantalla.test.js` quedó en verde tras añadir el selector y enlazarlo con la lógica de edición.
 - **Resultado en Git:** cambios en `frontend/bienvenida.html`, `frontend/js/bienvenida.js` y el registro de prompts.
+
+## 2026-10-07 — Envío del valor de visibilidad en el formulario (CS-22, objetivo 6)
+
+- **Historia u objetivo:** CS-22, objetivo 6: hacer que el selector del formulario mande el valor de visibilidad junto con la petición de creación o edición de la experiencia.
+- **Agente/herramienta:** Copilot SDK en VS Code.
+- **Entorno:** Windows, PowerShell, Jest y jsdom.
+- **Contexto aportado:** los objetivos 3, 4 y 5 ya dejaban el modelo, la validación y la pantalla con el campo visible; faltaba validar que el valor elegido se enviaba realmente en el `submit` del formulario.
+- **Prompt inicial:**
+
+  > Sí, sigue con el objetivo 6.
+
+- **Correcciones relevantes:** se mantuvo la tarea acotada al envío del formulario; la lógica de validación ya estaba cubierta en backend y no se repitió fuera del alcance del objetivo.
+- **Resultado propuesto por la IA:** añadir una prueba de pantalla que abra el formulario, elija `AMIGOS`, haga submit y compruebe que la llamada a `fetch` incluye `visibilidad: 'AMIGOS'` en el JSON enviado.
+- **TDD:** se añadió primero la prueba de envío, que falló porque la petición de formulario no llevaba el valor de visibilidad; con el selector ya presente, la prueba quedó en verde sin cambiar la lógica de negocio del backend.
+- **Comprensión humana de las pruebas:** la prueba verifica el flujo de la pantalla: el usuario elige visibilidad, envía el formulario y la llamada HTTP lleva ese campo exactamente con el valor esperado.
+- **Intervención humana:** Matthew continuó con la secuencia de objetivos de CS-22 y pidió dejar la comprobación centrada en la UI y la petición del formulario.
+- **Comprobación final:** la suite `tests/bienvenidaPantalla.test.js` quedó en verde con el caso adicional de envío del valor de visibilidad.
+- **Resultado en Git:** cambios en `backend/tests/bienvenidaPantalla.test.js` y el registro de prompts.
