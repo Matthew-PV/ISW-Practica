@@ -2,7 +2,67 @@
 
 Registro de los cambios realizados en el proyecto, en orden cronológico.
 
-# CS-01: valorar una experiencia — En progreso (06/10/2026)
+# Excel de historias: cambios de OneDrive y CS-64 para José — Documentado (07/10/2026)
+
+La copia de OneDrive descargada hoy no tenía las correcciones del 06/10 (fila «Total», números de objetivo con fórmula, tiempo total sin duplicar). Se ha partido del libro corregido del repositorio y se le han añadido los cambios que el equipo hizo en OneDrive desde la última descarga:
+
+- **CS-45:** objetivos 1 a 5 finalizados, objetivo 2 a nombre de Flavia y sus tiempos.
+- **CS-48:** objetivos 3 a 10 finalizados, objetivos 7 a 10 a nombre de Jorge y sus tiempos.
+- **CS-61:** objetivos 12 a 16 finalizados y sus tiempos.
+- **CS-62:** objetivo 12 finalizado, objetivos 8 y 11 marcados «No» y tiempos corregidos de los objetivos 5 y 12.
+- **CS-64:** los 15 objetivos, a nombre de José, con su tiempo estimado (340 min en total). El Tiempo estimado de la historia en el Índice pasa de 0,5 h a 6 h. Aún no tienen tiempo real, porque ninguno está empezado.
+
+Hay que subir esta versión a OneDrive para sustituir la actual.
+
+Al subirla, Excel para la web reparó el libro («Removed Part: Data store»): quitó el vínculo con el botón «Crear páginas» y los enlaces del Índice y de las páginas dejaron de responder. Por eso:
+
+- `documentacion/office-scripts/crearPaginas.ts` rehace ahora también el enlace «↑ Índice» de cada página y de la Plantilla, además de los del Índice. Pulsar el botón repara todos los enlaces. Después de crear el enlace vuelve a poner la letra en blanco y negrita, porque Excel la pone azul y no se leía sobre el fondo azul de la fila. Para aplicarlo hay que sustituir el código del script «Crear páginas» en Excel para la web y pulsar el botón otra vez.
+- El enlace de CS-60 mostraba el título antiguo, «METODOLOGÍA». Ahora muestra el actual, «ORGANIZACIÓN INTERNA».
+- `metodologia.md` (sección 3.3) explica cómo reparar los enlaces.
+
+Se ha borrado `documentacion/customer-stories/~$Customer_Stories_PlanB.xlsx`. Era un archivo de bloqueo del 25/09: Excel lo crea mientras alguien tiene el libro abierto y lo borra al cerrarlo, pero este se había subido a Git y hacía parecer que el libro seguía abierto. `.gitignore` ignora ahora cualquier archivo de bloqueo de Office (`~$*`) o de LibreOffice (`.~lock.*#`) en cualquier carpeta. La regla anterior apuntaba a la ruta antigua `customer-stories/` y ya no tenía efecto.
+
+# CS-48: valoraciones de amigos y seguidores — Finalizada (06/10/2026)
+
+Se ha implementado la consulta y presentación diferenciada de las valoraciones realizadas por amigos o seguidores del usuario que consulta una experiencia. La funcionalidad reutiliza las relaciones de CS-61 y la regla compartida de visibilidad de experiencias.
+
+### Cambios realizados
+
+- **Consulta de valoraciones:** `valoracionRepository.listarDeUsuarios(experienciaId, usuarioIds, pagina, limite)` filtra por experiencia y por los usuarios relacionados, devuelve únicamente datos públicos del autor de cada valoración, calcula el total y pagina con un orden estable por última actualización e identificador. Si no hay usuarios relacionados devuelve una lista vacía sin consultar MySQL.
+- **Amigos y seguidores:** `amistadRepository.listarAmigosIds` obtiene solo amistades aceptadas, independientemente de quién inició la solicitud. `seguimientoRepository.listarSeguidoresIds` obtiene a quienes siguen al solicitante (registros donde el solicitante es el usuario seguido).
+- **Servicio:** `valoracionService.listarValoracionesRelacionadas` valida sesión, identificador de experiencia y paginación; devuelve 404 si la experiencia no existe y 403 si existe pero no es visible; obtiene amigos y seguidores en paralelo, elimina duplicados con un `Set` y delega la consulta paginada al repositorio.
+- **API:** `GET /api/experiencias/:id/valoracion`, protegido por sesión, acepta `pagina` y `limite` opcionales y devuelve `{ valoraciones, total, pagina, limite }`.
+- **Pantalla:** `frontend/bienvenida.html` y `frontend/js/bienvenida.js` incorporan «Ver detalle» junto a «Editar». El detalle abre un `<dialog>` con una sección propia «Valoraciones de amigos y seguidores», muestra nombre, puntuación y comentario, presenta un mensaje vacío cuando no hay resultados y permite avanzar o retroceder por páginas cuando existen más de diez valoraciones.
+- **Actualización al recargar:** cada vez que se vuelve a abrir el detalle se consulta de nuevo la API, por lo que una valoración recién añadida aparece sin conservar una copia obsoleta en el navegador.
+- **Pruebas:** se ampliaron las pruebas de repositorios, servicio y API; `bienvenidaPantalla.test.js` comprueba la sección, estado vacío, edición separada, paginación y recarga; `valoracionesRelacionadasCriterio.test.js` ejecuta rutas y servicios reales con repositorios en memoria y demuestra que aparecen amigos y seguidores, se excluyen terceros, se respeta el 403 de visibilidad, el vacío no da error, una nueva valoración aparece en la siguiente consulta y sin sesión se responde 401.
+- **Comprobación manual:** la sección se revisó en Chrome tanto en escritorio como en vista móvil de 375 px. Durante la primera ejecución real se detectó que el cliente Prisma local no estaba regenerado y `prisma.amistad` era `undefined`; tras `npx prisma generate` la pantalla funcionó sin modificar el código.
+
+### TDD y trazabilidad
+
+Las pruebas finales cubren los criterios de CS-48, pero durante esta implementación no se siguió de forma estricta el orden rojo → verde en todos los objetivos. En particular, algunos objetivos del Excel que indicaban «crear primero las pruebas» terminaron con pruebas añadidas después de la implementación. No se reconstruye una evidencia de fallo inicial que no se conservó. El detalle del trabajo asistido por IA y de esta desviación queda registrado en `documentacion/prompts/jorge.md`.
+
+Los commits principales son `8822291`, `1d3f216`, `e4db6d7`, `d715051`, `699f011`, `73313fd`, `90d93aa`, `667ef6c` y `9f4fb51`. Los dos primeros se hicieron antes de acordar la convención de incluir `CS-48 - Objetivo X` en el mensaje.
+
+### Para quien continúe
+
+- La unión considera **amigos aceptados** y **seguidores del solicitante**; un mismo usuario presente en ambos grupos solo se consulta una vez.
+- Mantener el filtrado y la autorización en backend. La sección del frontend no debe decidir por sí sola quién puede ver una experiencia.
+- La sección visual está integrada actualmente en el detalle abierto desde `bienvenida.html`. Si otra historia crea un detalle general de publicaciones o experiencias, debe reutilizar la misma API y no duplicar la regla de negocio.
+- Después de recibir cambios de Prisma mediante `git pull`, ejecutar desde `backend/` tanto `npx prisma migrate deploy` como `npx prisma generate` antes de probar la aplicación.
+- La configuración local utilizada por Jorge para evitar un conflicto de puerto MySQL no forma parte del repositorio ni debe trasladarse a `docker-compose.yml`.
+
+### Cómo comprobarlo
+
+Desde `backend/`:
+
+```powershell
+npm.cmd test -- bienvenidaPantalla.test.js valoracionesRelacionadasCriterio.test.js --runInBand
+npm.cmd test -- --runInBand
+```
+
+Para la comprobación manual, arrancar MySQL y PlanB, iniciar sesión, abrir «Ver detalle» en una experiencia y revisar la sección de valoraciones. Comprobar también la vista móvil desde las herramientas de desarrollo del navegador.
+
+# CS-01: valorar una experiencia — En progreso; Excel de historias corregido (06/10/2026)
 
 Se ha empezado CS-01. Como necesita saber si quien valora puede ver la experiencia, primero se ha añadido la visibilidad de las experiencias, que es el único objetivo de CS-22 imprescindible para CS-01 (acordado con Matthew, propietario de CS-22).
 
@@ -34,6 +94,23 @@ Resultado esperado: 33 suites y 277 pruebas correctas.
 Con Docker en marcha, `npm run test:todo` ejecuta además las pruebas con MySQL real: 1 suite y 2 pruebas correctas.
 
 
+
+### Excel de historias (`Customer_Stories_PlanB.xlsx`)
+
+Se ha sustituido el libro de `documentacion/customer-stories/` por la copia actual de OneDrive con estas correcciones:
+
+- **Fila «Total» en todas las páginas y en la Plantilla:** suma el Tiempo estimado y el Tiempo total de los objetivos. Las páginas nuevas creadas con «Crear páginas» ya la traen.
+- **Tiempo total sin duplicar:** el Tiempo total del Índice y de la cabecera de cada página suma solo las filas con número de objetivo. Antes también sumaba la fila «Total», y en CS-01, CS-22, CS-48, CS-61 y CS-62 el tiempo salía doble (CS-01 pasa de 1,7 h a 0,85 h).
+- **Estado:** en CS-01, CS-22, CS-30, CS-45, CS-48 y CS-60 el número de objetivo estaba escrito a mano y el Índice no contaba esos objetivos, así que esas historias no podían llegar a «Finalizada». Se ha vuelto a poner la fórmula que los numera. CS-01 pasa a «Finalizada», porque tiene todos sus objetivos en «Sí».
+- **Cómo añadir objetivos:** la ayuda de cada página y la sección 3.3 de `metodologia.md` explican el método nuevo: pulsar Tab en la última celda de la tabla, encima de «Total».
+- **José** se ha añadido a la lista de responsables de todas las páginas y a `metodologia.md`.
+- **Cambios hechos en OneDrive después de la primera descarga, incorporados:** tiempos de CS-48 (objetivo 3) y CS-62 (objetivos 9 y 10, ahora finalizados).
+- **Datos:** títulos de CS-37 a CS-42 en mayúsculas, como el resto; prioridad de CS-06 corregida de «IM» a «N»; Tiempo estimado de CS-60 en 3 h, y su página vuelve a copiarlo del Índice.
+
+### Para quien use el libro
+
+- El libro oficial sigue en OneDrive: hay que subir allí esta versión para que el equipo la use.
+- El botón «Crear páginas» se conserva. Al abrir el libro, Excel recalcula todas las fórmulas.
 
 # CS-61: base de amistades y seguidores — Finalizada (06/10/2026)
 
