@@ -98,9 +98,15 @@ async function cargarComentarios() {
       btnCargarMas.classList.add('d-none');
     }
   } catch (error) {
-    console.error('Error al cargar comentarios:', error);
+      console.error('Error al cargar comentarios:', error);
+
+      // Mostramos una alerta visual al final de la lista de comentarios
+      const alertaError = document.createElement('div');
+      alertaError.className = 'alert alert-danger mt-3';
+      alertaError.textContent = 'Problema de conexión al cargar los comentarios. Inténtalo de nuevo.';
+      listaComentarios.appendChild(alertaError);
   }
-}
+} // CORRECCIÓN: Faltaba esta llave de cierre de la función cargarComentarios
 
 // Crea la tarjeta del comentario usando textContent por seguridad
 function crearElementoComentario(valoracion) {
@@ -163,48 +169,60 @@ function crearElementoComentario(valoracion) {
   if (leDiUtil) btnUtil.classList.replace('btn-outline-success', 'btn-success');
   btnUtil.innerHTML = `👍 Útil <span class="badge text-bg-light ms-1">${cantidadUtiles}</span>`;
 
-  // Evento simulado para marcar/desmarcar útil
-  btnUtil.addEventListener('click', () => {
-    leDiUtil = !leDiUtil;
-    cantidadUtiles += leDiUtil ? 1 : -1;
+  // Evento simulado para marcar/desmarcar útil (Con manejo de errores integrado)
+  btnUtil.addEventListener('click', async () => {
+    btnUtil.disabled = true;
+    try {
+      // Cuando tengas el backend: await api(...)
+      leDiUtil = !leDiUtil;
+      cantidadUtiles += leDiUtil ? 1 : -1;
 
-    if (leDiUtil) {
-      btnUtil.classList.replace('btn-outline-success', 'btn-success');
-    } else {
-      btnUtil.classList.replace('btn-success', 'btn-outline-success');
+      if (leDiUtil) {
+        btnUtil.classList.replace('btn-outline-success', 'btn-success');
+      } else {
+        btnUtil.classList.replace('btn-success', 'btn-outline-success');
+      }
+      btnUtil.innerHTML = `👍 Útil <span class="badge text-bg-light ms-1">${cantidadUtiles}</span>`;
+    } catch (error) {
+      console.error('Error al dar útil:', error);
+      // Deshacemos el cambio visual porque falló el servidor
+      leDiUtil = !leDiUtil;
+      cantidadUtiles += leDiUtil ? 1 : -1;
+      alert('Error de red: No se pudo registrar tu voto.');
+    } finally {
+      btnUtil.disabled = false;
     }
-    btnUtil.innerHTML = `👍 Útil <span class="badge text-bg-light ms-1">${cantidadUtiles}</span>`;
   });
 
   contenedorUtil.appendChild(btnUtil);
 
   // --- OBJETIVO 8: Botón Reportar ---
-    const btnReportar = document.createElement('button');
-    btnReportar.className = 'btn btn-sm btn-outline-danger ms-2';
-    btnReportar.innerHTML = `🚨 Reportar`;
+  const btnReportar = document.createElement('button');
+  btnReportar.className = 'btn btn-sm btn-outline-danger ms-2';
+  btnReportar.innerHTML = `🚨 Reportar`;
 
-    if (autorComentarioId === miUsuarioId) {
-      btnReportar.disabled = true;
-    }
+  if (autorComentarioId === miUsuarioId) {
+    btnReportar.disabled = true;
+  }
 
-    btnReportar.addEventListener('click', () => {
-      valoracionReporteId = valoracion.id;
-      comentarioYaReportado = valoracion.yaReportado || false;
+  btnReportar.addEventListener('click', () => {
+    valoracionReporteId = valoracion.id;
+    comentarioYaReportado = valoracion.yaReportado || false;
 
-      // Reseteamos el formulario
-      formReporte.reset();
-      mensajeReporte.classList.add('d-none');
-      btnEnviarReporte.disabled = false;
-      btnEnviarReporte.classList.remove('d-none');
+    // Reseteamos el formulario
+    formReporte.reset();
+    mensajeReporte.classList.add('d-none');
+    btnEnviarReporte.disabled = false;
+    btnEnviarReporte.classList.remove('d-none');
 
-      // MAGIA PURA: Forzamos la apertura del modal modificando su CSS directamente
-      const modal = document.getElementById('modal-reporte');
-      modal.style.display = 'block';
-      modal.style.backgroundColor = 'rgba(0,0,0,0.5)'; // Fondo oscuro semitransparente
-      setTimeout(() => modal.classList.add('show'), 10);
-    });
+    // MAGIA PURA: Forzamos la apertura del modal modificando su CSS directamente
+    const modal = document.getElementById('modal-reporte');
+    modal.style.display = 'block';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.5)'; // Fondo oscuro semitransparente
+    setTimeout(() => modal.classList.add('show'), 10);
+  });
 
-    contenedorUtil.appendChild(btnReportar);
+  contenedorUtil.appendChild(btnReportar);
 
   cuerpo.appendChild(contenedorUtil);
 
@@ -306,6 +324,7 @@ formValoracion.addEventListener('submit', async (e) => {
     btnGuardarValoracion.disabled = false;
   }
 });
+
 // --- OBJETIVO 8: LÓGICA DEL MODAL DE REPORTE ---
 let valoracionReporteId = null;
 let comentarioYaReportado = false;
