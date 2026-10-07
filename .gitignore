@@ -32,4 +32,7 @@ Desktop.ini
 
 # El libro oficial de historias se mantiene en OneDrive, no en Git
 customer-stories/Customer_Stories_PlanB.xlsx
-customer-stories/~$Customer_Stories_PlanB.xlsx
+
+# Archivos de bloqueo que crean Office y LibreOffice mientras un documento está abierto
+~$*
+.~lock.*#

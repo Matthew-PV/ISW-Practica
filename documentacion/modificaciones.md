@@ -20,6 +20,8 @@ Al subirla, Excel para la web reparó el libro («Removed Part: Data store»): q
 - El enlace de CS-60 mostraba el título antiguo, «METODOLOGÍA». Ahora muestra el actual, «ORGANIZACIÓN INTERNA».
 - `metodologia.md` (sección 3.3) explica cómo reparar los enlaces.
 
+Se ha borrado `documentacion/customer-stories/~$Customer_Stories_PlanB.xlsx`. Era un archivo de bloqueo del 25/09: Excel lo crea mientras alguien tiene el libro abierto y lo borra al cerrarlo, pero este se había subido a Git y hacía parecer que el libro seguía abierto. `.gitignore` ignora ahora cualquier archivo de bloqueo de Office (`~$*`) o de LibreOffice (`.~lock.*#`) en cualquier carpeta. La regla anterior apuntaba a la ruta antigua `customer-stories/` y ya no tenía efecto.
+
 # CS-48: valoraciones de amigos y seguidores — Finalizada (06/10/2026)
 
 Se ha implementado la consulta y presentación diferenciada de las valoraciones realizadas por amigos o seguidores del usuario que consulta una experiencia. La funcionalidad reutiliza las relaciones de CS-61 y la regla compartida de visibilidad de experiencias.
