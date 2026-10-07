@@ -47,7 +47,7 @@ Toda la documentación detallada vive en [`documentacion/`](documentacion/):
 * [Modificaciones](documentacion/modificaciones.md) — registro de los cambios realizados: qué se ha hecho, cómo probarlo y notas para quien siga trabajando.
 * [Metodología de trabajo con IA](documentacion/metodologia.md) — proceso común, responsabilidades, revisión y forma de trabajo de cada integrante.
 * [Registro de prompts](documentacion/prompts/README.md) — índice, plantilla y un archivo por integrante para las interacciones con IA que hayan influido en el proyecto.
-* [Hoja de ruta de aprendizaje](documentacion/hoja-ruta-aprendizaje.md) — plan de dos semanas con ejercicios para comprender la arquitectura, las herramientas y el frontend con Bootstrap.
+* [Guía de aprendizaje](documentacion/hoja-ruta-aprendizaje.md) — recorrido flexible para entender los fundamentos de PlanB, practicar cada concepto y reconocerlo en la versión vigente del proyecto.
 
 Desde el 05/10/2026, el libro oficial de historias de usuario está en el OneDrive compartido del equipo y ya no se conserva una copia activa en el repositorio. Para cada sesión, el integrante responsable facilita una copia actualizada para consulta y traslada manualmente al libro online las tareas acordadas. Cada tarea registra su responsable voluntario, su tiempo estimado y su tiempo real de desarrollo.
 

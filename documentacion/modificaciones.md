@@ -2,6 +2,10 @@
 
 Registro de los cambios realizados en el proyecto, en orden cronológico.
 
+# Guía de aprendizaje atemporal — Documentado (07/10/2026)
+
+Se revisó `documentacion/hoja-ruta-aprendizaje.md` para que sirva a cualquier integrante y pueda seguirse sin un calendario ni una revisión concreta. Nueve módulos explican fundamentos de programación, Git, interfaz, HTTP, arquitectura, datos, seguridad, TDD y configuración/despliegue. Cada uno incluye un laboratorio independiente, una búsqueda del concepto en el PlanB vigente y una comprobación de comprensión. La práctica final recorre una funcionalidad desde el criterio actual hasta su prueba y resultado visible. Las herramientas actuales se presentan como ejemplos, con indicaciones para encontrar sus equivalentes si cambia la implementación. Se actualizó la descripción de la guía en el README y se registró el prompt de Matthew en `documentacion/prompts/matthew.md`.
+
 # Cambios del día (07/10/2026)
 
 Se ha trabajado de forma incremental en la historia CS-30 y en la validación del cierre de CS-22, manteniendo el alcance de un objetivo a la vez y dejando constancia de cada paso en la documentación y en las pruebas.

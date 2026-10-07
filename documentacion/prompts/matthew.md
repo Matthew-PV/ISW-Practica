@@ -4,6 +4,30 @@ Identificador habitual: MAT / Matthew-PV.
 
 Las interacciones siguientes proceden de la conversación conservada en Codex. Cuando no consta la fecha exacta de la interacción, `2026-10-02` indica la fecha en la que se incorporó al registro, no necesariamente la fecha en que se escribió el prompt original. Se omiten mensajes de cortesía y confirmaciones que no influyeron en el trabajo.
 
+## 2026-10-07 — Convertir la hoja de aprendizaje en una guía atemporal
+
+- **Historia u objetivo:** sin historia asociada; actualización de la guía de aprendizaje del equipo.
+- **Agente/herramienta:** Codex de ChatGPT en la aplicación de escritorio.
+- **Entorno:** Windows, PowerShell y documentación Markdown del repositorio.
+- **Contexto aportado:** la hoja anterior seguía un calendario de dos semanas y usaba ejemplos concretos del código; Matthew avisó de cambios en el repositorio y de una próxima recodificación grande.
+- **Prompt inicial:**
+
+  > Te voy a pedir que actualices el documento de hoja de aprendizaje. Me gustaría hacerlo atemporal, es decir, que recoja los frentes clave que son necesarios entender para trabajar en PlanB.
+  >
+  > Además, el repositorio ha cambiado, y pronto se hará una recodificación grande, por lo que me gustaría abstraer los conocimientos necesarios lo máximo posible. Que el plan siga incluyendo explicación teórica con prueba práctica.
+
+- **Decisiones posteriores de Matthew:** eligió «General para el equipo» como destinatario y «Mixta» para combinar laboratorios independientes con búsquedas en el PlanB vigente. Después pidió implementar el plan acordado y, finalmente, registrar esta petición y proponer un mensaje de commit.
+- **Solicitud posterior de registro:**
+
+  > Perfecto, ¿puedes incluir este prompt en el registro, y darme un mensaje para el commit que haré?
+
+- **Resultado propuesto por la IA:** sustituir el calendario por nueve módulos de conceptos duraderos, cada uno con explicación, ejercicio independiente, búsqueda en PlanB y comprobación de comprensión; añadir una práctica final de extremo a extremo. Actualizar el enlace descriptivo del README y dejar constancia en `modificaciones.md`.
+- **TDD:** no aplicaba a una edición de documentación. El laboratorio de TDD de la guía sí muestra el fallo inicial, la implementación mínima y una refactorización con las mismas pruebas.
+- **Comprensión humana de las pruebas:** el ejercicio enseña a identificar preparación, acción y resultado esperado; no se atribuye a Matthew una ejecución personal de ese laboratorio.
+- **Intervención humana:** Matthew cambió el alcance de una guía individual a una guía común, eligió el formato de prácticas y aprobó el plan antes de pedir su implementación.
+- **Comprobación final:** se comprobaron los nueve módulos, laboratorios, búsquedas y criterios de comprensión; los enlaces locales existen, no quedaron referencias al calendario anterior y `git diff --check` no señaló errores de espacios. No se ejecutaron pruebas de la aplicación porque no se cambió código.
+- **Resultado en Git:** pendiente del commit de Matthew; cambios en `documentacion/hoja-ruta-aprendizaje.md`, `README.md`, `documentacion/modificaciones.md` y este registro.
+
 ## 2026-10-05 — Implementar el modelo de amistad de CS-61
 
 - **Historia u objetivo:** CS-61, objetivo 1: modelo Amistad con solicitante, destinatario, estado pendiente o aceptada, fecha, un registro por solicitud y migración.
