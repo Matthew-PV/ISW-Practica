@@ -22,6 +22,19 @@ Al subirla, Excel para la web reparó el libro («Removed Part: Data store»): q
 
 Se ha borrado `documentacion/customer-stories/~$Customer_Stories_PlanB.xlsx`. Era un archivo de bloqueo del 25/09: Excel lo crea mientras alguien tiene el libro abierto y lo borra al cerrarlo, pero este se había subido a Git y hacía parecer que el libro seguía abierto. `.gitignore` ignora ahora cualquier archivo de bloqueo de Office (`~$*`) o de LibreOffice (`.~lock.*#`) en cualquier carpeta. La regla anterior apuntaba a la ruta antigua `customer-stories/` y ya no tenía efecto.
 
+# CS-30: acceso a experiencias según visibilidad — objetivo 1 (07/10/2026)
+
+Se ha dejado fijada la matriz de acceso a experiencias según visibilidad y amistad aceptada. La regla compartida ya existía en CS-22 y se ha consolidado con pruebas que describen los casos de negocio del objetivo 1.
+
+### Cambios realizados
+
+- **Pruebas de acceso:** `backend/tests/visibilidad.test.js` añade la matriz de casos para `PUBLICA`, `AMIGOS` y `PRIVADA`, incluyendo el autor y el requisito de amistad aceptada.
+- **Contrato del negocio:** la regla queda definida como: el autor siempre puede verla; pública la ve cualquiera; privada solo la ve el autor; de amigos solo la ve quien tiene amistad aceptada con el autor.
+
+### TDD y comprobación
+
+Se añadieron pruebas que caracterizan el comportamiento ya implementado y validan la matriz de acceso. `npm test -- --runInBand tests/visibilidad.test.js` quedó en verde sin cambiar la lógica de negocio del servicio compartido.
+
 # CS-30: acceso a experiencias según visibilidad — objetivo 4 (07/10/2026)
 
 Se ha añadido la consulta por id de una experiencia con comprobación de sesión y de visibilidad antes de devolver el dato. La ruta real requiere autenticación y reutiliza la regla compartida de `puedeVerExperiencia` sin duplicar la lógica de negocio.

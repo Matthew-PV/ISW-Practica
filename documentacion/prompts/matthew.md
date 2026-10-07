@@ -703,3 +703,21 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Intervención humana:** Matthew siguió la secuencia de un objetivo a la vez y dejó el objetivo 5 para una siguiente llamada.
 - **Comprobación final:** `npm test -- --runInBand tests/experienciaObjetivos.test.js` quedó en verde con 9 pruebas correctas.
 - **Resultado en Git:** cambios en `backend/src/services/experienciaService.js`, `backend/src/routes/experienciaRoutes.js`, `backend/tests/experienciaObjetivos.test.js` y el registro de prompts.
+
+## 2026-10-07 — Definir los casos de acceso a una experiencia (CS-30, objetivo 1)
+
+- **Historia u objetivo:** CS-30, objetivo 1: definir los casos de acceso según visibilidad y amistad aceptada.
+- **Agente/herramienta:** Copilot SDK en VS Code.
+- **Entorno:** Windows, PowerShell, Jest y el backend de PlanB.
+- **Contexto aportado:** CS-22 ya dejó la regla compartida `puedeVerExperiencia`, y CS-30 empieza con la definición explícita de los casos de acceso para cada visibilidad y relación con el autor.
+- **Prompt inicial:**
+
+  > Haz el objetivo 1 y regístralo en mi registro de prompts.
+
+- **Correcciones relevantes:** se mantuvo el alcance exactamente en la definición y verificación de los casos de acceso; no se ampliaron rutas ni mensajes de error porque la lógica de negocio ya estaba implementada y reutilizable en CS-22.
+- **Resultado propuesto por la IA:** documentar la matriz de accesos con pruebas en `backend/tests/visibilidad.test.js` para cubrir `PUBLICA`, `AMIGOS` y `PRIVADA` y validar el caso de autora y de amistad aceptada.
+- **TDD:** se añadieron pruebas que caracterizan el comportamiento existente y se ejecutaron para confirmar la matriz de acceso. No hizo falta cambiar la implementación porque `puedeVerExperiencia` ya cumple ese contrato.
+- **Comprensión humana de las pruebas:** la prueba protege que el autor siempre puede ver su experiencia, que cualquiera ve `PUBLICA`, que `PRIVADA` solo la ve el autor y que `AMIGOS` exige amistad aceptada.
+- **Intervención humana:** Matthew pidió cerrar este objetivo de forma acotada y seguir con los siguientes objetivos uno a uno.
+- **Comprobación final:** `npm test -- --runInBand tests/visibilidad.test.js` quedó en verde.
+- **Resultado en Git:** cambios en `backend/tests/visibilidad.test.js` y el registro de prompts.

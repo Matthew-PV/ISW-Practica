@@ -10,6 +10,22 @@ beforeEach(() => {
   amistadService.sonAmigos.mockResolvedValue(false);
 });
 
+describe('CS-30, objetivo 1 - matriz de acceso según visibilidad y amistad', () => {
+  test.each([
+    ['la pública la ve cualquier usuario', 1, { autorId: 2, visibilidad: 'PUBLICA' }, true],
+    ['la privada la ve el autor', 2, { autorId: 2, visibilidad: 'PRIVADA' }, true],
+    ['la privada no la ve nadie más', 1, { autorId: 2, visibilidad: 'PRIVADA' }, false],
+    ['la de amigos la ve con amistad aceptada', 1, { autorId: 2, visibilidad: 'AMIGOS' }, true],
+    ['la de amigos no la ve sin amistad aceptada', 1, { autorId: 2, visibilidad: 'AMIGOS' }, false],
+  ])('caso: %s', async (_descripcion, usuarioId, experiencia, esperado) => {
+    if (experiencia.visibilidad === 'AMIGOS') {
+      amistadService.sonAmigos.mockResolvedValue(esperado);
+    }
+
+    await expect(puedeVerExperiencia(usuarioId, experiencia)).resolves.toBe(esperado);
+  });
+});
+
 test('una experiencia pública la puede ver cualquier usuario', async () => {
   await expect(puedeVerExperiencia(1, { autorId: 2, visibilidad: 'PUBLICA' })).resolves.toBe(true);
 });
