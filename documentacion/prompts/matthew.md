@@ -686,6 +686,24 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Comprobación final:** la suite `tests/bienvenidaPantalla.test.js` quedó en verde y cubre la carga y conservación del valor de visibilidad al editar.
 - **Resultado en Git:** cambios en `frontend/js/bienvenida.js`, `frontend/bienvenida.html` y el registro de prompts.
 
+## 2026-10-07 — Pruebas unitarias iniciales de visibilidad (CS-30, objetivo 2)
+
+- **Historia u objetivo:** CS-30, objetivo 2: escribir las pruebas unitarias iniciales de la lógica de visibilidad de experiencias.
+- **Agente/herramienta:** Copilot SDK en VS Code.
+- **Entorno:** Windows, PowerShell, Jest y el backend de PlanB.
+- **Contexto aportado:** tras definir la matriz de accesos del objetivo 1, queda dejar la prueba unitaria base que cubra los casos clave antes de implementar cambios funcionales adicionales.
+- **Prompt inicial:**
+
+  > Haz el objetivo 2, regístralo también, y dame un mensaje para el commit de este objetivo.
+
+- **Correcciones relevantes:** se mantuvo el alcance a las pruebas unitarias del servicio compartido y no se ampliaron rutas ni mensajes de error. La lógica ya estaba en `puedeVerExperiencia`, así que la tarea quedó centrada en especificar y verificar el contrato existente.
+- **Resultado propuesto por la IA:** reforzar `backend/tests/visibilidad.test.js` con la matriz de casos del objetivo 2 para `PUBLICA`, `AMIGOS` y `PRIVADA`, validando además el caso del autor y la necesidad de amistad aceptada.
+- **TDD:** las pruebas fueron la especificación del comportamiento esperado; se ejecutaron y quedaron en verde porque la lógica de visibilidad ya estaba implementada y validada anteriormente.
+- **Comprensión humana de las pruebas:** la suite protege que la decisión de acceso dependa de la relación con el autor y no solo de la visibilidad de la experiencia.
+- **Intervención humana:** Matthew pidió seguir la secuencia de objetivos y dejar este punto registrado antes de avanzar.
+- **Comprobación final:** `npm test -- --runInBand tests/visibilidad.test.js` quedó en verde con 10 pruebas correctas.
+- **Resultado en Git:** cambios en `backend/tests/visibilidad.test.js` y el registro de prompts.
+
 ## 2026-10-07 — Recuperar una experiencia por id con visibilidad y autorización (CS-30, objetivo 4)
 
 - **Historia u objetivo:** CS-30, objetivo 4: añadir la búsqueda por id de experiencia y comprobar que el usuario de la sesión puede verla antes de devolverla.

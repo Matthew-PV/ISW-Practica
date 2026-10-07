@@ -35,6 +35,19 @@ Se ha dejado fijada la matriz de acceso a experiencias según visibilidad y amis
 
 Se añadieron pruebas que caracterizan el comportamiento ya implementado y validan la matriz de acceso. `npm test -- --runInBand tests/visibilidad.test.js` quedó en verde sin cambiar la lógica de negocio del servicio compartido.
 
+# CS-30: acceso a experiencias según visibilidad — objetivo 2 (07/10/2026)
+
+Se ha reforzado la especificación unitaria de la lógica de visibilidad con una prueba base que cubre los casos críticos del acceso a experiencias. La historia sigue centrada en el servicio compartido y no cambia la implementación existente.
+
+### Cambios realizados
+
+- **Pruebas unitarias:** `backend/tests/visibilidad.test.js` incorpora la batería del objetivo 2 para `PUBLICA`, `AMIGOS` y `PRIVADA`, con el caso del autor y la necesidad de amistad aceptada.
+- **Cobertura del contrato:** la prueba fija que la decisión de acceso depende tanto del nivel de visibilidad como de la relación con el autor.
+
+### TDD y comprobación
+
+Se añadió la prueba como contrato del comportamiento esperado y quedó en verde. `npm test -- --runInBand tests/visibilidad.test.js` pasó correctamente.
+
 # CS-30: acceso a experiencias según visibilidad — objetivo 4 (07/10/2026)
 
 Se ha añadido la consulta por id de una experiencia con comprobación de sesión y de visibilidad antes de devolver el dato. La ruta real requiere autenticación y reutiliza la regla compartida de `puedeVerExperiencia` sin duplicar la lógica de negocio.
