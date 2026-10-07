@@ -36,3 +36,6 @@ customer-stories/Customer_Stories_PlanB.xlsx
 # Archivos de bloqueo que crean Office y LibreOffice mientras un documento está abierto
 ~$*
 .~lock.*#
+
+# Plan de trabajo personal (auditoría y refactorización), solo para uso local
+/PLAN.md
