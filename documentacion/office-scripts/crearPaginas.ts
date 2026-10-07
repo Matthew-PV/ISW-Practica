@@ -5,7 +5,9 @@
  *   1. si no tiene referencia, le pone la siguiente libre (CS-61, CS-62...);
  *   2. si su página no existe, la crea copiando la hoja «Plantilla»,
  *      le escribe la referencia en B2 y la fecha de hoy en B10;
- *   3. enlaza el título del Índice con su página.
+ *   3. enlaza el título del Índice con su página, y la página con el Índice («↑ Índice», en F1).
+ * Como rehace todos los enlaces, también sirve para repararlos si dejan de funcionar
+ * o si el texto de un enlace no coincide con el título.
  * Se puede ejecutar todas las veces que se quiera: lo que ya existe no se toca.
  *
  * Instalación (una sola vez, en Excel para la web, con el libro ya en OneDrive):
@@ -73,7 +75,9 @@ function main(workbook: ExcelScript.Workbook) {
       textToDisplay: titulo,
       screenTip: `Abrir ${ref}`,
     });
+    enlazarIndice(workbook.getWorksheet(ref), tabla.getWorksheet().getName());
   }
+  enlazarIndice(plantilla, tabla.getWorksheet().getName());
 
   // Con una sola página nueva se abre directamente para rellenarla.
   if (creadas.length === 1) {
@@ -82,4 +86,13 @@ function main(workbook: ExcelScript.Workbook) {
   console.log(creadas.length > 0
     ? `Páginas creadas: ${creadas.map((hoja) => hoja.getName()).join(", ")}`
     : "No había páginas nuevas que crear.");
+}
+
+// Rehace el enlace «↑ Índice» (F1) de una página para volver al Índice.
+function enlazarIndice(hoja: ExcelScript.Worksheet, indice: string) {
+  hoja.getRange("F1").setHyperlink({
+    documentReference: `'${indice}'!A1`,
+    textToDisplay: "↑ Índice",
+    screenTip: "Volver al índice",
+  });
 }

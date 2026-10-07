@@ -125,6 +125,8 @@ Si el botón no está disponible, la página se crea a mano: clic derecho en «P
 
 **Instalación del botón (una sola vez).** Con el libro en OneDrive y abierto en Excel para la web: Automatizar → Nuevo script → pegar `documentacion/office-scripts/crearPaginas.ts` → guardar como «Crear páginas» → en el panel del script, «…» → «Agregar en el libro». El botón queda en el libro para todas las personas con permiso de edición. Requiere una cuenta de Microsoft 365 con Office Scripts: si no aparece la pestaña «Automatizar», no están disponibles.
 
+**Enlaces que no funcionan.** Pulsar «Crear páginas» vuelve a crear los enlaces de todos los títulos del Índice y el «↑ Índice» de cada página, con el título actual como texto. Si se sube a OneDrive un archivo editado fuera de Excel, Excel puede repararlo al abrirlo y quitar el botón («Removed Part: Data store»). En ese caso, volver a agregarlo desde el panel del script y pulsarlo.
+
 ### 3.4. Precauciones
 
 * No escribir en las celdas grises de las páginas ni en las columnas Tiempo total y Estado del Índice: contienen fórmulas y se perderían.
