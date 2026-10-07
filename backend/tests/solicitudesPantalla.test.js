@@ -41,7 +41,7 @@ test('aceptar una solicitud la elimina de la lista', async () => {
   [...document.querySelectorAll('#solicitudes-recibidas button')].find((boton) => boton.textContent === 'Aceptar').click();
   await terminar();
 
-  const [ruta, opciones] = window.fetch.mock.calls[2];
+  const [ruta, opciones] = window.fetch.mock.calls.at(-1);
   expect(ruta).toBe('/api/amistades/10');
   expect(opciones.method).toBe('PATCH');
   expect(JSON.parse(opciones.body)).toEqual({ aceptar: true });
@@ -55,7 +55,7 @@ test('rechazar una solicitud usa la misma ruta con aceptar a false', async () =>
   [...document.querySelectorAll('#solicitudes-recibidas button')].find((boton) => boton.textContent === 'Rechazar').click();
   await terminar();
 
-  const [ruta, opciones] = window.fetch.mock.calls[2];
+  const [ruta, opciones] = window.fetch.mock.calls.at(-1);
   expect(ruta).toBe('/api/amistades/10');
   expect(opciones.method).toBe('PATCH');
   expect(JSON.parse(opciones.body)).toEqual({ aceptar: false });

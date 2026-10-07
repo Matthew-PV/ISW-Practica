@@ -51,7 +51,7 @@ test('al elegir una foto se sube sola, sin pulsar ningún botón, y se ve la nue
   elegirFoto(archivo);
   await terminar();
 
-  const [ruta, opciones] = window.fetch.mock.calls[2];
+  const [ruta, opciones] = window.fetch.mock.calls.at(-1);
   expect(ruta).toBe('/api/perfil/foto');
   expect(opciones.method).toBe('PUT');
   expect(opciones.body.get('foto')).toBe(archivo);
