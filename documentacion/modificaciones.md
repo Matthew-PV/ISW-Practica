@@ -2,6 +2,46 @@
 
 Registro de los cambios realizados en el proyecto, en orden cronológico.
 
+# CS-48: valoraciones de amigos y seguidores — Finalizada (06/10/2026)
+
+Se ha implementado la consulta y presentación diferenciada de las valoraciones realizadas por amigos o seguidores del usuario que consulta una experiencia. La funcionalidad reutiliza las relaciones de CS-61 y la regla compartida de visibilidad de experiencias.
+
+### Cambios realizados
+
+- **Consulta de valoraciones:** `valoracionRepository.listarDeUsuarios(experienciaId, usuarioIds, pagina, limite)` filtra por experiencia y por los usuarios relacionados, devuelve únicamente datos públicos del autor de cada valoración, calcula el total y pagina con un orden estable por última actualización e identificador. Si no hay usuarios relacionados devuelve una lista vacía sin consultar MySQL.
+- **Amigos y seguidores:** `amistadRepository.listarAmigosIds` obtiene solo amistades aceptadas, independientemente de quién inició la solicitud. `seguimientoRepository.listarSeguidoresIds` obtiene a quienes siguen al solicitante (registros donde el solicitante es el usuario seguido).
+- **Servicio:** `valoracionService.listarValoracionesRelacionadas` valida sesión, identificador de experiencia y paginación; devuelve 404 si la experiencia no existe y 403 si existe pero no es visible; obtiene amigos y seguidores en paralelo, elimina duplicados con un `Set` y delega la consulta paginada al repositorio.
+- **API:** `GET /api/experiencias/:id/valoracion`, protegido por sesión, acepta `pagina` y `limite` opcionales y devuelve `{ valoraciones, total, pagina, limite }`.
+- **Pantalla:** `frontend/bienvenida.html` y `frontend/js/bienvenida.js` incorporan «Ver detalle» junto a «Editar». El detalle abre un `<dialog>` con una sección propia «Valoraciones de amigos y seguidores», muestra nombre, puntuación y comentario, presenta un mensaje vacío cuando no hay resultados y permite avanzar o retroceder por páginas cuando existen más de diez valoraciones.
+- **Actualización al recargar:** cada vez que se vuelve a abrir el detalle se consulta de nuevo la API, por lo que una valoración recién añadida aparece sin conservar una copia obsoleta en el navegador.
+- **Pruebas:** se ampliaron las pruebas de repositorios, servicio y API; `bienvenidaPantalla.test.js` comprueba la sección, estado vacío, edición separada, paginación y recarga; `valoracionesRelacionadasCriterio.test.js` ejecuta rutas y servicios reales con repositorios en memoria y demuestra que aparecen amigos y seguidores, se excluyen terceros, se respeta el 403 de visibilidad, el vacío no da error, una nueva valoración aparece en la siguiente consulta y sin sesión se responde 401.
+- **Comprobación manual:** la sección se revisó en Chrome tanto en escritorio como en vista móvil de 375 px. Durante la primera ejecución real se detectó que el cliente Prisma local no estaba regenerado y `prisma.amistad` era `undefined`; tras `npx prisma generate` la pantalla funcionó sin modificar el código.
+
+### TDD y trazabilidad
+
+Las pruebas finales cubren los criterios de CS-48, pero durante esta implementación no se siguió de forma estricta el orden rojo → verde en todos los objetivos. En particular, algunos objetivos del Excel que indicaban «crear primero las pruebas» terminaron con pruebas añadidas después de la implementación. No se reconstruye una evidencia de fallo inicial que no se conservó. El detalle del trabajo asistido por IA y de esta desviación queda registrado en `documentacion/prompts/jorge.md`.
+
+Los commits principales son `8822291`, `1d3f216`, `e4db6d7`, `d715051`, `699f011`, `73313fd`, `90d93aa`, `667ef6c` y `9f4fb51`. Los dos primeros se hicieron antes de acordar la convención de incluir `CS-48 - Objetivo X` en el mensaje.
+
+### Para quien continúe
+
+- La unión considera **amigos aceptados** y **seguidores del solicitante**; un mismo usuario presente en ambos grupos solo se consulta una vez.
+- Mantener el filtrado y la autorización en backend. La sección del frontend no debe decidir por sí sola quién puede ver una experiencia.
+- La sección visual está integrada actualmente en el detalle abierto desde `bienvenida.html`. Si otra historia crea un detalle general de publicaciones o experiencias, debe reutilizar la misma API y no duplicar la regla de negocio.
+- Después de recibir cambios de Prisma mediante `git pull`, ejecutar desde `backend/` tanto `npx prisma migrate deploy` como `npx prisma generate` antes de probar la aplicación.
+- La configuración local utilizada por Jorge para evitar un conflicto de puerto MySQL no forma parte del repositorio ni debe trasladarse a `docker-compose.yml`.
+
+### Cómo comprobarlo
+
+Desde `backend/`:
+
+```powershell
+npm.cmd test -- bienvenidaPantalla.test.js valoracionesRelacionadasCriterio.test.js --runInBand
+npm.cmd test -- --runInBand
+```
+
+Para la comprobación manual, arrancar MySQL y PlanB, iniciar sesión, abrir «Ver detalle» en una experiencia y revisar la sección de valoraciones. Comprobar también la vista móvil desde las herramientas de desarrollo del navegador.
+
 # CS-01: valorar una experiencia — En progreso (06/10/2026)
 
 Se ha empezado CS-01. Como necesita saber si quien valora puede ver la experiencia, primero se ha añadido la visibilidad de las experiencias, que es el único objetivo de CS-22 imprescindible para CS-01 (acordado con Matthew, propietario de CS-22).
