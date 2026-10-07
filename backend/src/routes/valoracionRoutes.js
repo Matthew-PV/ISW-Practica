@@ -51,4 +51,22 @@ router.put('/', async (req, res) => {
   res.status(creada ? 201 : 200).json(valoracion);
 });
 
+// GET /api/experiencias/:id/valoracion/mia
+// Devuelve la valoración que el usuario de la sesión ha hecho de esta experiencia.
+router.get('/mia', async (req, res, next) => {
+  try {
+    const valoracion = await valoracionService.obtenerMiValoracion(
+      req.session.usuarioId,
+      Number(req.params.id)
+    );
+    res.json(valoracion);
+  } catch (error) {
+    // Si da 404 (no existe), simplemente enviamos el error limpio sin colapsar el servidor
+    if (error.status === 404) {
+      return res.status(404).json({ error: error.message });
+    }
+    next(error);
+  }
+});
+
 module.exports = router;

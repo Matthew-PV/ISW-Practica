@@ -1,6 +1,7 @@
 // Obtener parámetros de la URL
 const parametros = new URLSearchParams(window.location.search);
 const experienciaId = parametros.get('id');
+let miUsuarioId = null;
 
 // Elementos del DOM
 const mensajeEstado = document.getElementById('mensaje-estado');
@@ -17,13 +18,17 @@ async function cargarPaginaExperiencia() {
   }
 
   try {
-    const experiencia = await api(`/experiencias/${experienciaId}`);
+    // Pedimos la experiencia y nuestros propios datos de usuario a la vez
+    const [experiencia, yo] = await Promise.all([
+      api(`/experiencias/${experienciaId}`),
+      api('/auth/yo')
+    ]);
 
-    // Ocultar mensaje de carga y mostrar el contenido
+    miUsuarioId = yo.id;
+
     mensajeEstado.classList.add('d-none');
     contenidoExperiencia.classList.remove('d-none');
 
-    // Inyectar datos (Objetivo 3)
     tituloEl.textContent = experiencia.titulo;
     autorEl.textContent = experiencia.autor.nombreUsuario;
     ciudadEl.textContent = experiencia.ciudad.nombre;
@@ -31,8 +36,14 @@ async function cargarPaginaExperiencia() {
 
     await cargarComentarios();
 
+    // Comprobamos si somos el autor para mostrar u ocultar el formulario
+    const autorId = experiencia.autorId || (experiencia.autor && experiencia.autor.id);
+    if (autorId !== yo.id) {
+      cajaFormulario.classList.remove('d-none'); // Mostrar formulario
+      await cargarMiValoracion(); // Solo cargar mi valoración si puedo valorar
+    }
+
   } catch (error) {
-    // Si da 403 o 404, mostramos «Contenido no disponible» según el criterio (Objetivo 9)
     if (error.message.includes('permiso') || error.message.includes('existe')) {
       mostrarError('Contenido no disponible');
     } else {
@@ -128,6 +139,59 @@ function crearElementoComentario(valoracion) {
   fechaElemento.className = 'text-muted';
   const fechaValor = valoracion.creadoEn || valoracion.fecha;
   fechaElemento.textContent = fechaValor ? new Date(fechaValor).toLocaleDateString() : '';
+
+  // --- OBJETIVO 7: Botón Útil ---
+    const contenedorUtil = document.createElement('div');
+    contenedorUtil.className = 'mt-3 mb-2';
+
+    const btnUtil = document.createElement('button');
+    btnUtil.className = 'btn btn-sm btn-outline-success';
+
+    // Comprobamos si el comentario es tuyo para desactivar el botón
+    const autorComentarioId = valoracion.usuarioId || valoracion.usuario?.id;
+    if (autorComentarioId === miUsuarioId) {
+      btnUtil.disabled = true;
+      btnUtil.title = "No puedes votar tu propio comentario";
+    }
+
+    // Contador de utilidades (asumiendo que tu backend envía una propiedad 'utilidades' o similar)
+    // Si tu backend lo llama de otra forma (ej. 'likes'), cambia 'valoracion.utiles'
+    let cantidadUtiles = valoracion.utiles || 0;
+
+    // Asumimos que el backend también te dice si TÚ ya le diste útil (ej. 'leDiUtil: true')
+    let leDiUtil = valoracion.leDiUtil || false;
+    if (leDiUtil) btnUtil.classList.replace('btn-outline-success', 'btn-success');
+
+    btnUtil.innerHTML = `👍 Útil <span class="badge text-bg-light ms-1">${cantidadUtiles}</span>`;
+
+    // Evento para marcar/desmarcar útil
+    btnUtil.addEventListener('click', async () => {
+      btnUtil.disabled = true;
+      try {
+        // ⚠️ AQUÍ IRÁ LA LLAMADA AL BACKEND
+        console.log(`Clic en útil para la valoración ${valoracion.id}`);
+
+        // Simulamos visualmente el cambio hasta conectar el backend
+        leDiUtil = !leDiUtil;
+        cantidadUtiles += leDiUtil ? 1 : -1;
+
+        if (leDiUtil) {
+          btnUtil.classList.replace('btn-outline-success', 'btn-success');
+        } else {
+          btnUtil.classList.replace('btn-success', 'btn-outline-success');
+        }
+        btnUtil.innerHTML = `👍 Útil <span class="badge text-bg-light ms-1">${cantidadUtiles}</span>`;
+
+      } catch (error) {
+        console.error('Error al dar útil:', error);
+      } finally {
+        btnUtil.disabled = false;
+      }
+    });
+
+    contenedorUtil.appendChild(btnUtil);
+  cuerpo.appendChild(contenedorUtil);
+
   cuerpo.appendChild(fechaElemento);
 
   tarjeta.appendChild(cuerpo);
@@ -146,7 +210,7 @@ btnCargarMas.addEventListener('click', async () => {
   btnCargarMas.textContent = 'Cargar más';
 });
 
-// --- OBJETIVO 5: FORMULARIO Y CONTADOR DE CARACTERES ---
+// --- OBJETIVO 5 y 6: FORMULARIO, CONTADOR Y GUARDADO ---
 const formValoracion = document.getElementById('form-valoracion');
 const inputPuntuacion = document.getElementById('val-puntuacion');
 const inputComentario = document.getElementById('val-comentario');
@@ -155,8 +219,9 @@ const errorValoracion = document.getElementById('error-valoracion');
 const btnGuardarValoracion = document.getElementById('btn-guardar-valoracion');
 
 const MAX_COMENTARIO = 255;
+let miValoracionId = null; // Guardará el ID si ya existe una valoración tuya
 
-// Actualiza el contador dinámicamente y avisa si se acerca al límite
+// Actualiza el contador dinámicamente
 inputComentario.addEventListener('input', () => {
   const actual = inputComentario.value.length;
   contadorCaracteres.textContent = `${actual} / ${MAX_COMENTARIO}`;
@@ -170,8 +235,66 @@ inputComentario.addEventListener('input', () => {
   }
 });
 
-// Evitamos que recargue la página al enviar (se preparará en el Objetivo 6)
-formValoracion.addEventListener('submit', (e) => {
+// Comprueba si el usuario ya ha valorado esta experiencia
+async function cargarMiValoracion() {
+  try {
+    // ⚠️ ATENCIÓN: Ajusta esta ruta si tu backend usa una diferente para "mi valoración"
+    const miValoracion = await api(`/experiencias/${experienciaId}/valoracion/mia`);
+
+    if (miValoracion && miValoracion.id) {
+      miValoracionId = miValoracion.id;
+      inputPuntuacion.value = miValoracion.puntuacion;
+
+      if (miValoracion.comentario) {
+        inputComentario.value = miValoracion.comentario;
+        contadorCaracteres.textContent = `${inputComentario.value.length} / ${MAX_COMENTARIO}`;
+      }
+
+      btnGuardarValoracion.textContent = 'Actualizar valoración';
+    }
+  } catch (error) {
+    // Si da error (ej. 404 No encontrado), significa que no has valorado aún. Lo ignoramos.
+  }
+}
+
+// Guardar o actualizar la valoración
+// Guardar o actualizar la valoración
+formValoracion.addEventListener('submit', async (e) => {
   e.preventDefault();
-  console.log("Puntuación lista para guardar:", inputPuntuacion.value);
+
+  errorValoracion.classList.add('d-none');
+  btnGuardarValoracion.disabled = true;
+
+  // Preparamos los datos tal y como los pide tu ruta PUT
+  const datos = {
+    puntuacion: Number(inputPuntuacion.value)
+  };
+  if (inputComentario.value.trim() !== '') {
+    datos.comentario = inputComentario.value.trim();
+  }
+
+  try {
+    // Usamos PUT: tu backend ya es inteligente y decide si crear o actualizar
+    await api(`/experiencias/${experienciaId}/valoracion`, {
+      method: 'PUT',
+      body: JSON.stringify(datos)
+    });
+
+    // Refrescamos la lista de comentarios
+    paginaComentarios = 1;
+    listaComentarios.replaceChildren();
+    await cargarComentarios();
+
+    // Feedback visual para el usuario
+    btnGuardarValoracion.textContent = '¡Guardado!';
+    setTimeout(() => {
+      btnGuardarValoracion.textContent = 'Actualizar valoración';
+    }, 2000);
+
+  } catch (error) {
+    errorValoracion.textContent = error.message || 'Error al guardar la valoración';
+    errorValoracion.classList.remove('d-none');
+  } finally {
+    btnGuardarValoracion.disabled = false;
+  }
 });

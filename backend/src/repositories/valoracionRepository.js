@@ -68,4 +68,17 @@ async function listarDeUsuarios(experienciaId, usuarioIds, pagina, limite) {
   return { valoraciones, total };
 }
 
-module.exports = { guardar, listarDeUsuarios };
+// Busca la valoración de un usuario específico en una experiencia específica
+async function obtenerPorUsuarioYExperiencia(usuarioId, experienciaId) {
+  return prisma.valoracion.findUnique({
+    where: {
+      // CORRECCIÓN: El nombre debe coincidir exactamente con el orden del schema.prisma
+      usuarioId_experienciaId: {
+        usuarioId: usuarioId,
+        experienciaId: experienciaId
+      }
+    }
+  });
+}
+
+module.exports = { guardar, listarDeUsuarios, obtenerPorUsuarioYExperiencia };

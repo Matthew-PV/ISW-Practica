@@ -29,13 +29,4 @@ async function api(ruta, opciones = {}) {
     throw new Error(datos?.error || `Error ${res.status}`);
   }
   return datos;
-
-  obtenerExperiencia: async (id) => {
-      const respuesta = await fetch(`/api/experiencias/${id}`);
-      if (!respuesta.ok) {
-        const errorData = await respuesta.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Error al cargar la experiencia');
-      }
-      return respuesta.json();
-    }
 }

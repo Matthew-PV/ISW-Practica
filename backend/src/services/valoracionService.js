@@ -109,7 +109,24 @@ async function listarValoracionesRelacionadas(
   );
 }
 
+// Devuelve la valoración del usuario. Si no existe, lanza 404.
+async function obtenerMiValoracion(usuarioId, experienciaId) {
+  // Asegúrate de que valoracionRepository esté importado arriba en tu archivo
+  const valoracion = await valoracionRepository.obtenerPorUsuarioYExperiencia(usuarioId, experienciaId);
+
+  if (!valoracion) {
+    const error = new Error('Aún no has valorado esta experiencia');
+    error.status = 404;
+    throw error;
+  }
+
+  return valoracion;
+}
+
+// Recuerda añadir 'obtenerMiValoracion' en tu module.exports al final del archivo
+
 module.exports = {
   valorarExperiencia,
   listarValoracionesRelacionadas,
+  obtenerMiValoracion
 };
