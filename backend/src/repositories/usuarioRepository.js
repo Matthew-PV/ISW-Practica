@@ -3,7 +3,8 @@
 // Las de perfil (obtenerPerfil, actualizarPerfil, actualizarFoto) son la excepción:
 // devuelven solo los campos de CAMPOS_PERFIL.
 // Capa: repositorios (repositories).
-// Lo usan: services/authService.js, services/perfilService.js y services/experienciaService.js.
+// Lo usan: services/authService.js, perfilService.js, usuarioService.js, experienciaService.js,
+//          amistadService.js y seguimientoService.js.
 // Usa: repositories/shared/prisma.js (la conexión con MySQL) y repositories/shared/camposPublicos.js.
 //
 // Los repositorios solo leen y escriben datos: no comprueban nada. Los datos llegan

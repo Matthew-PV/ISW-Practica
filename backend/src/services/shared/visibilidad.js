@@ -1,6 +1,7 @@
 // Regla de visibilidad de las experiencias (CS-22): quién puede ver cada una.
 // Capa: servicios (services), en shared/ porque la usan varias funcionalidades.
-// Lo usan: services/valoracionService.js y services/experienciaService.js (CS-30, CS-44 y CS-63).
+// Lo usa: services/experienciaService.js (CS-30, CS-44 y CS-63). Las valoraciones la aplican a
+//         través de experienciaService.obtenerExperiencia.
 // Usa: services/amistadService.js (sonAmigos, que solo cuenta amistades aceptadas).
 const amistadService = require('../amistadService');
 

@@ -1,7 +1,7 @@
 // Lógica de negocio de la autenticación: registro, inicio de sesión, usuario actual y
 // recuperación de la contraseña por email (CS-64).
 // Capa: servicios (services).
-// Lo usa: routes/authRoutes.js.
+// Lo usan: routes/authRoutes.js y middlewares/sesionMiddleware.js (obtenerUsuario).
 // Usa: repositories/usuarioRepository.js (leer y crear usuarios), services/captchaService.js
 //      (comprobar el CAPTCHA), services/shared/nombreUsuario.js (reglas del nombre),
 //      services/shared/password.js (reglas y cifrado de la contraseña, CS-64),

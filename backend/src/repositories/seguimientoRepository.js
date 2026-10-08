@@ -1,6 +1,7 @@
 // Acceso a los seguimientos en MySQL.
 // Capa: repositorios (repositories).
-// Lo usarán los servicios de seguimiento cuando se implementen.
+// Lo usan: services/seguimientoService.js, services/perfilService.js (contadores y listado de
+//          seguidores) y services/usuarioService.js (perfil público).
 // Usa: repositories/shared/prisma.js (la conexión con MySQL), repositories/shared/carreras.js y
 //      repositories/shared/camposPublicos.js.
 //

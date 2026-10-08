@@ -1,6 +1,6 @@
 // Reglas de negocio de los seguimientos.
 // Capa: servicios (services).
-// Lo usarán las rutas de seguimiento cuando se implementen.
+// Lo usa: routes/seguimientoRoutes.js.
 // Usa: repositories/usuarioRepository.js, repositories/seguimientoRepository.js,
 //      services/shared/identificadores.js y errores.js.
 const usuarioRepository = require('../repositories/usuarioRepository');

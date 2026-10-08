@@ -1,6 +1,6 @@
 // Reglas de negocio de las solicitudes de amistad.
 // Capa: servicios (services).
-// Lo usarán las rutas de amistad cuando se implementen.
+// Lo usan: routes/amistadRoutes.js y services/shared/visibilidad.js (sonAmigos).
 // Usa: repositories/usuarioRepository.js, repositories/amistadRepository.js,
 //      services/shared/identificadores.js, services/shared/fotoPorDefecto.js y errores.js.
 const usuarioRepository = require('../repositories/usuarioRepository');
