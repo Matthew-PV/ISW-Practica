@@ -56,6 +56,7 @@
       "frontend/js/**/*.js"
     ],
     "coverageProvider": "v8",
+    "coverageDirectory": "<rootDir>/backend/coverage",
     "coverageThreshold": {
       "global": {
         "statements": 94,
