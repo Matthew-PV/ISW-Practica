@@ -36,10 +36,20 @@
       <!-- El botón de seguir lo crea js/usuario.js; seguir no depende de la amistad -->
       <div id="boton-seguir" class="d-flex justify-content-center mb-3"></div>
       <div id="error-usuario" class="alert alert-danger d-none"></div>
+
+      <!-- CS-44: sus experiencias que puedo ver; las pinta js/shared/experiencias.js -->
+      <section class="mt-5 text-start" aria-labelledby="titulo-experiencias">
+        <h2 id="titulo-experiencias" class="h4">Sus experiencias</h2>
+        <div id="error-experiencias" class="alert alert-danger d-none" role="alert"></div>
+        <p id="sin-experiencias" class="text-secondary d-none">No hay experiencias que puedas ver.</p>
+        <div id="lista-experiencias" class="list-group"></div>
+        <button type="button" id="mas-experiencias" class="btn btn-outline-secondary btn-sm mt-2 d-none">Cargar más experiencias</button>
+      </section>
     </div>
   </main>
 
   <script src="js/shared/api.js"></script>
+  <script src="js/shared/experiencias.js"></script>
   <script src="js/usuario.js"></script>
 </body>
 </html>

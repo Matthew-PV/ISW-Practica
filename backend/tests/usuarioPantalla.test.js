@@ -9,7 +9,7 @@ const path = require('node:path');
 const FRONTEND = path.join(__dirname, '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('usuario.html');
-const SCRIPTS = leer('js/shared/api.js') + leer('js/usuario.js');
+const SCRIPTS = leer('js/shared/api.js') + leer('js/shared/experiencias.js') + leer('js/usuario.js');
 const FOTO = 'https://res.cloudinary.com/demo/image/upload/v1/planb/perfiles/usuario-2.png';
 const PERFIL = {
   id: 2, nombreUsuario: 'ana', foto: FOTO, ciudad: 'Madrid',
@@ -28,6 +28,10 @@ async function abrirPagina(nombre, perfil = PERFIL, siguientes = []) {
   window.history.pushState({}, '', `/usuario.html?nombre=${encodeURIComponent(nombre)}`);
   document.documentElement.innerHTML = HTML;
   window.fetch = jest.fn().mockReturnValueOnce(respuesta(200, perfil));
+  // CS-44: al mostrarse el perfil, la página pide también sus experiencias (petición 2)
+  if (!perfil.esPropio) {
+    window.fetch.mockReturnValueOnce(respuesta(200, { experiencias: [], siguiente: null }));
+  }
   siguientes.forEach((r) => window.fetch.mockReturnValueOnce(r));
   (0, eval)(SCRIPTS);
   await terminar();
@@ -109,11 +113,11 @@ describe('botón de amistad', () => {
     boton('Añadir amigo').click();
     await terminar();
 
-    const [ruta, opciones] = window.fetch.mock.calls[1];
+    const [ruta, opciones] = window.fetch.mock.calls[2];
     expect(ruta).toBe('/api/amistades');
     expect(opciones.method).toBe('POST');
     expect(JSON.parse(opciones.body)).toEqual({ destinatarioId: 2 });
-    expect(window.fetch.mock.calls[2][0]).toBe('/api/usuarios/ana');
+    expect(window.fetch.mock.calls[3][0]).toBe('/api/usuarios/ana');
     expect(textosBotones()).toEqual(['Solicitud enviada']);
   });
 
@@ -126,7 +130,7 @@ describe('botón de amistad', () => {
     boton('Aceptar').click();
     await terminar();
 
-    const [ruta, opciones] = window.fetch.mock.calls[1];
+    const [ruta, opciones] = window.fetch.mock.calls[2];
     expect(ruta).toBe('/api/amistades/10');
     expect(opciones.method).toBe('PATCH');
     expect(JSON.parse(opciones.body)).toEqual({ aceptar: true });
@@ -143,7 +147,7 @@ describe('botón de amistad', () => {
     boton('Rechazar').click();
     await terminar();
 
-    const [ruta, opciones] = window.fetch.mock.calls[1];
+    const [ruta, opciones] = window.fetch.mock.calls[2];
     expect(ruta).toBe('/api/amistades/10');
     expect(JSON.parse(opciones.body)).toEqual({ aceptar: false });
     expect(textosBotones()).toEqual(['Añadir amigo']);
@@ -157,7 +161,8 @@ describe('botón de amistad', () => {
     await terminar();
 
     expect(window.confirm).toHaveBeenCalled();
-    expect(window.fetch).toHaveBeenCalledTimes(1);
+    // Solo las dos peticiones de la carga (perfil y experiencias): ninguna para borrar
+    expect(window.fetch).toHaveBeenCalledTimes(2);
     expect(textosBotones()).toEqual(['Eliminar amigo']);
   });
 
@@ -171,7 +176,7 @@ describe('botón de amistad', () => {
     boton('Eliminar amigo').click();
     await terminar();
 
-    const [ruta, opciones] = window.fetch.mock.calls[1];
+    const [ruta, opciones] = window.fetch.mock.calls[2];
     expect(ruta).toBe('/api/amistades/10');
     expect(opciones.method).toBe('DELETE');
     expect($('#amigos').textContent).toBe('2');
@@ -218,11 +223,11 @@ describe('botón de seguir', () => {
     botonSeguir().click();
     await terminar();
 
-    const [ruta, opciones] = window.fetch.mock.calls[1];
+    const [ruta, opciones] = window.fetch.mock.calls[2];
     expect(ruta).toBe('/api/seguimientos');
     expect(opciones.method).toBe('POST');
     expect(JSON.parse(opciones.body)).toEqual({ seguidoId: 2 });
-    expect(window.fetch.mock.calls[2][0]).toBe('/api/usuarios/ana');
+    expect(window.fetch.mock.calls[3][0]).toBe('/api/usuarios/ana');
     expect($('#seguidores').textContent).toBe('6');
     expect(textoSeguir()).toEqual(['Dejar de seguir']);
   });
@@ -236,7 +241,7 @@ describe('botón de seguir', () => {
     botonSeguir().click();
     await terminar();
 
-    const [ruta, opciones] = window.fetch.mock.calls[1];
+    const [ruta, opciones] = window.fetch.mock.calls[2];
     expect(ruta).toBe('/api/seguimientos/2');
     expect(opciones.method).toBe('DELETE');
     expect($('#seguidores').textContent).toBe('4');

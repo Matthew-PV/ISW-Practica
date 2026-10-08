@@ -87,6 +87,13 @@ El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de confli
   - con MySQL real, `tests/mysql/experienciasAutor.test.js`: el criterio completo con autor, amigo, seguidor, solicitud pendiente y desconocido, y todas las páginas con una publicación entre medias.
   - Fallaron primero. Se comprobó además que detectan el fallo: sin el filtro de visibilidad fallan 4 pruebas, y sin el cursor, 1.
 
+### CS-44 y CS-62 (objetivo 8): experiencias en los perfiles
+
+- `usuario.html` muestra «Sus experiencias» (las que puedo ver) y `perfil.html`, «Mis experiencias» (también las privadas). Cada una enlaza a `experiencia.html?id=…` y muestra su ciudad y su visibilidad. «Cargar más» añade las siguientes sin repetir ninguna. Sin experiencias se indica la lista vacía, y si la carga falla se ve el error.
+- El código común está en `js/shared/experiencias.js` (`mostrarExperienciasDe`). Las dos páginas lo cargan después de `api.js`. En «Mi perfil», si se cambia el nombre de usuario, las páginas siguientes se piden con el nombre nuevo.
+- Pruebas: `experienciasPerfilPantalla.test.js` (jsdom), que falló primero porque el módulo no existía. Las pruebas de pantalla de `usuario.html` y `perfil.html` cargan ahora también ese script. En `usuarioPantalla.test.js`, el listado es la segunda petición al abrir la página, así que las peticiones de las acciones pasan a la posición siguiente.
+- Pendiente de comprobar a mano en el navegador, en escritorio y móvil.
+
 ### Para quien continúe
 
 - Tras el `git pull`, aplicar la migración nueva desde `backend/`: `npx prisma migrate deploy` y `npx prisma generate`.

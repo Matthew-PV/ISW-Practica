@@ -53,6 +53,15 @@
     </form>
 
     <!-- Solicitudes de amistad pendientes. js/perfil.js las obtiene desde /api/amistades/solicitudes. -->
+    <!-- CS-44: mis experiencias, también las privadas; las pinta js/shared/experiencias.js -->
+    <section class="mt-5" aria-labelledby="titulo-experiencias">
+      <h2 id="titulo-experiencias" class="h4">Mis experiencias</h2>
+      <div id="error-experiencias" class="alert alert-danger d-none" role="alert"></div>
+      <p id="sin-experiencias" class="text-secondary d-none">Todavía no has publicado experiencias.</p>
+      <div id="lista-experiencias" class="list-group"></div>
+      <button type="button" id="mas-experiencias" class="btn btn-outline-secondary btn-sm mt-2 d-none">Cargar más experiencias</button>
+    </section>
+
     <section class="mt-5" aria-labelledby="titulo-solicitudes">
       <h2 id="titulo-solicitudes" class="h4">Solicitudes recibidas</h2>
       <div id="error-solicitudes" class="alert alert-danger d-none" role="alert"></div>
@@ -82,6 +91,7 @@
   </main>
 
   <script src="js/shared/api.js"></script>
+  <script src="js/shared/experiencias.js"></script>
   <script src="js/perfil.js"></script>
 </body>
 </html>

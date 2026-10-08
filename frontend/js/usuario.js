@@ -1,7 +1,8 @@
 // Página del perfil de otro usuario (usuario.html): muestra su foto, nombre, ciudad, el número de
 // amigos y seguidores, el botón de amistad que corresponde a la relación con él y el de seguir.
 // Se abre con usuario.html?nombre=ana. Si el usuario no existe lo indica, y si es el propio usuario
-// va a perfil.html. Usa `api` de shared/api.js.
+// va a perfil.html. Debajo, sus experiencias que puedo ver (CS-44). Usa `api` de shared/api.js y
+// `mostrarExperienciasDe` de shared/experiencias.js.
 
 const nombre = new URLSearchParams(window.location.search).get('nombre');
 const botonesAmistad = document.getElementById('botones-amistad');
@@ -84,10 +85,13 @@ function mostrarPerfil(perfil) {
   mostrarBotonSeguir(perfil);
 }
 
-// Pide el perfil del usuario indicado en la dirección (?nombre=...)
+// Pide el perfil del usuario indicado en la dirección (?nombre=...). Devuelve true si se ha
+// mostrado (existe y no es el propio).
 async function cargarPerfil() {
   try {
-    mostrarPerfil(await api(`/usuarios/${encodeURIComponent(nombre)}`));
+    const perfil = await api(`/usuarios/${encodeURIComponent(nombre)}`);
+    mostrarPerfil(perfil);
+    return !perfil.esPropio;
   } catch (err) {
     if (err.message === 'Usuario no encontrado') {
       document.getElementById('perfil-usuario').classList.add('d-none');
@@ -96,7 +100,14 @@ async function cargarPerfil() {
       // Sin sesión (o el servidor no responde): se vuelve al login
       window.location.href = '/';
     }
+    return false;
   }
 }
 
-cargarPerfil();
+// Al abrir la página: el perfil y, si se muestra, sus experiencias. Las acciones de amistad y
+// seguimiento vuelven a pedir solo el perfil.
+cargarPerfil().then((mostrado) => {
+  if (mostrado) {
+    mostrarExperienciasDe(nombre);
+  }
+});

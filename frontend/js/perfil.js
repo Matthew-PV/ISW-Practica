@@ -1,5 +1,6 @@
 // Página de mi perfil (perfil.html): muestra y permite editar nombreUsuario, ciudad y foto.
-// Se ejecuta nada más cargar la página. Usa `api` de shared/api.js.
+// Se ejecuta nada más cargar la página. Usa `api` de shared/api.js y `mostrarExperienciasDe` de
+// shared/experiencias.js (CS-44: mis experiencias).
 
 const formulario = document.getElementById('form-perfil');
 const cajaError = document.getElementById('error-perfil');
@@ -11,6 +12,7 @@ function mostrarPerfil(perfil) {
   document.getElementById('nombreUsuario').value = perfil.nombreUsuario;
   document.getElementById('email').value = perfil.email;
   document.getElementById('ciudad').value = perfil.ciudad ?? '';
+  mostrarExperienciasDe(perfil.nombreUsuario);
 
   if (perfil.foto) {
     const img = document.getElementById('foto-perfil');
