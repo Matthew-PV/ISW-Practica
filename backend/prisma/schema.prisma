@@ -92,9 +92,9 @@ model Valoracion {
   @@index([experienciaId])
 }
 
-// Una solicitud de amistad identifica quién la envía y quién la recibe.
-// El servicio comprobará también la dirección inversa antes de crearla, para que
-// dos usuarios no puedan tener dos solicitudes entre sí.
+// Una solicitud de amistad identifica quién la envía y quién la recibe (CS-61). Empieza
+// PENDIENTE y pasa a ACEPTADA; rechazarla o eliminar la amistad borra la fila. Entre dos usuarios
+// solo puede haber una, en cualquier sentido: lo garantiza parejaClave, que es única.
 enum EstadoAmistad {
   PENDIENTE
   ACEPTADA
