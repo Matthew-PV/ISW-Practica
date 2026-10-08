@@ -49,18 +49,23 @@ async function contarSeguidores(seguidoId) {
   });
 }
 
-// Devuelve una página de las personas que siguen a un usuario, con sus datos públicos (nunca el email), del seguimiento más reciente al más antiguo.
-
-async function listarSeguidores(usuarioId, pagina, limite) {
+// CS-45: hasta `cantidad` personas que siguen a un usuario, del seguimiento más reciente al más
+// antiguo, como { id, persona }: `id` es el del seguimiento (el cursor de «Cargar más») y
+// `persona`, los datos públicos del seguidor (nunca el email). Con `despuesDe` (el id de un
+// seguimiento) empieza justo después de él (ver services/shared/paginacion.js).
+async function listarSeguidores(usuarioId, despuesDe, cantidad) {
+  const where = { seguidoId: usuarioId };
+  if (despuesDe !== null) {
+    where.id = { lt: despuesDe };
+  }
   const seguimientos = await prisma.seguimiento.findMany({
-    where: { seguidoId: usuarioId },
-    select: { seguidor: { select: { id: true, nombreUsuario: true, foto: true } } },
-    orderBy: [{ fecha: 'desc' }, { id: 'desc' }],
-    skip: (pagina - 1) * limite,
-    take: limite,
+    where,
+    select: { id: true, seguidor: { select: { id: true, nombreUsuario: true, foto: true } } },
+    orderBy: { id: 'desc' },
+    take: cantidad,
   });
 
-  return seguimientos.map((seguimiento) => seguimiento.seguidor);
+  return seguimientos.map((seguimiento) => ({ id: seguimiento.id, persona: seguimiento.seguidor }));
 }
 
 module.exports = {

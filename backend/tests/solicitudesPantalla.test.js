@@ -41,7 +41,8 @@ test('aceptar una solicitud la elimina de la lista', async () => {
   [...document.querySelectorAll('#solicitudes-recibidas button')].find((boton) => boton.textContent === 'Aceptar').click();
   await terminar();
 
-  const [ruta, opciones] = window.fetch.mock.calls.at(-1);
+  // Tras aceptar, la página recarga también los contadores (CS-45): se busca la petición por su ruta
+  const [ruta, opciones] = window.fetch.mock.calls.find(([llamada]) => llamada === '/api/amistades/10');
   expect(ruta).toBe('/api/amistades/10');
   expect(opciones.method).toBe('PATCH');
   expect(JSON.parse(opciones.body)).toEqual({ aceptar: true });

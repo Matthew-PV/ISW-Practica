@@ -94,6 +94,16 @@ El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de confli
 - Pruebas: `experienciasPerfilPantalla.test.js` (jsdom), que falló primero porque el módulo no existía. Las pruebas de pantalla de `usuario.html` y `perfil.html` cargan ahora también ese script. En `usuarioPantalla.test.js`, el listado es la segunda petición al abrir la página, así que las peticiones de las acciones pasan a la posición siguiente.
 - Pendiente de comprobar a mano en el navegador, en escritorio y móvil.
 
+### CS-45: listas de amigos y seguidores por cursor
+
+- **Por qué:** con páginas numeradas (`?pagina=2`), si llegaba un amigo o un seguidor entre la carga de la primera página y «Cargar más», la lista se desplazaba y una persona salía repetida. Se comprobó con MySQL real: con 26 seguidores, la segunda página traía 6 personas y repetía la última de la primera. Eso incumple «sin repetir personas» del criterio.
+- **Ahora:** `GET /api/perfil/amigos` y `/api/perfil/seguidores` aceptan `?despuesDe=<id>&limite=<n>` (20 por defecto, de 1 a 50) y responden `{ personas, siguiente }`, con la misma paginación común que CS-44. Ya no devuelven `pagina`, `limite` ni `total`: los contadores siguen saliendo de `/api/perfil/resumen`. `perfil.js` pide «Cargar más» con el `siguiente` de la página anterior.
+- **Al aceptar una solicitud** en «Mi perfil», el contador de amigos y la lista de amigos se actualizan en la misma página. Antes había que recargarla.
+- **Pruebas:**
+  - `tests/mysql/relacionesPerfil.test.js`: todas las páginas, con un alta entre medias, sin repetir ni saltar a nadie, para amigos y para seguidores. Falló primero porque la respuesta no traía `siguiente`.
+  - Las pruebas de CS-45 (servicio, rutas, repositorio, criterio y pantalla) usan ahora la forma nueva de pedir y de responder. Siguen protegiendo lo mismo: ceros sin error, pendientes y rechazadas que no cuentan, subidas y bajadas de uno, sin emails y sin repetidos.
+  - En `relacionesPantalla.test.js`, una prueba nueva de los contadores tras aceptar, que falló primero (se quedaba en 0). En `solicitudesPantalla.test.js`, la petición de aceptar se busca por su ruta, porque ya no es la última.
+
 ### Para quien continúe
 
 - Tras el `git pull`, aplicar la migración nueva desde `backend/`: `npx prisma migrate deploy` y `npx prisma generate`.

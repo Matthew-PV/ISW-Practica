@@ -49,9 +49,13 @@ function amistadesAceptadas(usuarioId) {
     && (amistad.solicitanteId === usuarioId || amistad.destinatarioId === usuarioId));
 }
 
-// Trozo de una lista que corresponde a una página.
-function paginar(lista, pagina, limite) {
-  return lista.slice((pagina - 1) * limite, pagina * limite);
+// Página por cursor, como la consulta real: de id mayor a menor, solo las anteriores a
+// `despuesDe` (si se indica) y como mucho `cantidad` filas.
+function paginaPorCursor(filas, despuesDe, cantidad) {
+  return filas
+    .filter((fila) => despuesDe === null || fila.id < despuesDe)
+    .sort((a, b) => b.id - a.id)
+    .slice(0, cantidad);
 }
 
 beforeEach(() => {
@@ -83,11 +87,12 @@ beforeEach(() => {
     return amistades.splice(indice, 1)[0];
   });
   amistadRepository.contarAmigos.mockImplementation(async (usuarioId) => amistadesAceptadas(usuarioId).length);
-  amistadRepository.listarAmigos.mockImplementation(async (usuarioId, pagina, limite) => paginar(
-    amistadesAceptadas(usuarioId), pagina, limite
-  ).map((amistad) => datosPublicos(
-    amistad.solicitanteId === usuarioId ? amistad.destinatarioId : amistad.solicitanteId
-  )));
+  amistadRepository.listarAmigos.mockImplementation(async (usuarioId, despuesDe, cantidad) => paginaPorCursor(
+    amistadesAceptadas(usuarioId), despuesDe, cantidad
+  ).map((amistad) => ({
+    id: amistad.id,
+    persona: datosPublicos(amistad.solicitanteId === usuarioId ? amistad.destinatarioId : amistad.solicitanteId),
+  })));
 
   seguimientoRepository.sigueA.mockImplementation(async (seguidorId, seguidoId) => seguimientos
     .some((seguimiento) => seguimiento.seguidorId === seguidorId && seguimiento.seguidoId === seguidoId));
@@ -102,9 +107,9 @@ beforeEach(() => {
   });
   seguimientoRepository.contarSeguidores.mockImplementation(async (seguidoId) => seguimientos
     .filter((seguimiento) => seguimiento.seguidoId === seguidoId).length);
-  seguimientoRepository.listarSeguidores.mockImplementation(async (usuarioId, pagina, limite) => paginar(
-    seguimientos.filter((seguimiento) => seguimiento.seguidoId === usuarioId), pagina, limite
-  ).map((seguimiento) => datosPublicos(seguimiento.seguidorId)));
+  seguimientoRepository.listarSeguidores.mockImplementation(async (usuarioId, despuesDe, cantidad) => paginaPorCursor(
+    seguimientos.filter((seguimiento) => seguimiento.seguidoId === usuarioId), despuesDe, cantidad
+  ).map((seguimiento) => ({ id: seguimiento.id, persona: datosPublicos(seguimiento.seguidorId) })));
 });
 
 async function agente(usuarioId) {
@@ -127,9 +132,9 @@ test('un usuario sin amigos ni seguidores ve ceros y listas vacías, sin error',
 
   expect(await resumen(ana)).toEqual(SIN_RELACIONES);
   expect(amigos.status).toBe(200);
-  expect(amigos.body).toEqual({ pagina: 1, limite: 20, total: 0, personas: [] });
+  expect(amigos.body).toEqual({ personas: [], siguiente: null });
   expect(seguidores.status).toBe(200);
-  expect(seguidores.body).toEqual({ pagina: 1, limite: 20, total: 0, personas: [] });
+  expect(seguidores.body).toEqual({ personas: [], siguiente: null });
 });
 
 test('una solicitud pendiente no cuenta; al aceptarla, los dos suben en uno', async () => {
@@ -145,8 +150,8 @@ test('una solicitud pendiente no cuenta; al aceptarla, los dos suben en uno', as
   expect(await resumen(ana)).toEqual({ amigos: 1, seguidores: 0 });
   expect(await resumen(beatriz)).toEqual({ amigos: 1, seguidores: 0 });
   expect((await ana.get('/api/perfil/amigos')).body).toEqual({
-    pagina: 1, limite: 20, total: 1,
     personas: [{ id: 2, nombreUsuario: 'beatriz', foto: FOTO_POR_DEFECTO }],
+    siguiente: null,
   });
 });
 
@@ -200,13 +205,13 @@ test('el listado de seguidores se pagina sin repetir personas', async () => {
   }
   const ana = await agente(1);
 
-  const primera = (await ana.get('/api/perfil/seguidores?pagina=1&limite=20')).body;
-  const segunda = (await ana.get('/api/perfil/seguidores?pagina=2&limite=20')).body;
+  const primera = (await ana.get('/api/perfil/seguidores?limite=20')).body;
+  const segunda = (await ana.get(`/api/perfil/seguidores?limite=20&despuesDe=${primera.siguiente}`)).body;
 
   expect(await resumen(ana)).toEqual({ amigos: 0, seguidores: 25 });
-  expect(primera).toMatchObject({ pagina: 1, limite: 20, total: 25 });
   expect(primera.personas).toHaveLength(20);
   expect(segunda.personas).toHaveLength(5);
+  expect(segunda.siguiente).toBeNull();
   const ids = [...primera.personas, ...segunda.personas].map((persona) => persona.id);
   expect(new Set(ids).size).toBe(25);
 });

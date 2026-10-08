@@ -1,4 +1,4 @@
-// CS-45, objetivos 1 y 4: servicio de contadores y listados paginados del perfil propio.
+// CS-45, objetivos 1 y 4: servicio de contadores y listados paginados (por cursor) del perfil propio.
 jest.mock('../src/repositories/usuarioRepository');
 jest.mock('../src/repositories/amistadRepository');
 jest.mock('../src/repositories/seguimientoRepository');
@@ -16,8 +16,8 @@ beforeEach(() => {
   jest.resetAllMocks();
   amistadRepository.contarAmigos.mockResolvedValue(2);
   seguimientoRepository.contarSeguidores.mockResolvedValue(5);
-  amistadRepository.listarAmigos.mockResolvedValue([ANA, LUIS]);
-  seguimientoRepository.listarSeguidores.mockResolvedValue([ANA]);
+  amistadRepository.listarAmigos.mockResolvedValue([]);
+  seguimientoRepository.listarSeguidores.mockResolvedValue([]);
 });
 
 test('el resumen devuelve el número de amigos y de seguidores del usuario', async () => {
@@ -33,52 +33,56 @@ test('un usuario sin amigos ni seguidores ve ceros, sin error', async () => {
   await expect(obtenerResumenRelaciones(7)).resolves.toEqual({ amigos: 0, seguidores: 0 });
 });
 
-test('lista una página de amigos con el total y la foto por defecto de quien no tiene', async () => {
-  const resultado = await listarAmigosPropios(7, '2', '10');
+// Los repositorios devuelven filas { id, persona } (id de la amistad o del seguimiento) y una
+// fila de más de las que se muestran: si llega, hay página siguiente (paginación por cursor).
+test('lista una página de amigos con la foto por defecto de quien no tiene y el cursor de la siguiente', async () => {
+  amistadRepository.listarAmigos.mockResolvedValue([
+    { id: 30, persona: ANA }, { id: 29, persona: LUIS }, { id: 28, persona: ANA },
+  ]);
 
-  expect(amistadRepository.listarAmigos).toHaveBeenCalledWith(7, 2, 10);
-  expect(resultado).toEqual({
-    pagina: 2, limite: 10, total: 2,
-    personas: [ANA, { ...LUIS, foto: FOTO_POR_DEFECTO }],
-  });
+  const resultado = await listarAmigosPropios(7, { despuesDe: '31', limite: '2' });
+
+  expect(amistadRepository.listarAmigos).toHaveBeenCalledWith(7, 31, 3);
+  expect(resultado).toEqual({ personas: [ANA, { ...LUIS, foto: FOTO_POR_DEFECTO }], siguiente: 29 });
 });
 
-test('sin página ni límite usa la página 1 y 20 personas', async () => {
-  await listarAmigosPropios(7, undefined, undefined);
+test('sin cursor ni límite empieza por el principio con 20 personas', async () => {
+  await listarAmigosPropios(7, {});
 
-  expect(amistadRepository.listarAmigos).toHaveBeenCalledWith(7, 1, 20);
+  expect(amistadRepository.listarAmigos).toHaveBeenCalledWith(7, null, 21);
 });
 
-test('lista una página de seguidores con el total', async () => {
-  const resultado = await listarSeguidoresPropios(7, '1', '20');
+test('lista una página de seguidores; si no llega una fila de más, no hay página siguiente', async () => {
+  seguimientoRepository.listarSeguidores.mockResolvedValue([{ id: 5, persona: ANA }]);
 
-  expect(seguimientoRepository.listarSeguidores).toHaveBeenCalledWith(7, 1, 20);
-  expect(resultado).toEqual({ pagina: 1, limite: 20, total: 5, personas: [ANA] });
+  const resultado = await listarSeguidoresPropios(7, { limite: '20' });
+
+  expect(seguimientoRepository.listarSeguidores).toHaveBeenCalledWith(7, null, 21);
+  expect(resultado).toEqual({ personas: [ANA], siguiente: null });
 });
 
-test('sin amigos devuelve una lista vacía y total cero', async () => {
-  amistadRepository.contarAmigos.mockResolvedValue(0);
+test('sin amigos devuelve una lista vacía y ningún cursor', async () => {
   amistadRepository.listarAmigos.mockResolvedValue([]);
 
-  await expect(listarAmigosPropios(7, '1', '20')).resolves.toEqual({
-    pagina: 1, limite: 20, total: 0, personas: [],
-  });
+  await expect(listarAmigosPropios(7, {})).resolves.toEqual({ personas: [], siguiente: null });
 });
 
 test.each([
-  ['0', '20'],
-  ['-1', '20'],
-  ['abc', '20'],
-  ['1.5', '20'],
-  ['1', '0'],
-  ['1', '51'],
-  ['1', 'abc'],
-])('rechaza la paginación no válida (página %s, límite %s) con un 400', async (pagina, limite) => {
-  await expect(listarAmigosPropios(7, pagina, limite)).rejects.toMatchObject({ status: 400 });
+  ['despuesDe', '0'],
+  ['despuesDe', '-1'],
+  ['despuesDe', 'abc'],
+  ['despuesDe', '1.5'],
+  ['limite', '0'],
+  ['limite', '51'],
+  ['limite', 'abc'],
+])('rechaza la paginación no válida (%s=%s) con un 400', async (parametro, valor) => {
+  await expect(listarAmigosPropios(7, { [parametro]: valor })).rejects.toMatchObject({
+    status: 400, message: 'La paginación no es válida',
+  });
   expect(amistadRepository.listarAmigos).not.toHaveBeenCalled();
 });
 
 test('los seguidores también rechazan la paginación no válida', async () => {
-  await expect(listarSeguidoresPropios(7, '0', '20')).rejects.toMatchObject({ status: 400 });
+  await expect(listarSeguidoresPropios(7, { despuesDe: '0' })).rejects.toMatchObject({ status: 400 });
   expect(seguimientoRepository.listarSeguidores).not.toHaveBeenCalled();
 });

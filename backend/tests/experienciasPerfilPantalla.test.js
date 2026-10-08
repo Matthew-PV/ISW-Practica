@@ -96,8 +96,8 @@ describe('Mis experiencias (perfil.html)', () => {
     '/api/perfil': [200, PERFIL_PROPIO],
     '/api/amistades/solicitudes': [200, []],
     '/api/perfil/resumen': [200, { amigos: 0, seguidores: 0 }],
-    '/api/perfil/amigos?pagina=1&limite=20': [200, { pagina: 1, limite: 20, total: 0, personas: [] }],
-    '/api/perfil/seguidores?pagina=1&limite=20': [200, { pagina: 1, limite: 20, total: 0, personas: [] }],
+    '/api/perfil/amigos?limite=20': [200, { personas: [], siguiente: null }],
+    '/api/perfil/seguidores?limite=20': [200, { personas: [], siguiente: null }],
     '/api/experiencias?autor=luis': [200, { experiencias: [experiencia(4, 'Mi plan secreto', 'PRIVADA')], siguiente: 4 }],
   };
 

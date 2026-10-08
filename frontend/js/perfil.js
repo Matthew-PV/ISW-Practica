@@ -126,6 +126,10 @@ async function responderSolicitud(solicitudId, aceptar, fila) {
     });
     fila.remove();
     actualizarEstadoSolicitudes();
+    // CS-45: un amigo nuevo cambia el contador y la lista de amigos de esta misma página
+    if (aceptar) {
+      recargarRelaciones();
+    }
   } catch (err) {
     cajaErrorSolicitudes.textContent = err.message;
     cajaErrorSolicitudes.classList.remove('d-none');
@@ -178,19 +182,20 @@ campoFoto.addEventListener('change', async () => {
 const cajaErrorRelaciones = document.getElementById('error-relaciones');
 const PERSONAS_POR_PAGINA = 20;
 
-// Elementos de cada listado y la última página que se ha mostrado (0 = todavía ninguna).
+// Elementos de cada listado y el cursor de la página siguiente (`siguiente` del backend; null al
+// empezar y cuando no quedan más).
 const listados = {
   amigos: {
     lista: document.getElementById('lista-amigos'),
     vacio: document.getElementById('sin-amigos'),
     botonMas: document.getElementById('mas-amigos'),
-    pagina: 0,
+    siguiente: null,
   },
   seguidores: {
     lista: document.getElementById('lista-seguidores'),
     vacio: document.getElementById('sin-seguidores'),
     botonMas: document.getElementById('mas-seguidores'),
-    pagina: 0,
+    siguiente: null,
   },
 };
 
@@ -226,16 +231,17 @@ function mostrarPagina(listado, respuesta) {
       listado.lista.append(crearPersona(persona));
     }
   }
-  listado.pagina = respuesta.pagina;
+  listado.siguiente = respuesta.siguiente;
   listado.vacio.classList.toggle('d-none', listado.lista.children.length !== 0);
-  const quedanMas = respuesta.pagina * respuesta.limite < respuesta.total;
-  listado.botonMas.classList.toggle('d-none', !quedanMas);
+  listado.botonMas.classList.toggle('d-none', respuesta.siguiente === null);
 }
 
 // Pide al backend la página siguiente de un listado ('amigos' o 'seguidores') y la muestra.
+// La primera se pide sin cursor; las demás, desde el `siguiente` de la anterior.
 async function cargarPagina(tipo) {
   const listado = listados[tipo];
-  const respuesta = await api(`/perfil/${tipo}?pagina=${listado.pagina + 1}&limite=${PERSONAS_POR_PAGINA}`);
+  const cursor = listado.siguiente === null ? '' : `&despuesDe=${listado.siguiente}`;
+  const respuesta = await api(`/perfil/${tipo}?limite=${PERSONAS_POR_PAGINA}${cursor}`);
   mostrarPagina(listado, respuesta);
 }
 
@@ -256,6 +262,15 @@ async function cargarRelaciones() {
   } catch (err) {
     mostrarErrorRelaciones(err);
   }
+}
+
+// Vuelve a empezar los dos listados y los contadores (por ejemplo, tras aceptar una solicitud).
+function recargarRelaciones() {
+  for (const listado of Object.values(listados)) {
+    listado.lista.replaceChildren();
+    listado.siguiente = null;
+  }
+  return cargarRelaciones();
 }
 
 // «Cargar más»: el botón se desactiva mientras llega la página para no pedirla dos veces.

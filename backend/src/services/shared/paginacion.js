@@ -1,6 +1,6 @@
 // Paginación por cursor, común a los listados («Cargar más»).
 // Capa: servicios (services/shared).
-// Lo usa: services/experienciaService.js (CS-44).
+// Lo usan: services/experienciaService.js (CS-44) y services/perfilService.js (CS-45).
 // Usa: errores.js.
 //
 // En lugar de pedir «la página 3» (OFFSET, que obliga a MySQL a recorrer todas las filas

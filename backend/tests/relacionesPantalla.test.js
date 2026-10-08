@@ -20,21 +20,22 @@ const terminar = () => new Promise((resolve) => setTimeout(resolve, 0));
 // Personas de ejemplo con ids consecutivos: personas(2, 4) son los usuarios 2, 3 y 4.
 const persona = (id) => ({ id, nombreUsuario: `usuario_${id}`, foto: '/img/foto-por-defecto.svg' });
 const personas = (desde, hasta) => Array.from({ length: hasta - desde + 1 }, (_, i) => persona(desde + i));
-// Respuesta de un listado paginado, como la devuelve el backend.
-const pagina = (numero, total, lista) => ({ pagina: numero, limite: 20, total, personas: lista });
+// Respuesta de un listado paginado por cursor, como la devuelve el backend: `siguiente` es el
+// valor para pedir la página siguiente, o null si no hay más.
+const listado = (lista, siguiente = null) => ({ personas: lista, siguiente });
 
 const RESUMEN = '/api/perfil/resumen';
-const AMIGOS = '/api/perfil/amigos?pagina=1&limite=20';
-const SEGUIDORES = '/api/perfil/seguidores?pagina=1&limite=20';
-const SEGUIDORES_2 = '/api/perfil/seguidores?pagina=2&limite=20';
+const AMIGOS = '/api/perfil/amigos?limite=20';
+const SEGUIDORES = '/api/perfil/seguidores?limite=20';
+const SEGUIDORES_2 = '/api/perfil/seguidores?limite=20&despuesDe=23';
 
 // Lo que responde el servidor simulado si la prueba no indica otra cosa: un perfil sin relaciones.
 const SIN_RELACIONES = {
   '/api/perfil': [200, PERFIL],
   '/api/amistades/solicitudes': [200, []],
   [RESUMEN]: [200, { amigos: 0, seguidores: 0 }],
-  [AMIGOS]: [200, pagina(1, 0, [])],
-  [SEGUIDORES]: [200, pagina(1, 0, [])],
+  [AMIGOS]: [200, listado([])],
+  [SEGUIDORES]: [200, listado([])],
 };
 
 // Abre la página con un servidor simulado que responde según la dirección pedida,
@@ -59,8 +60,8 @@ test('muestra el número de amigos y de seguidores', async () => {
 
 test('lista a los amigos y a los seguidores por su nombre', async () => {
   await abrirPerfil({
-    [AMIGOS]: [200, pagina(1, 2, personas(2, 3))],
-    [SEGUIDORES]: [200, pagina(1, 1, personas(4, 4))],
+    [AMIGOS]: [200, listado(personas(2, 3))],
+    [SEGUIDORES]: [200, listado(personas(4, 4))],
   });
 
   expect($('#lista-amigos').children).toHaveLength(2);
@@ -74,7 +75,7 @@ test('lista a los amigos y a los seguidores por su nombre', async () => {
 
 test('el nombre se escribe como texto y nunca se interpreta como HTML', async () => {
   const conEtiquetas = { id: 2, nombreUsuario: '<b>ana</b>', foto: '/img/foto-por-defecto.svg' };
-  await abrirPerfil({ [AMIGOS]: [200, pagina(1, 1, [conEtiquetas])] });
+  await abrirPerfil({ [AMIGOS]: [200, listado([conEtiquetas])] });
 
   expect($('#lista-amigos').textContent).toContain('<b>ana</b>');
   expect($('#lista-amigos b')).toBeNull();
@@ -96,8 +97,8 @@ test('sin amigos ni seguidores se ven ceros y un aviso en cada lista', async () 
 
 test('«Cargar más» solo aparece si quedan personas por mostrar', async () => {
   await abrirPerfil({
-    [AMIGOS]: [200, pagina(1, 2, personas(2, 3))],
-    [SEGUIDORES]: [200, pagina(1, 25, personas(4, 23))],
+    [AMIGOS]: [200, listado(personas(2, 3))],
+    [SEGUIDORES]: [200, listado(personas(4, 23), 23)],
   });
 
   expect(oculto('#mas-amigos')).toBe(true);
@@ -106,9 +107,9 @@ test('«Cargar más» solo aparece si quedan personas por mostrar', async () => 
 
 test('al pulsar «Cargar más» se pide la página siguiente y se añade sin repetir a nadie', async () => {
   await abrirPerfil({
-    [SEGUIDORES]: [200, pagina(1, 25, personas(4, 23))],
-    // La página 2 repite al usuario 23, ya mostrado, y trae a los cinco que faltan.
-    [SEGUIDORES_2]: [200, pagina(2, 25, personas(23, 28))],
+    [SEGUIDORES]: [200, listado(personas(4, 23), 23)],
+    // La página siguiente repite al usuario 23, ya mostrado, y trae a los cinco que faltan.
+    [SEGUIDORES_2]: [200, listado(personas(23, 28))],
   });
 
   $('#mas-seguidores').click();
@@ -131,7 +132,7 @@ test('si el servidor falla se muestra su mensaje y el resto del perfil sigue fun
 
 test('si falla «Cargar más» se avisa y el botón sigue disponible para reintentar', async () => {
   await abrirPerfil({
-    [SEGUIDORES]: [200, pagina(1, 25, personas(4, 23))],
+    [SEGUIDORES]: [200, listado(personas(4, 23), 23)],
     [SEGUIDORES_2]: [500, { error: 'Error temporal' }],
   });
 
@@ -143,4 +144,29 @@ test('si falla «Cargar más» se avisa y el botón sigue disponible para reinte
   expect($('#lista-seguidores').children).toHaveLength(20);
   expect(oculto('#mas-seguidores')).toBe(false);
   expect($('#mas-seguidores').disabled).toBe(false);
+});
+test('al aceptar una solicitud en la misma página sube el contador y el amigo aparece en la lista', async () => {
+  const SOLICITUD = { id: 10, estado: 'PENDIENTE', solicitante: persona(2) };
+  await abrirPerfil({ '/api/amistades/solicitudes': [200, [SOLICITUD]] });
+  expect($('#total-amigos').textContent).toBe('0');
+
+  // A partir de aquí el servidor ya tiene la amistad aceptada
+  const despues = {
+    ...SIN_RELACIONES,
+    '/api/amistades/10': [200, { ...SOLICITUD, estado: 'ACEPTADA' }],
+    [RESUMEN]: [200, { amigos: 1, seguidores: 0 }],
+    [AMIGOS]: [200, listado([persona(2)])],
+  };
+  window.fetch.mockImplementation((ruta) => {
+    const [status, cuerpo] = despues[ruta] ?? [404, { error: `Ruta no simulada: ${ruta}` }];
+    return respuesta(status, cuerpo);
+  });
+  [...document.querySelectorAll('#solicitudes-recibidas button')]
+    .find((boton) => boton.textContent === 'Aceptar')
+    .click();
+  await terminar();
+
+  expect($('#total-amigos').textContent).toBe('1');
+  expect([...$('#lista-amigos').children].map((fila) => fila.textContent.trim())).toEqual(['usuario_2']);
+  expect(oculto('#sin-amigos')).toBe(true);
 });

@@ -15,8 +15,8 @@ const { crearError } = require('../src/errores');
 
 const USUARIO = { id: 1, email: 'luis@ejemplo.com' };
 const ANA = { id: 2, nombreUsuario: 'ana', foto: '/img/foto-por-defecto.svg' };
-const PAGINA_AMIGOS = { pagina: 2, limite: 10, total: 11, personas: [ANA] };
-const PAGINA_SEGUIDORES = { pagina: 1, limite: 20, total: 1, personas: [ANA] };
+const PAGINA_AMIGOS = { personas: [ANA], siguiente: 11 };
+const PAGINA_SEGUIDORES = { personas: [ANA], siguiente: null };
 
 beforeAll(async () => {
   USUARIO.passwordHash = await bcrypt.hash('secreta123', 4);
@@ -56,46 +56,44 @@ test('el resumen devuelve los contadores del usuario de la sesión', async () =>
   expect(perfilService.obtenerResumenRelaciones).toHaveBeenCalledWith(1);
 });
 
-test('los amigos se piden con la página y el límite de la dirección', async () => {
+test('los amigos se piden con el cursor y el límite de la dirección', async () => {
   perfilService.listarAmigosPropios.mockResolvedValue(PAGINA_AMIGOS);
   const agente = await agenteConSesion();
 
-  const res = await agente.get('/api/perfil/amigos?pagina=2&limite=10');
+  const res = await agente.get('/api/perfil/amigos?despuesDe=57&limite=10');
 
   expect(res.status).toBe(200);
   expect(res.body).toEqual(PAGINA_AMIGOS);
-  expect(perfilService.listarAmigosPropios).toHaveBeenCalledWith(1, '2', '10');
+  expect(perfilService.listarAmigosPropios).toHaveBeenCalledWith(1, { despuesDe: '57', limite: '10' });
 });
 
-test('sin página ni límite, el servicio decide los valores por defecto', async () => {
+test('sin cursor ni límite, el servicio decide los valores por defecto', async () => {
   perfilService.listarAmigosPropios.mockResolvedValue(PAGINA_AMIGOS);
   const agente = await agenteConSesion();
 
   const res = await agente.get('/api/perfil/amigos');
 
   expect(res.status).toBe(200);
-  expect(perfilService.listarAmigosPropios).toHaveBeenCalledWith(1, undefined, undefined);
+  expect(perfilService.listarAmigosPropios).toHaveBeenCalledWith(1, { despuesDe: undefined, limite: undefined });
 });
 
-test('los seguidores se piden con la página y el límite de la dirección', async () => {
+test('los seguidores se piden con el cursor y el límite de la dirección', async () => {
   perfilService.listarSeguidoresPropios.mockResolvedValue(PAGINA_SEGUIDORES);
   const agente = await agenteConSesion();
 
-  const res = await agente.get('/api/perfil/seguidores?pagina=1&limite=20');
+  const res = await agente.get('/api/perfil/seguidores?despuesDe=3&limite=20');
 
   expect(res.status).toBe(200);
   expect(res.body).toEqual(PAGINA_SEGUIDORES);
-  expect(perfilService.listarSeguidoresPropios).toHaveBeenCalledWith(1, '1', '20');
+  expect(perfilService.listarSeguidoresPropios).toHaveBeenCalledWith(1, { despuesDe: '3', limite: '20' });
 });
 
 test('si la paginación no es válida responde 400 con el mensaje del servicio', async () => {
-  perfilService.listarAmigosPropios.mockRejectedValue(
-    crearError('La página debe ser un número entero mayor que 0', 400)
-  );
+  perfilService.listarAmigosPropios.mockRejectedValue(crearError('La paginación no es válida', 400));
   const agente = await agenteConSesion();
 
-  const res = await agente.get('/api/perfil/amigos?pagina=0');
+  const res = await agente.get('/api/perfil/amigos?despuesDe=0');
 
   expect(res.status).toBe(400);
-  expect(res.body).toEqual({ error: 'La página debe ser un número entero mayor que 0' });
+  expect(res.body).toEqual({ error: 'La paginación no es válida' });
 });

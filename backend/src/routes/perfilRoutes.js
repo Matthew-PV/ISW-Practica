@@ -47,18 +47,19 @@ router.get('/resumen', async (req, res) => {
   res.json(resumen);
 });
 
-// GET /api/perfil/amigos?pagina=1&limite=20 — una página de los amigos del usuario de la sesión:
-// { pagina, limite, total, personas }. Sin `pagina` ni `limite` se usan 1 y 20; 400 si no son válidos.
+// GET /api/perfil/amigos?despuesDe=57&limite=20 — una página de los amigos del usuario de la
+// sesión: { personas, siguiente }. Sin `despuesDe` empieza por el principio; sin `limite`, 20.
+// 400 si no son válidos.
 router.get('/amigos', async (req, res) => {
-  const { pagina, limite } = req.query;
-  const amigos = await perfilService.listarAmigosPropios(req.session.usuarioId, pagina, limite);
+  const { despuesDe, limite } = req.query;
+  const amigos = await perfilService.listarAmigosPropios(req.session.usuarioId, { despuesDe, limite });
   res.json(amigos);
 });
 
-// GET /api/perfil/seguidores?pagina=1&limite=20 — igual que /amigos, con quienes siguen al usuario.
+// GET /api/perfil/seguidores?despuesDe=57&limite=20 — igual que /amigos, con quienes siguen al usuario.
 router.get('/seguidores', async (req, res) => {
-  const { pagina, limite } = req.query;
-  const seguidores = await perfilService.listarSeguidoresPropios(req.session.usuarioId, pagina, limite);
+  const { despuesDe, limite } = req.query;
+  const seguidores = await perfilService.listarSeguidoresPropios(req.session.usuarioId, { despuesDe, limite });
   res.json(seguidores);
 });
 
