@@ -227,9 +227,9 @@ Se ha trabajado de forma incremental en la historia CS-30 y en la validación de
 - `backend/tests/visibilidad.test.js` quedó en verde con la matriz de acceso.
 - `backend/tests/experienciaObjetivos.test.js` quedó en verde con la validación del detalle de experiencia y el mensaje unificado de acceso.
 
-# CS-62: perfil de otro usuario — En progreso (07/10/2026)
+# CS-62: perfil de otro usuario — Finalizada (08/10/2026)
 
-Se puede abrir el perfil de otra persona en `usuario.html?nombre=<nombreUsuario>`, ver su foto, nombre, ciudad y contadores de amigos y seguidores, y gestionar la amistad y el seguimiento sin recargar la página. Están hechos los objetivos 1 a 7, 9, 11 y 12. Quedan pendientes el objetivo 8 y la mitad del 10, que dependen de CS-44 (ver «Pendiente»).
+Se puede abrir el perfil de otra persona en `usuario.html?nombre=<nombreUsuario>`, ver su foto, nombre, ciudad y contadores de amigos y seguidores, y gestionar la amistad y el seguimiento sin recargar la página. Los objetivos 1 a 7, 9, 11 y 12 los hizo Flavia; el 8 y el 10 los cubrieron otras personas al construir sus historias (ver «Objetivos cubiertos por otras historias»).
 
 ### Cambios realizados
 
@@ -240,10 +240,11 @@ Se puede abrir el perfil de otra persona en `usuario.html?nombre=<nombreUsuario>
 - **Pruebas:** `perfilPublicoRepository`, `contadoresRepository`, `perfilPublicoService`, `perfilPublicoRoutes`, `perfilPublicoApi` y `usuarioPantalla` (esta con jsdom). Cubren los campos devueltos, la ausencia del email, el 404, cada estado de la relación, cada botón y su efecto, los errores del servidor, la confirmación cancelada o aceptada, el usuario inexistente y el perfil propio.
 - **Comprobación manual:** con servidor, MySQL y navegador reales, y dos usuarios de prueba, se comprobaron todos los estados de los botones en escritorio (1280 px), tablet (768 px) y móvil (375 px), la persistencia al recargar y el recorrido desde «Buscar personas» hasta el perfil.
 
-### Pendiente
+### Objetivos cubiertos por otras historias
 
-- **Objetivo 8** (listado de sus experiencias visibles para mí): depende de la función de CS-44, que todavía no existe. Se podrá construir con `experienciaRepository.listarPorAutor` y `puedeVerExperiencia`.
-- **Objetivo 10:** la mitad «desde la búsqueda de personas» ya está resuelta por CS-61 (`personas.js` enlaza a `usuario.html`). Falta el enlace «desde el autor de cada experiencia», porque aún no hay ninguna pantalla que muestre experiencias de otras personas.
+- **Objetivo 8** (listado de sus experiencias visibles para mí): lo resolvió Joaquín con CS-44 (`GET /api/experiencias?autor=`, `js/shared/experiencias.js` y la sección «Sus experiencias» de `usuario.html`). Respeta la visibilidad: las públicas las ve cualquiera, las de «amigos» solo quien tiene una amistad aceptada con el autor, y las privadas nunca.
+- **Objetivo 10:** el enlace desde la búsqueda de personas lo hizo Matthew en CS-61 (`personas.js`), y el enlace desde el autor de cada experiencia lo hizo Joaquín en `experiencia.html` (CS-63).
+- Comprobado el 08/10/2026 con servidor y datos reales: sin relación con el autor solo se ve su experiencia pública; siendo amigos se ve también la de amigos, y la privada nunca. Desde una experiencia, el autor enlaza a su perfil.
 - Sin comprobar: el aspecto visual de la ventana de `confirm()`, que el navegador integrado de la herramienta no muestra.
 
 ### Para quien continúe
@@ -252,6 +253,7 @@ Se puede abrir el perfil de otra persona en `usuario.html?nombre=<nombreUsuario>
 - `js/shared/api.js` solo lanza el mensaje del error, no su código HTTP. `usuario.js` reconoce el 404 por el texto «Usuario no encontrado»; si se cambia el mensaje del servicio hay que cambiarlo también allí, o hacer que `api.js` añada el código al error.
 - `contarAmigos` y `contarSeguidores` se pueden reutilizar en CS-45.
 - Para añadir al perfil otras acciones, reutilizar `crearBoton` y `actuar` de `usuario.js`.
+- Tras un `git pull` conviene ejecutar también `npm install` (CS-64 añadió `nodemailer`; sin él fallan 20 suites) y `npm run db:seed` si `/api/ciudades` devuelve una lista vacía (sin ciudades no se pueden crear experiencias).
 - Tras un `git pull` que traiga migraciones hay que ejecutar `npx prisma migrate deploy` y `npx prisma generate` en `backend/`. Sin las migraciones de visibilidad y valoraciones, la bienvenida da «Error interno del servidor».
 
 ### Cómo comprobarlo
@@ -261,7 +263,7 @@ cd backend
 npm test
 ```
 
-Resultado esperado el 07/10/2026: 49 suites y 416 pruebas correctas. Para la comprobación manual: `docker compose up -d`, `npm run dev`, iniciar sesión, abrir «Buscar personas», buscar a otro usuario y pulsar su nombre.
+Resultado esperado el 08/10/2026: 61 suites y 561 pruebas correctas. Para la comprobación manual: `docker compose up -d`, `npm run dev`, iniciar sesión, abrir «Buscar personas», buscar a otro usuario y pulsar su nombre.
 
 # Excel de historias: cambios de OneDrive y CS-64 para José — Documentado (07/10/2026)
 
