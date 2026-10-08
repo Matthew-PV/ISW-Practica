@@ -39,15 +39,15 @@ No vuelvas a preguntar la identidad si ya consta de forma inequívoca en el chat
 Consulta únicamente la documentación necesaria para la tarea y usa este orden de prioridad:
 
 1. Las instrucciones actuales del equipo y del usuario.
-2. Los criterios de validación de la historia de usuario correspondiente, en `customer-stories/`.
+2. Los criterios de validación de la historia de usuario correspondiente, en el libro de historias (ver el párrafo siguiente).
 3. El código y las pruebas actuales, que indican lo que realmente está implementado.
 4. `documentacion/arquitectura.md`, para las reglas técnicas estables.
 5. Las entradas más recientes de `documentacion/modificaciones.md`, para cambios y pasos operativos recientes.
 6. `documentacion/propuesta-inicial.md`, como visión conceptual del producto, no como prueba de que una función exista.
 
-`README.md` resume el estado actual y la puesta en marcha. Si la documentación, las historias y el código se contradicen, indícalo antes de decidir cuál actualizar. Distingue siempre entre funcionalidad implementada, trabajo pendiente y diseño futuro.
+`README.md` resume el estado actual y la puesta en marcha. Para consultar cómo funciona algo ya implementado: `documentacion/api.md` (rutas), `documentacion/flujos.md` (secuencias y estados), `documentacion/frontend.md` (pantallas) y `documentacion/glosario.md` (términos técnicos). Si la documentación, las historias y el código se contradicen, indícalo antes de decidir cuál actualizar. Distingue siempre entre funcionalidad implementada, trabajo pendiente y diseño futuro.
 
-Desde el 05/10/2026, `Customer_Stories_PlanB.xlsx` se mantiene únicamente en el OneDrive compartido del equipo y su copia antigua se ha retirado del repositorio. Para cada trabajo, consulta la copia actualizada que facilite el integrante responsable y no la añadas a Git. Las filas de tareas registran descripción, estado, responsable voluntario, tiempo estimado por esa persona y tiempo total empleado. Si no se dispone de una copia actual, no reconstruyas los criterios desde documentos antiguos: solicita la versión vigente al integrante.
+El libro de historias `Customer_Stories_PlanB.xlsx` con el que trabaja el equipo está en el OneDrive compartido: allí se llevan el estado, el responsable voluntario, el tiempo estimado por esa persona y el tiempo total empleado de cada tarea. La copia de `documentacion/customer-stories/Customer_Stories_PlanB.xlsx` es solo una guía general de las historias: no se usa para trabajar ni se marca en ella ningún progreso; los cambios que haya que hacer en el libro se entregan como una lista para pasarla al libro online. Para los criterios de una tarea, usa la copia actual que facilite el integrante responsable; si no la hay, solicítala en lugar de reconstruir los criterios desde documentos antiguos.
 
 ## 4. Arquitectura obligatoria
 
@@ -63,10 +63,21 @@ PlanB es un monolito web por capas. El flujo normal del backend es:
 
 Reutiliza antes de duplicar:
 
-- `requiereSesion` en `backend/src/middlewares/sesionMiddleware.js`.
+- `requiereSesion` en `backend/src/middlewares/sesionMiddleware.js`. Además de exigir sesión, comprueba que su usuario sigue existiendo; los servicios no repiten esa comprobación.
 - `validarNombreUsuario` en `backend/src/services/shared/nombreUsuario.js`.
 - El cliente Prisma y el almacén de sesiones de `backend/src/repositories/shared/`.
 - `crearError` en `backend/src/errores.js` para errores con estado HTTP.
+- `leerId` en `backend/src/services/shared/identificadores.js` para validar identificadores.
+- `leerPaginacion` y `cortarPagina` en `backend/src/services/shared/paginacion.js` para cualquier lista por páginas.
+- `validarPassword` y `cifrarPassword` en `backend/src/services/shared/password.js`.
+- `USUARIO_PUBLICO` en `backend/src/repositories/shared/camposPublicos.js` cada vez que una consulta devuelva a otro usuario.
+
+Convenciones de la API (detalle en `documentacion/api.md`):
+
+- Una experiencia que no existe o que el usuario no puede ver responde lo mismo: 404 «Contenido no disponible», con `experienciaService.obtenerExperiencia`. Todo lo que cuelga de una experiencia (sus valoraciones) pasa por esa función.
+- Las listas se paginan por cursor: `?despuesDe=&limite=` en la URL y `{ <lista>, siguiente }` en la respuesta, con el repositorio pidiendo `limite + 1` filas ordenadas por id descendente. No se usa OFFSET.
+- De otro usuario solo se devuelven `{ id, nombreUsuario, foto }`; nunca su email ni su contraseña cifrada.
+- Los errores de concurrencia de Prisma (P2002, P2025) se traducen a 400 o 404, nunca a 500 (ver `repositories/shared/carreras.js`).
 
 Cada archivo nuevo debe respetar los sufijos `Routes.js`, `Middleware.js`, `Service.js` o `Repository.js`. Mantén el código sencillo y comprensible para estudiantes; evita abstracciones prematuras.
 
@@ -107,6 +118,8 @@ No escribas una prueba que pase desde el principio sin demostrar que detecta la 
 - Servicios: pruebas unitarias con repositorios simulados cuando corresponda.
 - API: Jest y Supertest.
 - Pantallas: Jest con jsdom, además de comprobación manual cuando sea relevante.
+- Dónde va cada prueba, dentro de `backend/tests/`: `services/` y `services/shared/` (unitarias, repositorios simulados), `routes/` y `middlewares/` (Supertest con servicios reales y repositorios simulados), `criterios/` (un archivo por historia, de principio a fin por HTTP), `mysql/` (con MySQL real: restricciones, transacciones y concurrencia) y `frontend/` (jsdom). Las ayudas comunes están en `helpers/`.
+- `npm run test:mysql` ejecuta las de `mysql/` (necesita `docker compose up -d`) y `npm run test:cobertura` las ejecuta todas con el informe de cobertura; falla si la cobertura baja de los mínimos de `package.json`.
 - Ejecuta primero las pruebas específicas del cambio y después toda la batería con `npm test` desde `backend/`.
 - No cambies una prueba solo para ocultar un fallo. Si cambia un comportamiento acordado, explica por qué deben cambiar tanto el código como su expectativa.
 - Informa del comando ejecutado, el resultado y cualquier parte que no haya podido comprobarse.
@@ -118,6 +131,8 @@ No escribas una prueba que pase desde el principio sin demostrar que detecta la 
 - No reescribas el historial, borres ramas ni descartes cambios sin autorización expresa.
 - No incluyas archivos temporales, `node_modules`, `.env`, cookies ni bloqueos creados fuera del paquete al que pertenecen.
 - Los mensajes de commit deben explicar el resultado y, cuando sea útil, mencionar la historia u objetivo correspondiente.
+- Antes de cada push, y siempre después de un merge o de resolver un conflicto, ejecuta `npm test` desde `backend/` y comprueba que no queda ningún marcador de conflicto. Este comando, desde la raíz, no debe mostrar nada: `git grep -nE '^(<<<<<<<|=======|>>>>>>>)( |$)'`.
+- Quien cambie una ruta, un modelo de datos, un flujo o una pantalla actualiza en el mismo commit su documentación: `documentacion/api.md`, el diagrama ER de `documentacion/arquitectura.md`, `documentacion/flujos.md` o `documentacion/frontend.md`.
 
 ## 9. Registro del uso de IA
 
