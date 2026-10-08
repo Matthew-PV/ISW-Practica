@@ -36,15 +36,6 @@ async function actualizar(id, datos) {
   });
 }
 
-// Devuelve las experiencias de un autor, de la más nueva a la más antigua, con su ciudad.
-async function listarPorAutor(autorId) {
-  return prisma.experiencia.findMany({
-    where: { autorId },
-    orderBy: { id: 'desc' },
-    include: { ciudad: true },
-  });
-}
-
 // CS-44: hasta `cantidad` experiencias de un autor con alguna de las `visibilidades` indicadas,
 // de la más reciente a la más antigua, con su ciudad. Con `despuesDe` (un id) empieza justo
 // después de ese elemento: es el cursor de «Cargar más» (ver services/shared/paginacion.js).
@@ -62,4 +53,4 @@ async function listarDeAutor(autorId, visibilidades, despuesDe, cantidad) {
   });
 }
 
-module.exports = { crear, buscarPorId, actualizar, listarPorAutor, listarDeAutor };
+module.exports = { crear, buscarPorId, actualizar, listarDeAutor };

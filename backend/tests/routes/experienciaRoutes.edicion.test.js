@@ -108,11 +108,10 @@ describe('Objetivo 7 - los cambios sustituyen a los datos anteriores', () => {
     const agente = await agenteConSesion();
     await agente.patch('/api/experiencias/10').send({ titulo: 'Tarde de museos', descripcion: 'Solo el Prado' });
 
-    experienciaRepository.listarPorAutor.mockImplementation(async () => [{ ...guardada }]);
-    const res = await agente.get('/api/experiencias/mias');
+    const res = await agente.get('/api/experiencias/10');
 
-    expect(res.body[0].titulo).toBe('Tarde de museos');
-    expect(res.body[0].descripcion).toBe('Solo el Prado');
+    expect(res.body.titulo).toBe('Tarde de museos');
+    expect(res.body.descripcion).toBe('Solo el Prado');
     expect(JSON.stringify(res.body)).not.toContain('Tarde cultural');
   });
 

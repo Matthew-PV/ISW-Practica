@@ -1,12 +1,12 @@
 // CS-62, objetivo 3: ruta GET /api/usuarios/:nombreUsuario (perfil público de otro usuario).
-jest.mock('../../src/services/perfilService', () => ({ obtenerPerfilPublico: jest.fn() }));
+jest.mock('../../src/services/usuarioService', () => ({ obtenerPerfilPublico: jest.fn(), buscarUsuarios: jest.fn() }));
 jest.mock('../../src/repositories/usuarioRepository');
 
 const request = require('supertest');
 const bcrypt = require('bcrypt');
 const app = require('../../src/app');
 const usuarioRepository = require('../../src/repositories/usuarioRepository');
-const perfilService = require('../../src/services/perfilService');
+const usuarioService = require('../../src/services/usuarioService');
 const { crearError } = require('../../src/errores');
 
 const USUARIO = { id: 1, email: 'luis@ejemplo.com' };
@@ -33,22 +33,22 @@ test('sin sesión responde 401', async () => {
   const res = await request(app).get('/api/usuarios/ana');
 
   expect(res.status).toBe(401);
-  expect(perfilService.obtenerPerfilPublico).not.toHaveBeenCalled();
+  expect(usuarioService.obtenerPerfilPublico).not.toHaveBeenCalled();
 });
 
 test('con sesión devuelve el perfil público que entrega el servicio', async () => {
-  perfilService.obtenerPerfilPublico.mockResolvedValue(PERFIL_ANA);
+  usuarioService.obtenerPerfilPublico.mockResolvedValue(PERFIL_ANA);
   const agente = await agenteConSesion();
 
   const res = await agente.get('/api/usuarios/ana');
 
-  expect(perfilService.obtenerPerfilPublico).toHaveBeenCalledWith(1, 'ana');
+  expect(usuarioService.obtenerPerfilPublico).toHaveBeenCalledWith(1, 'ana');
   expect(res.status).toBe(200);
   expect(res.body).toEqual(PERFIL_ANA);
 });
 
 test('si el usuario no existe responde 404', async () => {
-  perfilService.obtenerPerfilPublico.mockRejectedValue(crearError('Usuario no encontrado', 404));
+  usuarioService.obtenerPerfilPublico.mockRejectedValue(crearError('Usuario no encontrado', 404));
   const agente = await agenteConSesion();
 
   const res = await agente.get('/api/usuarios/nadie');

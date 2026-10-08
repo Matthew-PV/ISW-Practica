@@ -10,7 +10,7 @@ const app = require('../../src/app');
 const usuarioRepository = require('../../src/repositories/usuarioRepository');
 const amistadRepository = require('../../src/repositories/amistadRepository');
 const seguimientoRepository = require('../../src/repositories/seguimientoRepository');
-const { FOTO_POR_DEFECTO } = require('../../src/services/perfilService');
+const { FOTO_POR_DEFECTO } = require('../../src/services/shared/fotoPorDefecto');
 
 const YO = { id: 1, nombreUsuario: 'luis', email: 'luis@ejemplo.com' };
 const ANA = { id: 2, nombreUsuario: 'ana', foto: null, ciudad: 'Madrid' };

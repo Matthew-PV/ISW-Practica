@@ -267,16 +267,6 @@ async function obtenerExperiencia(usuarioId, experienciaId) {
   return experiencia;
 }
 
-// Devuelve las experiencias del usuario de la sesión, de la más nueva a la más antigua.
-// Error 401 si el usuario ya no existe.
-async function listarExperienciasPropias(usuarioId) {
-  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
-      !(await usuarioRepository.buscarPorId(usuarioId))) {
-    throw crearError('No hay sesión iniciada', 401);
-  }
-  return experienciaRepository.listarPorAutor(usuarioId);
-}
-
 const EXPERIENCIAS_POR_PAGINA = 10;
 
 // CS-44: experiencias publicadas por un usuario, de la más reciente a la más antigua y por
@@ -308,7 +298,6 @@ async function listarDeAutor(usuarioId, nombreUsuario, paginacion) {
 
 module.exports = {
   listarDeAutor,
-  listarExperienciasPropias,
   obtenerExperiencia,
   validarCreacion,
   validarEdicion,

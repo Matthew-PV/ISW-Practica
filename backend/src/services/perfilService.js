@@ -3,9 +3,10 @@
 // Lo usa: routes/perfilRoutes.js.
 // Usa: repositories/usuarioRepository.js (leer y guardar el perfil),
 //      repositories/fotoRepository.js (subir la foto a Cloudinary),
-//      repositories/amistadRepository.js y repositories/seguimientoRepository.js (perfil público,
-//      contadores y listados de CS-45), services/shared/nombreUsuario.js (reglas del nombre),
-//      services/shared/paginacion.js (cursor de los listados), services/shared/password.js
+//      repositories/amistadRepository.js y repositories/seguimientoRepository.js (contadores y
+//      listados de CS-45), services/shared/nombreUsuario.js (reglas del nombre),
+//      services/shared/fotoPorDefecto.js, services/shared/paginacion.js (cursor de los
+//      listados), services/shared/password.js
 //      (reglas y cifrado de la contraseña, CS-64), la librería bcrypt y errores.js.
 //
 // Todas las funciones reciben el `id` del usuario de la sesión: un usuario solo puede
@@ -16,20 +17,12 @@ const fotoRepository = require('../repositories/fotoRepository');
 const amistadRepository = require('../repositories/amistadRepository');
 const seguimientoRepository = require('../repositories/seguimientoRepository');
 const { leerPaginacion, cortarPagina } = require('./shared/paginacion');
+const { conFotoPorDefecto } = require('./shared/fotoPorDefecto');
 const { validarPassword, cifrarPassword } = require('./shared/password');
 const { crearError } = require('../errores');
 const { validarNombreUsuario } = require('./shared/nombreUsuario');
 
 const CIUDAD_MAX = 191; // tamaño de la columna en MySQL
-
-// Imagen que se muestra mientras el usuario no ha subido ninguna foto (archivo del frontend).
-const FOTO_POR_DEFECTO = '/img/foto-por-defecto.svg';
-
-// Devuelve el perfil con la imagen por defecto en `foto` si el usuario no tiene ninguna.
-// En MySQL sigue guardándose null: solo cambia lo que devuelve la API.
-function conFotoPorDefecto(perfil) {
-  return { ...perfil, foto: perfil.foto || FOTO_POR_DEFECTO };
-}
 
 // La ciudad del perfil es texto libre y opcional: null o un texto vacío la dejan sin ciudad.
 // Cuenta caracteres Unicode (un emoji ocupa dos posiciones en String.length).
@@ -119,41 +112,6 @@ async function actualizarFotoPropia(id, archivo) {
   return conFotoPorDefecto(perfil);
 }
 
-// Devuelve el perfil público de otro usuario (nunca su email), con sus contadores de amigos y
-// seguidores y la relación de quien consulta con él.
-// - `usuarioId`: el usuario de la sesión, que consulta el perfil.
-// - `nombreUsuario`: el usuario cuyo perfil se consulta.
-// Devuelve { id, nombreUsuario, foto, ciudad, amigos, seguidores, esPropio, relacion }, o error 404.
-// `esPropio` es true cuando el perfil consultado es el del propio usuario de la sesión.
-// `relacion.amistad` es 'ninguna', 'enviada' (la envié yo), 'recibida' o 'amigos'; `relacion.amistadId`
-// es el id de esa solicitud o amistad (null si no hay), que las pantallas necesitan para responderla.
-async function obtenerPerfilPublico(usuarioId, nombreUsuario) {
-  const perfil = await usuarioRepository.obtenerPerfilPublico(nombreUsuario);
-  if (!perfil) {
-    throw crearError('Usuario no encontrado', 404);
-  }
-
-  const amigos = await amistadRepository.contarAmigos(perfil.id);
-  const seguidores = await seguimientoRepository.contarSeguidores(perfil.id);
-  const amistad = await amistadRepository.buscarEntreUsuarios(usuarioId, perfil.id);
-  const siguiendo = await seguimientoRepository.sigueA(usuarioId, perfil.id);
-
-  let estadoAmistad = 'ninguna';
-  if (amistad?.estado === 'ACEPTADA') {
-    estadoAmistad = 'amigos';
-  } else if (amistad?.estado === 'PENDIENTE') {
-    estadoAmistad = amistad.solicitanteId === usuarioId ? 'enviada' : 'recibida';
-  }
-
-  return {
-    ...conFotoPorDefecto(perfil),
-    amigos,
-    seguidores,
-    esPropio: perfil.id === usuarioId,
-    relacion: { amistad: estadoAmistad, amistadId: amistad?.id ?? null, siguiendo },
-  };
-}
-
 // Personas por página en los listados de amigos y seguidores (CS-45).
 const PERSONAS_POR_PAGINA = 20;
 
@@ -167,8 +125,11 @@ function paginaDePersonas(filas, limite) {
 // Devuelve cuántos amigos y seguidores tiene el usuario de la sesión: { amigos, seguidores }.
 // Solo cuentan las amistades aceptadas; quien no tiene ninguna relación obtiene ceros.
 async function obtenerResumenRelaciones(usuarioId) {
-  const amigos = await amistadRepository.contarAmigos(usuarioId);
-  const seguidores = await seguimientoRepository.contarSeguidores(usuarioId);
+  // Las dos consultas son independientes: se lanzan a la vez
+  const [amigos, seguidores] = await Promise.all([
+    amistadRepository.contarAmigos(usuarioId),
+    seguimientoRepository.contarSeguidores(usuarioId),
+  ]);
   return { amigos, seguidores };
 }
 
@@ -211,4 +172,12 @@ async function cambiarPassword(usuarioId, datos) {
   await usuarioRepository.actualizarPassword(usuarioId, await cifrarPassword(password));
 }
 
-module.exports = { obtenerPerfilPropio, actualizarPerfilPropio, actualizarFotoPropia, obtenerPerfilPublico, FOTO_POR_DEFECTO, obtenerResumenRelaciones, listarAmigosPropios, listarSeguidoresPropios, cambiarPassword };
+module.exports = {
+  obtenerPerfilPropio,
+  actualizarPerfilPropio,
+  actualizarFotoPropia,
+  obtenerResumenRelaciones,
+  listarAmigosPropios,
+  listarSeguidoresPropios,
+  cambiarPassword,
+};

@@ -64,6 +64,9 @@ const terminar = () =>
     setTimeout(resolve, 0)
   );
 
+// Cursor que devuelve el servidor tras la primera página (null: no hay más)
+let paginaSiguiente = null;
+
 beforeEach(async () => {
   document.documentElement.innerHTML = HTML;
 
@@ -89,11 +92,13 @@ beforeEach(async () => {
         );
       }
 
-      if (ruta === '/api/experiencias/mias') {
-        return respuesta(
-          200,
-          [EXPERIENCIA]
-        );
+      // CS-44: mis experiencias, por páginas
+      if (ruta === '/api/experiencias?autor=ana') {
+        return respuesta(200, { experiencias: [EXPERIENCIA], siguiente: paginaSiguiente });
+      }
+
+      if (ruta === '/api/experiencias?autor=ana&despuesDe=10') {
+        return respuesta(200, { experiencias: [EXPERIENCIA, { ...EXPERIENCIA, id: 4, titulo: 'Ruta antigua' }], siguiente: null });
       }
 
       if (ruta === '/api/experiencias') {
@@ -214,4 +219,26 @@ test('el botón Editar sigue abriendo el formulario de edición', () => {
   expect(
     $('#descripcion').value
   ).toBe('Visita a varios museos');
+});
+
+
+test('mis experiencias se cargan por páginas: «Cargar más» añade las siguientes sin repetir (CS-44)', async () => {
+  paginaSiguiente = 10;
+  document.documentElement.innerHTML = HTML;
+  for (const dialogo of document.querySelectorAll('dialog')) {
+    dialogo.showModal = jest.fn();
+    dialogo.close = jest.fn();
+  }
+  cargarScripts(SCRIPTS);
+  await terminar();
+  await terminar();
+  expect($('#mas-experiencias').classList.contains('d-none')).toBe(false);
+
+  $('#mas-experiencias').click();
+  await terminar();
+
+  const ids = [...document.querySelectorAll('#rejilla [data-id]')].map((columna) => columna.dataset.id);
+  expect(ids).toEqual(['10', '4']);
+  expect($('#mas-experiencias').classList.contains('d-none')).toBe(true);
+  paginaSiguiente = null;
 });

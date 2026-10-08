@@ -18,12 +18,6 @@ router.get('/', requiereSesion, async (req, res) => {
   res.json(await experienciaService.listarDeAutor(req.session.usuarioId, autor, { despuesDe, limite }));
 });
 
-// GET /api/experiencias/mias — las experiencias del usuario de la sesión, de la más nueva
-// a la más antigua, cada una con su ciudad. 401 si no hay sesión.
-router.get('/mias', requiereSesion, async (req, res) => {
-  res.json(await experienciaService.listarExperienciasPropias(req.session.usuarioId));
-});
-
 // GET /api/experiencias/:id — una experiencia concreta si el usuario de la sesión puede verla.
 router.get('/:id', requiereSesion, async (req, res) => {
   const experienciaId = Number(req.params.id);

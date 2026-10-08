@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt');
 const app = require('../../src/app');
 const usuarioRepository = require('../../src/repositories/usuarioRepository');
 const fotoRepository = require('../../src/repositories/fotoRepository');
-const { FOTO_POR_DEFECTO } = require('../../src/services/perfilService');
+const { FOTO_POR_DEFECTO } = require('../../src/services/shared/fotoPorDefecto');
 
 const URL_FOTO = 'https://res.cloudinary.com/demo/image/upload/v1/planb/perfiles/usuario-1.png';
 const PNG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);

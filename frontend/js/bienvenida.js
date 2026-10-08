@@ -200,15 +200,40 @@ formulario.addEventListener('submit', async (e) => {
   boton.disabled = false;
 });
 
-// Carga las ciudades y las experiencias del usuario.
-async function cargarExperiencias() {
+// Mis experiencias se cargan por páginas (CS-44): el cursor de la siguiente (null si no hay más)
+const botonMasExperiencias = document.getElementById('mas-experiencias');
+let autorExperiencias = null;
+let siguienteExperiencias = null;
+
+// Pide una página de mis experiencias (la primera, o la siguiente con el cursor) y añade sus
+// tarjetas a la rejilla sin repetir ninguna.
+async function cargarPaginaExperiencias() {
+  const cursor = siguienteExperiencias === null ? '' : `&despuesDe=${siguienteExperiencias}`;
+  const { experiencias, siguiente } = await api(`/experiencias?autor=${encodeURIComponent(autorExperiencias)}${cursor}`);
+  const nuevas = experiencias.filter((experiencia) => !rejilla.querySelector(`[data-id="${experiencia.id}"]`));
+  rejilla.append(...nuevas.map(crearTarjeta));
+  siguienteExperiencias = siguiente;
+  botonMasExperiencias.classList.toggle('d-none', siguiente === null);
+}
+
+botonMasExperiencias.addEventListener('click', async () => {
+  botonMasExperiencias.disabled = true;
   try {
-    const [
-      ciudades,
-      experiencias,
-    ] = await Promise.all([
+    await cargarPaginaExperiencias();
+  } catch (err) {
+    cajaErrorLista.textContent = err.message;
+    cajaErrorLista.classList.remove('d-none');
+  }
+  botonMasExperiencias.disabled = false;
+});
+
+// Carga las ciudades y la primera página de las experiencias del usuario.
+async function cargarExperiencias(nombreUsuario) {
+  autorExperiencias = nombreUsuario;
+  try {
+    const [ciudades] = await Promise.all([
       api('/ciudades'),
-      api('/experiencias/mias'),
+      cargarPaginaExperiencias(),
     ]);
 
     const desplegable =
@@ -226,10 +251,6 @@ async function cargarExperiencias() {
         )
       );
     }
-
-    rejilla.append(
-      ...experiencias.map(crearTarjeta)
-    );
   } catch (err) {
     cajaErrorLista.textContent = err.message;
     cajaErrorLista.classList.remove('d-none');
@@ -237,8 +258,9 @@ async function cargarExperiencias() {
 }
 
 async function mostrarBienvenida() {
+  let usuario;
   try {
-    const usuario = await api('/auth/yo');
+    usuario = await api('/auth/yo');
 
     document
       .getElementById('nombre-usuario')
@@ -248,7 +270,7 @@ async function mostrarBienvenida() {
     return;
   }
 
-  cargarExperiencias();
+  cargarExperiencias(usuario.nombreUsuario);
 }
 
 mostrarBienvenida();

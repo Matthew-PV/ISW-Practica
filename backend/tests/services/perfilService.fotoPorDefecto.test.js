@@ -1,5 +1,6 @@
 const usuarioRepository = require('../../src/repositories/usuarioRepository');
-const { obtenerPerfilPropio, FOTO_POR_DEFECTO } = require('../../src/services/perfilService');
+const { obtenerPerfilPropio } = require('../../src/services/perfilService');
+const { FOTO_POR_DEFECTO } = require('../../src/services/shared/fotoPorDefecto');
 
 jest.mock('../../src/repositories/usuarioRepository');
 jest.mock('../../src/repositories/fotoRepository');

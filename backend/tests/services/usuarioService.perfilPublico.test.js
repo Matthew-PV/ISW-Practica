@@ -6,7 +6,8 @@ jest.mock('../../src/repositories/seguimientoRepository');
 const usuarioRepository = require('../../src/repositories/usuarioRepository');
 const amistadRepository = require('../../src/repositories/amistadRepository');
 const seguimientoRepository = require('../../src/repositories/seguimientoRepository');
-const { obtenerPerfilPublico, FOTO_POR_DEFECTO } = require('../../src/services/perfilService');
+const { obtenerPerfilPublico } = require('../../src/services/usuarioService');
+const { FOTO_POR_DEFECTO } = require('../../src/services/shared/fotoPorDefecto');
 
 const ANA = { id: 2, nombreUsuario: 'ana', foto: 'https://res.cloudinary.com/demo/ana.png', ciudad: 'Madrid' };
 
