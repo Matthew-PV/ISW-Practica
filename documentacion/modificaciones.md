@@ -2,7 +2,21 @@
 
 Registro de los cambios realizados en el proyecto, en orden cronológico.
 
-# Perfiles enlazados, pruebas y limpieza del código (09/10/2026)
+# Perfiles enlazados, pruebas, limpieza del código y documentación completa (09/10/2026)
+
+### Documentación: API, flujos, pantallas y glosario
+
+- **`arquitectura.md`** al día, con diagramas Mermaid: contexto del sistema, capas y archivos por área, modelo de datos (ER) con sus restricciones, regla de visibilidad y mapa de pruebas.
+- **Documentos nuevos** en `documentacion/`:
+  - `api.md`: las 31 rutas, cada una con su servicio, lo que recibe, lo que devuelve y sus errores con el mensaje exacto;
+  - `flujos.md`: diagramas de secuencia de 12 flujos (registro, login, foto, crear y editar, abrir una experiencia, valorar, amistad, seguir, «Cargar más», perfil de otro usuario, recuperar y cambiar la contraseña) y de estados de la amistad, la relación en `usuario.html`, la valoración y el enlace de recuperación;
+  - `frontend.md`: mapa de navegación, archivos y llamadas de cada página, estados de una pantalla, módulos de `js/shared/`, reglas y pruebas de cada página;
+  - `glosario.md`: los términos técnicos del proyecto, cada uno con dónde aparece en PlanB.
+- **README:** estado por historias, comandos de pruebas, los documentos nuevos y dónde está el libro de historias: el que se usa es el de OneDrive; la copia de `documentacion/customer-stories/` es solo una guía y no se marca en ella ningún progreso.
+- **AGENTS.md:** piezas compartidas que hay que reutilizar (`leerId`, paginación, contraseñas, `USUARIO_PUBLICO`), convenciones de la API, dónde va cada tipo de prueba y dos reglas nuevas: `npm test` y la comprobación de marcadores de conflicto antes de cada push, y actualizar la documentación en el mismo commit que el código.
+- **metodologia.md:** el libro de historias, la misma regla antes del push y José en la tabla de integrantes (el código queda pendiente de que lo confirme).
+- Todos los diagramas se han comprobado con Mermaid CLI, y los enlaces entre documentos con un script: ninguno roto, salvo el de `prompts/README.md`, que tiene un cambio local pendiente.
+- **Pruebas nuevas:** `tests/frontend/login.test.js` para la pantalla de inicio de sesión, que no tenía ninguna.
 
 ### Pruebas: nueva estructura, MySQL real y cobertura del frontend
 
@@ -17,7 +31,7 @@ Registro de los cambios realizados en el proyecto, en orden cronológico.
 - **Cobertura:**
   - Las pruebas de pantallas cargan los scripts con `require` (`helpers/pantalla.js`) en lugar de `eval`, y los módulos compartidos dejan sus funciones en `window` de forma explícita. Así Jest mide también `frontend/js`.
   - `npm run test:cobertura` ejecuta todas las pruebas, también las de MySQL (Docker en marcha), y falla si la cobertura baja del 94 % de instrucciones, el 93 % de ramas o el 95 % de funciones.
-  - El informe se guarda en `coverage/`, en la raíz del repositorio.
+  - El informe se guarda en `backend/coverage/`.
 - Los comentarios citan las historias como CS-XX: LUC01 → CS-49, LUC09 → CS-57, FLA05 → CS-47 y MAT16 → CS-59.
 
 ### Código: flujos fáciles de seguir y sin duplicados
@@ -44,7 +58,7 @@ Registro de los cambios realizados en el proyecto, en orden cronológico.
 
 - En el perfil de otra persona (`usuario.html`), al aceptar su solicitud de amistad (o al eliminar la amistad), «Sus experiencias» se vuelve a cargar: aparecen al momento las que solo ven sus amigos, sin recargar la página (`recargarExperiencias` de `js/shared/experiencias.js`).
 - En «Mi perfil», cada amigo y cada seguidor enlaza a su perfil (`usuario.html?nombre=…`).
-- Pruebas jsdom en `experienciasPerfilPantalla.test.js` y `relacionesPantalla.test.js`, que fallaron primero.
+- Pruebas jsdom en `tests/frontend/shared/experiencias.test.js` y `tests/frontend/perfil.relaciones.test.js`, que fallaron primero.
 - Recorrido completo en un navegador real con dos usuarios: registro y requisitos de la contraseña, experiencias de cada visibilidad, búsqueda, amistad, valoraciones (también en móvil), «Útil» y «Reportar», «Contenido no disponible», cambio y recuperación de la contraseña. Sin fallos. El CAPTCHA de Cloudflare no se resuelve en un navegador sin ventana, así que en ese recorrido los usuarios se crearon directamente en la base de datos.
 
 # Reparación de `main`, limpieza y correcciones de CS-61 (08/10/2026)
