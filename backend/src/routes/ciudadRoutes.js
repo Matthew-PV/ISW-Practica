@@ -9,7 +9,8 @@ const ciudadService = require('../services/ciudadService');
 
 const router = express.Router();
 
-// GET /api/ciudades — el catálogo completo [{ id, nombre, pais }], ordenado por nombre.
+// GET /api/ciudades → ciudadService.listarCiudades
+// El catálogo completo [{ id, nombre, pais }], ordenado por nombre.
 // Es público: solo son nombres de ciudades.
 router.get('/', async (req, res) => {
   res.json(await ciudadService.listarCiudades());

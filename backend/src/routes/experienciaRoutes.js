@@ -11,14 +11,16 @@ const { requiereSesion } = require('../middlewares/sesionMiddleware');
 
 const router = express.Router();
 
-// GET /api/experiencias?autor=ana&despuesDe=57&limite=10 — CS-44: las experiencias de un usuario
+// GET /api/experiencias?autor=ana&despuesDe=57&limite=10 → experienciaService.listarDeAutor
+// CS-44: las experiencias de un usuario
 // que puede ver el de la sesión, por páginas: { experiencias, siguiente }.
 router.get('/', requiereSesion, async (req, res) => {
   const { autor, despuesDe, limite } = req.query;
   res.json(await experienciaService.listarDeAutor(req.session.usuarioId, autor, { despuesDe, limite }));
 });
 
-// GET /api/experiencias/:id — una experiencia concreta si el usuario de la sesión puede verla.
+// GET /api/experiencias/:id → experienciaService.obtenerExperiencia
+// Una experiencia concreta si el usuario de la sesión puede verla.
 router.get('/:id', requiereSesion, async (req, res) => {
   const experienciaId = Number(req.params.id);
   const experiencia = await experienciaService.obtenerExperiencia(
@@ -28,7 +30,8 @@ router.get('/:id', requiereSesion, async (req, res) => {
   res.json(experiencia);
 });
 
-// POST /api/experiencias — crea una experiencia cuyo autor es el usuario de la sesión (201),
+// POST /api/experiencias → experienciaService.crearExperiencia
+// Crea una experiencia cuyo autor es el usuario de la sesión (201),
 // o 400 si los datos no son válidos.
 // Cuerpo: { titulo, descripcion, ciudadId, tipo?, momentoAdecuado? }.
 // Responde con la experiencia creada, incluida su ciudad.
@@ -37,7 +40,8 @@ router.post('/', requiereSesion, async (req, res) => {
   res.status(201).json(experiencia);
 });
 
-// PATCH /api/experiencias/:id — edita una experiencia existente.
+// PATCH /api/experiencias/:id → experienciaService.editarExperiencia
+// Edita una experiencia existente.
 // Solo puede editarla su propio autor.
 router.patch('/:id', requiereSesion, async (req, res) => {
   const experienciaId = Number(req.params.id);

@@ -10,13 +10,15 @@ const router = express.Router();
 
 router.use(requiereSesion);
 
-// POST /api/seguimientos — sigue a un usuario. Cuerpo: { seguidoId }.
+// POST /api/seguimientos → seguimientoService.seguirUsuario
+// Sigue a un usuario. Cuerpo: { seguidoId }.
 router.post('/', async (req, res) => {
   const seguimiento = await seguimientoService.seguirUsuario(req.session.usuarioId, req.body?.seguidoId);
   res.status(201).json(seguimiento);
 });
 
-// DELETE /api/seguimientos/:seguidoId — deja de seguir a un usuario.
+// DELETE /api/seguimientos/:seguidoId → seguimientoService.dejarDeSeguir
+// Deja de seguir a un usuario.
 router.delete('/:seguidoId', async (req, res) => {
   await seguimientoService.dejarDeSeguir(req.session.usuarioId, Number(req.params.seguidoId));
   res.status(204).send();

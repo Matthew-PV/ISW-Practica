@@ -39,7 +39,7 @@ router.get('/valoraciones', async (req, res) => {
   ));
 });
 
-// GET /api/experiencias/:id/valoraciones/amigos?despuesDe=&limite=
+// GET /api/experiencias/:id/valoraciones/amigos?despuesDe=&limite= → valoracionService.listarValoracionesRelacionadas
 // → valoracionService.listarValoracionesRelacionadas
 // Las de mis amigos y mis seguidores, por páginas: { valoraciones, siguiente }.
 router.get('/valoraciones/amigos', async (req, res) => {

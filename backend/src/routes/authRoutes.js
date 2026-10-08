@@ -28,7 +28,8 @@ function abrirSesion(req, usuarioId) {
   });
 }
 
-// POST /api/auth/registro — crea la cuenta y deja la sesión iniciada.
+// POST /api/auth/registro → authService.registrar
+// Crea la cuenta y deja la sesión iniciada.
 // Cuerpo: { nombreUsuario, email, password, captcha }. Responde 201 con el usuario creado.
 // Los datos los valida el servicio; req.body es undefined si la petición no trae JSON.
 router.post('/registro', limiteRegistro, async (req, res) => {
@@ -37,13 +38,15 @@ router.post('/registro', limiteRegistro, async (req, res) => {
   res.status(201).json(usuario);
 });
 
-// GET /api/auth/captcha — clave pública del CAPTCHA, que el formulario de registro necesita
+// GET /api/auth/captcha → sin servicio (lee TURNSTILE_SITE_KEY de .env)
+// Clave pública del CAPTCHA, que el formulario de registro necesita
 // para mostrarlo. Es pública a propósito: la secreta (TURNSTILE_SECRET_KEY) nunca sale del servidor.
 router.get('/captcha', (req, res) => {
   res.json({ siteKey: process.env.TURNSTILE_SITE_KEY });
 });
 
-// POST /api/auth/login — inicia la sesión con email y contraseña.
+// POST /api/auth/login → authService.iniciarSesion
+// Inicia la sesión con email y contraseña.
 // Cuerpo: { email, password }. Responde 200 con el usuario, o 401 si los datos no coinciden.
 router.post('/login', limiteLogin, async (req, res) => {
   const usuario = await authService.iniciarSesion(req.body ?? {});
@@ -51,7 +54,8 @@ router.post('/login', limiteLogin, async (req, res) => {
   res.json(usuario);
 });
 
-// POST /api/auth/logout — cierra la sesión en el servidor y borra la cookie del navegador.
+// POST /api/auth/logout → sin servicio (solo cierra la sesión)
+// Cierra la sesión en el servidor y borra la cookie del navegador.
 // Responde 204 (sin contenido). Funciona también si no había sesión.
 router.post('/logout', (req, res) => {
   req.session.destroy(() => {
@@ -61,21 +65,24 @@ router.post('/logout', (req, res) => {
   });
 });
 
-// GET /api/auth/yo — devuelve el usuario con la sesión iniciada, o 401 si no hay sesión.
+// GET /api/auth/yo → authService.obtenerUsuario
+// Devuelve el usuario con la sesión iniciada, o 401 si no hay sesión.
 // La usa el frontend para saber quién está conectado (por ejemplo, en bienvenida.html).
 router.get('/yo', requiereSesion, async (req, res) => {
   const usuario = await authService.obtenerUsuario(req.session.usuarioId);
   res.json(usuario);
 });
 
-// POST /api/auth/recuperar — CS-64: pide el enlace para restablecer la contraseña. Cuerpo: { email }.
+// POST /api/auth/recuperar → authService.solicitarRecuperacion
+// CS-64: pide el enlace para restablecer la contraseña. Cuerpo: { email }.
 // Responde siempre lo mismo, exista o no el email, para no revelar qué emails están registrados.
 router.post('/recuperar', limiteRecuperacion, async (req, res) => {
   await authService.solicitarRecuperacion(req.body);
   res.json({ mensaje: 'Si el email está registrado, te hemos enviado un enlace para restablecer la contraseña.' });
 });
 
-// POST /api/auth/restablecer — CS-64: cambia la contraseña con el enlace. Cuerpo: { token, nueva }.
+// POST /api/auth/restablecer → authService.restablecerPassword
+// CS-64: cambia la contraseña con el enlace. Cuerpo: { token, nueva }.
 // 400 si el enlace no es válido, ya se usó o ha caducado, o si la contraseña no cumple los requisitos.
 router.post('/restablecer', limiteRecuperacion, async (req, res) => {
   await authService.restablecerPassword(req.body);
