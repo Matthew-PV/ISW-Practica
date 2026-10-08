@@ -4,9 +4,9 @@
 // Crea sus propios usuarios y experiencia y los borra al terminar, aunque la prueba falle.
 const request = require('supertest');
 const bcrypt = require('bcrypt');
-const app = require('../../src/app');
-const prisma = require('../../src/repositories/shared/prisma');
-const experienciaRepository = require('../../src/repositories/experienciaRepository');
+const app = require('../../../src/app');
+const prisma = require('../../../src/repositories/shared/prisma');
+const experienciaRepository = require('../../../src/repositories/experienciaRepository');
 
 // Sufijo único para no chocar con datos existentes ni con otra ejecución
 const sufijo = `${Date.now()}`;
