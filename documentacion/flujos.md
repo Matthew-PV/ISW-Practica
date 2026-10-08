@@ -104,7 +104,7 @@ sequenceDiagram
   end
 ```
 
-Qué protege: una sesión nueva en cada login impide reutilizar un identificador anterior (fijación de sesión), y la misma respuesta para «email inexistente» y «contraseña incorrecta» no revela qué emails tienen cuenta. Tras 10 intentos fallidos en 15 minutos responde 429.
+Qué protege: una sesión nueva en cada login impide reutilizar un identificador anterior (fijación de sesión), y la misma respuesta para «email inexistente» y «contraseña incorrecta» no revela qué emails tienen cuenta. Tras 10 intentos fallidos en 15 minutos responde 429. Cerrar la sesión (`POST /api/auth/logout`) la borra de MySQL y borra la cookie, así que la cookie antigua deja de servir en ese momento.
 
 ### F3. Foto de perfil
 

@@ -110,21 +110,29 @@ stateDiagram-v2
 
 Formulario de email y contraseña. Si el login es correcto va a `bienvenida.html`; si no, muestra el mensaje del servidor en `#error-login`. Enlaza a registro y a «¿Has olvidado tu contraseña?».
 
+Pruebas: `login.test.js`.
+
 ### `registro.html`: crear una cuenta
 
 * Pide nombre de usuario, email y contraseña. Mientras se escribe la contraseña, `mostrarRequisitosPassword` marca cada requisito cumplido en `#requisitos-password`, también el de no contener el nombre.
 * El CAPTCHA de Cloudflare Turnstile se dibuja en `#captcha` cuando su script llama a `window.iniciarCaptcha`, con la clave pública de `GET /api/auth/captcha`.
 * Con el registro correcto, la sesión ya está abierta y va a `bienvenida.html`.
 
+Pruebas: `registro.test.js`.
+
 ### `recuperar.html`: pedir el enlace
 
 Pide el email y siempre muestra el mismo mensaje de éxito, exista la cuenta o no: la página no lo sabe, y así nadie puede usarla para averiguarlo.
+
+Pruebas: `recuperacion.test.js`.
 
 ### `restablecer.html`: elegir una contraseña nueva
 
 * Lee el `token` de la URL. Sin token muestra el aviso y oculta el formulario.
 * Pide la contraseña dos veces y comprueba en la pantalla que coinciden antes de enviarla. El requisito «sin el nombre de usuario» lo comprueba el servidor, porque la página no sabe de quién es el enlace.
 * Al terminar, muestra un enlace a `index.html`.
+
+Pruebas: `recuperacion.test.js`.
 
 ### `bienvenida.html`: mis experiencias
 
@@ -134,6 +142,8 @@ Pide el email y siempre muestra el mismo mensaje de éxito, exista la cuenta o n
 * Al guardar, la tarjeta nueva aparece la primera y la editada se sustituye en su sitio, sin recargar la página.
 * El desplegable de ciudades se llena con `GET /api/ciudades`.
 
+Pruebas: `bienvenida.test.js`.
+
 ### `perfil.html`: mi perfil
 
 * **Datos:** nombre de usuario y ciudad editables, email solo de lectura, y la foto, que se sube nada más elegirla.
@@ -142,9 +152,13 @@ Pide el email y siempre muestra el mismo mensaje de éxito, exista la cuenta o n
 * **Solicitudes recibidas:** cada una con «Aceptar» y «Rechazar». Al aceptar se recargan los contadores, la lista de amigos y mis experiencias.
 * **Amigos y seguidores:** contadores y dos listas de 20 en 20 con «Cargar más». Cada nombre lleva a su perfil.
 
+Pruebas: `perfil.foto.test.js`, `perfil.password.test.js`, `perfil.relaciones.test.js`, `perfil.solicitudes.test.js` y `shared/experiencias.test.js`.
+
 ### `personas.html`: buscar personas
 
 Un buscador por parte del nombre (como mucho 20 resultados). Cada resultado es un enlace a su perfil.
+
+Pruebas: `personas.test.js`.
 
 ### `usuario.html?nombre=`: perfil de otro usuario
 
@@ -153,6 +167,8 @@ Un buscador por parte del nombre (como mucho 20 resultados). Cada resultado es u
 * `#boton-seguir` alterna entre «Seguir» y «Dejar de seguir».
 * Tras cada acción se vuelve a pedir el perfil, para que los contadores y botones sean los reales, y también «Sus experiencias», porque al cambiar la amistad cambian las que se pueden ver.
 
+Pruebas: `usuario.test.js` y `shared/experiencias.test.js`.
+
 ### `experiencia.html?id=`: una experiencia
 
 * Título, autor (enlace a su perfil), ciudad y descripción.
@@ -160,6 +176,8 @@ Un buscador por parte del nombre (como mucho 20 resultados). Cada resultado es u
 * **Valoraciones de amigos y seguidores** (CS-48) y **todas las valoraciones** (CS-63): dos listas de 10 en 10 con «Cargar más».
 * **«Útil» y «Reportar»:** solo funcionan en la pantalla y no guardan nada, hasta que se implementen CS-02 y CS-04. «Reportar» abre el `<dialog>` `#dialogo-reporte`.
 * Si cualquier petición responde 404, se borra lo que se mostraba y queda solo «Contenido no disponible».
+
+Pruebas: `experiencia.test.js` y `experiencia.formulario.test.js`.
 
 ## Módulos compartidos (`js/shared/`)
 
