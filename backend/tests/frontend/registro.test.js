@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-// MAT16, objetivo 7: la pantalla de registro (frontend/registro.html y js/registro.js) en un
+// CS-59, objetivo 7: la pantalla de registro (frontend/registro.html y js/registro.js) en un
 // navegador simulado (jsdom). Se simulan el servidor (fetch) y el CAPTCHA (window.turnstile),
 // así que no hace falta arrancar nada.
 const fs = require('node:fs');

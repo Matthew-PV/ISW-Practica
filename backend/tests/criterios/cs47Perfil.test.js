@@ -1,4 +1,4 @@
-// FLA05, objetivo 10: criterio de validación del perfil visto desde fuera. Cada caso edita el
+// CS-47, objetivo 10: criterio de validación del perfil visto desde fuera. Cada caso edita el
 // perfil y después lo vuelve a consultar (GET /api/perfil) para comprobar qué ha quedado.
 // Se simulan MySQL y Cloudinary; el repositorio simulado guarda el perfil en memoria.
 jest.mock('../../src/repositories/usuarioRepository');

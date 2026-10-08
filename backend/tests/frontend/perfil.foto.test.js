@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-// FLA05: la foto en la pantalla de mi perfil (frontend/perfil.html y js/perfil.js) en un
+// CS-47: la foto en la pantalla de mi perfil (frontend/perfil.html y js/perfil.js) en un
 // navegador simulado (jsdom). La foto se sube en cuanto se elige, sin pulsar ningún botón.
 // Se simula el servidor (fetch), así que no hace falta arrancar nada.
 const fs = require('node:fs');

@@ -1,4 +1,5 @@
-// Rutas de las experiencias, bajo /api/experiencias: listar las propias, crear (LUC01) y editar (LUC09).
+// Rutas de las experiencias, bajo /api/experiencias: listar las de un autor (CS-44), leer
+// una (CS-30), crear (CS-49) y editar (CS-57).
 // Capa: rutas (routes).
 // Lo usa: routes/index.js.
 // Usa: services/experienciaService.js (la lógica) y middlewares/sesionMiddleware.js (exigir sesión).

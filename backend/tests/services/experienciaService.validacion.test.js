@@ -1,4 +1,4 @@
-// LUC01: campos obligatorios y ciudad válida antes de crear una experiencia.
+// CS-49: campos obligatorios y ciudad válida antes de crear una experiencia.
 jest.mock('../../src/repositories/ciudadRepository', () => ({ buscarPorId: jest.fn() }));
 
 const ciudadRepository = require('../../src/repositories/ciudadRepository');
@@ -11,7 +11,7 @@ beforeEach(() => {
   ciudadRepository.buscarPorId.mockResolvedValue({ id: 1, nombre: 'Madrid' });
 });
 
-describe('LUC01: rechazar datos incorrectos antes de consultar la ciudad', () => {
+describe('CS-49: rechazar datos incorrectos antes de consultar la ciudad', () => {
   test.each([undefined, null, [], 'texto', 42])('cuerpo incorrecto: %p', async (datos) => {
     await expect(validarCreacion(datos)).rejects.toMatchObject({ status: 400 });
     expect(ciudadRepository.buscarPorId).not.toHaveBeenCalled();
@@ -52,7 +52,7 @@ describe('LUC01: rechazar datos incorrectos antes de consultar la ciudad', () =>
   });
 });
 
-test('LUC01: rechaza una ciudad que no está registrada', async () => {
+test('CS-49: rechaza una ciudad que no está registrada', async () => {
   ciudadRepository.buscarPorId.mockResolvedValue(null);
   await expect(validarCreacion(VALIDA)).rejects.toMatchObject({
     status: 400, message: 'La ciudad seleccionada no existe',

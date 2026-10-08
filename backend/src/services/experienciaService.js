@@ -1,4 +1,5 @@
-// Reglas de creación de experiencias (LUC01).
+// Reglas de las experiencias: crearlas (CS-49) con su visibilidad (CS-22), editarlas (CS-57),
+// leer una si se puede ver (CS-30) y listar las de un autor (CS-44).
 // Capa: servicios (services).
 // Lo usa: routes/experienciaRoutes.js.
 // Usa: repositories/ciudadRepository.js (comprobar que la ciudad existe),

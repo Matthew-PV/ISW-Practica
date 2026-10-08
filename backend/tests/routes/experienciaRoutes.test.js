@@ -1,4 +1,4 @@
-// LUC01: creación por HTTP. Se simulan los repositorios, sin necesitar MySQL.
+// CS-49: creación por HTTP. Se simulan los repositorios, sin necesitar MySQL.
 jest.mock('../../src/repositories/usuarioRepository');
 jest.mock('../../src/repositories/ciudadRepository');
 jest.mock('../../src/repositories/experienciaRepository');

@@ -1,4 +1,4 @@
-// LUC09: edición por HTTP (PATCH /api/experiencias/:id), objetivos 6 y 7.
+// CS-57: edición por HTTP (PATCH /api/experiencias/:id), objetivos 6 y 7.
 // Se simulan los repositorios, sin necesitar MySQL. El de experiencias guarda una experiencia
 // en memoria para poder comprobar cómo queda después de editarla.
 jest.mock('../../src/repositories/usuarioRepository');
