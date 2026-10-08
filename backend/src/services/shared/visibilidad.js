@@ -1,6 +1,6 @@
 // Regla de visibilidad de las experiencias (CS-22): quién puede ver cada una.
 // Capa: servicios (services), en shared/ porque la usan varias funcionalidades.
-// Lo usa: services/valoracionService.js. Lo reutilizarán CS-02, CS-30 y CS-63.
+// Lo usan: services/valoracionService.js y services/experienciaService.js (CS-30, CS-44 y CS-63).
 // Usa: services/amistadService.js (sonAmigos, que solo cuenta amistades aceptadas).
 const amistadService = require('../amistadService');
 
@@ -20,4 +20,16 @@ async function puedeVerExperiencia(usuarioId, experiencia) {
   return false;
 }
 
-module.exports = { puedeVerExperiencia };
+// Devuelve los niveles de visibilidad que `usuarioId` puede ver entre las experiencias de
+// `autorId`, para filtrar un listado en una sola consulta (CS-44). Es la misma regla que
+// puedeVerExperiencia:
+// - el autor: todas, también las privadas;
+// - un amigo con la amistad aceptada: las de amigos y las públicas;
+// - cualquier otro (también un seguidor o una solicitud pendiente): solo las públicas.
+async function nivelesVisibles(usuarioId, autorId) {
+  if (usuarioId === autorId) return ['PRIVADA', 'AMIGOS', 'PUBLICA'];
+  if (await amistadService.sonAmigos(usuarioId, autorId)) return ['AMIGOS', 'PUBLICA'];
+  return ['PUBLICA'];
+}
+
+module.exports = { puedeVerExperiencia, nivelesVisibles };

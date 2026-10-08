@@ -45,4 +45,21 @@ async function listarPorAutor(autorId) {
   });
 }
 
-module.exports = { crear, buscarPorId, actualizar, listarPorAutor };
+// CS-44: hasta `cantidad` experiencias de un autor con alguna de las `visibilidades` indicadas,
+// de la más reciente a la más antigua, con su ciudad. Con `despuesDe` (un id) empieza justo
+// después de ese elemento: es el cursor de «Cargar más» (ver services/shared/paginacion.js).
+// El índice por autorId permite a MySQL ir directo a esas filas, sin recorrer las anteriores.
+async function listarDeAutor(autorId, visibilidades, despuesDe, cantidad) {
+  const where = { autorId, visibilidad: { in: visibilidades } };
+  if (despuesDe !== null) {
+    where.id = { lt: despuesDe };
+  }
+  return prisma.experiencia.findMany({
+    where,
+    orderBy: { id: 'desc' },
+    take: cantidad,
+    include: { ciudad: true },
+  });
+}
+
+module.exports = { crear, buscarPorId, actualizar, listarPorAutor, listarDeAutor };

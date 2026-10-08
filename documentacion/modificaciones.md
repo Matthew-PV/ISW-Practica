@@ -75,6 +75,18 @@ El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de confli
 - `tests/mysql/experienciaVisibilidad.test.js` recorre el criterio con MySQL real. Una experiencia creada como privada solo la ve su autor. Al editarla a pública, el cambio se conserva al recargar y la ve cualquiera. En «amigos», otro usuario no la ve hasta que la amistad está aceptada. La validación ya existía (trabajo de Matthew): para comprobar que la prueba detecta el fallo, se quitó a propósito la visibilidad de `experienciaRepository.crear`, la prueba falló (`Expected "PRIVADA"`, `Received "PUBLICA"`) y se deshizo el cambio.
 - Queda fuera de CS-22: «aparece en mi perfil» depende del listado de CS-44, y «se puede encontrar buscándola», de la búsqueda de experiencias, que todavía no existe.
 
+### CS-44: listado de experiencias de un usuario (backend)
+
+- **Ruta:** `GET /api/experiencias?autor=<nombreUsuario>&despuesDe=<id>&limite=<n>`, con sesión. Responde `{ experiencias, siguiente }`, de la más reciente a la más antigua y con su ciudad.
+  - El autor ve todas las suyas, también las privadas. Un amigo con la amistad aceptada ve las de amigos y las públicas. Cualquier otro (también un seguidor o alguien con la solicitud pendiente) ve solo las públicas.
+  - Un usuario sin experiencias recibe una lista vacía; uno que no existe, 404 «Usuario no encontrado».
+- **Paginación por cursor** (`services/shared/paginacion.js`): el cliente pide los siguientes `limite` (de 1 a 50; 10 por defecto) después del id `despuesDe`. `siguiente` es el valor que debe enviar para la próxima página, o `null` si no hay más. Así no se repite ni se salta nada aunque se publique otra experiencia entre dos peticiones. Además, MySQL no recorre las filas anteriores, como haría con OFFSET.
+- **Visibilidad en una sola consulta:** `nivelesVisibles(usuarioId, autorId)` (`services/shared/visibilidad.js`) devuelve los niveles que puede ver el usuario, con la misma regla que `puedeVerExperiencia`, y el repositorio filtra con ellos.
+- **Pruebas:**
+  - `paginacion.test.js`, `visibilidad.test.js` (también la verificación cruzada de las dos funciones) y `experienciasAutor.test.js` (servicio);
+  - con MySQL real, `tests/mysql/experienciasAutor.test.js`: el criterio completo con autor, amigo, seguidor, solicitud pendiente y desconocido, y todas las páginas con una publicación entre medias.
+  - Fallaron primero. Se comprobó además que detectan el fallo: sin el filtro de visibilidad fallan 4 pruebas, y sin el cursor, 1.
+
 ### Para quien continúe
 
 - Tras el `git pull`, aplicar la migración nueva desde `backend/`: `npx prisma migrate deploy` y `npx prisma generate`.

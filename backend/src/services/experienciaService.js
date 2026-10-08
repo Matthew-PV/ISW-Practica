@@ -4,7 +4,8 @@
 // Usa: repositories/ciudadRepository.js (comprobar que la ciudad existe),
 //      repositories/experienciaRepository.js (guardar la experiencia),
 //      repositories/usuarioRepository.js (comprobar que el autor existe),
-//      services/shared/visibilidad.js, services/shared/identificadores.js y errores.js.
+//      services/shared/visibilidad.js, services/shared/identificadores.js,
+//      services/shared/paginacion.js y errores.js.
 //
 // Orden de trabajo: primero se valida todo lo que no necesita la base de datos (textos,
 // longitudes, tipo de ciudadId) y solo después se consulta MySQL. Así una petición con
@@ -12,7 +13,8 @@
 const ciudadRepository = require('../repositories/ciudadRepository');
 const experienciaRepository = require('../repositories/experienciaRepository');
 const usuarioRepository = require('../repositories/usuarioRepository');
-const { puedeVerExperiencia } = require('./shared/visibilidad');
+const { puedeVerExperiencia, nivelesVisibles } = require('./shared/visibilidad');
+const { leerPaginacion, cortarPagina } = require('./shared/paginacion');
 const { leerId } = require('./shared/identificadores');
 const { crearError } = require('../errores');
 
@@ -274,7 +276,37 @@ async function listarExperienciasPropias(usuarioId) {
   return experienciaRepository.listarPorAutor(usuarioId);
 }
 
+const EXPERIENCIAS_POR_PAGINA = 10;
+
+// CS-44: experiencias publicadas por un usuario, de la más reciente a la más antigua y por
+// páginas, solo las que puede ver el usuario de la sesión (el autor ve también las privadas).
+// - `nombreUsuario`: el autor, tal como aparece en su perfil.
+// - `paginacion`: { despuesDe, limite } de la URL (ver services/shared/paginacion.js).
+// Devuelve { experiencias, siguiente }. Error 400 si falta el autor o la paginación no es
+// válida, y 404 si el autor no existe. Un autor sin experiencias da una lista vacía.
+async function listarDeAutor(usuarioId, nombreUsuario, paginacion) {
+  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
+      !(await usuarioRepository.buscarPorId(usuarioId))) {
+    throw crearError('No hay sesión iniciada', 401);
+  }
+  if (typeof nombreUsuario !== 'string' || nombreUsuario === '') {
+    throw crearError('Indica el nombre de usuario del autor', 400);
+  }
+  const { despuesDe, limite } = leerPaginacion(paginacion, EXPERIENCIAS_POR_PAGINA);
+
+  const autor = await usuarioRepository.obtenerPerfilPublico(nombreUsuario);
+  if (!autor) {
+    throw crearError('Usuario no encontrado', 404);
+  }
+
+  const niveles = await nivelesVisibles(usuarioId, autor.id);
+  const filas = await experienciaRepository.listarDeAutor(autor.id, niveles, despuesDe, limite + 1);
+  const { elementos, siguiente } = cortarPagina(filas, limite);
+  return { experiencias: elementos, siguiente };
+}
+
 module.exports = {
+  listarDeAutor,
   listarExperienciasPropias,
   obtenerExperiencia,
   validarCreacion,

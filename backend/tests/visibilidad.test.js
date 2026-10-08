@@ -3,7 +3,7 @@
 jest.mock('../src/services/amistadService', () => ({ sonAmigos: jest.fn() }));
 
 const amistadService = require('../src/services/amistadService');
-const { puedeVerExperiencia } = require('../src/services/shared/visibilidad');
+const { puedeVerExperiencia, nivelesVisibles } = require('../src/services/shared/visibilidad');
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -48,4 +48,33 @@ test('una experiencia de amigos la ve un amigo con la amistad aceptada', async (
 test('una experiencia de amigos no la ve quien no es amigo (o tiene la solicitud pendiente)', async () => {
   // sonAmigos devuelve false tanto sin relación como con la solicitud pendiente
   await expect(puedeVerExperiencia(1, { autorId: 2, visibilidad: 'AMIGOS' })).resolves.toBe(false);
+});
+
+describe('CS-44 - niveles de visibilidad que puede ver cada usuario en el listado de un autor', () => {
+  test('el autor ve todos los niveles, también las privadas', async () => {
+    await expect(nivelesVisibles(2, 2)).resolves.toEqual(['PRIVADA', 'AMIGOS', 'PUBLICA']);
+  });
+
+  test('un amigo con la amistad aceptada ve las de amigos y las públicas', async () => {
+    amistadService.sonAmigos.mockResolvedValue(true);
+
+    await expect(nivelesVisibles(1, 2)).resolves.toEqual(['AMIGOS', 'PUBLICA']);
+  });
+
+  test('cualquier otro usuario (seguidor, solicitud pendiente o desconocido) solo ve las públicas', async () => {
+    await expect(nivelesVisibles(1, 2)).resolves.toEqual(['PUBLICA']);
+  });
+
+  // Verificación cruzada: las dos funciones aplican la misma regla en toda la tabla
+  test.each([
+    ['el autor', 2, false], ['un amigo', 1, true], ['otro usuario', 1, false],
+  ])('para %s, nivelesVisibles coincide con puedeVerExperiencia en los tres niveles', async (_quien, usuarioId, amigos) => {
+    amistadService.sonAmigos.mockResolvedValue(amigos);
+    const niveles = await nivelesVisibles(usuarioId, 2);
+
+    for (const visibilidad of ['PRIVADA', 'AMIGOS', 'PUBLICA']) {
+      const puede = await puedeVerExperiencia(usuarioId, { autorId: 2, visibilidad });
+      expect(niveles.includes(visibilidad)).toBe(puede);
+    }
+  });
 });

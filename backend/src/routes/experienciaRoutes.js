@@ -10,6 +10,13 @@ const { requiereSesion } = require('../middlewares/sesionMiddleware');
 
 const router = express.Router();
 
+// GET /api/experiencias?autor=ana&despuesDe=57&limite=10 — CS-44: las experiencias de un usuario
+// que puede ver el de la sesión, por páginas: { experiencias, siguiente }.
+router.get('/', requiereSesion, async (req, res) => {
+  const { autor, despuesDe, limite } = req.query;
+  res.json(await experienciaService.listarDeAutor(req.session.usuarioId, autor, { despuesDe, limite }));
+});
+
 // GET /api/experiencias/mias — las experiencias del usuario de la sesión, de la más nueva
 // a la más antigua, cada una con su ciudad. 401 si no hay sesión.
 router.get('/mias', requiereSesion, async (req, res) => {
