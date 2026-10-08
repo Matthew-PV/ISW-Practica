@@ -22,10 +22,6 @@ test('crea una solicitud si ambos usuarios existen y no tienen relación previa'
   expect(amistadRepository.crear).toHaveBeenCalledWith(1, 2);
 });
 
-test('rechaza una sesión que ya no pertenece a un usuario', async () => {
-  await expect(enviarSolicitud(99, 2)).rejects.toMatchObject({ status: 401 });
-  expect(amistadRepository.crear).not.toHaveBeenCalled();
-});
 
 test('rechaza una solicitud a un usuario inexistente', async () => {
   await expect(enviarSolicitud(1, 99)).rejects.toMatchObject({ status: 404 });

@@ -36,6 +36,8 @@ afterEach(() => {
 // Devuelve un agente (guarda la cookie de sesión entre peticiones) ya logueado como `usuario`
 async function agenteConSesion() {
   usuarioRepository.buscarPorEmail.mockResolvedValue(usuario);
+  // requiereSesion comprueba que el usuario de la sesión sigue existiendo
+  usuarioRepository.buscarPorId.mockResolvedValue(usuario);
   const agente = request.agent(app);
   await agente.post('/api/auth/login').send({ email: usuario.email, password: 'secreta123' });
   return agente;

@@ -11,10 +11,6 @@ const { crearError } = require('../errores');
 // Envía una solicitud pendiente si los dos usuarios existen y no tienen ninguna
 // solicitud o amistad previa entre sí. El solicitante procede siempre de sesión.
 async function enviarSolicitud(solicitanteId, destinatarioId) {
-  if (!Number.isInteger(solicitanteId) || solicitanteId <= 0 ||
-      !(await usuarioRepository.buscarPorId(solicitanteId))) {
-    throw crearError('No hay sesión iniciada', 401);
-  }
   leerId(destinatarioId, 'del usuario');
 
   if (solicitanteId === destinatarioId) {
@@ -41,10 +37,6 @@ async function enviarSolicitud(solicitanteId, destinatarioId) {
 // `aceptar` tiene que ser exactamente true o false: cualquier otro valor ("si", 1 o la
 // ausencia del campo) responde 400 en lugar de aceptar o borrar la solicitud por error.
 async function responderSolicitud(usuarioId, solicitudId, aceptar) {
-  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
-      !(await usuarioRepository.buscarPorId(usuarioId))) {
-    throw crearError('No hay sesión iniciada', 401);
-  }
   leerId(solicitudId, 'de la solicitud de amistad');
   if (typeof aceptar !== 'boolean') {
     throw crearError('Indica si aceptas la solicitud con true o false', 400);
@@ -73,10 +65,6 @@ async function responderSolicitud(usuarioId, solicitudId, aceptar) {
 
 // Elimina una amistad ya aceptada. Puede hacerlo cualquiera de sus dos participantes.
 async function eliminarAmistad(usuarioId, amistadId) {
-  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
-      !(await usuarioRepository.buscarPorId(usuarioId))) {
-    throw crearError('No hay sesión iniciada', 401);
-  }
   leerId(amistadId, 'de la amistad');
 
   const amistad = await amistadRepository.buscarPorId(amistadId);
@@ -107,10 +95,6 @@ async function sonAmigos(usuarioAId, usuarioBId) {
 
 // Devuelve las solicitudes pendientes que el usuario de la sesión debe responder.
 async function listarSolicitudesRecibidas(usuarioId) {
-  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
-      !(await usuarioRepository.buscarPorId(usuarioId))) {
-    throw crearError('No hay sesión iniciada', 401);
-  }
   return amistadRepository.listarSolicitudesRecibidas(usuarioId);
 }
 

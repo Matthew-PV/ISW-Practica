@@ -29,6 +29,8 @@ beforeEach(() => {
   jest.resetAllMocks();
   guardado = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', foto: null, ciudad: null };
   usuarioRepository.buscarPorEmail.mockResolvedValue(usuario);
+  // requiereSesion comprueba que el usuario de la sesión sigue existiendo
+  usuarioRepository.buscarPorId.mockResolvedValue(usuario);
   usuarioRepository.obtenerPerfil.mockImplementation(async () => ({ ...guardado }));
   // Como MySQL: un nombre repetido falla con P2002 y no cambia nada; los campos undefined no se tocan
   usuarioRepository.actualizarPerfil.mockImplementation(async (id, { nombreUsuario, ciudad }) => {

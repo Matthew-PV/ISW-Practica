@@ -187,11 +187,6 @@ async function validarEdicion(datos) {
   return cambios;
 }
 async function crearExperiencia(usuarioId, datos) {
-  // La sesión podría apuntar a un usuario que ya no existe (por ejemplo, base de datos vaciada)
-  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
-      !(await usuarioRepository.buscarPorId(usuarioId))) {
-    throw crearError('No hay sesión iniciada', 401);
-  }
   const datosValidados = await validarCreacion(datos);
   try {
     return await experienciaRepository.crear({ ...datosValidados, autorId: usuarioId });
@@ -213,10 +208,6 @@ async function crearExperiencia(usuarioId, datos) {
 // Comprueba que el usuario exista, que la experiencia exista
 // y que pertenezca al usuario que intenta modificarla.
 async function editarExperiencia(usuarioId, experienciaId, datos) {
-  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
-      !(await usuarioRepository.buscarPorId(usuarioId))) {
-    throw crearError('No hay sesión iniciada', 401);
-  }
 
   leerId(experienciaId, 'de la experiencia');
 
@@ -251,10 +242,6 @@ async function editarExperiencia(usuarioId, experienciaId, datos) {
 // Requiere sesión y valida el identificador primero; si no existe o no es visible,
 // devuelve errores explícitos sin filtrar la causa final.
 async function obtenerExperiencia(usuarioId, experienciaId) {
-  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
-      !(await usuarioRepository.buscarPorId(usuarioId))) {
-    throw crearError('No hay sesión iniciada', 401);
-  }
 
   leerId(experienciaId, 'de la experiencia');
 
@@ -276,10 +263,6 @@ const EXPERIENCIAS_POR_PAGINA = 10;
 // Devuelve { experiencias, siguiente }. Error 400 si falta el autor o la paginación no es
 // válida, y 404 si el autor no existe. Un autor sin experiencias da una lista vacía.
 async function listarDeAutor(usuarioId, nombreUsuario, paginacion) {
-  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
-      !(await usuarioRepository.buscarPorId(usuarioId))) {
-    throw crearError('No hay sesión iniciada', 401);
-  }
   if (typeof nombreUsuario !== 'string' || nombreUsuario === '') {
     throw crearError('Indica el nombre de usuario del autor', 400);
   }

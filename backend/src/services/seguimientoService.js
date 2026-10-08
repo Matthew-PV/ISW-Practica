@@ -8,13 +8,7 @@ const seguimientoRepository = require('../repositories/seguimientoRepository');
 const { leerId } = require('./shared/identificadores');
 const { crearError } = require('../errores');
 
-// Comprueba que el usuario que actúa sigue existiendo.
-async function comprobarSesion(usuarioId) {
-  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
-      !(await usuarioRepository.buscarPorId(usuarioId))) {
-    throw crearError('No hay sesión iniciada', 401);
-  }
-}
+
 
 // Comprueba que la persona a seguir o dejar de seguir existe.
 async function comprobarUsuarioDestino(usuarioId) {
@@ -26,7 +20,6 @@ async function comprobarUsuarioDestino(usuarioId) {
 
 // Crea un seguimiento entre dos usuarios diferentes si no existía antes.
 async function seguirUsuario(seguidorId, seguidoId) {
-  await comprobarSesion(seguidorId);
   if (seguidorId === seguidoId) {
     throw crearError('No puedes seguirte a ti mismo', 400);
   }
@@ -44,7 +37,6 @@ async function seguirUsuario(seguidorId, seguidoId) {
 
 // Elimina un seguimiento existente entre dos usuarios diferentes.
 async function dejarDeSeguir(seguidorId, seguidoId) {
-  await comprobarSesion(seguidorId);
   if (seguidorId === seguidoId) {
     throw crearError('No puedes dejar de seguirte a ti mismo', 400);
   }

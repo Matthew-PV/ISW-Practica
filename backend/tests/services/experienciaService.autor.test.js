@@ -35,9 +35,6 @@ test('devuelve la página y el cursor de la siguiente', async () => {
   });
 });
 
-test('sin sesión válida responde 401', async () => {
-  await expect(listarDeAutor(99, 'bea', {})).rejects.toMatchObject({ status: 401 });
-});
 
 test.each([['', 'vacío'], [undefined, 'ausente'], [['bea', 'ana'], 'repetido en la URL']])(
   'un autor %p (%s) responde 400 sin consultar la base de datos', async (autor) => {

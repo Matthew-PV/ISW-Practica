@@ -3,7 +3,6 @@
 // Capa: servicios (services).
 // Lo usa: routes/valoracionRoutes.js.
 // Usa: repositories/valoracionRepository.js (guardar la valoración),
-//      repositories/usuarioRepository.js (comprobar que quien valora existe),
 //      services/experienciaService.js (obtenerExperiencia: que exista y pueda verla),
 //      services/shared/identificadores.js (validar el id), services/shared/paginacion.js
 //      (cursor de los listados) y errores.js.
@@ -11,7 +10,6 @@
 // Orden de trabajo: primero se valida todo lo que no necesita la base de datos (id,
 // puntuación y comentario) y solo después se consulta MySQL. Si algo falla no se guarda nada.
 const valoracionRepository = require('../repositories/valoracionRepository');
-const usuarioRepository = require('../repositories/usuarioRepository');
 const experienciaService = require('./experienciaService');
 const { leerId } = require('./shared/identificadores');
 const { leerPaginacion, cortarPagina } = require('./shared/paginacion');
@@ -48,11 +46,6 @@ function leerComentario(valor) {
 // disponible» si la experiencia no existe o no puede verla (el mismo, para no revelar que
 // existe) y 403 si es su propia experiencia.
 async function valorarExperiencia(usuarioId, experienciaId, datos) {
-  // La sesión podría apuntar a un usuario que ya no existe (por ejemplo, base de datos vaciada)
-  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
-      !(await usuarioRepository.buscarPorId(usuarioId))) {
-    throw crearError('No hay sesión iniciada', 401);
-  }
   leerId(experienciaId, 'de la experiencia');
   // Number.isInteger descarta el texto "4", los decimales y la ausencia de valor
   const puntuacion = datos?.puntuacion;

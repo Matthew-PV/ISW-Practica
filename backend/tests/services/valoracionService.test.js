@@ -275,19 +275,6 @@ describe('el comentario tiene como máximo 1000 caracteres y se guarda limpio', 
 });
 
 describe('quién puede valorar', () => {
-  test('si el usuario de la sesión ya no existe responde 401', async () => {
-    await expect(
-      valorarExperiencia(
-        99,
-        10,
-        { puntuacion: 4 }
-      )
-    ).rejects.toMatchObject({
-      status: 401,
-    });
-
-    expect(valoracionRepository.guardar).not.toHaveBeenCalled();
-  });
 
   test('un identificador de experiencia no válido responde 400', async () => {
     await expect(
@@ -430,7 +417,4 @@ describe.each([
     expect(valoracionRepository[metodo]).not.toHaveBeenCalled();
   });
 
-  test('sin sesión válida responde 401', async () => {
-    await expect(listarFn(99, 10, {})).rejects.toMatchObject({ status: 401 });
-  });
 });
