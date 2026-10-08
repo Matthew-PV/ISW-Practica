@@ -21,7 +21,7 @@ Su uso no elimina la responsabilidad del equipo. Cada integrante sigue siendo re
 
 ## 3. Gestión de las historias de usuario
 
-Desde el 05/10/2026, `Customer_Stories_PlanB.xlsx` se mantiene en el OneDrive compartido del equipo como única versión oficial. La copia de trabajo se ha retirado del repositorio para evitar versiones divergentes.
+`Customer_Stories_PlanB.xlsx` se mantiene en el OneDrive compartido del equipo como única versión con la que se trabaja: allí se marcan el estado, los responsables y los tiempos. La copia de `documentacion/customer-stories/` es solo una guía general de las historias; no se usa para trabajar ni se marca en ella ningún progreso.
 
 Cada fila de tarea incluye:
 
@@ -34,7 +34,7 @@ Para trabajar con una historia:
 1. El integrante facilita una copia actualizada del libro al agente cuando necesite consultarla.
 2. La copia se usa como referencia de solo lectura, salvo petición expresa de editarla.
 3. El integrante traslada manualmente al libro online las tareas o cambios acordados.
-4. No se guarda ni se vuelve a añadir a Git una copia activa del libro.
+4. No se marca progreso en la copia del repositorio: si hay que cambiar algo del libro, se entrega como una lista de cambios para pasarla al libro online.
 
 Si la copia facilitada, el código y la documentación se contradicen, se informa de la diferencia antes de decidir qué actualizar. Una copia conservada de una sesión anterior no se considera vigente.
 
@@ -246,7 +246,7 @@ Antes de considerar terminada la tarea, el integrante:
 1. Revisa el resumen o la comparación de archivos modificados.
 2. Pide explicación de cualquier fragmento que no entienda.
 3. Comprueba que la prueba nueva falló antes de la implementación por el motivo previsto y entiende su estructura.
-4. Ejecuta las pruebas específicas y la batería completa desde `backend/` con `npm test`.
+4. Ejecuta las pruebas específicas y la batería completa desde `backend/` con `npm test`. También antes de cada push y después de cada merge o conflicto resuelto, comprobando además que no queda ningún marcador de conflicto: `git grep -nE '^(<<<<<<<|=======|>>>>>>>)( |$)'` no debe mostrar nada.
 5. Comprueba manualmente la interfaz cuando el comportamiento visible haya cambiado.
 6. Verifica que no se hayan añadido secretos, archivos temporales o cambios ajenos.
 7. Actualiza la historia de usuario y la documentación que corresponda.
@@ -282,7 +282,7 @@ Esta sección debe completarla cada persona en primera persona. No debe describi
 |Jorge Delgado Castellanos|JOR / jorjonudo|Pendiente de completar por el integrante|
 |Lucía Alexandra Guzmán Álvarez|LUC|Completada en la sección 6.3|
 |Joaquín de Vicente Abad|JOA|Pendiente de completar por el integrante|
-|Integrante 6 — nombre pendiente|Código pendiente|Pendiente de completar cuando confirme su identidad|
+|Jose Fernando Nevarez|Código pendiente|Pendiente de completar por el integrante|
 
 Cada ficha debe responder de forma breve a estas preguntas:
 

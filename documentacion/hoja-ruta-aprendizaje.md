@@ -129,7 +129,7 @@ Abre la página, pulsa el botón y usa la vista móvil del navegador. Comprueba 
 
 **Ejercicio guiado, independiente.** Imagina una aplicación que permite guardar libros. Clasifica estas cuatro acciones: «leer el JSON de una petición», «impedir que alguien modifique el libro de otra persona», «guardar el libro», «mostrar un aviso de éxito». Asígnalas a ruta, servicio, repositorio e interfaz, respectivamente. Añade un caso de error: ¿en qué capa se decide que la persona no tiene permiso y en cuál se traduce a una respuesta HTTP?
 
-**Búsqueda en PlanB.** Elige una funcionalidad implementada y dibuja la secuencia real desde el evento de la interfaz hasta la lectura o escritura de datos. Anota una responsabilidad por capa y una prueba que confirme alguna regla. Si el código y la arquitectura documentada difieren, registra la diferencia antes de concluir que una de ellas es correcta.
+**Búsqueda en PlanB.** Elige una funcionalidad implementada y dibuja la secuencia real desde el evento de la interfaz hasta la lectura o escritura de datos. Anota una responsabilidad por capa y una prueba que confirme alguna regla. Si el código y la arquitectura documentada difieren, registra la diferencia antes de concluir que una de ellas es correcta. Después compara tu dibujo con el diagrama de ese flujo en [flujos](flujos.md).
 
 **Comprueba que lo entendiste.** Puedes explicar dónde van una validación, una comprobación de permisos y una operación de base de datos, y distinguir una regla implementada de otra solo prevista en una historia.
 
@@ -190,7 +190,7 @@ function contarAceptadas(relaciones) {
 
 Ejecuta de nuevo y comprueba el **verde**. Como refactorización, sustituye el cuerpo por `return relaciones.filter((relacion) => relacion.estado === 'aceptada').length;` y repite las pruebas: el resultado debe permanecer igual. No cambies las expectativas para esconder un resultado incorrecto. Finalmente explica cada prueba con tres frases: qué prepara, qué acción ejecuta y qué espera.
 
-**Búsqueda en PlanB.** Obtén un criterio del libro vigente y encuentra una prueba que lo proteja. Ejecuta esa prueba con el comando que figure en la configuración actual del proyecto. Identifica qué simula, qué ejecuta de verdad y qué escenario importante requiere además una comprobación manual o una prueba con base real. Para una tarea nueva, acuerda primero la prueba y observa el fallo por el motivo previsto antes de implementar.
+**Búsqueda en PlanB.** Obtén un criterio del libro vigente y encuentra una prueba que lo proteja. Las pruebas están ordenadas por tipo en `backend/tests/` ([arquitectura, sección 9](arquitectura.md#9-pruebas)); `criterios/` reúne las de cada historia. Ejecuta esa prueba con el comando que figure en la configuración actual del proyecto. Identifica qué simula, qué ejecuta de verdad y qué escenario importante requiere además una comprobación manual o una prueba con base real. Para una tarea nueva, acuerda primero la prueba y observa el fallo por el motivo previsto antes de implementar.
 
 **Comprueba que lo entendiste.** Puedes relacionar una expectativa con un criterio, contar el ciclo rojo-verde-refactorización y decir con precisión qué demostró la prueba y qué quedó sin comprobar.
 
