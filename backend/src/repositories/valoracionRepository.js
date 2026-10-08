@@ -1,11 +1,12 @@
 // Acceso a las valoraciones en MySQL (CS-01, CS-48 y CS-63).
 // Capa: repositorios (repositories).
 // Lo usa: services/valoracionService.js.
-// Usa: repositories/shared/prisma.js (la conexión con MySQL).
+// Usa: repositories/shared/prisma.js (la conexión con MySQL) y repositories/shared/camposPublicos.js.
 //
 // Los datos llegan validados desde el servicio. Este archivo solo consulta o
 // modifica la tabla Valoracion.
 const prisma = require('./shared/prisma');
+const { USUARIO_PUBLICO } = require('./shared/camposPublicos');
 
 // Crea la valoración o, si el usuario ya había valorado esa experiencia, sustituye su
 // puntuación y comentario. Devuelve { valoracion, creada }.
@@ -30,7 +31,7 @@ async function guardar({ usuarioId, experienciaId, puntuacion, comentario }) {
 }
 
 // Datos públicos del autor de cada valoración (nunca su email).
-const AUTOR_PUBLICO = { select: { id: true, nombreUsuario: true, foto: true } };
+const AUTOR_PUBLICO = { select: USUARIO_PUBLICO };
 
 // Consulta común de los listados: hasta `cantidad` valoraciones que cumplen `where`, de la más
 // reciente a la más antigua y anteriores al id `despuesDe` si se indica (el cursor de «Cargar

@@ -33,6 +33,7 @@ const {
   listarValoraciones,
   listarValoracionesRelacionadas,
 } = require('../../src/services/valoracionService');
+const { FOTO_POR_DEFECTO } = require('../../src/services/shared/fotoPorDefecto');
 
 // Experiencia pública de otro autor (id 2): el usuario 1 puede verla y valorarla.
 const EXPERIENCIA = {
@@ -394,10 +395,13 @@ describe.each([
   ['valoraciones de amigos y seguidores - CS-48', listarValoracionesRelacionadas, 'listarDeRelacionados', (despuesDe, cantidad) => [10, 1, despuesDe, cantidad]],
 ])('%s', (_nombre, listarFn, metodo, argumentos) => {
   test('pide al repositorio una fila de más desde el cursor y devuelve la página y el siguiente', async () => {
-    valoracionRepository[metodo].mockResolvedValue([{ id: 9 }, { id: 8 }, { id: 7 }]);
+    // El repositorio devuelve cada valoración con su autor; sin foto, la API da la de por defecto
+    const fila = (id) => ({ id, usuario: { id: 3, nombreUsuario: 'carlos', foto: null } });
+    const conFoto = (id) => ({ id, usuario: { id: 3, nombreUsuario: 'carlos', foto: FOTO_POR_DEFECTO } });
+    valoracionRepository[metodo].mockResolvedValue([fila(9), fila(8), fila(7)]);
 
     await expect(listarFn(1, 10, { despuesDe: '40', limite: '2' })).resolves.toEqual({
-      valoraciones: [{ id: 9 }, { id: 8 }], siguiente: 8,
+      valoraciones: [conFoto(9), conFoto(8)], siguiente: 8,
     });
     expect(valoracionRepository[metodo]).toHaveBeenCalledWith(...argumentos(40, 3));
   });

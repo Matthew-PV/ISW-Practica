@@ -2,10 +2,11 @@
 // Capa: servicios (services).
 // Lo usarán las rutas de amistad cuando se implementen.
 // Usa: repositories/usuarioRepository.js, repositories/amistadRepository.js,
-//      services/shared/identificadores.js y errores.js.
+//      services/shared/identificadores.js, services/shared/fotoPorDefecto.js y errores.js.
 const usuarioRepository = require('../repositories/usuarioRepository');
 const amistadRepository = require('../repositories/amistadRepository');
 const { leerId } = require('./shared/identificadores');
+const { conFotoPorDefecto } = require('./shared/fotoPorDefecto');
 const { crearError } = require('../errores');
 
 // Envía una solicitud pendiente si los dos usuarios existen y no tienen ninguna
@@ -95,7 +96,8 @@ async function sonAmigos(usuarioAId, usuarioBId) {
 
 // Devuelve las solicitudes pendientes que el usuario de la sesión debe responder.
 async function listarSolicitudesRecibidas(usuarioId) {
-  return amistadRepository.listarSolicitudesRecibidas(usuarioId);
+  const solicitudes = await amistadRepository.listarSolicitudesRecibidas(usuarioId);
+  return solicitudes.map((solicitud) => ({ ...solicitud, solicitante: conFotoPorDefecto(solicitud.solicitante) }));
 }
 
 module.exports = {

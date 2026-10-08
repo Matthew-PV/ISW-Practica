@@ -5,7 +5,7 @@
 // Usa: repositories/valoracionRepository.js (guardar la valoración),
 //      services/experienciaService.js (obtenerExperiencia: que exista y pueda verla),
 //      services/shared/identificadores.js (validar el id), services/shared/paginacion.js
-//      (cursor de los listados) y errores.js.
+//      (cursor de los listados), services/shared/fotoPorDefecto.js y errores.js.
 //
 // Orden de trabajo: primero se valida todo lo que no necesita la base de datos (id,
 // puntuación y comentario) y solo después se consulta MySQL. Si algo falla no se guarda nada.
@@ -13,6 +13,7 @@ const valoracionRepository = require('../repositories/valoracionRepository');
 const experienciaService = require('./experienciaService');
 const { leerId } = require('./shared/identificadores');
 const { leerPaginacion, cortarPagina } = require('./shared/paginacion');
+const { conFotoPorDefecto } = require('./shared/fotoPorDefecto');
 const { crearError } = require('../errores');
 
 const PUNTUACION_MIN = 1;
@@ -78,7 +79,10 @@ async function listarPagina(usuarioId, experienciaId, paginacion, consultar) {
   const { despuesDe, limite } = leerPaginacion(paginacion, VALORACIONES_POR_PAGINA);
   await experienciaService.obtenerExperiencia(usuarioId, experienciaId);
   const { elementos, siguiente } = cortarPagina(await consultar(despuesDe, limite + 1), limite);
-  return { valoraciones: elementos, siguiente };
+  return {
+    valoraciones: elementos.map((valoracion) => ({ ...valoracion, usuario: conFotoPorDefecto(valoracion.usuario) })),
+    siguiente,
+  };
 }
 
 // CS-63: todas las valoraciones de la experiencia, de la más reciente a la más antigua y por

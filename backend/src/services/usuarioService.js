@@ -19,7 +19,8 @@ async function buscarUsuarios(usuarioId, texto) {
   if (buscado === '') {
     throw crearError('Escribe un nombre de usuario para buscar', 400);
   }
-  return usuarioRepository.buscarPorNombre(buscado, usuarioId);
+  const usuarios = await usuarioRepository.buscarPorNombre(buscado, usuarioId);
+  return usuarios.map(conFotoPorDefecto);
 }
 
 // Devuelve el perfil público de otro usuario (nunca su email), con sus contadores de amigos y

@@ -1,12 +1,15 @@
 // Acceso a las solicitudes de amistad en MySQL.
 // Capa: repositorios (repositories).
-// Lo usarán los servicios de amistad cuando se implementen.
-// Usa: repositories/shared/prisma.js (la conexión con MySQL) y repositories/shared/carreras.js.
+// Lo usan: services/amistadService.js, services/perfilService.js, services/usuarioService.js
+//          y services/shared/visibilidad.js (a través de amistadService.sonAmigos).
+// Usa: repositories/shared/prisma.js (la conexión con MySQL), repositories/shared/carreras.js y
+//      repositories/shared/camposPublicos.js.
 //
 // Los datos llegan validados desde el servicio. Este archivo solo consulta o
 // modifica la tabla Amistad.
 const prisma = require('./shared/prisma');
 const { nullSi } = require('./shared/carreras');
+const { USUARIO_PUBLICO } = require('./shared/camposPublicos');
 
 // Clave de la pareja sin orden: "3-7" tanto para 3 → 7 como para 7 → 3 (ver schema.prisma).
 function claveDePareja(usuarioAId, usuarioBId) {
@@ -22,17 +25,15 @@ async function crear(solicitanteId, destinatarioId) {
   }));
 }
 
-// Busca la única relación que puede haber entre dos usuarios, sin importar quién
-// la inició. El servicio decidirá si el estado permite la acción solicitada.
+// Condición «amistades de este usuario», la enviara él o la recibiera.
+function deUsuario(usuarioId) {
+  return { OR: [{ solicitanteId: usuarioId }, { destinatarioId: usuarioId }] };
+}
+
+// Busca la única relación que puede haber entre dos usuarios, sin importar quién la inició (por
+// su clave de pareja, que es única). El servicio decidirá si el estado permite la acción.
 async function buscarEntreUsuarios(usuarioAId, usuarioBId) {
-  return prisma.amistad.findFirst({
-    where: {
-      OR: [
-        { solicitanteId: usuarioAId, destinatarioId: usuarioBId },
-        { solicitanteId: usuarioBId, destinatarioId: usuarioAId },
-      ],
-    },
-  });
+  return prisma.amistad.findUnique({ where: { parejaClave: claveDePareja(usuarioAId, usuarioBId) } });
 }
 
 // Busca una solicitud o amistad por su identificador.
@@ -60,13 +61,7 @@ async function listarSolicitudesRecibidas(destinatarioId) {
   return prisma.amistad.findMany({
     where: { destinatarioId, estado: 'PENDIENTE' },
     include: {
-      solicitante: {
-        select: {
-          id: true,
-          nombreUsuario: true,
-          foto: true,
-        },
-      },
+      solicitante: { select: USUARIO_PUBLICO },
     },
     orderBy: { fecha: 'desc' },
   });
@@ -75,29 +70,15 @@ async function listarSolicitudesRecibidas(destinatarioId) {
 // Cuenta las amistades aceptadas de un usuario, sea quien sea el que envió la solicitud.
 // Las pendientes no cuentan.
 async function contarAmigos(usuarioId) {
-  return prisma.amistad.count({
-    where: {
-      estado: 'ACEPTADA',
-      OR: [
-        { solicitanteId: usuarioId },
-        { destinatarioId: usuarioId },
-      ],
-    },
-  });
+  return prisma.amistad.count({ where: { estado: 'ACEPTADA', ...deUsuario(usuarioId) } });
 }
+
 // CS-45: hasta `cantidad` amistades aceptadas de un usuario, de la más reciente a la más antigua,
 // como { id, persona }: `id` es el de la amistad (el cursor de «Cargar más») y `persona`, los
 // datos públicos del amigo (nunca el email). Con `despuesDe` (el id de una amistad) empieza
 // justo después de ella (ver services/shared/paginacion.js).
 async function listarAmigos(usuarioId, despuesDe, cantidad) {
-  const datosPublicos = { id: true, nombreUsuario: true, foto: true };
-  const where = {
-    estado: 'ACEPTADA',
-    OR: [
-      { solicitanteId: usuarioId },
-      { destinatarioId: usuarioId },
-    ],
-  };
+  const where = { estado: 'ACEPTADA', ...deUsuario(usuarioId) };
   if (despuesDe !== null) {
     where.id = { lt: despuesDe };
   }
@@ -106,8 +87,8 @@ async function listarAmigos(usuarioId, despuesDe, cantidad) {
     select: {
       id: true,
       solicitanteId: true,
-      solicitante: { select: datosPublicos },
-      destinatario: { select: datosPublicos },
+      solicitante: { select: USUARIO_PUBLICO },
+      destinatario: { select: USUARIO_PUBLICO },
     },
     orderBy: { id: 'desc' },
     take: cantidad,

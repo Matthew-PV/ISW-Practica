@@ -6,7 +6,7 @@
 //      repositories/experienciaRepository.js (guardar la experiencia),
 //      repositories/usuarioRepository.js (comprobar que el autor existe),
 //      services/shared/visibilidad.js, services/shared/identificadores.js,
-//      services/shared/paginacion.js y errores.js.
+//      services/shared/paginacion.js, services/shared/fotoPorDefecto.js y errores.js.
 //
 // Orden de trabajo: primero se valida todo lo que no necesita la base de datos (textos,
 // longitudes, tipo de ciudadId) y solo después se consulta MySQL. Así una petición con
@@ -17,6 +17,7 @@ const usuarioRepository = require('../repositories/usuarioRepository');
 const { puedeVerExperiencia, nivelesVisibles } = require('./shared/visibilidad');
 const { leerPaginacion, cortarPagina } = require('./shared/paginacion');
 const { leerId } = require('./shared/identificadores');
+const { conFotoPorDefecto } = require('./shared/fotoPorDefecto');
 const { crearError } = require('../errores');
 
 const TEXTO_CORTO_MAX = 191; // Columnas VARCHAR(191) de MySQL.
@@ -71,114 +72,81 @@ function leerVisibilidad(valor) {
   return visibilidad;
 }
 
-// Devuelve únicamente los campos admitidos y preparados para guardar.
-// No crea registros. La ciudad se consulta solo después de validar los datos locales.
-// - `datos`: el cuerpo de la petición { titulo, descripcion, ciudadId, tipo?, momentoAdecuado? }.
-// Cualquier otro campo que llegue (por ejemplo autorId) se ignora.
-// Se exporta aparte para probar la validación sola (tests/experienciaValidacion.test.js).
-async function validarCreacion(datos) {
-  if (!datos || typeof datos !== 'object' || Array.isArray(datos)) {
-    throw crearError('Los datos de la experiencia deben ser un objeto', 400);
-  }
+// Lee un texto que cabe en una columna VARCHAR(191) (título, tipo o momento adecuado).
+function leerTextoCorto(valor, nombre, obligatorio) {
+  const texto = leerTexto(valor, nombre, obligatorio);
+  comprobarTextoCorto(texto, nombre);
+  return texto;
+}
 
-  const titulo = leerTexto(datos.titulo, 'El título', true);
-  const descripcion = leerTexto(datos.descripcion, 'La descripción', true);
-  const tipo = leerTexto(datos.tipo, 'El tipo', false);
-  const momentoAdecuado = leerTexto(datos.momentoAdecuado, 'El momento adecuado', false);
-  const visibilidad = leerVisibilidad(datos.visibilidad);
-  const ciudadId = datos.ciudadId;
-
-  comprobarTextoCorto(titulo, 'El título');
-  comprobarTextoCorto(tipo, 'El tipo');
-  comprobarTextoCorto(momentoAdecuado, 'El momento adecuado');
+// Lee la descripción, obligatoria y que quepa en la columna TEXT.
+function leerDescripcion(valor) {
+  const descripcion = leerTexto(valor, 'La descripción', true);
   // TEXT limita bytes: las tildes y los emojis pueden ocupar más de uno.
   if (Buffer.byteLength(descripcion, 'utf8') > DESCRIPCION_MAX_BYTES) {
     throw crearError('La descripción es demasiado larga (máximo 65535 bytes en UTF-8)', 400);
   }
-  // ciudadId debe ser un número entero (no el texto "3") que quepa en la columna
+  return descripcion;
+}
+
+// Comprueba la ciudad: un número entero (no el texto "3") que quepa en la columna y que esté en
+// el catálogo. Es la única comprobación que consulta MySQL, por eso va la última.
+async function leerCiudadId(ciudadId) {
   if (!Number.isInteger(ciudadId) || ciudadId <= 0 || ciudadId > CIUDAD_ID_MAX) {
     throw crearError('Debes indicar una ciudad con un identificador entero positivo válido', 400);
   }
-  // Última comprobación, la única que consulta MySQL: que la ciudad exista en el catálogo
   if (!(await ciudadRepository.buscarPorId(ciudadId))) {
     throw crearError('La ciudad seleccionada no existe', 400);
   }
-
-  return { titulo, descripcion, ciudadId, tipo, momentoAdecuado, visibilidad };
+  return ciudadId;
 }
 
-// El autor viene de la sesión, nunca del cuerpo de la petición.
-// - `usuarioId`: el id de la sesión.
-// - `datos`: el cuerpo de la petición (ver validarCreacion).
-// Devuelve la experiencia guardada, con su ciudad. Error 401 si el usuario ya no existe,
-// 400 si los datos no son válidos.
+// Cómo se lee cada campo de texto de una experiencia. Las reglas son las mismas al crearla (se
+// leen todos) y al editarla (solo los que llegan).
+const LECTORES = {
+  titulo: (valor) => leerTextoCorto(valor, 'El título', true),
+  descripcion: leerDescripcion,
+  tipo: (valor) => leerTextoCorto(valor, 'El tipo', false),
+  momentoAdecuado: (valor) => leerTextoCorto(valor, 'El momento adecuado', false),
+  visibilidad: leerVisibilidad,
+};
+
+// Error 400 si los datos no son un objeto (por ejemplo, una lista o un texto).
+function comprobarObjeto(datos) {
+  if (!datos || typeof datos !== 'object' || Array.isArray(datos)) {
+    throw crearError('Los datos de la experiencia deben ser un objeto', 400);
+  }
+}
+
+// Devuelve únicamente los campos admitidos y preparados para guardar.
+// No crea registros. La ciudad se consulta solo después de validar los datos locales.
+// - `datos`: el cuerpo de la petición { titulo, descripcion, ciudadId, tipo?, momentoAdecuado?, visibilidad? }.
+// Cualquier otro campo que llegue (por ejemplo autorId) se ignora.
+// Se exporta aparte para probar la validación sola (tests/services/experienciaService.validacion.test.js).
+async function validarCreacion(datos) {
+  comprobarObjeto(datos);
+  const experiencia = {};
+  for (const [campo, leer] of Object.entries(LECTORES)) {
+    experiencia[campo] = leer(datos[campo]);
+  }
+  experiencia.ciudadId = await leerCiudadId(datos.ciudadId);
+  return experiencia;
+}
 
 // Valida los campos que se pueden modificar de una experiencia.
 // En una edición no es obligatorio enviar todos los campos,
 // solo aquellos que se quieran cambiar.
 async function validarEdicion(datos) {
-  if (!datos || typeof datos !== 'object' || Array.isArray(datos)) {
-    throw crearError('Los datos de la experiencia deben ser un objeto', 400);
-  }
-
+  comprobarObjeto(datos);
   const cambios = {};
-
-  if (datos.titulo !== undefined) {
-    const titulo = leerTexto(datos.titulo, 'El título', true);
-    comprobarTextoCorto(titulo, 'El título');
-    cambios.titulo = titulo;
-  }
-
-  if (datos.descripcion !== undefined) {
-    const descripcion = leerTexto(datos.descripcion, 'La descripción', true);
-
-    if (Buffer.byteLength(descripcion, 'utf8') > DESCRIPCION_MAX_BYTES) {
-      throw crearError(
-        'La descripción es demasiado larga (máximo 65535 bytes en UTF-8)',
-        400
-      );
+  for (const [campo, leer] of Object.entries(LECTORES)) {
+    if (datos[campo] !== undefined) {
+      cambios[campo] = leer(datos[campo]);
     }
-
-    cambios.descripcion = descripcion;
   }
-
-  if (datos.tipo !== undefined) {
-    const tipo = leerTexto(datos.tipo, 'El tipo', false);
-    comprobarTextoCorto(tipo, 'El tipo');
-    cambios.tipo = tipo;
-  }
-
-  if (datos.momentoAdecuado !== undefined) {
-    const momentoAdecuado = leerTexto(
-      datos.momentoAdecuado,
-      'El momento adecuado',
-      false
-    );
-
-    comprobarTextoCorto(momentoAdecuado, 'El momento adecuado');
-    cambios.momentoAdecuado = momentoAdecuado;
-  }
-
-  if (datos.visibilidad !== undefined) {
-    cambios.visibilidad = leerVisibilidad(datos.visibilidad);
-  }
-
   if (datos.ciudadId !== undefined) {
-  const ciudadId = datos.ciudadId;
-
-  if (!Number.isInteger(ciudadId) || ciudadId <= 0 || ciudadId > CIUDAD_ID_MAX) {
-    throw crearError(
-      'Debes indicar una ciudad con un identificador entero positivo válido',
-      400
-    );
+    cambios.ciudadId = await leerCiudadId(datos.ciudadId);
   }
-
-  if (!(await ciudadRepository.buscarPorId(ciudadId))) {
-    throw crearError('La ciudad seleccionada no existe', 400);
-  }
-
-  cambios.ciudadId = ciudadId;
-}
 
   if (Object.keys(cambios).length === 0) {
     throw crearError('Debes indicar al menos un campo para modificar', 400);
@@ -186,6 +154,11 @@ async function validarEdicion(datos) {
 
   return cambios;
 }
+
+// Crea una experiencia (CS-49). El autor viene de la sesión, nunca del cuerpo de la petición.
+// - `usuarioId`: el id de la sesión.
+// - `datos`: el cuerpo de la petición (ver validarCreacion).
+// Devuelve la experiencia guardada, con su ciudad. Error 400 si los datos no son válidos.
 async function crearExperiencia(usuarioId, datos) {
   const datosValidados = await validarCreacion(datos);
   try {
@@ -251,7 +224,8 @@ async function obtenerExperiencia(usuarioId, experienciaId) {
     throw crearError('Contenido no disponible', 404);
   }
 
-  return experiencia;
+  // Las experiencias antiguas pueden no tener autor
+  return experiencia.autor ? { ...experiencia, autor: conFotoPorDefecto(experiencia.autor) } : experiencia;
 }
 
 const EXPERIENCIAS_POR_PAGINA = 10;

@@ -4,17 +4,18 @@
 // devuelven solo los campos de CAMPOS_PERFIL.
 // Capa: repositorios (repositories).
 // Lo usan: services/authService.js, services/perfilService.js y services/experienciaService.js.
-// Usa: repositories/shared/prisma.js (la conexión con MySQL).
+// Usa: repositories/shared/prisma.js (la conexión con MySQL) y repositories/shared/camposPublicos.js.
 //
 // Los repositorios solo leen y escriben datos: no comprueban nada. Los datos llegan
 // ya validados desde el servicio.
 const prisma = require('./shared/prisma');
+const { USUARIO_PUBLICO } = require('./shared/camposPublicos');
 
 // Campos del perfil que se pueden mostrar (nunca la contraseña cifrada)
 const CAMPOS_PERFIL = { id: true, nombreUsuario: true, email: true, foto: true, ciudad: true };
 
 // Campos del perfil que puede ver otra persona: nunca el email
-const CAMPOS_PERFIL_PUBLICO = { id: true, nombreUsuario: true, foto: true, ciudad: true };
+const CAMPOS_PERFIL_PUBLICO = { ...USUARIO_PUBLICO, ciudad: true };
 
 // Crea un usuario. La contraseña debe llegar ya cifrada.
 // Si el email o el nombre ya existen, Prisma lanza un error con código P2002.
@@ -43,7 +44,7 @@ async function buscarPorNombre(texto, usuarioExcluidoId) {
       nombreUsuario: { contains: texto },
       id: { not: usuarioExcluidoId },
     },
-    select: { id: true, nombreUsuario: true, foto: true },
+    select: USUARIO_PUBLICO,
     orderBy: { nombreUsuario: 'asc' },
     take: 20,
   });

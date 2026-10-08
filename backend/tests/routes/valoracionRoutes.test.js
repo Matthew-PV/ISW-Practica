@@ -350,7 +350,9 @@ describe('consultar valoraciones - CS-63 y CS-48', () => {
     const res = await agente.get(`/api/experiencias/10${ruta}?despuesDe=40&limite=2`);
 
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ valoraciones: [VALORACION, { ...VALORACION, id: 6 }], siguiente: 6 });
+    // Sin foto, el autor llega con la de por defecto
+    const conFoto = { ...VALORACION, usuario: { ...VALORACION.usuario, foto: '/img/foto-por-defecto.svg' } };
+    expect(res.body).toEqual({ valoraciones: [conFoto, { ...conFoto, id: 6 }], siguiente: 6 });
     expect(valoracionRepository[metodo]).toHaveBeenCalledWith(...argumentos);
   });
 
