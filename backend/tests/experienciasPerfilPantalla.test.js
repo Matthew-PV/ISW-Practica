@@ -125,3 +125,32 @@ describe('Mis experiencias (perfil.html)', () => {
     expect($$('#lista-experiencias a').map((enlace) => enlace.dataset.experienciaId)).toEqual(['4', '2']);
   });
 });
+
+test('al aceptar desde su perfil la solicitud de amistad, aparecen sus experiencias de amigos sin recargar', async () => {
+  const conSolicitud = { ...PERFIL_ANA, relacion: { amistad: 'recibida', amistadId: 10, siguiendo: false } };
+  const servidor = {
+    'GET /api/usuarios/ana': [200, conSolicitud],
+    'GET /api/experiencias?autor=ana': [200, { experiencias: [experiencia(3, 'Museos')], siguiente: null }],
+  };
+  window.history.pushState({}, '', '/usuario.html?nombre=ana');
+  document.documentElement.innerHTML = leer('usuario.html');
+  window.fetch = jest.fn((ruta, opciones = {}) => {
+    const [status, cuerpo] = servidor[`${opciones.method ?? 'GET'} ${ruta}`] ?? [404, { error: `Ruta no simulada: ${ruta}` }];
+    return respuesta(status, cuerpo);
+  });
+  (0, eval)(COMUNES + leer('js/usuario.js'));
+  await terminar();
+  expect($$('#lista-experiencias a')).toHaveLength(1);
+
+  // Al aceptar, el servidor ya considera amigos a los dos
+  servidor['PATCH /api/amistades/10'] = [200, { id: 10, estado: 'ACEPTADA' }];
+  servidor['GET /api/usuarios/ana'] = [200, { ...conSolicitud, relacion: { amistad: 'amigos', amistadId: 10, siguiendo: false } }];
+  servidor['GET /api/experiencias?autor=ana'] = [200, {
+    experiencias: [experiencia(7, 'Cena con amigos', 'AMIGOS'), experiencia(3, 'Museos')], siguiente: null,
+  }];
+  [...document.querySelectorAll('#botones-amistad button')].find((b) => b.textContent === 'Aceptar').click();
+  await terminar();
+  await terminar();
+
+  expect($$('#lista-experiencias a').map((a) => a.dataset.experienciaId)).toEqual(['7', '3']);
+});

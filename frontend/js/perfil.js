@@ -200,11 +200,12 @@ const listados = {
   },
 };
 
-// Crea la fila de una persona. El nombre se incorpora como texto para que nunca se interprete
-// como HTML aportado por otra persona.
+// Crea la fila de una persona, que enlaza a su perfil (usuario.html). El nombre se incorpora como
+// texto para que nunca se interprete como HTML aportado por otra persona.
 function crearPersona(persona) {
-  const fila = document.createElement('div');
-  fila.className = 'list-group-item d-flex align-items-center gap-2';
+  const fila = document.createElement('a');
+  fila.className = 'list-group-item list-group-item-action d-flex align-items-center gap-2';
+  fila.href = `usuario.html?nombre=${encodeURIComponent(persona.nombreUsuario)}`;
   fila.dataset.usuarioId = persona.id;
 
   const foto = document.createElement('img');

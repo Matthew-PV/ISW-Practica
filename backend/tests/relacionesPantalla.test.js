@@ -170,3 +170,13 @@ test('al aceptar una solicitud en la misma página sube el contador y el amigo a
   expect([...$('#lista-amigos').children].map((fila) => fila.textContent.trim())).toEqual(['usuario_2']);
   expect(oculto('#sin-amigos')).toBe(true);
 });
+
+test('cada amigo y cada seguidor enlaza a su perfil', async () => {
+  await abrirPerfil({
+    [AMIGOS]: [200, listado([persona(2)])],
+    [SEGUIDORES]: [200, listado([{ id: 4, nombreUsuario: 'ana maría', foto: '/img/foto-por-defecto.svg' }])],
+  });
+
+  expect($('#lista-amigos a').getAttribute('href')).toBe('usuario.html?nombre=usuario_2');
+  expect($('#lista-seguidores a').getAttribute('href')).toBe('usuario.html?nombre=ana%20mar%C3%ADa');
+});

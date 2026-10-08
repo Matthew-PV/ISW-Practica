@@ -2,6 +2,15 @@
 
 Registro de los cambios realizados en el proyecto, en orden cronológico.
 
+# Perfiles enlazados y limpieza del proyecto (09/10/2026)
+
+### Perfiles: experiencias al aceptar una amistad y personas enlazadas
+
+- En el perfil de otra persona (`usuario.html`), al aceptar su solicitud de amistad (o al eliminar la amistad), «Sus experiencias» se vuelve a cargar: aparecen al momento las que solo ven sus amigos, sin recargar la página (`recargarExperiencias` de `js/shared/experiencias.js`).
+- En «Mi perfil», cada amigo y cada seguidor enlaza a su perfil (`usuario.html?nombre=…`).
+- Pruebas jsdom en `experienciasPerfilPantalla.test.js` y `relacionesPantalla.test.js`, que fallaron primero.
+- Recorrido completo en un navegador real con dos usuarios: registro y requisitos de la contraseña, experiencias de cada visibilidad, búsqueda, amistad, valoraciones (también en móvil), «Útil» y «Reportar», «Contenido no disponible», cambio y recuperación de la contraseña. Sin fallos. El CAPTCHA de Cloudflare no se resuelve en un navegador sin ventana, así que en ese recorrido los usuarios se crearon directamente en la base de datos.
+
 # Reparación de `main`, limpieza y correcciones de CS-61 (08/10/2026)
 
 El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de conflicto (`<<<<<<<`, `=======`, `>>>>>>>`) en `experienciaService.js`, `experiencia.html` y `experiencia.js`. El servidor no arrancaba y fallaban 22 de los 50 archivos de prueba. Queda resuelto conservando el trabajo de CS-30 y el de CS-63.

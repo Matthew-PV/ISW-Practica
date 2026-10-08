@@ -2,7 +2,7 @@
 // amigos y seguidores, el botón de amistad que corresponde a la relación con él y el de seguir.
 // Se abre con usuario.html?nombre=ana. Si el usuario no existe lo indica, y si es el propio usuario
 // va a perfil.html. Debajo, sus experiencias que puedo ver (CS-44). Usa `api` de shared/api.js y
-// `mostrarExperienciasDe` de shared/experiencias.js.
+// `mostrarExperienciasDe` y `recargarExperiencias` de shared/experiencias.js.
 
 const nombre = new URLSearchParams(window.location.search).get('nombre');
 const botonesAmistad = document.getElementById('botones-amistad');
@@ -27,6 +27,10 @@ async function actuar(ruta, opciones) {
   try {
     await api(ruta, opciones);
     await cargarPerfil();
+    // Una amistad aceptada o eliminada cambia qué experiencias suyas se pueden ver (CS-44)
+    if (ruta.startsWith('/amistades')) {
+      await recargarExperiencias();
+    }
   } catch (err) {
     cajaError.textContent = err.message;
     cajaError.classList.remove('d-none');

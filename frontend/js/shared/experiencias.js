@@ -69,6 +69,14 @@ function mostrarExperienciasDe(nombreUsuario) {
   }
 }
 
+// Vuelve a empezar el listado desde la primera página. Por ejemplo, tras aceptar o eliminar una
+// amistad, porque cambia qué experiencias de amigos se pueden ver.
+function recargarExperiencias() {
+  siguienteExperiencias = null;
+  listaExperiencias.replaceChildren();
+  return cargarPaginaExperiencias();
+}
+
 // «Cargar más»: el botón se desactiva mientras llega la página para no pedirla dos veces.
 botonMasExperiencias.addEventListener('click', async () => {
   botonMasExperiencias.disabled = true;
