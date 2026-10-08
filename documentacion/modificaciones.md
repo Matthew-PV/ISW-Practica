@@ -142,6 +142,12 @@ Sobre la página de José (`experiencia.html` y `js/experiencia.js`):
 - **Pruebas:** `experienciaDetallePantalla.test.js` (jsdom), una por cada frase del criterio de CS-63, más la sección de CS-48 y el objetivo 9 de CS-30. Fallaron primero 19 de 21. Las dos pruebas de José (`experienciaPantalla.test.js`) siguen pasando.
 - Pendiente: la comprobación manual en el navegador, en escritorio y móvil, con dos usuarios.
 
+### CS-30: pruebas de acceso por API (objetivos 7 y 8)
+
+- `tests/mysql/accesoExperiencia.test.js` recorre con MySQL real los cinco casos del objetivo 7: pública de otro (200), privada propia (200), privada ajena (404 «Contenido no disponible», sin datos), de amigos con la solicitud pendiente (404) y con la amistad aceptada (200).
+- Recorre también los tres cambios del objetivo 8, con la misma petición antes y después: una pública que pasa a privada, una amistad aceptada que se elimina y una solicitud pendiente que se acepta.
+- La regla ya estaba implementada (trabajo de Matthew). Para comprobar que las pruebas detectan un fallo, se hizo que una solicitud pendiente contara como amistad: fallaron 3 y se deshizo el cambio.
+
 ### Para quien continúe
 
 - Tras el `git pull`, aplicar la migración nueva desde `backend/`: `npx prisma migrate deploy` y `npx prisma generate`.
