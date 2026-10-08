@@ -5,7 +5,9 @@
 //  - `ruta`: la parte que va detrás de /api (por ejemplo '/auth/yo').
 //  - `opciones`: las mismas que acepta fetch (method, body...). Si no se indica, es un GET.
 // Devuelve el JSON de la respuesta (o null si no trae cuerpo). Si algo va mal, lanza un Error
-// cuyo mensaje ya se puede enseñar al usuario tal cual.
+// cuyo mensaje ya se puede enseñar al usuario tal cual. Si el servidor respondió con un error,
+// el Error lleva además su código HTTP en `status` (por ejemplo, 404), para que la página pueda
+// distinguir los casos sin depender del texto del mensaje.
 async function api(ruta, opciones = {}) {
   let res;
   try {
@@ -26,7 +28,9 @@ async function api(ruta, opciones = {}) {
   const datos = await res.json().catch(() => null);
   // Códigos 4xx/5xx: el backend manda { error: 'mensaje' }; si no lo trae, se usa el código
   if (!res.ok) {
-    throw new Error(datos?.error || `Error ${res.status}`);
+    const error = new Error(datos?.error || `Error ${res.status}`);
+    error.status = res.status;
+    throw error;
   }
   return datos;
 }

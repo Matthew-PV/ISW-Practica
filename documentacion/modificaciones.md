@@ -125,6 +125,23 @@ El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de confli
   - `valoracionService.test.js` y `valoraciones.test.js` prueban las reglas y las rutas nuevas con repositorios simulados.
   - Las pruebas nuevas fallaron primero. Quitando a propósito la condición «me sigue» del filtro, la prueba de MySQL falla.
 
+### CS-63, CS-48 y CS-30 (objetivo 9): página de una experiencia
+
+Sobre la página de José (`experiencia.html` y `js/experiencia.js`):
+- **Cabecera:** el autor enlaza a su perfil (`usuario.html?nombre=…`, o «Mi perfil» si es el mío; CS-62, objetivo 10).
+- **«Valoraciones y comentarios»:** se piden a `GET /valoraciones`, así que salen todas y no solo las de amigos. Cada una lleva el autor enlazado, la puntuación, el texto y la fecha, que antes no aparecía porque el campo es `creadaEn`. «Cargar más» usa el cursor y no repite ninguna.
+- **«Valoraciones de amigos y seguidores» (CS-48):** sección propia con su «Cargar más» y su aviso de lista vacía.
+- **Formulario:**
+  - comentario de hasta 1000 caracteres, con el contador «n / 1000» que avisa al acercarse;
+  - mi valoración se precarga con `GET /valoracion`;
+  - no se envía sin una puntuación entera del 1 al 5;
+  - si falla la red, se muestra el error y no se borra lo escrito.
+- **«Contenido no disponible»:** se reconoce por el código 404 y no por el texto del mensaje. Se borran el título, el autor, la ciudad, la descripción y las listas, también si la experiencia deja de estar disponible mientras se ve (CS-30, objetivo 9).
+- **«Útil» y «Reportar»** se quedan como estaban: funcionan solo en la pantalla hasta CS-02 y CS-04.
+- **`js/shared/api.js`:** el error que lanza lleva ahora el código HTTP en `status`.
+- **Pruebas:** `experienciaDetallePantalla.test.js` (jsdom), una por cada frase del criterio de CS-63, más la sección de CS-48 y el objetivo 9 de CS-30. Fallaron primero 19 de 21. Las dos pruebas de José (`experienciaPantalla.test.js`) siguen pasando.
+- Pendiente: la comprobación manual en el navegador, en escritorio y móvil, con dos usuarios.
+
 ### Para quien continúe
 
 - Tras el `git pull`, aplicar la migración nueva desde `backend/`: `npx prisma migrate deploy` y `npx prisma generate`.

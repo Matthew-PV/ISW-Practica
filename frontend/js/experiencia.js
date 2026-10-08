@@ -1,3 +1,9 @@
+// Página de una experiencia (experiencia.html?id=7): título, autor y ciudad, las valoraciones y
+// comentarios (CS-63), las de amigos y seguidores (CS-48) y el formulario para valorarla. Si la
+// experiencia no existe o no se puede ver, solo se muestra «Contenido no disponible» (CS-30).
+// «Útil» y «Reportar» funcionan solo en la pantalla: no guardan nada hasta CS-02 y CS-04.
+// Usa `api` de shared/api.js.
+
 // Obtener parámetros de la URL
 const parametros = new URLSearchParams(window.location.search);
 const experienciaId = parametros.get('id');
@@ -10,8 +16,16 @@ const tituloEl = document.getElementById('detalle-titulo');
 const autorEl = document.getElementById('detalle-autor');
 const ciudadEl = document.getElementById('detalle-ciudad');
 const descEl = document.getElementById('detalle-descripcion');
-// CORRECCIÓN: Faltaba capturar la caja del formulario para poder mostrarla/ocultarla
 const cajaFormulario = document.getElementById('caja-formulario-valoracion');
+
+// Convierte `enlace` en el enlace al perfil de `usuario`: el mío lleva a «Mi perfil» y el de otra
+// persona, a su página (CS-62). El nombre se pone como texto, nunca como HTML.
+function enlacePerfil(enlace, usuario) {
+  enlace.textContent = usuario.nombreUsuario;
+  enlace.href = usuario.id === miUsuarioId
+    ? 'perfil.html'
+    : `usuario.html?nombre=${encodeURIComponent(usuario.nombreUsuario)}`;
+}
 
 async function cargarPaginaExperiencia() {
   if (!experienciaId) {
@@ -32,34 +46,27 @@ async function cargarPaginaExperiencia() {
     contenidoExperiencia.classList.remove('d-none');
 
     tituloEl.textContent = experiencia.titulo;
+    // Las experiencias antiguas pueden no tener autor
+    if (experiencia.autor) {
+      enlacePerfil(autorEl, experiencia.autor);
+    } else {
+      autorEl.textContent = 'Usuario anónimo';
+    }
+    ciudadEl.textContent = experiencia.ciudad?.nombre || 'Ciudad desconocida';
+    descEl.textContent = experiencia.descripcion;
 
-        // Truco definitivo: Si el backend no trae el objeto autor, pero el autorId
-        // coincide con nuestro ID, usamos nuestro propio nombre de perfil.
-        let nombreAutor = 'Usuario anónimo';
-        if (experiencia.autor?.nombreUsuario) {
-          nombreAutor = experiencia.autor.nombreUsuario;
-        } else if (experiencia.autorId === yo.id) {
-          nombreAutor = yo.nombreUsuario;
-        }
-        autorEl.textContent = nombreAutor;
-
-        ciudadEl.textContent = experiencia.ciudad?.nombre || 'Ciudad desconocida';
-        descEl.textContent = experiencia.descripcion;
-
-    await cargarComentarios();
-
-    // Comprobamos si somos el autor para mostrar u ocultar el formulario
+    // El autor no puede valorar su propia experiencia: solo los demás ven el formulario
     const autorId = experiencia.autorId || (experiencia.autor && experiencia.autor.id);
     if (autorId !== yo.id) {
       cajaFormulario.classList.remove('d-none'); // Mostrar formulario
-      await cargarMiValoracion(); // Solo cargar mi valoración si puedo valorar
+      cargarMiValoracion();
     }
 
+    cargarValoracionesAmigos();
+    await cargarComentarios();
   } catch (error) {
-    if (error.message.includes('permiso') || error.message.includes('existe')) {
-      mostrarError('Contenido no disponible');
-    } else {
-      mostrarError('Error de red o servidor: ' + error.message);
+    if (!tratarErrorDeAcceso(error)) {
+      mostrarError(error.message);
     }
   }
 }
@@ -70,58 +77,40 @@ function mostrarError(mensaje) {
   contenidoExperiencia.classList.add('d-none');
 }
 
-// Iniciar
-cargarPaginaExperiencia();
+// CS-30: si la experiencia no existe o ya no se puede ver, se borra todo lo que se mostraba y
+// solo queda el aviso, sin ningún dato de la experiencia.
+function mostrarNoDisponible() {
+  tituloEl.textContent = '';
+  autorEl.textContent = '';
+  autorEl.removeAttribute('href');
+  ciudadEl.textContent = '';
+  descEl.textContent = '';
+  listaComentarios.replaceChildren();
+  listaAmigos.replaceChildren();
+  mostrarError('Contenido no disponible');
+}
 
-// --- OBJETIVO 4: COMENTARIOS Y PAGINACIÓN ---
-let paginaComentarios = 1;
-const LIMITE_COMENTARIOS = 10;
-
-const listaComentarios = document.getElementById('lista-comentarios');
-const sinComentarios = document.getElementById('sin-comentarios');
-const btnCargarMas = document.getElementById('btn-cargar-mas');
-
-// Función que pide las valoraciones al backend y las dibuja
-async function cargarComentarios() {
-  try {
-    const ruta = `/experiencias/${experienciaId}/valoracion?pagina=${paginaComentarios}&limite=${LIMITE_COMENTARIOS}`;
-    const resultado = await api(ruta);
-
-    const valoraciones = resultado.valoraciones || [];
-    const total = resultado.total || 0;
-
-    // Si es la primera página y no hay nada, mostramos el mensaje
-    if (paginaComentarios === 1 && valoraciones.length === 0) {
-      sinComentarios.classList.remove('d-none');
-      btnCargarMas.classList.add('d-none');
-      return;
-    }
-
-    // Dibujamos cada comentario
-    valoraciones.forEach(crearElementoComentario);
-
-    // Si los comentarios mostrados son menores que el total, mostramos el botón
-    const mostrados = listaComentarios.children.length;
-    if (mostrados < total) {
-      btnCargarMas.classList.remove('d-none');
-    } else {
-      btnCargarMas.classList.add('d-none');
-    }
-  } catch (error) {
-      console.error('Error al cargar comentarios:', error);
-
-      // Mostramos una alerta visual al final de la lista de comentarios
-      const alertaError = document.createElement('div');
-      alertaError.className = 'alert alert-danger mt-3';
-      alertaError.textContent = 'Problema de conexión al cargar los comentarios. Inténtalo de nuevo.';
-      listaComentarios.appendChild(alertaError);
+// Errores que no dependen de la sección: 404 (la experiencia no existe o ya no se puede ver) y
+// 401 (sin sesión: se vuelve al login). Devuelve true si el error era uno de ellos.
+function tratarErrorDeAcceso(error) {
+  if (error.status === 404) {
+    mostrarNoDisponible();
+    return true;
   }
-} // CORRECCIÓN: Faltaba esta llave de cierre de la función cargarComentarios
+  if (error.status === 401) {
+    window.location.href = '/';
+    return true;
+  }
+  return false;
+}
 
-// Crea la tarjeta del comentario usando textContent por seguridad
-function crearElementoComentario(valoracion) {
+// Crea la tarjeta común de una valoración: autor enlazado a su perfil, puntuación, texto y fecha,
+// todo con textContent para que un comentario con HTML se vea como texto.
+// Devuelve { tarjeta, cuerpo } para poder añadirle botones.
+function crearTarjetaValoracion(valoracion) {
   const tarjeta = document.createElement('div');
   tarjeta.className = 'card shadow-sm';
+  tarjeta.dataset.valoracionId = valoracion.id;
 
   const cuerpo = document.createElement('div');
   cuerpo.className = 'card-body';
@@ -131,9 +120,8 @@ function crearElementoComentario(valoracion) {
 
   // Autor enlazado a su perfil
   const autorEnlace = document.createElement('a');
-  autorEnlace.href = `perfil.html?id=${valoracion.usuarioId || valoracion.usuario?.id}`;
   autorEnlace.className = 'text-decoration-none fw-bold';
-  autorEnlace.textContent = valoracion.usuario?.nombreUsuario || 'Usuario anónimo';
+  enlacePerfil(autorEnlace, valoracion.usuario);
 
   // Puntuación
   const puntuacion = document.createElement('span');
@@ -154,9 +142,57 @@ function crearElementoComentario(valoracion) {
   // Fecha
   const fechaElemento = document.createElement('small');
   fechaElemento.className = 'text-muted d-block mb-2';
-  const fechaValor = valoracion.creadoEn || valoracion.fecha;
-  fechaElemento.textContent = fechaValor ? new Date(fechaValor).toLocaleDateString() : '';
+  fechaElemento.textContent = new Date(valoracion.creadaEn).toLocaleDateString('es-ES');
   cuerpo.appendChild(fechaElemento);
+
+  tarjeta.appendChild(cuerpo);
+  return { tarjeta, cuerpo };
+}
+
+// --- OBJETIVO 4: COMENTARIOS Y «CARGAR MÁS» ---
+// Paginación por cursor: `siguienteComentarios` es el valor que devolvió el backend para pedir la
+// página siguiente (null al empezar y cuando ya no quedan más).
+let siguienteComentarios = null;
+
+const listaComentarios = document.getElementById('lista-comentarios');
+const sinComentarios = document.getElementById('sin-comentarios');
+const btnCargarMas = document.getElementById('btn-cargar-mas');
+
+// Pide la página siguiente de valoraciones y la añade a la lista sin repetir ninguna
+async function cargarComentarios() {
+  const cursor = siguienteComentarios === null ? '' : `?despuesDe=${siguienteComentarios}`;
+  try {
+    const { valoraciones, siguiente } = await api(`/experiencias/${experienciaId}/valoraciones${cursor}`);
+
+    valoraciones
+      .filter((valoracion) => !listaComentarios.querySelector(`[data-valoracion-id="${valoracion.id}"]`))
+      .forEach(crearElementoComentario);
+
+    siguienteComentarios = siguiente;
+    sinComentarios.classList.toggle('d-none', listaComentarios.children.length !== 0);
+    btnCargarMas.classList.toggle('d-none', siguiente === null);
+  } catch (error) {
+    if (tratarErrorDeAcceso(error)) return;
+    console.error('Error al cargar comentarios:', error);
+
+    // Mostramos una alerta visual al final de la lista de comentarios
+    const alertaError = document.createElement('div');
+    alertaError.className = 'alert alert-danger mt-3';
+    alertaError.textContent = 'Problema de conexión al cargar los comentarios. Inténtalo de nuevo.';
+    listaComentarios.appendChild(alertaError);
+  }
+}
+
+// Vuelve a pedir la lista desde el principio (por ejemplo, después de guardar mi valoración)
+function recargarComentarios() {
+  siguienteComentarios = null;
+  listaComentarios.replaceChildren();
+  return cargarComentarios();
+}
+
+// Crea la tarjeta del comentario, con los botones «Útil» y «Reportar», y la añade a la lista
+function crearElementoComentario(valoracion) {
+  const { tarjeta, cuerpo } = crearTarjetaValoracion(valoracion);
 
   // --- OBJETIVO 7: Botón Útil (Simulado visualmente) ---
   const contenedorUtil = document.createElement('div');
@@ -235,14 +271,11 @@ function crearElementoComentario(valoracion) {
   contenedorUtil.appendChild(btnReportar);
 
   cuerpo.appendChild(contenedorUtil);
-
-  tarjeta.appendChild(cuerpo);
   listaComentarios.appendChild(tarjeta);
 }
 
 // Evento para el botón de cargar más
 btnCargarMas.addEventListener('click', async () => {
-  paginaComentarios++;
   btnCargarMas.disabled = true;
   btnCargarMas.textContent = 'Cargando...';
 
@@ -250,6 +283,43 @@ btnCargarMas.addEventListener('click', async () => {
 
   btnCargarMas.disabled = false;
   btnCargarMas.textContent = 'Cargar más';
+});
+
+// --- CS-48: VALORACIONES DE AMIGOS Y SEGUIDORES ---
+// Las de mis amigos (con la amistad aceptada) y de quienes me siguen, con su propio cursor.
+let siguienteAmigos = null;
+
+const listaAmigos = document.getElementById('lista-valoraciones-amigos');
+const sinAmigos = document.getElementById('sin-valoraciones-amigos');
+const btnMasAmigos = document.getElementById('btn-mas-amigos');
+
+async function cargarValoracionesAmigos() {
+  const cursor = siguienteAmigos === null ? '' : `?despuesDe=${siguienteAmigos}`;
+  try {
+    const { valoraciones, siguiente } = await api(`/experiencias/${experienciaId}/valoraciones/amigos${cursor}`);
+
+    for (const valoracion of valoraciones) {
+      if (!listaAmigos.querySelector(`[data-valoracion-id="${valoracion.id}"]`)) {
+        listaAmigos.appendChild(crearTarjetaValoracion(valoracion).tarjeta);
+      }
+    }
+
+    siguienteAmigos = siguiente;
+    sinAmigos.classList.toggle('d-none', listaAmigos.children.length !== 0);
+    btnMasAmigos.classList.toggle('d-none', siguiente === null);
+  } catch (error) {
+    if (tratarErrorDeAcceso(error)) return;
+    const alertaError = document.createElement('div');
+    alertaError.className = 'alert alert-danger';
+    alertaError.textContent = 'Problema de conexión al cargar las valoraciones de tus amigos. Inténtalo de nuevo.';
+    listaAmigos.appendChild(alertaError);
+  }
+}
+
+btnMasAmigos.addEventListener('click', async () => {
+  btnMasAmigos.disabled = true;
+  await cargarValoracionesAmigos();
+  btnMasAmigos.disabled = false;
 });
 
 // --- OBJETIVO 5 y 6: FORMULARIO, CONTADOR Y GUARDADO ---
@@ -260,11 +330,10 @@ const contadorCaracteres = document.getElementById('contador-caracteres');
 const errorValoracion = document.getElementById('error-valoracion');
 const btnGuardarValoracion = document.getElementById('btn-guardar-valoracion');
 
-const MAX_COMENTARIO = 255;
-let miValoracionId = null;
+const MAX_COMENTARIO = 1000; // El mismo máximo que comprueba el backend (CS-01)
 
-// Actualiza el contador dinámicamente
-inputComentario.addEventListener('input', () => {
+// Actualiza el contador «n / 1000» y lo resalta al acercarse al máximo
+function actualizarContador() {
   const actual = inputComentario.value.length;
   contadorCaracteres.textContent = `${actual} / ${MAX_COMENTARIO}`;
 
@@ -275,32 +344,37 @@ inputComentario.addEventListener('input', () => {
     contadorCaracteres.classList.add('text-muted');
     contadorCaracteres.classList.remove('text-danger', 'fw-bold');
   }
-});
+}
 
-// Comprueba si el usuario ya ha valorado esta experiencia
+inputComentario.addEventListener('input', actualizarContador);
+
+// Si ya había valorado la experiencia, rellena el formulario con mi valoración (null si no)
 async function cargarMiValoracion() {
   try {
-    const miValoracion = await api(`/experiencias/${experienciaId}/valoracion/mia`);
+    const miValoracion = await api(`/experiencias/${experienciaId}/valoracion`);
 
-    if (miValoracion && miValoracion.id) {
-      miValoracionId = miValoracion.id;
+    if (miValoracion) {
       inputPuntuacion.value = miValoracion.puntuacion;
-
-      if (miValoracion.comentario) {
-        inputComentario.value = miValoracion.comentario;
-        contadorCaracteres.textContent = `${inputComentario.value.length} / ${MAX_COMENTARIO}`;
-      }
-
+      inputComentario.value = miValoracion.comentario ?? '';
+      actualizarContador();
       btnGuardarValoracion.textContent = 'Actualizar valoración';
     }
   } catch (error) {
-    // Silencioso: significa que no ha valorado aún
+    // Si falla por otra causa, el formulario se queda vacío y se puede valorar igualmente
+    tratarErrorDeAcceso(error);
   }
 }
 
-// Guardar o actualizar la valoración
+// Guardar o actualizar la valoración. El backend crea la mía o actualiza la que ya tenía.
 formValoracion.addEventListener('submit', async (e) => {
   e.preventDefault();
+
+  // El navegador ya impide enviar sin una puntuación entera del 1 al 5 (required, min y max);
+  // esto lo asegura también si el envío no pasa por su validación
+  if (!formValoracion.checkValidity()) {
+    formValoracion.reportValidity();
+    return;
+  }
 
   errorValoracion.classList.add('d-none');
   btnGuardarValoracion.disabled = true;
@@ -318,9 +392,7 @@ formValoracion.addEventListener('submit', async (e) => {
       body: JSON.stringify(datos)
     });
 
-    paginaComentarios = 1;
-    listaComentarios.replaceChildren();
-    await cargarComentarios();
+    await recargarComentarios();
 
     btnGuardarValoracion.textContent = '¡Guardado!';
     setTimeout(() => {
@@ -328,8 +400,11 @@ formValoracion.addEventListener('submit', async (e) => {
     }, 2000);
 
   } catch (error) {
-    errorValoracion.textContent = error.message || 'Error al guardar la valoración';
-    errorValoracion.classList.remove('d-none');
+    // Lo escrito no se borra: se puede volver a intentar
+    if (!tratarErrorDeAcceso(error)) {
+      errorValoracion.textContent = error.message || 'Error al guardar la valoración';
+      errorValoracion.classList.remove('d-none');
+    }
   } finally {
     btnGuardarValoracion.disabled = false;
   }
@@ -388,3 +463,6 @@ formReporte.addEventListener('submit', async (e) => {
     btnEnviarReporte.disabled = false;
   }
 });
+
+// Iniciar
+cargarPaginaExperiencia();

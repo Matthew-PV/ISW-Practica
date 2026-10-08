@@ -22,7 +22,7 @@
     <div id="contenido-experiencia" class="d-none">
       <h1 id="detalle-titulo" class="h3 mb-2"></h1>
       <p class="text-muted mb-4">
-        Por <strong id="detalle-autor"></strong> en <span id="detalle-ciudad"></span>
+        Por <a id="detalle-autor" class="fw-semibold"></a> en <span id="detalle-ciudad"></span>
       </p>
 
       <p id="detalle-descripcion" class="fs-5"></p>
@@ -41,9 +41,9 @@
 
                   <div class="mb-3">
                     <label for="val-comentario" class="form-label fw-bold">Comentario (opcional)</label>
-                    <textarea class="form-control" id="val-comentario" rows="3" maxlength="255"></textarea>
+                    <textarea class="form-control" id="val-comentario" rows="3" maxlength="1000"></textarea>
                     <!-- Contador de caracteres -->
-                    <div id="contador-caracteres" class="form-text text-end text-muted mt-1">0 / 255</div>
+                    <div id="contador-caracteres" class="form-text text-end text-muted mt-1">0 / 1000</div>
                   </div>
 
                   <div id="error-valoracion" class="alert alert-danger d-none small p-2 mb-3"></div>
@@ -52,6 +52,16 @@
                 </form>
               </div>
             </div>
+
+            <!-- CS-48: valoraciones de amigos y seguidores -->
+            <section class="mb-5" aria-labelledby="titulo-amigos">
+              <h2 id="titulo-amigos" class="h5 mb-3">Valoraciones de amigos y seguidores</h2>
+              <p id="sin-valoraciones-amigos" class="text-muted d-none">Ningún amigo o seguidor ha valorado esta experiencia.</p>
+              <div id="lista-valoraciones-amigos" class="d-flex flex-column gap-3 mb-3"></div>
+              <div class="text-center">
+                <button type="button" id="btn-mas-amigos" class="btn btn-outline-primary d-none">Cargar más</button>
+              </div>
+            </section>
 
             <!-- Objetivo 4: Lista de valoraciones y comentarios -->
             <h2 class="h5 mb-4">Valoraciones y comentarios</h2>
@@ -64,7 +74,7 @@
 
             <!-- Botón Cargar más -->
             <div class="text-center">
-              <button id="btn-cargar-mas" class="btn btn-outline-primary d-none">
+              <button type="button" id="btn-cargar-mas" class="btn btn-outline-primary d-none">
                 Cargar más
               </button>
             </div>
