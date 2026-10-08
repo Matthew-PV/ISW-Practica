@@ -53,11 +53,26 @@ El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de confli
 - **`aceptar`:** `PATCH /api/amistades/:id` exige `{ "aceptar": true }` o `{ "aceptar": false }`. Cualquier otro valor responde 400 «Indica si aceptas la solicitud con true o false» y la solicitud sigue pendiente. Antes `"si"` la aceptaba, y `1` o la ausencia del campo la borraban.
 - **Pruebas:** `tests/identificadores.test.js`, y en `tests/interaccionesCriterio.test.js` los ids no válidos de cada ruta y tres valores de `aceptar` que no son booleanos. Fallaron primero (404 y 200) y pasaron tras el cambio.
 
+### CS-61: peticiones simultáneas
+
+- **Una sola relación por pareja:** `Amistad` tiene el campo nuevo `parejaClave`, la pareja sin orden (`"3-7"` tanto si 3 envió la solicitud a 7 como al revés), único en MySQL. Lo calcula `amistadRepository.crear`. Así, dos solicitudes cruzadas que llegan a la vez dejan una sola relación: la segunda responde 400 «Ya existe una solicitud o amistad entre estos usuarios».
+- **Migración `20261008160000_amistad_pareja_clave`:** añade la columna, rellena las filas existentes y, si una base local tuviera ya dos relaciones cruzadas entre la misma pareja, conserva la aceptada o, si están en el mismo estado, la más antigua. Se probó aparte con parejas cruzadas en una base de datos temporal.
+- **Sin errores 500 por carreras:** `repositories/shared/carreras.js` (`nullSi`) convierte en `null` los errores de Prisma que solo indican que otra petición se adelantó: P2002 (ya existe) y P2025 (ya no existe). Los servicios responden con un 400 o un 404 claros. Lo usan al seguir, dejar de seguir, crear, aceptar, rechazar y eliminar amistades.
+- **Pruebas:**
+  - unitarias de cada caso en `amistadService.test.js` y `seguimientoService.test.js`;
+  - con MySQL real, `tests/mysql/interaccionesConcurrencia.test.js`: pareja cruzada, dos solicitudes cruzadas simultáneas, diez «seguir» simultáneos (uno 201 y nueve 400, ningún 500) y aceptar o borrar algo que ya no existe.
+  - Todas fallaron primero: se creaba la segunda relación, uno de los «seguir» acababa en 500 y P2025 lanzaba un error.
+
+### Para quien continúe
+
+- Tras el `git pull`, aplicar la migración nueva desde `backend/`: `npx prisma migrate deploy` y `npx prisma generate`.
+
 ### Cómo comprobarlo
 
 ```bash
 cd backend
-npm test        # 50 archivos y 418 pruebas en verde
+npm test            # todas las pruebas, sin base de datos
+npm run test:mysql  # con Docker en marcha: autor público y peticiones simultáneas
 npm run dev     # bienvenida → «Ver detalle» abre experiencia.html
 ```
 

@@ -112,3 +112,32 @@ test('lista las solicitudes recibidas por el usuario de la sesión', async () =>
   await expect(listarSolicitudesRecibidas(2)).resolves.toEqual([]);
   expect(amistadRepository.listarSolicitudesRecibidas).toHaveBeenCalledWith(2);
 });
+
+// Peticiones simultáneas: el repositorio devuelve null cuando MySQL detecta que otra petición
+// se adelantó (pareja ya creada o fila ya borrada). El servicio responde con un error claro.
+test('si otra petición crea antes la misma pareja, responde 400', async () => {
+  amistadRepository.crear.mockResolvedValue(null);
+
+  await expect(enviarSolicitud(1, 2)).rejects.toMatchObject({
+    status: 400, message: 'Ya existe una solicitud o amistad entre estos usuarios',
+  });
+});
+
+test.each([
+  ['aceptar', true, 'aceptar'],
+  ['rechazar', false, 'borrar'],
+])('si la solicitud desaparece mientras se intenta %s, responde 404', async (_accion, aceptar, metodo) => {
+  amistadRepository.buscarPorId.mockResolvedValue({ id: 10, solicitanteId: 1, destinatarioId: 2, estado: 'PENDIENTE' });
+  amistadRepository[metodo].mockResolvedValue(null);
+
+  await expect(responderSolicitud(2, 10, aceptar)).rejects.toMatchObject({
+    status: 404, message: 'La solicitud de amistad no existe',
+  });
+});
+
+test('si la amistad desaparece mientras se elimina, responde 404', async () => {
+  amistadRepository.buscarPorId.mockResolvedValue({ id: 10, solicitanteId: 1, destinatarioId: 2, estado: 'ACEPTADA' });
+  amistadRepository.borrar.mockResolvedValue(null);
+
+  await expect(eliminarAmistad(1, 10)).rejects.toMatchObject({ status: 404, message: 'La amistad no existe' });
+});

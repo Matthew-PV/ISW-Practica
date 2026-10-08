@@ -34,7 +34,12 @@ async function seguirUsuario(seguidorId, seguidoId) {
   if (await seguimientoRepository.sigueA(seguidorId, seguidoId)) {
     throw crearError('Ya sigues a este usuario', 400);
   }
-  return seguimientoRepository.seguir(seguidorId, seguidoId);
+  // null: otra petición creó el mismo seguimiento entre la comprobación anterior y este momento
+  const seguimiento = await seguimientoRepository.seguir(seguidorId, seguidoId);
+  if (!seguimiento) {
+    throw crearError('Ya sigues a este usuario', 400);
+  }
+  return seguimiento;
 }
 
 // Elimina un seguimiento existente entre dos usuarios diferentes.
@@ -47,7 +52,12 @@ async function dejarDeSeguir(seguidorId, seguidoId) {
   if (!(await seguimientoRepository.sigueA(seguidorId, seguidoId))) {
     throw crearError('No sigues a este usuario', 404);
   }
-  return seguimientoRepository.dejarDeSeguir(seguidorId, seguidoId);
+  // null: otra petición lo borró mientras tanto
+  const borrado = await seguimientoRepository.dejarDeSeguir(seguidorId, seguidoId);
+  if (!borrado) {
+    throw crearError('No sigues a este usuario', 404);
+  }
+  return borrado;
 }
 
 module.exports = { seguirUsuario, dejarDeSeguir };

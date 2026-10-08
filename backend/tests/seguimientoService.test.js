@@ -50,3 +50,17 @@ test('rechaza dejar de seguir si no existe la relación', async () => {
   await expect(dejarDeSeguir(1, 2)).rejects.toMatchObject({ status: 404 });
   expect(seguimientoRepository.dejarDeSeguir).not.toHaveBeenCalled();
 });
+
+// Peticiones simultáneas: el repositorio devuelve null cuando otra petición se adelantó.
+test('si otra petición crea antes el mismo seguimiento, responde 400', async () => {
+  seguimientoRepository.seguir.mockResolvedValue(null);
+
+  await expect(seguirUsuario(1, 2)).rejects.toMatchObject({ status: 400, message: 'Ya sigues a este usuario' });
+});
+
+test('si el seguimiento desaparece mientras se deja de seguir, responde 404', async () => {
+  seguimientoRepository.sigueA.mockResolvedValue(true);
+  seguimientoRepository.dejarDeSeguir.mockResolvedValue(null);
+
+  await expect(dejarDeSeguir(1, 2)).rejects.toMatchObject({ status: 404, message: 'No sigues a este usuario' });
+});

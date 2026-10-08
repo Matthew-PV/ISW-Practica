@@ -104,12 +104,16 @@ model Amistad {
   solicitanteId  Int
   destinatarioId Int
   estado         EstadoAmistad @default(PENDIENTE)
+  // La pareja sin orden, "<menorId>-<mayorId>" (por ejemplo "3-7" tanto si 3 envió la
+  // solicitud a 7 como al revés). Al ser única, MySQL impide una segunda relación entre los
+  // mismos usuarios aunque dos solicitudes cruzadas lleguen a la vez. La calcula
+  // amistadRepository.crear.
+  parejaClave    String        @unique @db.VarChar(21)
   fecha          DateTime      @default(now())
   solicitante    Usuario       @relation("Solicitante", fields: [solicitanteId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   destinatario   Usuario       @relation("Destinatario", fields: [destinatarioId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  // Evita repetir exactamente la misma solicitud. La relación inversa se valida
-  // en el servicio cuando se implemente el envío de solicitudes.
+  // Evita repetir exactamente la misma solicitud; parejaClave cubre además el otro sentido.
   @@unique([solicitanteId, destinatarioId])
   @@index([destinatarioId])
 }

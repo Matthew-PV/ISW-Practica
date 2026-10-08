@@ -29,7 +29,12 @@ async function enviarSolicitud(solicitanteId, destinatarioId) {
     throw crearError('Ya existe una solicitud o amistad entre estos usuarios', 400);
   }
 
-  return amistadRepository.crear(solicitanteId, destinatarioId);
+  // null: otra petición creó la relación entre la comprobación anterior y este momento
+  const amistad = await amistadRepository.crear(solicitanteId, destinatarioId);
+  if (!amistad) {
+    throw crearError('Ya existe una solicitud o amistad entre estos usuarios', 400);
+  }
+  return amistad;
 }
 
 // Acepta o rechaza una solicitud pendiente. Solo puede responder quien la recibió.
@@ -56,7 +61,14 @@ async function responderSolicitud(usuarioId, solicitudId, aceptar) {
     throw crearError('Solo puedes responder tus solicitudes de amistad', 403);
   }
 
-  return aceptar ? amistadRepository.aceptar(solicitudId) : amistadRepository.borrar(solicitudId);
+  // null: otra petición la borró mientras tanto
+  const resultado = aceptar
+    ? await amistadRepository.aceptar(solicitudId)
+    : await amistadRepository.borrar(solicitudId);
+  if (!resultado) {
+    throw crearError('La solicitud de amistad no existe', 404);
+  }
+  return resultado;
 }
 
 // Elimina una amistad ya aceptada. Puede hacerlo cualquiera de sus dos participantes.
@@ -78,7 +90,12 @@ async function eliminarAmistad(usuarioId, amistadId) {
     throw crearError('No puedes eliminar una amistad de otra persona', 403);
   }
 
-  return amistadRepository.borrar(amistadId);
+  // null: otra petición la borró mientras tanto
+  const borrada = await amistadRepository.borrar(amistadId);
+  if (!borrada) {
+    throw crearError('La amistad no existe', 404);
+  }
+  return borrada;
 }
 
 // Devuelve true solo cuando existe una amistad aceptada entre ambos usuarios.

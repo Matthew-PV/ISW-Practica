@@ -1,24 +1,27 @@
 // Acceso a los seguimientos en MySQL.
 // Capa: repositorios (repositories).
 // Lo usarán los servicios de seguimiento cuando se implementen.
-// Usa: repositories/shared/prisma.js (la conexión con MySQL).
+// Usa: repositories/shared/prisma.js (la conexión con MySQL) y repositories/shared/carreras.js.
 //
 // Los datos llegan validados desde el servicio. Este archivo solo consulta o
 // modifica la tabla Seguimiento.
 const prisma = require('./shared/prisma');
+const { nullSi } = require('./shared/carreras');
 
 // Crea un seguimiento. La fecha se asigna automáticamente en el esquema.
+// Devuelve null si ya existía: con dos «seguir» simultáneos, la restricción única
+// [seguidorId, seguidoId] deja crear solo uno.
 async function seguir(seguidorId, seguidoId) {
-  return prisma.seguimiento.create({
+  return nullSi('P2002', () => prisma.seguimiento.create({
     data: { seguidorId, seguidoId },
-  });
+  }));
 }
 
-// Elimina exactamente el seguimiento de un usuario a otro.
+// Elimina exactamente el seguimiento de un usuario a otro. Devuelve null si ya no existe.
 async function dejarDeSeguir(seguidorId, seguidoId) {
-  return prisma.seguimiento.delete({
+  return nullSi('P2025', () => prisma.seguimiento.delete({
     where: { seguidorId_seguidoId: { seguidorId, seguidoId } },
-  });
+  }));
 }
 
 // Indica si existe el seguimiento solicitado.

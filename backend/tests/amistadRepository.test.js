@@ -21,7 +21,8 @@ test('crea una solicitud pendiente entre dos usuarios', async () => {
   await amistadRepository.crear(1, 2);
 
   expect(prisma.amistad.create).toHaveBeenCalledWith({
-    data: { solicitanteId: 1, destinatarioId: 2 },
+    // parejaClave: la pareja sin orden, que impide la relación inversa (CS-61)
+    data: { solicitanteId: 1, destinatarioId: 2, parejaClave: '1-2' },
   });
 });
 
