@@ -1,6 +1,6 @@
 // CS-64: límite de intentos al cambiar la contraseña, con el limitador real (setup.js lo desactiva).
 // Va en su propio archivo: los contadores son por IP y viven mientras se ejecuta el archivo, así
-// que los intentos de login de tests/limites.test.js impedirían iniciar la sesión que hace falta.
+// que los intentos de login de tests/middlewares/limitesMiddleware.test.js impedirían iniciar la sesión que hace falta.
 jest.unmock('../../src/middlewares/limitesMiddleware');
 jest.mock('../../src/repositories/usuarioRepository');
 

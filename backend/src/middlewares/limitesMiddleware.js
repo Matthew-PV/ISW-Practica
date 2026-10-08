@@ -7,7 +7,7 @@
 //
 // Cuando una IP supera el límite, responde 429 («demasiadas peticiones») con el mensaje
 // de `opcionesComunes` y la petición no llega a la ruta.
-// En las pruebas se desactivan (tests/setup.js), salvo en tests/limites.test.js.
+// En las pruebas se desactivan (tests/setup.js), salvo en los tests/middlewares/limitesMiddleware*.test.js.
 const { rateLimit } = require('express-rate-limit');
 
 const MINUTO = 60 * 1000; // en milisegundos
