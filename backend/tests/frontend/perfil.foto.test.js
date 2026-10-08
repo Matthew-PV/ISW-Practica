@@ -11,7 +11,7 @@ const { cargarScripts } = require('../helpers/pantalla');
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('perfil.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/experiencias.js', 'js/shared/password.js', 'js/perfil.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/experiencias.js', 'js/shared/password.js', 'js/perfil.js'];
 const FOTO_ANTERIOR = 'https://res.cloudinary.com/demo/image/upload/v1/planb/perfiles/usuario-1.png';
 const FOTO_NUEVA = 'https://res.cloudinary.com/demo/image/upload/v2/planb/perfiles/usuario-1.jpg';
 const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', foto: FOTO_ANTERIOR, ciudad: null };

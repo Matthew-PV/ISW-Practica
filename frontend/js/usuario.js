@@ -2,7 +2,8 @@
 // amigos y seguidores, el botón de amistad que corresponde a la relación con él y el de seguir.
 // Se abre con usuario.html?nombre=ana. Si el usuario no existe lo indica, y si es el propio usuario
 // va a perfil.html. Debajo, sus experiencias que puedo ver (CS-44). Usa `api` de shared/api.js y
-// `mostrarExperienciasDe` y `recargarExperiencias` de shared/experiencias.js.
+// `mostrarExperienciasDe` y `recargarExperiencias` de shared/experiencias.js, y `mostrarMensaje`,
+// `ocultarMensaje` e `irAlLogin` de shared/pantalla.js.
 
 const nombre = new URLSearchParams(window.location.search).get('nombre');
 const botonesAmistad = document.getElementById('botones-amistad');
@@ -23,7 +24,7 @@ function crearBoton(zona, texto, clase, alPulsar) {
 // Hace una petición de amistad o de seguimiento y, si sale bien, vuelve a pedir el perfil para actualizar
 // los botones y los contadores sin recargar la página. Si falla, se muestra el mensaje del backend.
 async function actuar(ruta, opciones) {
-  cajaError.classList.add('d-none');
+  ocultarMensaje(cajaError);
   try {
     await api(ruta, opciones);
     await cargarPerfil();
@@ -32,8 +33,7 @@ async function actuar(ruta, opciones) {
       await recargarExperiencias();
     }
   } catch (err) {
-    cajaError.textContent = err.message;
-    cajaError.classList.remove('d-none');
+    mostrarMensaje(cajaError, err.message);
   }
 }
 
@@ -97,12 +97,12 @@ async function cargarPerfil() {
     mostrarPerfil(perfil);
     return !perfil.esPropio;
   } catch (err) {
-    if (err.message === 'Usuario no encontrado') {
+    if (err.status === 404) {
       document.getElementById('perfil-usuario').classList.add('d-none');
       document.getElementById('no-encontrado').classList.remove('d-none');
     } else {
       // Sin sesión (o el servidor no responde): se vuelve al login
-      window.location.href = '/';
+      irAlLogin();
     }
     return false;
   }

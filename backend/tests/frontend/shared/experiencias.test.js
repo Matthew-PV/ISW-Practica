@@ -10,7 +10,7 @@ const { cargarScripts } = require('../../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const COMUNES = ['js/shared/api.js', 'js/shared/experiencias.js', 'js/shared/password.js'];
+const COMUNES = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/experiencias.js', 'js/shared/password.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);

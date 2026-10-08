@@ -1,5 +1,6 @@
 // Página de búsqueda de personas (personas.html). Cada resultado lleva al perfil público de esa
-// persona en usuario.html. Usa api de shared/api.js para conservar la sesión del navegador.
+// persona en usuario.html. Usa `api` de shared/api.js y `crearEnlacePerfil`, `mostrarMensaje` y
+// `ocultarMensaje` de shared/pantalla.js.
 
 const formularioBusqueda = document.getElementById('form-busqueda');
 const campoBusqueda = document.getElementById('texto-busqueda');
@@ -10,18 +11,16 @@ const errorBusqueda = document.getElementById('error-busqueda');
 // Crea un enlace seguro al perfil público. El nombre procede de otro usuario, por eso se asigna
 // con textContent y nunca se inserta como HTML.
 function crearResultado(usuario) {
-  const enlace = document.createElement('a');
+  const enlace = crearEnlacePerfil(document.createElement('a'), usuario);
   enlace.className = 'list-group-item list-group-item-action';
-  enlace.href = `usuario.html?nombre=${encodeURIComponent(usuario.nombreUsuario)}`;
-  enlace.textContent = usuario.nombreUsuario;
   return enlace;
 }
 
 // Pide al servidor los usuarios cuyo nombre contiene el texto buscado y reemplaza los resultados.
 async function buscarPersonas() {
   resultados.replaceChildren();
-  sinResultados.classList.add('d-none');
-  errorBusqueda.classList.add('d-none');
+  ocultarMensaje(sinResultados);
+  ocultarMensaje(errorBusqueda);
 
   try {
     const usuarios = await api(`/usuarios?texto=${encodeURIComponent(campoBusqueda.value.trim())}`);
@@ -31,8 +30,7 @@ async function buscarPersonas() {
     }
     resultados.append(...usuarios.map(crearResultado));
   } catch (err) {
-    errorBusqueda.textContent = err.message;
-    errorBusqueda.classList.remove('d-none');
+    mostrarMensaje(errorBusqueda, err.message);
   }
 }
 

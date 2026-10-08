@@ -20,7 +20,7 @@ const leer = (archivo) =>
 
 const HTML = leer('bienvenida.html');
 
-const SCRIPTS = ['js/shared/api.js', 'js/bienvenida.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/bienvenida.js'];
 
 const USUARIO = {
   id: 1,

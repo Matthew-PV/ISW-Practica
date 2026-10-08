@@ -10,7 +10,12 @@
 <body>
   <nav class="navbar navbar-dark bg-dark">
     <div class="container">
-      <a class="navbar-brand" href="bienvenida.html">⬅ Volver a Bienvenida</a>
+      <a class="navbar-brand" href="bienvenida.html">PlanB</a>
+      <div class="d-flex gap-3">
+        <a class="nav-link text-light" href="bienvenida.html">Inicio</a>
+        <a class="nav-link text-light" href="personas.html">Buscar personas</a>
+        <a class="nav-link text-light" href="perfil.html">Mi perfil</a>
+      </div>
     </div>
   </nav>
 
@@ -81,43 +86,40 @@
           </div>
   </main>
 
-  <!-- OBJETIVO 8: Modal de Reporte -->
-  <div class="modal fade" id="modal-reporte" tabindex="-1" aria-labelledby="modalReporteLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalReporteLabel">Reportar comentario</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <p>Selecciona el motivo por el que deseas reportar este comentario:</p>
-          <form id="form-reporte">
-            <div class="form-check mb-2">
-              <input class="form-check-input" type="radio" name="motivoReporte" id="motivoSpam" value="SPAM" required>
-              <label class="form-check-label" for="motivoSpam">Spam o publicidad</label>
-            </div>
-            <div class="form-check mb-2">
-              <input class="form-check-input" type="radio" name="motivoReporte" id="motivoOfensivo" value="OFENSIVO">
-              <label class="form-check-label" for="motivoOfensivo">Contenido ofensivo o insultante</label>
-            </div>
-            <div class="form-check mb-3">
-              <input class="form-check-input" type="radio" name="motivoReporte" id="motivoInapropiado" value="INAPROPIADO">
-              <label class="form-check-label" for="motivoInapropiado">Inapropiado u off-topic</label>
-            </div>
-
-            <!-- Aquí mostraremos el aviso de éxito o si ya estaba reportado -->
-            <div id="mensaje-reporte" class="alert d-none small"></div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" form="form-reporte" class="btn btn-danger" id="btn-enviar-reporte">Enviar reporte</button>
-        </div>
+  <!-- CS-63, objetivo 8: ventana para reportar un comentario. Solo funciona en la pantalla: no
+       guarda nada hasta que exista CS-04 (js/experiencia.js) -->
+  <dialog id="dialogo-reporte" class="dialogo-experiencia" aria-labelledby="titulo-reporte">
+    <form id="form-reporte" class="p-4">
+      <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+        <h2 id="titulo-reporte" class="h5 mb-0">Reportar comentario</h2>
+        <button type="button" class="btn-close" data-cerrar-reporte aria-label="Cerrar"></button>
       </div>
-    </div>
-  </div>
+      <p>Selecciona el motivo por el que deseas reportar este comentario:</p>
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="radio" name="motivoReporte" id="motivoSpam" value="SPAM" required>
+        <label class="form-check-label" for="motivoSpam">Spam o publicidad</label>
+      </div>
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="radio" name="motivoReporte" id="motivoOfensivo" value="OFENSIVO">
+        <label class="form-check-label" for="motivoOfensivo">Contenido ofensivo o insultante</label>
+      </div>
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="radio" name="motivoReporte" id="motivoInapropiado" value="INAPROPIADO">
+        <label class="form-check-label" for="motivoInapropiado">Inapropiado u off-topic</label>
+      </div>
+
+      <!-- Aviso de éxito o de que ya estaba reportado -->
+      <div id="mensaje-reporte" class="alert d-none small"></div>
+
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-secondary" data-cerrar-reporte>Cancelar</button>
+        <button type="submit" class="btn btn-danger" id="btn-enviar-reporte">Enviar reporte</button>
+      </div>
+    </form>
+  </dialog>
 
   <script src="js/shared/api.js"></script>
+  <script src="js/shared/pantalla.js"></script>
   <script src="js/experiencia.js"></script>
 </body>
 </html>

@@ -1,5 +1,6 @@
 // Página de mi perfil (perfil.html): muestra y permite editar nombreUsuario, ciudad y foto.
-// Se ejecuta nada más cargar la página. Usa `api` de shared/api.js, `mostrarExperienciasDe` de
+// Se ejecuta nada más cargar la página. Usa `api` de shared/api.js, `listaConCargarMas`,
+// `crearEnlacePerfil`, `mostrarMensaje` y `ocultarMensaje` de shared/pantalla.js, `mostrarExperienciasDe` de
 // shared/experiencias.js (CS-44: mis experiencias) y `mostrarRequisitosPassword` de
 // shared/password.js (CS-64: cambiar la contraseña).
 
@@ -183,29 +184,11 @@ campoFoto.addEventListener('change', async () => {
 const cajaErrorRelaciones = document.getElementById('error-relaciones');
 const PERSONAS_POR_PAGINA = 20;
 
-// Elementos de cada listado y el cursor de la página siguiente (`siguiente` del backend; null al
-// empezar y cuando no quedan más).
-const listados = {
-  amigos: {
-    lista: document.getElementById('lista-amigos'),
-    vacio: document.getElementById('sin-amigos'),
-    botonMas: document.getElementById('mas-amigos'),
-    siguiente: null,
-  },
-  seguidores: {
-    lista: document.getElementById('lista-seguidores'),
-    vacio: document.getElementById('sin-seguidores'),
-    botonMas: document.getElementById('mas-seguidores'),
-    siguiente: null,
-  },
-};
-
 // Crea la fila de una persona, que enlaza a su perfil (usuario.html). El nombre se incorpora como
 // texto para que nunca se interprete como HTML aportado por otra persona.
 function crearPersona(persona) {
-  const fila = document.createElement('a');
+  const fila = crearEnlacePerfil(document.createElement('a'), persona);
   fila.className = 'list-group-item list-group-item-action d-flex align-items-center gap-2';
-  fila.href = `usuario.html?nombre=${encodeURIComponent(persona.nombreUsuario)}`;
   fila.dataset.usuarioId = persona.id;
 
   const foto = document.createElement('img');
@@ -218,76 +201,60 @@ function crearPersona(persona) {
   const nombre = document.createElement('span');
   nombre.textContent = persona.nombreUsuario;
 
-  fila.append(foto, nombre);
+  fila.replaceChildren(foto, nombre);
   return fila;
 }
 
-// Añade a un listado la página recibida del backend y actualiza el aviso de lista vacía y el
-// botón «Cargar más».
-function mostrarPagina(listado, respuesta) {
-  for (const persona of respuesta.personas) {
-    // Si alguien ya está en la lista (por ejemplo, porque llegó un seguidor nuevo entre una
-    // página y la siguiente), no se repite.
-    const yaMostrada = listado.lista.querySelector(`[data-usuario-id="${persona.id}"]`);
-    if (!yaMostrada) {
-      listado.lista.append(crearPersona(persona));
-    }
-  }
-  listado.siguiente = respuesta.siguiente;
-  listado.vacio.classList.toggle('d-none', listado.lista.children.length !== 0);
-  listado.botonMas.classList.toggle('d-none', respuesta.siguiente === null);
+const mostrarErrorRelaciones = (err) => mostrarMensaje(cajaErrorRelaciones, err.message);
+
+// Un listado con «Cargar más» de 'amigos' o 'seguidores' (ver shared/pantalla.js)
+function crearListadoPersonas(tipo, idLista, idVacio, idBoton) {
+  return listaConCargarMas({
+    lista: document.getElementById(idLista),
+    vacio: document.getElementById(idVacio),
+    botonMas: document.getElementById(idBoton),
+    pedir: async (cursor) => {
+      ocultarMensaje(cajaErrorRelaciones);
+      const despuesDe = cursor === null ? '' : `&despuesDe=${cursor}`;
+      const { personas, siguiente } = await api(`/perfil/${tipo}?limite=${PERSONAS_POR_PAGINA}${despuesDe}`);
+      return { elementos: personas, siguiente };
+    },
+    crear: crearPersona,
+    alFallar: mostrarErrorRelaciones,
+  });
 }
 
-// Pide al backend la página siguiente de un listado ('amigos' o 'seguidores') y la muestra.
-// La primera se pide sin cursor; las demás, desde el `siguiente` de la anterior.
-async function cargarPagina(tipo) {
-  const listado = listados[tipo];
-  const cursor = listado.siguiente === null ? '' : `&despuesDe=${listado.siguiente}`;
-  const respuesta = await api(`/perfil/${tipo}?limite=${PERSONAS_POR_PAGINA}${cursor}`);
-  mostrarPagina(listado, respuesta);
-}
+const listadoAmigos = crearListadoPersonas('amigos', 'lista-amigos', 'sin-amigos', 'mas-amigos');
+const listadoSeguidores = crearListadoPersonas('seguidores', 'lista-seguidores', 'sin-seguidores', 'mas-seguidores');
 
-function mostrarErrorRelaciones(err) {
-  cajaErrorRelaciones.textContent = err.message;
-  cajaErrorRelaciones.classList.remove('d-none');
-}
-
-// Al abrir la página: los contadores y la primera página de cada listado.
-async function cargarRelaciones() {
-  cajaErrorRelaciones.classList.add('d-none');
+// Pide los contadores de amigos y seguidores. Devuelve false si fallan (y lo muestra).
+async function cargarContadores() {
+  ocultarMensaje(cajaErrorRelaciones);
   try {
     const resumen = await api('/perfil/resumen');
     document.getElementById('total-amigos').textContent = resumen.amigos;
     document.getElementById('total-seguidores').textContent = resumen.seguidores;
-    await cargarPagina('amigos');
-    await cargarPagina('seguidores');
+    return true;
   } catch (err) {
     mostrarErrorRelaciones(err);
+    return false;
   }
 }
 
-// Vuelve a empezar los dos listados y los contadores (por ejemplo, tras aceptar una solicitud).
-function recargarRelaciones() {
-  for (const listado of Object.values(listados)) {
-    listado.lista.replaceChildren();
-    listado.siguiente = null;
+// Al abrir la página: los contadores y la primera página de cada listado.
+async function cargarRelaciones() {
+  if (await cargarContadores()) {
+    await listadoAmigos.cargar();
+    await listadoSeguidores.cargar();
   }
-  return cargarRelaciones();
 }
 
-// «Cargar más»: el botón se desactiva mientras llega la página para no pedirla dos veces.
-for (const tipo of ['amigos', 'seguidores']) {
-  const { botonMas } = listados[tipo];
-  botonMas.addEventListener('click', async () => {
-    cajaErrorRelaciones.classList.add('d-none');
-    botonMas.disabled = true;
-    try {
-      await cargarPagina(tipo);
-    } catch (err) {
-      mostrarErrorRelaciones(err);
-    }
-    botonMas.disabled = false;
-  });
+// Vuelve a empezar los contadores y los dos listados (por ejemplo, tras aceptar una solicitud).
+async function recargarRelaciones() {
+  if (await cargarContadores()) {
+    await listadoAmigos.reiniciar();
+    await listadoSeguidores.reiniciar();
+  }
 }
 
 cargarRelaciones();

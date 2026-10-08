@@ -18,3 +18,18 @@ test.each(['bienvenida.html', 'perfil.html', 'usuario.html'])(
     expect(enlace.textContent.trim()).toBe('Buscar personas');
   }
 );
+
+test.each(['bienvenida.html', 'perfil.html', 'usuario.html', 'personas.html', 'experiencia.html'])(
+  '%s tiene la misma barra que el resto de pantallas con sesión',
+  (pagina) => {
+    document.documentElement.innerHTML = leer(pagina);
+
+    const enlaces = [...document.querySelectorAll('nav a')].map((a) => [a.textContent.trim(), a.getAttribute('href')]);
+    expect(enlaces).toEqual([
+      ['PlanB', 'bienvenida.html'],
+      ['Inicio', 'bienvenida.html'],
+      ['Buscar personas', 'personas.html'],
+      ['Mi perfil', 'perfil.html'],
+    ]);
+  }
+);

@@ -12,7 +12,7 @@ const { cargarScripts } = require('../helpers/pantalla');
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('experiencia.html');
-const SCRIPTS = ['js/shared/api.js', 'js/experiencia.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/experiencia.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -50,6 +50,10 @@ async function abrir(rutas = {}) {
   const servidor = { ...SERVIDOR, ...rutas };
   window.history.pushState({}, '', '/experiencia.html?id=7');
   document.documentElement.innerHTML = HTML;
+  // jsdom no implementa del todo <dialog>
+  const dialogo = document.getElementById('dialogo-reporte');
+  dialogo.showModal = jest.fn();
+  dialogo.close = jest.fn();
   window.fetch = jest.fn((ruta, opciones = {}) => {
     const clave = `${opciones.method ?? 'GET'} ${ruta}`;
     const definida = servidor[clave] ?? [404, { error: `Ruta no simulada: ${clave}` }];
