@@ -12,7 +12,8 @@ jest.mock('../src/repositories/shared/sesionStore', () => {
 // tests/limites.test.js los prueba de verdad con jest.unmock.
 jest.mock('../src/middlewares/limitesMiddleware', () => {
   const dejarPasar = (req, res, next) => next();
-  return { limiteLogin: dejarPasar, limiteRegistro: dejarPasar, limiteCambioPassword: dejarPasar };
+  return { limiteLogin: dejarPasar, limiteRegistro: dejarPasar, limiteCambioPassword: dejarPasar,
+    limiteRecuperacion: dejarPasar };
 });
 
 // El CAPTCHA se da siempre por bueno (sin llamar a Cloudflare). Es una función normal y no

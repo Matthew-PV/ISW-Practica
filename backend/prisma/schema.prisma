@@ -17,18 +17,19 @@ datasource db {
 // - foto: URL de la foto en Cloudinary; null mientras no suba ninguna.
 // - ciudad: texto libre del perfil, distinto del catálogo Ciudad de las experiencias.
 model Usuario {
-  id                     Int           @id @default(autoincrement())
-  nombreUsuario          String        @unique
-  email                  String        @unique
+  id                     Int                 @id @default(autoincrement())
+  nombreUsuario          String              @unique
+  email                  String              @unique
   passwordHash           String
   foto                   String?
   ciudad                 String?
-  creadoEn               DateTime      @default(now())
+  creadoEn               DateTime            @default(now())
   experiencias           Experiencia[]
-  solicitudesEnviadas    Amistad[]     @relation("Solicitante")
-  solicitudesRecibidas   Amistad[]     @relation("Destinatario")
-  seguimientosRealizados Seguimiento[] @relation("Seguidor")
-  seguidores             Seguimiento[] @relation("Seguido")
+  solicitudesEnviadas    Amistad[]           @relation("Solicitante")
+  solicitudesRecibidas   Amistad[]           @relation("Destinatario")
+  seguimientosRealizados Seguimiento[]       @relation("Seguidor")
+  seguidores             Seguimiento[]       @relation("Seguido")
+  tokensRecuperacion     TokenRecuperacion[]
   valoraciones           Valoracion[]
 }
 
@@ -130,6 +131,22 @@ model Seguimiento {
 
   @@unique([seguidorId, seguidoId])
   @@index([seguidoId])
+}
+
+// CS-64: enlaces para restablecer la contraseña. Solo se guarda el hash (SHA-256) del token que
+// va en el enlace, nunca el token: con acceso a la base de datos no se podría usar ningún enlace.
+// Cada enlace sirve una sola vez (usadoEn) y caduca a los 30 minutos (caducaEn).
+// Si se borra el usuario, se borran sus enlaces.
+model TokenRecuperacion {
+  id        Int       @id @default(autoincrement())
+  usuarioId Int
+  tokenHash String    @unique @db.Char(64)
+  caducaEn  DateTime
+  usadoEn   DateTime?
+  creadoEn  DateTime  @default(now())
+  usuario   Usuario   @relation(fields: [usuarioId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([usuarioId])
 }
 
 // Sesiones de express-session, guardadas por @quixo3/prisma-session-store

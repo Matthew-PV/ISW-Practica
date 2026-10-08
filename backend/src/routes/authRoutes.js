@@ -10,7 +10,7 @@
 // Lo único propio de esta capa es la sesión (abrirla y cerrarla), porque es cosa de HTTP.
 const express = require('express');
 const authService = require('../services/authService');
-const { limiteLogin, limiteRegistro } = require('../middlewares/limitesMiddleware');
+const { limiteLogin, limiteRegistro, limiteRecuperacion } = require('../middlewares/limitesMiddleware');
 const { requiereSesion } = require('../middlewares/sesionMiddleware');
 
 const router = express.Router();
@@ -66,6 +66,20 @@ router.post('/logout', (req, res) => {
 router.get('/yo', requiereSesion, async (req, res) => {
   const usuario = await authService.obtenerUsuario(req.session.usuarioId);
   res.json(usuario);
+});
+
+// POST /api/auth/recuperar — CS-64: pide el enlace para restablecer la contraseña. Cuerpo: { email }.
+// Responde siempre lo mismo, exista o no el email, para no revelar qué emails están registrados.
+router.post('/recuperar', limiteRecuperacion, async (req, res) => {
+  await authService.solicitarRecuperacion(req.body);
+  res.json({ mensaje: 'Si el email está registrado, te hemos enviado un enlace para restablecer la contraseña.' });
+});
+
+// POST /api/auth/restablecer — CS-64: cambia la contraseña con el enlace. Cuerpo: { token, nueva }.
+// 400 si el enlace no es válido, ya se usó o ha caducado, o si la contraseña no cumple los requisitos.
+router.post('/restablecer', limiteRecuperacion, async (req, res) => {
+  await authService.restablecerPassword(req.body);
+  res.json({ mensaje: 'Contraseña cambiada. Ya puedes iniciar sesión con la nueva.' });
 });
 
 module.exports = router;

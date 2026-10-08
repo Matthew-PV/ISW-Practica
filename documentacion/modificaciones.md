@@ -170,9 +170,28 @@ Sobre la página de José (`experiencia.html` y `js/experiencia.js`):
   - `cambioPasswordPantalla.test.js` (jsdom).
   - Fallaron primero. Las pruebas que cargan `perfil.js` cargan también `js/shared/password.js`.
 
+### CS-64: recuperar la contraseña por email (objetivos 8 a 15)
+
+- **Modelo `TokenRecuperacion`** (migración `20261008200000_token_recuperacion`): usuario, `tokenHash` (SHA-256 del token, único), `caducaEn`, `usadoEn` y `creadoEn`. En la base de datos nunca está el token del enlace, solo su hash.
+- **Email:** `repositories/emailRepository.js` envía con Nodemailer (dependencia nueva) si `.env` tiene `SMTP_URL`. Si no, escribe el email con el enlace en la consola del servidor, que basta para desarrollo. `.env.example` explica `SMTP_URL`, `EMAIL_REMITENTE` y `URL_APP`. Falta que el equipo elija proveedor y ponga su `SMTP_URL`.
+- **`POST /api/auth/recuperar`** `{ email }`: responde siempre lo mismo, exista o no el email. Si existe, crea un token aleatorio de 32 bytes que caduca a los 30 minutos y envía el enlace `restablecer.html?token=…`. El envío no se espera, para que la respuesta no tarde más cuando el email existe.
+- **`POST /api/auth/restablecer`** `{ token, nueva }`:
+  - la nueva cumple las mismas reglas que en el registro; si no las cumple, no cambia nada y el enlace sigue sirviendo;
+  - el enlace se consume en una transacción, con un UPDATE que solo funciona si sigue sin usar y sin caducar: con dos peticiones simultáneas, solo una cambia la contraseña;
+  - un enlace usado, caducado o inventado responde 400 «El enlace no es válido o ha caducado».
+- Las dos rutas comparten un límite de 10 peticiones cada 15 minutos por IP (`limiteRecuperacion`).
+- **Pantallas:** `recuperar.html` y `restablecer.html` (con los requisitos marcados mientras se escribe), y el enlace «¿Has olvidado tu contraseña?» en el inicio de sesión.
+- **Pruebas:**
+  - `tests/mysql/recuperacionPassword.test.js`: la misma respuesta con y sin cuenta, solo el hash en la base de datos, caducidad de 30 minutos, un solo uso (después el login funciona con la nueva y falla con la antigua), enlace caducado o inventado, contraseña débil y dos restablecimientos simultáneos;
+  - `recuperacionService.test.js`: no se espera al envío, y un fallo del envío no rompe la petición;
+  - `limiteRecuperacion.test.js`: 11 peticiones → 429;
+  - `recuperacionPantalla.test.js` (jsdom).
+  - Fallaron primero. Quitando a propósito la condición «sin usar» del consumo del enlace, fallan dos pruebas de MySQL.
+
 ### Para quien continúe
 
-- Tras el `git pull`, aplicar la migración nueva desde `backend/`: `npx prisma migrate deploy` y `npx prisma generate`.
+- Tras el `git pull`, desde `backend/`: `npm install` (llega `nodemailer`) y aplicar las migraciones nuevas con `npx prisma migrate deploy` y `npx prisma generate`.
+- Para la recuperación de contraseña, añadir a `.env` las variables nuevas de `.env.example`. Sin `SMTP_URL`, el enlace aparece en la consola del servidor.
 
 ### Cómo comprobarlo
 

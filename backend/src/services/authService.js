@@ -1,16 +1,21 @@
-// Lógica de negocio de la autenticación: registro, inicio de sesión y usuario actual.
+// Lógica de negocio de la autenticación: registro, inicio de sesión, usuario actual y
+// recuperación de la contraseña por email (CS-64).
 // Capa: servicios (services).
 // Lo usa: routes/authRoutes.js.
 // Usa: repositories/usuarioRepository.js (leer y crear usuarios), services/captchaService.js
 //      (comprobar el CAPTCHA), services/shared/nombreUsuario.js (reglas del nombre),
-//      services/shared/password.js (reglas de la contraseña, CS-64)
-//      y errores.js (errores con código HTTP).
+//      services/shared/password.js (reglas y cifrado de la contraseña, CS-64),
+//      repositories/tokenRecuperacionRepository.js y repositories/emailRepository.js (enlaces
+//      para restablecer la contraseña, CS-64) y errores.js (errores con código HTTP).
 //
 // Aquí están las reglas: qué datos son válidos, cómo se cifra la contraseña y qué se
 // devuelve al frontend. No sabe nada de HTTP ni de sesiones (eso es de la ruta) ni de
 // cómo se guarda en MySQL (eso es del repositorio).
+const crypto = require('node:crypto');
 const bcrypt = require('bcrypt');
 const usuarioRepository = require('../repositories/usuarioRepository');
+const tokenRecuperacionRepository = require('../repositories/tokenRecuperacionRepository');
+const emailRepository = require('../repositories/emailRepository');
 const captchaService = require('./captchaService');
 const { validarNombreUsuario } = require('./shared/nombreUsuario');
 const { validarPassword, cifrarPassword, SALT_ROUNDS } = require('./shared/password');
@@ -129,4 +134,66 @@ async function obtenerUsuario(id) {
   return datosPublicos(usuario);
 }
 
-module.exports = { registrar, iniciarSesion, obtenerUsuario };
+// CS-64: minutos que dura un enlace para restablecer la contraseña
+const MINUTOS_ENLACE = 30;
+const ENLACE_NO_VALIDO = 'El enlace no es válido o ha caducado';
+
+// En la base de datos solo se guarda el SHA-256 del token: con él no se puede rehacer el enlace
+function hashDeToken(token) {
+  return crypto.createHash('sha256').update(token).digest('hex');
+}
+
+// CS-64: si el email es de una cuenta, crea un enlace para restablecer la contraseña, de un solo
+// uso y que caduca a los 30 minutos, y lo envía por email. Si no, no hace nada: la respuesta
+// (la da la ruta) es la misma en los dos casos, para no revelar qué emails están registrados.
+// - `datos`: { email }. Error 400 si falta.
+async function solicitarRecuperacion(datos) {
+  const { email } = leerTextos(datos ?? {}, ['email']);
+  const usuario = await usuarioRepository.buscarPorEmail(normalizarEmail(email));
+  if (!usuario) {
+    return;
+  }
+
+  // 32 bytes aleatorios: imposible de adivinar
+  const token = crypto.randomBytes(32).toString('hex');
+  await tokenRecuperacionRepository.crear({
+    usuarioId: usuario.id,
+    tokenHash: hashDeToken(token),
+    caducaEn: new Date(Date.now() + MINUTOS_ENLACE * 60 * 1000),
+  });
+
+  const enlace = `${process.env.URL_APP || 'http://localhost:3000'}/restablecer.html?token=${token}`;
+  // El envío no se espera: así la respuesta tarda lo mismo exista o no el email. Si falla, se
+  // anota en la consola del servidor y la petición no falla.
+  Promise.resolve()
+    .then(() => emailRepository.enviar({
+      para: usuario.email,
+      asunto: 'Restablecer tu contraseña de PlanB',
+      texto: `Para elegir una contraseña nueva, abre este enlace (sirve una sola vez y caduca en ${MINUTOS_ENLACE} minutos):\n\n${enlace}\n\nSi no lo has pedido tú, ignora este email.`,
+    }))
+    .catch((err) => console.error('No se ha podido enviar el email de recuperación:', err));
+}
+
+// CS-64: cambia la contraseña con el token de un enlace de recuperación.
+// - `datos`: { token, nueva }.
+// Error 400 si faltan datos, si el enlace no existe, ya se usó o ha caducado, o si la nueva
+// contraseña no cumple los requisitos (en ese caso el enlace sigue sirviendo).
+async function restablecerPassword(datos) {
+  const { token, nueva } = leerTextos(datos ?? {}, ['token', 'nueva']);
+  const ahora = new Date();
+  const tokenHash = hashDeToken(token);
+
+  const enlace = await tokenRecuperacionRepository.buscarVigente(tokenHash, ahora);
+  if (!enlace) {
+    throw crearError(ENLACE_NO_VALIDO, 400);
+  }
+  validarPassword(nueva, enlace.usuario.nombreUsuario);
+
+  // Si otra petición ha usado el enlace mientras tanto, no se cambia nada
+  const cambiada = await tokenRecuperacionRepository.restablecerPassword(tokenHash, await cifrarPassword(nueva), ahora);
+  if (!cambiada) {
+    throw crearError(ENLACE_NO_VALIDO, 400);
+  }
+}
+
+module.exports = { registrar, iniciarSesion, obtenerUsuario, solicitarRecuperacion, restablecerPassword };
