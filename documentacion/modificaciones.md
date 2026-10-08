@@ -26,6 +26,12 @@ El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de confli
 - **Datos privados del autor:** `GET /api/experiencias/:id` enviaba el `email` y el `passwordHash` del autor a cualquiera que pudiera ver la experiencia. `experienciaRepository.buscarPorId` trae ahora el autor solo con `id`, `nombreUsuario` y `foto`. Lo comprueba `tests/mysql/experienciaRepository.test.js`, con MySQL real, porque con el repositorio simulado no se ve qué columnas trae la consulta.
 - **`backend/.env.example`:** el merge lo había borrado. Se recupera sin cambios: es la plantilla de `cp .env.example .env` de la puesta en marcha.
 
+### Limpieza del repositorio
+
+- `backend/cookies.txt` deja de estar en Git (era una cookie de sesión de pruebas con curl) y `.gitignore` ignora cualquier `cookies.txt`. Quien lo tenga en local lo conserva.
+- Se borran `scripts/inspect_cs30_planning.py` (leía un archivo temporal de un equipo concreto), el `package-lock.json` vacío de la raíz (el del backend sigue en `backend/`) y el archivo de bloqueo de Word `~$-Joaquin.docx`.
+- `.gitignore` deja de mencionar `customer-stories/Customer_Stories_PlanB.xlsx`, una ruta que ya no existe.
+
 ### TDD y comprobación
 
 - Resolver los marcadores no cambia el comportamiento: la batería pasó de 22 archivos en rojo a todo en verde.

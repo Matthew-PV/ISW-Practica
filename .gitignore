@@ -30,12 +30,14 @@ Desktop.ini
 .vscode/
 *.swp
 
-# El libro oficial de historias se mantiene en OneDrive, no en Git
-customer-stories/Customer_Stories_PlanB.xlsx
+# Cookies de sesión guardadas al probar la API con curl
+cookies.txt
 
 # Archivos de bloqueo que crean Office y LibreOffice mientras un documento está abierto
 ~$*
 .~lock.*#
 
-# Plan de trabajo personal (auditoría y refactorización), solo para uso local
+# Plan de trabajo personal (auditoría y refactorización) y su mapa de la arquitectura,
+# solo para uso local
 /PLAN.md
+/architecture_map.md
