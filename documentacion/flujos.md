@@ -310,10 +310,10 @@ sequenceDiagram
   R->>S: responderSolicitud(bea, 10, aceptar)
   alt aceptar no es true ni false
     S-->>B: 400 «Indica si aceptas la solicitud con true o false»
-  else no es la destinataria
-    S-->>B: 403
   else ya no está pendiente
-    S-->>B: 400
+    S-->>B: 400 «La solicitud de amistad ya no está pendiente»
+  else no es la destinataria
+    S-->>B: 403 «Solo puedes responder tus solicitudes de amistad»
   else la responde
     S->>AR: aceptar(10) o borrar(10)
     alt la solicitud desapareció a la vez (P2025)
