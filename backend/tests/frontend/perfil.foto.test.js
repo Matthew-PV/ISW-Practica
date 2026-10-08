@@ -6,11 +6,12 @@
 // Se simula el servidor (fetch), así que no hace falta arrancar nada.
 const fs = require('node:fs');
 const path = require('node:path');
+const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('perfil.html');
-const SCRIPTS = leer('js/shared/api.js') + leer('js/shared/experiencias.js') + leer('js/shared/password.js') + leer('js/perfil.js');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/experiencias.js', 'js/shared/password.js', 'js/perfil.js'];
 const FOTO_ANTERIOR = 'https://res.cloudinary.com/demo/image/upload/v1/planb/perfiles/usuario-1.png';
 const FOTO_NUEVA = 'https://res.cloudinary.com/demo/image/upload/v2/planb/perfiles/usuario-1.jpg';
 const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', foto: FOTO_ANTERIOR, ciudad: null };
@@ -36,7 +37,7 @@ beforeEach(async () => {
   window.fetch = jest.fn()
     .mockReturnValueOnce(respuesta(200, PERFIL)) // GET /api/perfil al cargar
     .mockReturnValueOnce(respuesta(200, [])); // GET /api/amistades/solicitudes al cargar
-  (0, eval)(SCRIPTS);
+  cargarScripts(SCRIPTS);
   await terminar();
 });
 

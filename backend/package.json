@@ -10,6 +10,7 @@
     "test": "jest",
     "test:mysql": "node --env-file=.env node_modules/jest/bin/jest.js --testPathIgnorePatterns=/node_modules/ --runInBand tests/mysql",
     "test:todo": "npm test && npm run test:mysql",
+    "test:cobertura": "node --env-file=.env node_modules/jest/bin/jest.js --testPathIgnorePatterns=/node_modules/ --runInBand --coverage",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "node --env-file=.env prisma/seed.js"
@@ -36,13 +37,33 @@
     "supertest": "^7.1.0"
   },
   "jest": {
+    "rootDir": "..",
+    "roots": [
+      "<rootDir>/backend/tests",
+      "<rootDir>/backend/src",
+      "<rootDir>/frontend/js"
+    ],
     "setupFiles": [
-      "./tests/setup.js"
+      "<rootDir>/backend/tests/setup.js"
     ],
     "testPathIgnorePatterns": [
       "/node_modules/",
-      "/tests/mysql/"
-    ]
+      "/backend/tests/mysql/"
+    ],
+    "collectCoverageFrom": [
+      "backend/src/**/*.js",
+      "!backend/src/server.js",
+      "frontend/js/**/*.js"
+    ],
+    "coverageProvider": "v8",
+    "coverageThreshold": {
+      "global": {
+        "statements": 94,
+        "branches": 93,
+        "functions": 95,
+        "lines": 94
+      }
+    }
   },
   "allowScripts": {
     "@prisma/client@6.19.3": true,

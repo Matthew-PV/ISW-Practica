@@ -6,11 +6,12 @@
 // así que no hace falta arrancar nada.
 const fs = require('node:fs');
 const path = require('node:path');
+const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('registro.html');
-const SCRIPTS = leer('js/shared/api.js') + leer('js/shared/password.js') + leer('js/registro.js');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/password.js', 'js/registro.js'];
 const ERROR_RED = 'No se ha podido conectar con el servidor. Inténtalo de nuevo.';
 const ERROR_CARGA_CAPTCHA = 'No se ha podido cargar el CAPTCHA. Revisa tu conexión y recarga la página.';
 
@@ -29,7 +30,7 @@ beforeEach(() => {
   document.documentElement.innerHTML = HTML;
   window.fetch = jest.fn();
   window.turnstile = { render: jest.fn(), getResponse: jest.fn(() => 'token-captcha'), reset: jest.fn() };
-  (0, eval)(SCRIPTS);
+  cargarScripts(SCRIPTS);
   $('#nombreUsuario').value = 'ana';
   $('#email').value = 'ana@ejemplo.com';
   $('#password').value = 'secreta123';

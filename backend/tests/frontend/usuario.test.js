@@ -5,11 +5,12 @@
 // en un navegador simulado (jsdom). Se simula el servidor (fetch), así que no hace falta arrancar nada.
 const fs = require('node:fs');
 const path = require('node:path');
+const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('usuario.html');
-const SCRIPTS = leer('js/shared/api.js') + leer('js/shared/experiencias.js') + leer('js/usuario.js');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/experiencias.js', 'js/usuario.js'];
 const FOTO = 'https://res.cloudinary.com/demo/image/upload/v1/planb/perfiles/usuario-2.png';
 const PERFIL = {
   id: 2, nombreUsuario: 'ana', foto: FOTO, ciudad: 'Madrid',
@@ -33,7 +34,7 @@ async function abrirPagina(nombre, perfil = PERFIL, siguientes = []) {
     window.fetch.mockReturnValueOnce(respuesta(200, { experiencias: [], siguiente: null }));
   }
   siguientes.forEach((r) => window.fetch.mockReturnValueOnce(r));
-  (0, eval)(SCRIPTS);
+  cargarScripts(SCRIPTS);
   await terminar();
 }
 
@@ -282,7 +283,7 @@ async function abrirVigilandoRedireccion(nombre, primeraRespuesta) {
     writable: true,
   });
   window.fetch = jest.fn().mockReturnValueOnce(primeraRespuesta);
-  (0, eval)(SCRIPTS);
+  cargarScripts(SCRIPTS);
   await terminar();
 }
 const oculto = (selector) => $(selector).classList.contains('d-none');

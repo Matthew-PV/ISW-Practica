@@ -6,10 +6,11 @@
 // «Cargar más». Se simula el servidor con un fetch que responde según la ruta pedida.
 const fs = require('node:fs');
 const path = require('node:path');
+const { cargarScripts } = require('../../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const COMUNES = leer('js/shared/api.js') + leer('js/shared/experiencias.js') + leer('js/shared/password.js');
+const COMUNES = ['js/shared/api.js', 'js/shared/experiencias.js', 'js/shared/password.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -31,7 +32,7 @@ async function abrir(pagina, script, rutas, direccion) {
     const [status, cuerpo] = rutas[ruta] ?? [404, { error: `Ruta no simulada: ${ruta}` }];
     return respuesta(status, cuerpo);
   });
-  (0, eval)(COMUNES + leer(script));
+  cargarScripts([...COMUNES, script]);
   await terminar();
 }
 
@@ -138,7 +139,7 @@ test('al aceptar desde su perfil la solicitud de amistad, aparecen sus experienc
     const [status, cuerpo] = servidor[`${opciones.method ?? 'GET'} ${ruta}`] ?? [404, { error: `Ruta no simulada: ${ruta}` }];
     return respuesta(status, cuerpo);
   });
-  (0, eval)(COMUNES + leer('js/usuario.js'));
+  cargarScripts([...COMUNES, 'js/usuario.js']);
   await terminar();
   expect($$('#lista-experiencias a')).toHaveLength(1);
 

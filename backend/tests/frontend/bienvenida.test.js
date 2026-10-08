@@ -8,6 +8,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 
@@ -19,9 +20,7 @@ const leer = (archivo) =>
 
 const HTML = leer('bienvenida.html');
 
-const SCRIPTS =
-  leer('js/shared/api.js') +
-  leer('js/bienvenida.js');
+const SCRIPTS = ['js/shared/api.js', 'js/bienvenida.js'];
 
 const USUARIO = {
   id: 1,
@@ -121,7 +120,7 @@ beforeEach(async () => {
   );
 
   // Ejecuta api.js y bienvenida.js como lo haría el navegador.
-  (0, eval)(SCRIPTS);
+  cargarScripts(SCRIPTS);
 
   await terminar();
   await terminar();

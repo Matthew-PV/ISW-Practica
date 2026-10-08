@@ -39,3 +39,8 @@ function mostrarRequisitosPassword(campoPassword, lista, obtenerNombre) {
   marcar();
   return marcar;
 }
+
+// Funciones que usan los scripts de las páginas, que se cargan después de este. En el navegador
+// ya serían globales; se dejan en window de forma explícita para que también lo sean cuando las
+// pruebas cargan el archivo como módulo (para medir su cobertura).
+window.mostrarRequisitosPassword = mostrarRequisitosPassword;

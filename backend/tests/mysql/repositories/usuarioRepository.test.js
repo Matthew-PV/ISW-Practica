@@ -39,3 +39,23 @@ test('actualizarPassword guarda el hash nuevo', async () => {
 
   expect((await usuarioRepository.buscarPorId(u.zz.id)).passwordHash).toBe('hash-nuevo');
 });
+
+describe('perfil propio (CS-47)', () => {
+  test('crear guarda el usuario y buscarPorEmail lo encuentra', async () => {
+    const email = `nuevo_${sufijo()}@prueba.local`;
+    const creado = await usuarioRepository.crear({ nombreUsuario: `nuevo_${sufijo()}`, email, passwordHash: 'hash' });
+    u.nuevo = creado;
+
+    expect((await usuarioRepository.buscarPorEmail(email)).id).toBe(creado.id);
+  });
+
+  test('obtenerPerfil, actualizarPerfil y actualizarFoto devuelven solo los campos que se pueden mostrar', async () => {
+    const campos = ['ciudad', 'email', 'foto', 'id', 'nombreUsuario'];
+
+    expect(Object.keys(await usuarioRepository.obtenerPerfil(u.mm.id)).sort()).toEqual(campos);
+    const editado = await usuarioRepository.actualizarPerfil(u.mm.id, { nombreUsuario: undefined, ciudad: 'Sevilla' });
+    expect(editado).toMatchObject({ nombreUsuario: u.mm.nombreUsuario, ciudad: 'Sevilla' });
+    expect(Object.keys(editado).sort()).toEqual(campos);
+    expect((await usuarioRepository.actualizarFoto(u.mm.id, 'https://res.cloudinary.com/x.png')).foto).toBe('https://res.cloudinary.com/x.png');
+  });
+});

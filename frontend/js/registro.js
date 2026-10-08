@@ -88,3 +88,7 @@ const marcarRequisitos = mostrarRequisitosPassword(
   () => campoNombre.value
 );
 campoNombre.addEventListener('input', marcarRequisitos);
+
+// La llama el script de Turnstile al cargarse (onload=iniciarCaptcha en registro.html), así que
+// tiene que estar en window también cuando las pruebas cargan este archivo como módulo.
+window.iniciarCaptcha = iniciarCaptcha;

@@ -4,11 +4,12 @@
 // CS-61, objetivo 12: búsqueda de personas y enlaces al perfil público.
 const fs = require('node:fs');
 const path = require('node:path');
+const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('personas.html');
-const SCRIPTS = leer('js/shared/api.js') + leer('js/personas.js');
+const SCRIPTS = ['js/shared/api.js', 'js/personas.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -22,7 +23,7 @@ function buscar(texto) {
 beforeEach(() => {
   document.documentElement.innerHTML = HTML;
   window.fetch = jest.fn();
-  (0, eval)(SCRIPTS);
+  cargarScripts(SCRIPTS);
 });
 
 test('busca personas y cada resultado enlaza a su perfil público sin insertar HTML', async () => {

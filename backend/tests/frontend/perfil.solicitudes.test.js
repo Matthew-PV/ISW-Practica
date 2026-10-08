@@ -4,11 +4,12 @@
 // CS-61, objetivo 13: solicitudes de amistad recibidas en el perfil propio.
 const fs = require('node:fs');
 const path = require('node:path');
+const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('perfil.html');
-const SCRIPTS = leer('js/shared/api.js') + leer('js/shared/experiencias.js') + leer('js/shared/password.js') + leer('js/perfil.js');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/experiencias.js', 'js/shared/password.js', 'js/perfil.js'];
 const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', foto: null, ciudad: null };
 const SOLICITUDES = [{
   id: 10,
@@ -24,7 +25,7 @@ beforeEach(async () => {
   window.fetch = jest.fn()
     .mockReturnValueOnce(respuesta(200, PERFIL))
     .mockReturnValueOnce(respuesta(200, SOLICITUDES));
-  (0, eval)(SCRIPTS);
+  cargarScripts(SCRIPTS);
   await terminar();
 });
 

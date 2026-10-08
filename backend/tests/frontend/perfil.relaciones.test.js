@@ -5,11 +5,12 @@
 // (frontend/perfil.html y js/perfil.js) en un navegador simulado (jsdom).
 const fs = require('node:fs');
 const path = require('node:path');
+const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('perfil.html');
-const SCRIPTS = leer('js/shared/api.js') + leer('js/shared/experiencias.js') + leer('js/shared/password.js') + leer('js/perfil.js');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/experiencias.js', 'js/shared/password.js', 'js/perfil.js'];
 const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', foto: null, ciudad: null };
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
@@ -47,7 +48,7 @@ async function abrirPerfil(rutas = {}) {
     const [status, cuerpo] = servidor[ruta] ?? [404, { error: `Ruta no simulada: ${ruta}` }];
     return respuesta(status, cuerpo);
   });
-  (0, eval)(SCRIPTS);
+  cargarScripts(SCRIPTS);
   await terminar();
 }
 

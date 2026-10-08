@@ -7,11 +7,12 @@
 // fetch que responde según el método y la ruta.
 const fs = require('node:fs');
 const path = require('node:path');
+const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('experiencia.html');
-const SCRIPTS = leer('js/shared/api.js') + leer('js/experiencia.js');
+const SCRIPTS = ['js/shared/api.js', 'js/experiencia.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -55,7 +56,7 @@ async function abrir(rutas = {}) {
     if (typeof definida === 'function') return definida();
     return respuesta(...definida);
   });
-  (0, eval)(SCRIPTS);
+  cargarScripts(SCRIPTS);
   await terminar();
   await terminar();
 }

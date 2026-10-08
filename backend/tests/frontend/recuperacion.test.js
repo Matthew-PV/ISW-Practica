@@ -5,6 +5,7 @@
 // restablecer.html) y el enlace desde el inicio de sesión, con jsdom y el servidor simulado.
 const fs = require('node:fs');
 const path = require('node:path');
+const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
@@ -22,7 +23,7 @@ async function abrir(pagina, scripts, rutas, direccion) {
     const clave = `${opciones.method ?? 'GET'} ${ruta}`;
     return respuesta(...(rutas[clave] ?? [404, { error: `Ruta no simulada: ${clave}` }]));
   });
-  (0, eval)(scripts.map(leer).join('\n'));
+  cargarScripts(scripts);
   await terminar();
 }
 const enviar = async (formulario) => {
