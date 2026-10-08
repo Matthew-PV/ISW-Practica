@@ -2,7 +2,43 @@
 
 Registro de los cambios realizados en el proyecto, en orden cronológico.
 
-# Perfiles enlazados y limpieza del proyecto (09/10/2026)
+# Perfiles enlazados, pruebas y limpieza del código (09/10/2026)
+
+### Pruebas: nueva estructura, MySQL real y cobertura del frontend
+
+- **Estructura:** `backend/tests/` copia la de `src/` y `frontend/js/`.
+  - `routes/`, `services/` (con `shared/`) y `middlewares/`: una prueba por archivo, que se llama como él (`archivo.tema.test.js` si tiene varias).
+  - `criterios/`: una por historia, de principio a fin por HTTP (`cs45Relaciones`, `cs47Perfil`, `cs61Interacciones`, `cs62PerfilPublico`).
+  - `frontend/`: una por página, y `frontend/shared/` para los módulos comunes.
+  - `mysql/`: con MySQL real, y `mysql/repositories/` para los repositorios.
+  - `helpers/`: ayudas que no son pruebas, `pantalla.js` y `datosMysql.js`.
+  - Los archivos se movieron con `git mv` y conservan su historial.
+- **Sin pruebas que solo repiten el código:** las que comprobaban la consulta de Prisma con `toHaveBeenCalledWith` y las que leían `schema.prisma` como texto se sustituyen por pruebas con MySQL real. Comprueban el resultado: sin email, orden, los dos sentidos de una amistad, recuentos, valores por defecto y claves únicas.
+- **Cobertura:**
+  - Las pruebas de pantallas cargan los scripts con `require` (`helpers/pantalla.js`) en lugar de `eval`, y los módulos compartidos dejan sus funciones en `window` de forma explícita. Así Jest mide también `frontend/js`.
+  - `npm run test:cobertura` ejecuta todas las pruebas, también las de MySQL (Docker en marcha), y falla si la cobertura baja del 94 % de instrucciones, el 93 % de ramas o el 95 % de funciones.
+  - El informe se guarda en `coverage/`, en la raíz del repositorio.
+- Los comentarios citan las historias como CS-XX: LUC01 → CS-49, LUC09 → CS-57, FLA05 → CS-47 y MAT16 → CS-59.
+
+### Código: flujos fáciles de seguir y sin duplicados
+
+- **Rutas:**
+  - cada `xRoutes.js` llama solo a su `xService.js`; el perfil público de otro usuario pasa a `usuarioService`;
+  - cada ruta lleva el comentario `// MÉTODO /api/ruta → servicio.función`, y `routes/index.js` tiene la tabla de prefijos.
+- **Sesión:** `requiereSesion` comprueba también que el usuario de la sesión sigue existiendo, para todas las rutas protegidas. La comprobación estaba copiada en diez funciones de servicio y faltaba en el resumen y los listados del perfil y en la búsqueda.
+- **Bienvenida:** usa el listado paginado de CS-44, con «Cargar más». Se eliminan `GET /api/experiencias/mias`, `listarExperienciasPropias` y `listarPorAutor`.
+- **Duplicados del backend:**
+  - crear y editar una experiencia comparten las reglas de cada campo;
+  - los campos públicos de un usuario se definen una vez (`repositories/shared/camposPublicos.js`);
+  - `amistadRepository` usa `deUsuario()` y busca la pareja por su clave;
+  - todo usuario que devuelve la API lleva la foto por defecto si no tiene (`services/shared/fotoPorDefecto.js`);
+  - las consultas independientes del perfil se lanzan en paralelo.
+- **Frontend:**
+  - `js/shared/pantalla.js` reúne lo que repetían las páginas: el listado con «Cargar más» por cursor (`listaConCargarMas`, que usan los cinco listados), el enlace a un perfil, mostrar y ocultar avisos e ir al login;
+  - la ventana de reporte es un `<dialog>`;
+  - `usuario.js` reconoce el 404 por su código;
+  - todas las pantallas con sesión tienen la misma barra: PlanB, Inicio, Buscar personas y Mi perfil.
+- Cabeceras de los archivos y comentario de `Amistad` en `schema.prisma` al día.
 
 ### Perfiles: experiencias al aceptar una amistad y personas enlazadas
 
