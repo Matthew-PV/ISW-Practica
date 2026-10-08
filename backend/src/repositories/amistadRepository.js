@@ -72,30 +72,6 @@ async function listarSolicitudesRecibidas(destinatarioId) {
   });
 }
 
-// Devuelve los identificadores de todos los amigos aceptados de un usuario.
-// Una amistad puede haberse iniciado en cualquiera de los dos sentidos.
-async function listarAmigosIds(usuarioId) {
-  const amistades = await prisma.amistad.findMany({
-    where: {
-      estado: 'ACEPTADA',
-      OR: [
-        { solicitanteId: usuarioId },
-        { destinatarioId: usuarioId },
-      ],
-    },
-    select: {
-      solicitanteId: true,
-      destinatarioId: true,
-    },
-  });
-
-  return amistades.map((amistad) =>
-    amistad.solicitanteId === usuarioId
-      ? amistad.destinatarioId
-      : amistad.solicitanteId
-  );
-}
-
 // Cuenta las amistades aceptadas de un usuario, sea quien sea el que envió la solicitud.
 // Las pendientes no cuentan.
 async function contarAmigos(usuarioId) {
@@ -152,7 +128,6 @@ module.exports = {
   aceptar,
   borrar,
   listarSolicitudesRecibidas,
-  listarAmigosIds,
   contarAmigos,
   listarAmigos,
 };

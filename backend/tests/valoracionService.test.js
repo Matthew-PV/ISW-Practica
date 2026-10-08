@@ -1,4 +1,5 @@
 // CS-01: reglas de negocio para crear y modificar una valoración.
+// CS-63: consultar mi valoración y todas las de una experiencia.
 // CS-48: consulta de valoraciones hechas por amigos y seguidores.
 // Se simulan los repositorios, sin necesitar MySQL.
 
@@ -12,15 +13,9 @@ jest.mock('../src/repositories/experienciaRepository', () => ({
 
 jest.mock('../src/repositories/valoracionRepository', () => ({
   guardar: jest.fn(),
-  listarDeUsuarios: jest.fn(),
-}));
-
-jest.mock('../src/repositories/amistadRepository', () => ({
-  listarAmigosIds: jest.fn(),
-}));
-
-jest.mock('../src/repositories/seguimientoRepository', () => ({
-  listarSeguidoresIds: jest.fn(),
+  listar: jest.fn(),
+  listarDeRelacionados: jest.fn(),
+  obtenerPorUsuarioYExperiencia: jest.fn(),
 }));
 
 jest.mock('../src/services/amistadService', () => ({
@@ -30,12 +25,12 @@ jest.mock('../src/services/amistadService', () => ({
 const usuarioRepository = require('../src/repositories/usuarioRepository');
 const experienciaRepository = require('../src/repositories/experienciaRepository');
 const valoracionRepository = require('../src/repositories/valoracionRepository');
-const amistadRepository = require('../src/repositories/amistadRepository');
-const seguimientoRepository = require('../src/repositories/seguimientoRepository');
 const amistadService = require('../src/services/amistadService');
 
 const {
   valorarExperiencia,
+  obtenerMiValoracion,
+  listarValoraciones,
   listarValoracionesRelacionadas,
 } = require('../src/services/valoracionService');
 
@@ -88,13 +83,9 @@ beforeEach(() => {
     })
   );
 
-  amistadRepository.listarAmigosIds.mockResolvedValue([]);
-  seguimientoRepository.listarSeguidoresIds.mockResolvedValue([]);
-
-  valoracionRepository.listarDeUsuarios.mockResolvedValue({
-    valoraciones: [],
-    total: 0,
-  });
+  valoracionRepository.listar.mockResolvedValue([]);
+  valoracionRepository.listarDeRelacionados.mockResolvedValue([]);
+  valoracionRepository.obtenerPorUsuarioYExperiencia.mockResolvedValue(null);
 });
 
 describe('crear una valoración', () => {
@@ -394,178 +385,52 @@ describe('quién puede valorar', () => {
   });
 });
 
-describe('valoraciones de amigos y seguidores - CS-48', () => {
-  test('combina amigos y seguidores sin duplicados y devuelve sus valoraciones paginadas', async () => {
-    amistadRepository.listarAmigosIds.mockResolvedValue([3, 4]);
-    seguimientoRepository.listarSeguidoresIds.mockResolvedValue([4, 5]);
+// Lecturas de las valoraciones de una experiencia. El filtro de amigos y seguidores y el cursor
+// se resuelven en la consulta: se prueban con MySQL real en tests/mysql/valoracionesExperiencia.
+describe('mi valoración - CS-63', () => {
+  test('devuelve la valoración del usuario de la sesión, o null si todavía no ha valorado', async () => {
+    await expect(obtenerMiValoracion(1, 10)).resolves.toBeNull();
 
-    valoracionRepository.listarDeUsuarios.mockResolvedValue({
-      valoraciones: [
-        {
-          id: 100,
-          usuarioId: 3,
-        },
-      ],
-      total: 3,
-    });
-
-    const resultado = await listarValoracionesRelacionadas(
-      1,
-      10,
-      2,
-      5
-    );
-
-    expect(
-      amistadRepository.listarAmigosIds
-    ).toHaveBeenCalledWith(1);
-
-    expect(
-      seguimientoRepository.listarSeguidoresIds
-    ).toHaveBeenCalledWith(1);
-
-    expect(
-      valoracionRepository.listarDeUsuarios
-    ).toHaveBeenCalledWith(
-      10,
-      [3, 4, 5],
-      2,
-      5
-    );
-
-    expect(resultado).toEqual({
-      valoraciones: [
-        {
-          id: 100,
-          usuarioId: 3,
-        },
-      ],
-      total: 3,
-    });
+    valoracionRepository.obtenerPorUsuarioYExperiencia.mockResolvedValue({ id: 50, puntuacion: 4 });
+    await expect(obtenerMiValoracion(1, 10)).resolves.toEqual({ id: 50, puntuacion: 4 });
+    expect(valoracionRepository.obtenerPorUsuarioYExperiencia).toHaveBeenCalledWith(1, 10);
   });
 
-  test('si no tiene amigos ni seguidores devuelve la sección vacía sin error', async () => {
-    const resultado = await listarValoracionesRelacionadas(
-      1,
-      10,
-      1,
-      10
-    );
+  test.each([[999, 'inexistente'], [11, 'privada de otro']])('una experiencia %s (%s) responde 404', async (id) => {
+    await expect(obtenerMiValoracion(1, id)).rejects.toMatchObject({ status: 404, message: 'Contenido no disponible' });
+    expect(valoracionRepository.obtenerPorUsuarioYExperiencia).not.toHaveBeenCalled();
+  });
+});
 
-    expect(
-      valoracionRepository.listarDeUsuarios
-    ).toHaveBeenCalledWith(
-      10,
-      [],
-      1,
-      10
-    );
+describe.each([
+  ['todas las valoraciones - CS-63', listarValoraciones, 'listar', (despuesDe, cantidad) => [10, despuesDe, cantidad]],
+  ['valoraciones de amigos y seguidores - CS-48', listarValoracionesRelacionadas, 'listarDeRelacionados', (despuesDe, cantidad) => [10, 1, despuesDe, cantidad]],
+])('%s', (_nombre, listarFn, metodo, argumentos) => {
+  test('pide al repositorio una fila de más desde el cursor y devuelve la página y el siguiente', async () => {
+    valoracionRepository[metodo].mockResolvedValue([{ id: 9 }, { id: 8 }, { id: 7 }]);
 
-    expect(resultado).toEqual({
-      valoraciones: [],
-      total: 0,
+    await expect(listarFn(1, 10, { despuesDe: '40', limite: '2' })).resolves.toEqual({
+      valoraciones: [{ id: 9 }, { id: 8 }], siguiente: 8,
     });
+    expect(valoracionRepository[metodo]).toHaveBeenCalledWith(...argumentos(40, 3));
   });
 
-  test('si la experiencia no es visible responde 404, igual que si no existiera', async () => {
-    await expect(
-      listarValoracionesRelacionadas(
-        1,
-        11,
-        1,
-        10
-      )
-    ).rejects.toMatchObject({
-      status: 404,
-      message: 'Contenido no disponible',
-    });
-
-    expect(
-      valoracionRepository.listarDeUsuarios
-    ).not.toHaveBeenCalled();
+  test('sin cursor ni límite empieza por la más reciente con 10 por página; sin más, siguiente es null', async () => {
+    await expect(listarFn(1, 10, {})).resolves.toEqual({ valoraciones: [], siguiente: null });
+    expect(valoracionRepository[metodo]).toHaveBeenCalledWith(...argumentos(null, 11));
   });
 
-  test('si la experiencia no existe responde 404', async () => {
-    await expect(
-      listarValoracionesRelacionadas(
-        1,
-        999,
-        1,
-        10
-      )
-    ).rejects.toMatchObject({
-      status: 404,
-      message: 'Contenido no disponible',
-    });
-
-    expect(
-      valoracionRepository.listarDeUsuarios
-    ).not.toHaveBeenCalled();
+  test.each([[999], [11], [12]])('la experiencia %i (inexistente o no visible) responde 404', async (id) => {
+    await expect(listarFn(1, id, {})).rejects.toMatchObject({ status: 404, message: 'Contenido no disponible' });
+    expect(valoracionRepository[metodo]).not.toHaveBeenCalled();
   });
 
-  test('rechaza una paginación no válida con 400', async () => {
-    await expect(
-      listarValoracionesRelacionadas(
-        1,
-        10,
-        0,
-        10
-      )
-    ).rejects.toMatchObject({
-      status: 400,
-    });
-
-    expect(
-      valoracionRepository.listarDeUsuarios
-    ).not.toHaveBeenCalled();
+  test('una paginación no válida responde 400 sin consultar las valoraciones', async () => {
+    await expect(listarFn(1, 10, { limite: '0' })).rejects.toMatchObject({ status: 400 });
+    expect(valoracionRepository[metodo]).not.toHaveBeenCalled();
   });
 
-  test('no incluye valoraciones de usuarios que no son amigos ni seguidores', async () => {
-    // El usuario 3 es amigo y el 4 es seguidor.
-    // El usuario 99 no tiene ninguna relación con el solicitante.
-    amistadRepository.listarAmigosIds.mockResolvedValue([3]);
-    seguimientoRepository.listarSeguidoresIds.mockResolvedValue([4]);
-
-    valoracionRepository.listarDeUsuarios.mockResolvedValue({
-      valoraciones: [
-        {
-          id: 20,
-          usuarioId: 3,
-          puntuacion: 5,
-          comentario: 'Valoración de un amigo',
-        },
-        {
-          id: 21,
-          usuarioId: 4,
-          puntuacion: 4,
-          comentario: 'Valoración de un seguidor',
-        },
-      ],
-      total: 2,
-    });
-
-    const resultado = await listarValoracionesRelacionadas(
-      1,
-      10,
-      1,
-      10
-    );
-
-    expect(
-      valoracionRepository.listarDeUsuarios
-    ).toHaveBeenCalledWith(
-      10,
-      [3, 4],
-      1,
-      10
-    );
-
-    expect(resultado.valoraciones).toHaveLength(2);
-
-    expect(
-      resultado.valoraciones.some(
-        (valoracion) => valoracion.usuarioId === 99
-      )
-    ).toBe(false);
+  test('sin sesión válida responde 401', async () => {
+    await expect(listarFn(99, 10, {})).rejects.toMatchObject({ status: 401 });
   });
 });

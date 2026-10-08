@@ -1,4 +1,4 @@
-// Acceso a las valoraciones en MySQL (CS-01).
+// Acceso a las valoraciones en MySQL (CS-01, CS-48 y CS-63).
 // Capa: repositorios (repositories).
 // Lo usa: services/valoracionService.js.
 // Usa: repositories/shared/prisma.js (la conexión con MySQL).
@@ -29,56 +29,50 @@ async function guardar({ usuarioId, experienciaId, puntuacion, comentario }) {
   }
 }
 
-// Devuelve las valoraciones de una experiencia hechas por los usuarios indicados.
-// La consulta está paginada y solo incluye datos públicos del autor de la valoración.
-// Los identificadores de experiencia, usuarios, página y límite llegan ya validados
-// desde el servicio.
-async function listarDeUsuarios(experienciaId, usuarioIds, pagina, limite) {
-  if (usuarioIds.length === 0) {
-    return { valoraciones: [], total: 0 };
+// Datos públicos del autor de cada valoración (nunca su email).
+const AUTOR_PUBLICO = { select: { id: true, nombreUsuario: true, foto: true } };
+
+// Consulta común de los listados: hasta `cantidad` valoraciones que cumplen `where`, de la más
+// reciente a la más antigua y anteriores al id `despuesDe` si se indica (el cursor de «Cargar
+// más», ver services/shared/paginacion.js), con los datos públicos de su autor.
+async function listarPagina(where, despuesDe, cantidad) {
+  if (despuesDe !== null) {
+    where.id = { lt: despuesDe };
   }
-
-  const where = {
-    experienciaId,
-    usuarioId: { in: usuarioIds },
-  };
-
-  const [valoraciones, total] = await Promise.all([
-    prisma.valoracion.findMany({
-      where,
-      include: {
-        usuario: {
-          select: {
-            id: true,
-            nombreUsuario: true,
-            foto: true,
-          },
-        },
-      },
-      orderBy: [
-        { actualizadaEn: 'desc' },
-        { id: 'desc' },
-      ],
-      skip: (pagina - 1) * limite,
-      take: limite,
-    }),
-    prisma.valoracion.count({ where }),
-  ]);
-
-  return { valoraciones, total };
-}
-
-// Busca la valoración de un usuario específico en una experiencia específica
-async function obtenerPorUsuarioYExperiencia(usuarioId, experienciaId) {
-  return prisma.valoracion.findUnique({
-    where: {
-      // CORRECCIÓN: El nombre debe coincidir exactamente con el orden del schema.prisma
-      usuarioId_experienciaId: {
-        usuarioId: usuarioId,
-        experienciaId: experienciaId
-      }
-    }
+  return prisma.valoracion.findMany({
+    where,
+    include: { usuario: AUTOR_PUBLICO },
+    orderBy: { id: 'desc' },
+    take: cantidad,
   });
 }
 
-module.exports = { guardar, listarDeUsuarios, obtenerPorUsuarioYExperiencia };
+// CS-63: todas las valoraciones de una experiencia, por páginas.
+async function listar(experienciaId, despuesDe, cantidad) {
+  return listarPagina({ experienciaId }, despuesDe, cantidad);
+}
+
+// CS-48: las valoraciones de una experiencia hechas por amigos de `usuarioId` (amistad aceptada,
+// la enviara quien la enviara) o por quienes lo siguen, por páginas. El filtro va dentro de la
+// misma consulta, así que no hace falta cargar antes la lista de amigos y seguidores.
+async function listarDeRelacionados(experienciaId, usuarioId, despuesDe, cantidad) {
+  return listarPagina({
+    experienciaId,
+    usuario: {
+      OR: [
+        { solicitudesEnviadas: { some: { destinatarioId: usuarioId, estado: 'ACEPTADA' } } },
+        { solicitudesRecibidas: { some: { solicitanteId: usuarioId, estado: 'ACEPTADA' } } },
+        { seguimientosRealizados: { some: { seguidoId: usuarioId } } },
+      ],
+    },
+  }, despuesDe, cantidad);
+}
+
+// CS-63: la valoración de un usuario en una experiencia, o null si todavía no la ha valorado.
+async function obtenerPorUsuarioYExperiencia(usuarioId, experienciaId) {
+  return prisma.valoracion.findUnique({
+    where: { usuarioId_experienciaId: { usuarioId, experienciaId } },
+  });
+}
+
+module.exports = { guardar, listar, listarDeRelacionados, obtenerPorUsuarioYExperiencia };

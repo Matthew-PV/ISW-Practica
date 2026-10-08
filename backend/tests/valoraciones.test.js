@@ -1,5 +1,6 @@
 // CS-01: crear y modificar una valoración por HTTP.
-// CS-48: consultar las valoraciones de amigos y seguidores por HTTP.
+// CS-63 y CS-48: rutas de consulta (mi valoración, todas y las de amigos y seguidores).
+// El filtro de amigos y seguidores se prueba con MySQL real (tests/mysql/valoracionesExperiencia).
 // Se simulan los repositorios, sin necesitar MySQL.
 
 jest.mock('../src/repositories/usuarioRepository');
@@ -7,7 +8,9 @@ jest.mock('../src/repositories/experienciaRepository');
 
 jest.mock('../src/repositories/valoracionRepository', () => ({
   guardar: jest.fn(),
-  listarDeUsuarios: jest.fn(),
+  listar: jest.fn(),
+  listarDeRelacionados: jest.fn(),
+  obtenerPorUsuarioYExperiencia: jest.fn(),
 }));
 
 // Sin amistades guardadas por defecto.
@@ -110,15 +113,10 @@ beforeEach(() => {
     };
   });
 
-  // Por defecto no hay valoraciones relacionadas.
-  valoracionRepository.listarDeUsuarios.mockResolvedValue({
-    valoraciones: [],
-    total: 0,
-  });
-
-  // Por defecto el usuario no tiene amigos ni seguidores.
-  amistadRepository.listarAmigosIds.mockResolvedValue([]);
-  seguimientoRepository.listarSeguidoresIds.mockResolvedValue([]);
+  // Por defecto no hay valoraciones.
+  valoracionRepository.listar.mockResolvedValue([]);
+  valoracionRepository.listarDeRelacionados.mockResolvedValue([]);
+  valoracionRepository.obtenerPorUsuarioYExperiencia.mockResolvedValue(null);
 
   // Necesario para las pruebas ya existentes de seguimiento.
   seguimientoRepository.sigueA.mockImplementation(
@@ -330,141 +328,55 @@ describe('seguir a alguien no da acceso a sus experiencias de amigos', () => {
   });
 });
 
-describe('consultar valoraciones de amigos y seguidores - CS-48', () => {
-  test('devuelve las valoraciones relacionadas con la paginación por defecto', async () => {
+describe('consultar valoraciones - CS-63 y CS-48', () => {
+  const VALORACION = { id: 7, puntuacion: 5, comentario: 'Genial', usuario: { id: 3, nombreUsuario: 'carlos', foto: null } };
+
+  test('GET /valoracion devuelve mi valoración, o null si todavía no he valorado', async () => {
     const agente = await agenteConSesion();
 
-    amistadRepository.listarAmigosIds.mockResolvedValue([3]);
-    seguimientoRepository.listarSeguidoresIds.mockResolvedValue([4]);
+    expect((await agente.get('/api/experiencias/10/valoracion')).body).toBeNull();
+    valoracionRepository.obtenerPorUsuarioYExperiencia.mockResolvedValue({ id: 3, puntuacion: 4 });
+    expect((await agente.get('/api/experiencias/10/valoracion')).body).toEqual({ id: 3, puntuacion: 4 });
+    expect(valoracionRepository.obtenerPorUsuarioYExperiencia).toHaveBeenCalledWith(1, 10);
+  });
 
-    valoracionRepository.listarDeUsuarios.mockResolvedValue({
-      valoraciones: [
-        {
-          id: 20,
-          usuarioId: 3,
-          experienciaId: 10,
-          puntuacion: 5,
-          comentario: 'Muy buena',
-        },
-      ],
-      total: 1,
-    });
+  test.each([
+    ['/valoraciones', 'listar', [10, 40, 3]],
+    ['/valoraciones/amigos', 'listarDeRelacionados', [10, 1, 40, 3]],
+  ])('GET %s pasa el cursor y el límite de la dirección y responde { valoraciones, siguiente }', async (ruta, metodo, argumentos) => {
+    valoracionRepository[metodo].mockResolvedValue([VALORACION, { ...VALORACION, id: 6 }, { ...VALORACION, id: 5 }]);
+    const agente = await agenteConSesion();
 
-    const res = await agente
-      .get('/api/experiencias/10/valoracion');
+    const res = await agente.get(`/api/experiencias/10${ruta}?despuesDe=40&limite=2`);
 
     expect(res.status).toBe(200);
-
-    expect(
-      valoracionRepository.listarDeUsuarios
-    ).toHaveBeenCalledWith(
-      10,
-      [3, 4],
-      1,
-      10
-    );
-
-    expect(res.body).toEqual({
-      valoraciones: [
-        {
-          id: 20,
-          usuarioId: 3,
-          experienciaId: 10,
-          puntuacion: 5,
-          comentario: 'Muy buena',
-        },
-      ],
-      total: 1,
-      pagina: 1,
-      limite: 10,
-    });
+    expect(res.body).toEqual({ valoraciones: [VALORACION, { ...VALORACION, id: 6 }], siguiente: 6 });
+    expect(valoracionRepository[metodo]).toHaveBeenCalledWith(...argumentos);
   });
 
-  test('acepta página y límite mediante query', async () => {
-    const agente = await agenteConSesion();
+  test.each(['/valoracion', '/valoraciones', '/valoraciones/amigos'])(
+    'GET %s de una experiencia no visible responde 404 «Contenido no disponible»', async (ruta) => {
+      const agente = await agenteConSesion();
 
-    amistadRepository.listarAmigosIds.mockResolvedValue([3]);
+      const res = await agente.get(`/api/experiencias/11${ruta}`);
 
-    valoracionRepository.listarDeUsuarios.mockResolvedValue({
-      valoraciones: [],
-      total: 8,
-    });
-
-    const res = await agente
-      .get('/api/experiencias/10/valoracion?pagina=2&limite=5');
-
-    expect(res.status).toBe(200);
-
-    expect(
-      valoracionRepository.listarDeUsuarios
-    ).toHaveBeenCalledWith(
-      10,
-      [3],
-      2,
-      5
-    );
-
-    expect(res.body).toEqual({
-      valoraciones: [],
-      total: 8,
-      pagina: 2,
-      limite: 5,
-    });
-  });
-
-  test('si ningún amigo o seguidor ha valorado devuelve una sección vacía sin error', async () => {
-    const agente = await agenteConSesion();
-
-    const res = await agente
-      .get('/api/experiencias/10/valoracion');
-
-    expect(res.status).toBe(200);
-
-    expect(res.body).toEqual({
-      valoraciones: [],
-      total: 0,
-      pagina: 1,
-      limite: 10,
-    });
-  });
-
-  // Igual que en CS-30: no se distingue «no existe» de «no puedes verla», para no revelar nada
-  test('una experiencia no visible responde 404 «Contenido no disponible»', async () => {
-    const agente = await agenteConSesion();
-
-    const res = await agente
-      .get('/api/experiencias/11/valoracion');
-
-    expect(res.status).toBe(404);
-
-    expect(res.body.error).toBe('Contenido no disponible');
-
-    expect(
-      valoracionRepository.listarDeUsuarios
-    ).not.toHaveBeenCalled();
-  });
+      expect(res.status).toBe(404);
+      expect(res.body.error).toBe('Contenido no disponible');
+    }
+  );
 
   test('una paginación no válida responde 400', async () => {
     const agente = await agenteConSesion();
 
-    const res = await agente
-      .get('/api/experiencias/10/valoracion?pagina=0&limite=10');
+    const res = await agente.get('/api/experiencias/10/valoraciones/amigos?limite=0');
 
     expect(res.status).toBe(400);
-
-    expect(
-      valoracionRepository.listarDeUsuarios
-    ).not.toHaveBeenCalled();
+    expect(valoracionRepository.listarDeRelacionados).not.toHaveBeenCalled();
   });
 
-  test('sin sesión responde 401', async () => {
-    const res = await request(app)
-      .get('/api/experiencias/10/valoracion');
+  test.each(['/valoracion', '/valoraciones', '/valoraciones/amigos'])('sin sesión, GET %s responde 401', async (ruta) => {
+    const res = await request(app).get(`/api/experiencias/10${ruta}`);
 
     expect(res.status).toBe(401);
-
-    expect(
-      valoracionRepository.listarDeUsuarios
-    ).not.toHaveBeenCalled();
   });
 });

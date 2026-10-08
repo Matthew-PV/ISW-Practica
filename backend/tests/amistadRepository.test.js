@@ -99,34 +99,3 @@ test('lista las solicitudes pendientes recibidas con datos seguros del solicitan
     },
   });
 });
-
-test('lista los identificadores de los amigos aceptados en ambos sentidos', async () => {
-  prisma.amistad.findMany.mockResolvedValue([
-    {
-      solicitanteId: 1,
-      destinatarioId: 2,
-    },
-    {
-      solicitanteId: 3,
-      destinatarioId: 1,
-    },
-  ]);
-
-  const resultado = await amistadRepository.listarAmigosIds(1);
-
-  expect(resultado).toEqual([2, 3]);
-
-  expect(prisma.amistad.findMany).toHaveBeenCalledWith({
-    where: {
-      estado: 'ACEPTADA',
-      OR: [
-        { solicitanteId: 1 },
-        { destinatarioId: 1 },
-      ],
-    },
-    select: {
-      solicitanteId: true,
-      destinatarioId: true,
-    },
-  });
-});

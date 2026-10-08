@@ -47,19 +47,3 @@ test('indica que no hay seguimiento cuando no existe el registro', async () => {
 
   await expect(seguimientoRepository.sigueA(1, 2)).resolves.toBe(false);
 });
-
-test('lista los identificadores de los seguidores de un usuario', async () => {
-  prisma.seguimiento.findMany.mockResolvedValue([
-    { seguidorId: 2 },
-    { seguidorId: 3 },
-  ]);
-
-  const resultado = await seguimientoRepository.listarSeguidoresIds(1);
-
-  expect(resultado).toEqual([2, 3]);
-
-  expect(prisma.seguimiento.findMany).toHaveBeenCalledWith({
-    where: { seguidoId: 1 },
-    select: { seguidorId: true },
-  });
-});

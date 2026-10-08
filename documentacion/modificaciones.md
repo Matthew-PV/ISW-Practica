@@ -110,6 +110,21 @@ El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de confli
 - El comentario se guarda sin los espacios de los extremos y normalizado a NFC (una letra con tilde se guarda siempre como un solo carácter). Solo con espacios cuenta como sin comentario, y más de 1000 caracteres responden 400 «El comentario no puede superar los 1000 caracteres». Antes no tenía límite.
 - Pruebas: cuatro casos nuevos del comentario en `valoracionService.test.js`. Los mensajes y el 403 de las pruebas de CS-01 y CS-48 pasan al 404 acordado. Fallaron primero y pasaron tras el cambio.
 
+### CS-63 y CS-48: rutas de las valoraciones de una experiencia
+
+- Las rutas de valoraciones se montan en `/api/experiencias/:id` y cada una está escrita entera en `valoracionRoutes.js`:
+  - `GET /valoracion`: mi valoración, o `null` si todavía no he valorado. Sustituye a `/valoracion/mia`, que respondía 404.
+  - `PUT /valoracion`: valorar, sin cambios.
+  - `GET /valoraciones?despuesDe=&limite=`: todas, por páginas (10 por defecto), con el autor público y la fecha.
+  - `GET /valoraciones/amigos?despuesDe=&limite=`: las de amigos (amistad aceptada, en cualquier sentido) y de quienes me siguen. Sustituye a `GET /valoracion?pagina=…`, que era la ruta de CS-48.
+- Las tres consultas responden 404 «Contenido no disponible» si la experiencia no existe o no se puede ver, y los listados responden `{ valoraciones, siguiente }` con la paginación por cursor común.
+- **CS-48 en una sola consulta:** el filtro de amigos y seguidores va dentro de la consulta de valoraciones (`valoracionRepository.listarDeRelacionados`). Ya no se cargan en memoria todos los ids de amigos y seguidores para luego buscar con un `IN`. Se eliminan `listarAmigosIds`, `listarSeguidoresIds` y `listarDeUsuarios`, que se quedan sin uso.
+- **Pruebas:**
+  - El criterio de CS-48 y CS-63 se prueba con MySQL real en `tests/mysql/valoracionesExperiencia.test.js`. Ahí está el filtro: amigos en los dos sentidos y seguidores sí; a quien sigo, solicitudes pendientes y desconocidos no. También sección vacía, valoración nueva, páginas, lista general sin emails, mi valoración y el 404.
+  - `valoracionesRelacionadasCriterio.test.js` se elimina: simulaba en memoria ese mismo filtro, y repetirlo en la simulación no demostraría nada. Sus escenarios están en la prueba de MySQL.
+  - `valoracionService.test.js` y `valoraciones.test.js` prueban las reglas y las rutas nuevas con repositorios simulados.
+  - Las pruebas nuevas fallaron primero. Quitando a propósito la condición «me sigue» del filtro, la prueba de MySQL falla.
+
 ### Para quien continúe
 
 - Tras el `git pull`, aplicar la migración nueva desde `backend/`: `npx prisma migrate deploy` y `npx prisma generate`.

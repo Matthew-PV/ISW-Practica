@@ -1,10 +1,12 @@
-// Reglas de las valoraciones de experiencias (CS-01).
+// Reglas de las valoraciones de experiencias: valorar (CS-01), consultarlas (CS-63) y ver las
+// de amigos y seguidores (CS-48).
 // Capa: servicios (services).
 // Lo usa: routes/valoracionRoutes.js.
 // Usa: repositories/valoracionRepository.js (guardar la valoración),
 //      repositories/usuarioRepository.js (comprobar que quien valora existe),
 //      services/experienciaService.js (obtenerExperiencia: que exista y pueda verla),
-//      services/shared/identificadores.js (validar el id) y errores.js.
+//      services/shared/identificadores.js (validar el id), services/shared/paginacion.js
+//      (cursor de los listados) y errores.js.
 //
 // Orden de trabajo: primero se valida todo lo que no necesita la base de datos (id,
 // puntuación y comentario) y solo después se consulta MySQL. Si algo falla no se guarda nada.
@@ -12,9 +14,8 @@ const valoracionRepository = require('../repositories/valoracionRepository');
 const usuarioRepository = require('../repositories/usuarioRepository');
 const experienciaService = require('./experienciaService');
 const { leerId } = require('./shared/identificadores');
+const { leerPaginacion, cortarPagina } = require('./shared/paginacion');
 const { crearError } = require('../errores');
-const amistadRepository = require('../repositories/amistadRepository');
-const seguimientoRepository = require('../repositories/seguimientoRepository');
 
 const PUNTUACION_MIN = 1;
 const PUNTUACION_MAX = 5;
@@ -69,66 +70,43 @@ async function valorarExperiencia(usuarioId, experienciaId, datos) {
   return valoracionRepository.guardar({ usuarioId, experienciaId, puntuacion, comentario });
 }
 
-// Devuelve las valoraciones de una experiencia hechas por amigos o seguidores
-// del usuario que la consulta. Las relaciones duplicadas se cuentan una sola vez.
-// Respeta la visibilidad de la experiencia y devuelve los resultados paginados.
-async function listarValoracionesRelacionadas(
-  usuarioId,
-  experienciaId,
-  pagina = 1,
-  limite = 10
-) {
-  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
-      !(await usuarioRepository.buscarPorId(usuarioId))) {
-    throw crearError('No hay sesión iniciada', 401);
-  }
+const VALORACIONES_POR_PAGINA = 10;
 
-  leerId(experienciaId, 'de la experiencia');
-
-  if (!Number.isInteger(pagina) || pagina <= 0 ||
-      !Number.isInteger(limite) || limite <= 0) {
-    throw crearError('La paginación no es válida', 400);
-  }
-
-  // 404 «Contenido no disponible» si no existe o no puede verla
-  await experienciaService.obtenerExperiencia(usuarioId, experienciaId);
-
-  const [amigosIds, seguidoresIds] = await Promise.all([
-    amistadRepository.listarAmigosIds(usuarioId),
-    seguimientoRepository.listarSeguidoresIds(usuarioId),
-  ]);
-
-  // Un usuario puede ser a la vez amigo y seguidor.
-  const usuariosRelacionadosIds = [
-    ...new Set([...amigosIds, ...seguidoresIds]),
-  ];
-
-  return valoracionRepository.listarDeUsuarios(
-    experienciaId,
-    usuariosRelacionadosIds,
-    pagina,
-    limite
-  );
-}
-
-// Devuelve la valoración del usuario. Si no existe, lanza 404.
+// CS-63: la valoración del usuario de la sesión en la experiencia, o null si todavía no la ha
+// valorado. 404 «Contenido no disponible» si la experiencia no existe o no puede verla.
 async function obtenerMiValoracion(usuarioId, experienciaId) {
-  // Asegúrate de que valoracionRepository esté importado arriba en tu archivo
-  const valoracion = await valoracionRepository.obtenerPorUsuarioYExperiencia(usuarioId, experienciaId);
-
-  if (!valoracion) {
-    const error = new Error('Aún no has valorado esta experiencia');
-    error.status = 404;
-    throw error;
-  }
-
-  return valoracion;
+  await experienciaService.obtenerExperiencia(usuarioId, experienciaId);
+  return valoracionRepository.obtenerPorUsuarioYExperiencia(usuarioId, experienciaId);
 }
 
-// Recuerda añadir 'obtenerMiValoracion' en tu module.exports al final del archivo
+// Común a los dos listados: valida la paginación y la experiencia, pide al repositorio una fila
+// de más (con `consultar(despuesDe, cantidad)`) y devuelve { valoraciones, siguiente }.
+async function listarPagina(usuarioId, experienciaId, paginacion, consultar) {
+  const { despuesDe, limite } = leerPaginacion(paginacion, VALORACIONES_POR_PAGINA);
+  await experienciaService.obtenerExperiencia(usuarioId, experienciaId);
+  const { elementos, siguiente } = cortarPagina(await consultar(despuesDe, limite + 1), limite);
+  return { valoraciones: elementos, siguiente };
+}
+
+// CS-63: todas las valoraciones de la experiencia, de la más reciente a la más antigua y por
+// páginas: { valoraciones, siguiente }. Cada una lleva los datos públicos de su autor.
+// - `paginacion`: { despuesDe, limite } de la URL (ver services/shared/paginacion.js).
+// Errores: 401 sin sesión, 400 si la paginación no es válida y 404 «Contenido no disponible».
+async function listarValoraciones(usuarioId, experienciaId, paginacion) {
+  return listarPagina(usuarioId, experienciaId, paginacion,
+    (despuesDe, cantidad) => valoracionRepository.listar(experienciaId, despuesDe, cantidad));
+}
+
+// CS-48: igual que listarValoraciones, pero solo las de amigos del usuario de la sesión (con la
+// amistad aceptada) y de quienes lo siguen.
+async function listarValoracionesRelacionadas(usuarioId, experienciaId, paginacion) {
+  return listarPagina(usuarioId, experienciaId, paginacion,
+    (despuesDe, cantidad) => valoracionRepository.listarDeRelacionados(experienciaId, usuarioId, despuesDe, cantidad));
+}
 
 module.exports = {
   valorarExperiencia,
+  obtenerMiValoracion,
+  listarValoraciones,
   listarValoracionesRelacionadas,
-  obtenerMiValoracion
 };

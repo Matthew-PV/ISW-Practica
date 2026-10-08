@@ -32,16 +32,6 @@ async function sigueA(seguidorId, seguidoId) {
   return seguimiento !== null;
 }
 
-// Devuelve los identificadores de los usuarios que siguen al usuario indicado.
-async function listarSeguidoresIds(usuarioId) {
-  const seguimientos = await prisma.seguimiento.findMany({
-    where: { seguidoId: usuarioId },
-    select: { seguidorId: true },
-  });
-
-  return seguimientos.map((seguimiento) => seguimiento.seguidorId);
-}
-
 // Cuenta cuántas personas siguen a un usuario.
 async function contarSeguidores(seguidoId) {
   return prisma.seguimiento.count({
@@ -72,7 +62,6 @@ module.exports = {
   seguir,
   dejarDeSeguir,
   sigueA,
-  listarSeguidoresIds,
   contarSeguidores,
   listarSeguidores,
 };
