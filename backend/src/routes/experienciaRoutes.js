@@ -33,7 +33,7 @@ router.get('/:id', requiereSesion, async (req, res) => {
 // POST /api/experiencias → experienciaService.crearExperiencia
 // Crea una experiencia cuyo autor es el usuario de la sesión (201),
 // o 400 si los datos no son válidos.
-// Cuerpo: { titulo, descripcion, ciudadId, tipo?, momentoAdecuado? }.
+// Cuerpo: { titulo, descripcion, ciudadId, tipo?, momentoAdecuado?, visibilidad? }.
 // Responde con la experiencia creada, incluida su ciudad.
 router.post('/', requiereSesion, async (req, res) => {
   const experiencia = await experienciaService.crearExperiencia(req.session.usuarioId, req.body);

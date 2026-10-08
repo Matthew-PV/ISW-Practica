@@ -60,7 +60,7 @@ async function obtenerPerfilPropio(id) {
   if (!perfil) {
     throw crearError('No hay sesión iniciada', 401);
   }
-    return conFotoPorDefecto(perfil);
+  return conFotoPorDefecto(perfil);
 }
 
 // Actualiza nombreUsuario y/o ciudad del usuario de la sesión.
