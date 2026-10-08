@@ -43,7 +43,7 @@ function leerComentario(valor) {
 // - `experienciaId`: la experiencia que se valora.
 // - `datos`: el cuerpo de la petición { puntuacion, comentario? }.
 // Devuelve { valoracion, creada }: `creada` es false si ya existía y se ha actualizado.
-// Errores: 401 si el usuario ya no existe, 400 si los datos no son válidos, 404 «Contenido no
+// Errores: 400 si los datos no son válidos, 404 «Contenido no
 // disponible» si la experiencia no existe o no puede verla (el mismo, para no revelar que
 // existe) y 403 si es su propia experiencia.
 async function valorarExperiencia(usuarioId, experienciaId, datos) {
@@ -88,7 +88,7 @@ async function listarPagina(usuarioId, experienciaId, paginacion, consultar) {
 // CS-63: todas las valoraciones de la experiencia, de la más reciente a la más antigua y por
 // páginas: { valoraciones, siguiente }. Cada una lleva los datos públicos de su autor.
 // - `paginacion`: { despuesDe, limite } de la URL (ver services/shared/paginacion.js).
-// Errores: 401 sin sesión, 400 si la paginación no es válida y 404 «Contenido no disponible».
+// Errores: 400 si la paginación no es válida y 404 «Contenido no disponible».
 async function listarValoraciones(usuarioId, experienciaId, paginacion) {
   return listarPagina(usuarioId, experienciaId, paginacion,
     (despuesDe, cantidad) => valoracionRepository.listar(experienciaId, despuesDe, cantidad));
