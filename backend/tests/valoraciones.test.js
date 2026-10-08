@@ -257,7 +257,7 @@ describe('peticiones rechazadas: no se guarda nada', () => {
       });
 
     expect(res.status).toBe(404);
-    expect(res.body.error).toBe('La experiencia no existe');
+    expect(res.body.error).toBe('Contenido no disponible');
     expect(valoraciones.size).toBe(0);
   });
 
@@ -271,7 +271,7 @@ describe('peticiones rechazadas: no se guarda nada', () => {
       });
 
     expect(res.status).toBe(404);
-    expect(res.body.error).toBe('La experiencia no existe');
+    expect(res.body.error).toBe('Contenido no disponible');
     expect(valoraciones.size).toBe(0);
   });
 
@@ -325,7 +325,7 @@ describe('seguir a alguien no da acceso a sus experiencias de amigos', () => {
       });
 
     expect(res.status).toBe(404);
-    expect(res.body.error).toBe('La experiencia no existe');
+    expect(res.body.error).toBe('Contenido no disponible');
     expect(valoraciones.size).toBe(0);
   });
 });
@@ -428,17 +428,16 @@ describe('consultar valoraciones de amigos y seguidores - CS-48', () => {
     });
   });
 
-  test('una experiencia no visible responde 403', async () => {
+  // Igual que en CS-30: no se distingue «no existe» de «no puedes verla», para no revelar nada
+  test('una experiencia no visible responde 404 «Contenido no disponible»', async () => {
     const agente = await agenteConSesion();
 
     const res = await agente
       .get('/api/experiencias/11/valoracion');
 
-    expect(res.status).toBe(403);
+    expect(res.status).toBe(404);
 
-    expect(res.body.error).toBe(
-      'No tienes permiso para ver esta experiencia'
-    );
+    expect(res.body.error).toBe('Contenido no disponible');
 
     expect(
       valoracionRepository.listarDeUsuarios

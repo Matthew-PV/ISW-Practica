@@ -104,6 +104,12 @@ El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de confli
   - Las pruebas de CS-45 (servicio, rutas, repositorio, criterio y pantalla) usan ahora la forma nueva de pedir y de responder. Siguen protegiendo lo mismo: ceros sin error, pendientes y rechazadas que no cuentan, subidas y bajadas de uno, sin emails y sin repetidos.
   - En `relacionesPantalla.test.js`, una prueba nueva de los contadores tras aceptar, que falló primero (se quedaba en 0). En `solicitudesPantalla.test.js`, la petición de aceptar se busca por su ruta, porque ya no es la última.
 
+### CS-01 y CS-48: «Contenido no disponible» y comentario de hasta 1000 caracteres
+
+- Valorar (`PUT /api/experiencias/:id/valoracion`) y consultar las valoraciones de amigos y seguidores responden 404 «Contenido no disponible» si la experiencia no existe o no se puede ver, igual que su detalle (CS-30). Antes respondían «La experiencia no existe» o un 403 «No tienes permiso…», que revelaba que existía. Las dos pasan por `experienciaService.obtenerExperiencia`.
+- El comentario se guarda sin los espacios de los extremos y normalizado a NFC (una letra con tilde se guarda siempre como un solo carácter). Solo con espacios cuenta como sin comentario, y más de 1000 caracteres responden 400 «El comentario no puede superar los 1000 caracteres». Antes no tenía límite.
+- Pruebas: cuatro casos nuevos del comentario en `valoracionService.test.js`. Los mensajes y el 403 de las pruebas de CS-01 y CS-48 pasan al 404 acordado. Fallaron primero y pasaron tras el cambio.
+
 ### Para quien continúe
 
 - Tras el `git pull`, aplicar la migración nueva desde `backend/`: `npx prisma migrate deploy` y `npx prisma generate`.

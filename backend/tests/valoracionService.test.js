@@ -252,6 +252,37 @@ describe('el comentario, si se envía, es texto', () => {
   );
 });
 
+describe('el comentario tiene como máximo 1000 caracteres y se guarda limpio', () => {
+  const guardado = () => valoracionRepository.guardar.mock.calls[0][0].comentario;
+
+  test('acepta 1000 caracteres y rechaza 1001 con 400', async () => {
+    await valorarExperiencia(1, 10, { puntuacion: 4, comentario: 'a'.repeat(1000) });
+    expect(guardado()).toHaveLength(1000);
+
+    await expect(valorarExperiencia(1, 10, { puntuacion: 4, comentario: 'a'.repeat(1001) }))
+      .rejects.toMatchObject({ status: 400, message: 'El comentario no puede superar los 1000 caracteres' });
+  });
+
+  test('se guarda sin los espacios de los extremos', async () => {
+    await valorarExperiencia(1, 10, { puntuacion: 4, comentario: '  Muy bien  ' });
+
+    expect(guardado()).toBe('Muy bien');
+  });
+
+  test('un comentario de solo espacios se guarda como sin comentario', async () => {
+    await valorarExperiencia(1, 10, { puntuacion: 4, comentario: '   ' });
+
+    expect(guardado()).toBeNull();
+  });
+
+  test('las letras con tilde se guardan en su forma compuesta (NFC)', async () => {
+    await valorarExperiencia(1, 10, { puntuacion: 4, comentario: 'Cafe\u0301' });
+
+    expect(guardado()).toBe('Café');
+    expect(guardado()).toHaveLength(4);
+  });
+});
+
 describe('quién puede valorar', () => {
   test('si el usuario de la sesión ya no existe responde 401', async () => {
     await expect(
@@ -290,7 +321,7 @@ describe('quién puede valorar', () => {
       )
     ).rejects.toMatchObject({
       status: 404,
-      message: 'La experiencia no existe',
+      message: 'Contenido no disponible',
     });
 
     expect(valoracionRepository.guardar).not.toHaveBeenCalled();
@@ -305,7 +336,7 @@ describe('quién puede valorar', () => {
       )
     ).rejects.toMatchObject({
       status: 404,
-      message: 'La experiencia no existe',
+      message: 'Contenido no disponible',
     });
 
     expect(valoracionRepository.guardar).not.toHaveBeenCalled();
@@ -436,7 +467,7 @@ describe('valoraciones de amigos y seguidores - CS-48', () => {
     });
   });
 
-  test('si la experiencia no es visible responde 403', async () => {
+  test('si la experiencia no es visible responde 404, igual que si no existiera', async () => {
     await expect(
       listarValoracionesRelacionadas(
         1,
@@ -445,8 +476,8 @@ describe('valoraciones de amigos y seguidores - CS-48', () => {
         10
       )
     ).rejects.toMatchObject({
-      status: 403,
-      message: 'No tienes permiso para ver esta experiencia',
+      status: 404,
+      message: 'Contenido no disponible',
     });
 
     expect(
@@ -464,7 +495,7 @@ describe('valoraciones de amigos y seguidores - CS-48', () => {
       )
     ).rejects.toMatchObject({
       status: 404,
-      message: 'La experiencia no existe',
+      message: 'Contenido no disponible',
     });
 
     expect(

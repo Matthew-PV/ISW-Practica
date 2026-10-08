@@ -317,17 +317,15 @@ test('si ningún amigo o seguidor ha valorado devuelve la sección vacía sin er
   });
 });
 
-test('una experiencia que no es visible para el usuario responde 403', async () => {
+test('una experiencia que no es visible para el usuario responde 404, como si no existiera', async () => {
   const ana = await agente(1);
 
   const respuesta = await ana
     .get('/api/experiencias/11/valoracion');
 
-  expect(respuesta.status).toBe(403);
+  expect(respuesta.status).toBe(404);
 
-  expect(respuesta.body.error).toBe(
-    'No tienes permiso para ver esta experiencia'
-  );
+  expect(respuesta.body.error).toBe('Contenido no disponible');
 
   expect(
     valoracionRepository.listarDeUsuarios
