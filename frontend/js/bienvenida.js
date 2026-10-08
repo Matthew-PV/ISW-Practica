@@ -22,6 +22,22 @@ const campos = [
   'momentoAdecuado',
 ].map((id) => document.getElementById(id));
 
+// CS-22: explicación de cada visibilidad, que se muestra debajo del selector.
+const DESCRIPCIONES_VISIBILIDAD = {
+  PRIVADA: 'Solo tú puedes verla.',
+  AMIGOS: 'Solo la ven tus amigos (con la amistad aceptada) y tú.',
+  PUBLICA: 'Cualquier usuario puede verla.',
+};
+const selectorVisibilidad = document.getElementById('visibilidad');
+const descripcionVisibilidad = document.getElementById('descripcion-visibilidad');
+
+// Escribe debajo del selector la descripción de la visibilidad elegida.
+function describirVisibilidad() {
+  descripcionVisibilidad.textContent = DESCRIPCIONES_VISIBILIDAD[selectorVisibilidad.value] ?? '';
+}
+
+selectorVisibilidad.addEventListener('change', describirVisibilidad);
+
 // Experiencia que se está editando.
 // Es null cuando el formulario sirve para crear una nueva.
 let editando = null;
@@ -105,6 +121,7 @@ function abrirFormulario(experiencia) {
     campo.value = experiencia?.[campo.id] ?? '';
   }
 
+  describirVisibilidad();
   cajaError.classList.add('d-none');
 
   dialogo.showModal();

@@ -150,6 +150,23 @@ test('al editar una experiencia, el selector de visibilidad conserva su valor ac
   expect(selector.value).toBe('AMIGOS');
 });
 
+test('debajo del selector se describe la visibilidad elegida y cambia al elegir otra (CS-22)', () => {
+  $('#boton-nueva').click();
+
+  expect($('#descripcion-visibilidad').textContent).toBe('Cualquier usuario puede verla.');
+
+  $('#visibilidad').value = 'PRIVADA';
+  $('#visibilidad').dispatchEvent(new Event('change'));
+
+  expect($('#descripcion-visibilidad').textContent).toBe('Solo tú puedes verla.');
+});
+
+test('al editar, la descripción corresponde a la visibilidad actual de la experiencia (CS-22)', () => {
+  $('.tarjeta-experiencia .boton-editar').click();
+
+  expect($('#descripcion-visibilidad').textContent).toBe('Solo la ven tus amigos (con la amistad aceptada) y tú.');
+});
+
 test('al enviar el formulario se incluye la visibilidad elegida', async () => {
   $('#boton-nueva').click();
 

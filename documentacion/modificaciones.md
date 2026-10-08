@@ -69,6 +69,12 @@ El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de confli
 - Los resultados salen ordenados por nombre de usuario (`usuarioRepository.buscarPorNombre`).
 - Pruebas: `usuarioService.test.js` (texto recortado y cuatro textos no válidos), `interaccionesCriterio.test.js` (búsqueda sin texto por HTTP) y `tests/mysql/usuarioBusqueda.test.js` (orden con MySQL real). Fallaron primero y pasaron tras el cambio.
 
+### CS-22: descripción de la visibilidad y prueba con MySQL
+
+- Debajo del selector de visibilidad del formulario de la bienvenida aparece una frase que explica la opción elegida («Solo tú puedes verla.», «Solo la ven tus amigos (con la amistad aceptada) y tú.» o «Cualquier usuario puede verla.»). Cambia al elegir otra y, al editar, corresponde a la visibilidad actual. Probado con jsdom: falló primero porque el texto no existía.
+- `tests/mysql/experienciaVisibilidad.test.js` recorre el criterio con MySQL real. Una experiencia creada como privada solo la ve su autor. Al editarla a pública, el cambio se conserva al recargar y la ve cualquiera. En «amigos», otro usuario no la ve hasta que la amistad está aceptada. La validación ya existía (trabajo de Matthew): para comprobar que la prueba detecta el fallo, se quitó a propósito la visibilidad de `experienciaRepository.crear`, la prueba falló (`Expected "PRIVADA"`, `Received "PUBLICA"`) y se deshizo el cambio.
+- Queda fuera de CS-22: «aparece en mi perfil» depende del listado de CS-44, y «se puede encontrar buscándola», de la búsqueda de experiencias, que todavía no existe.
+
 ### Para quien continúe
 
 - Tras el `git pull`, aplicar la migración nueva desde `backend/`: `npx prisma migrate deploy` y `npx prisma generate`.
