@@ -2,6 +2,50 @@
 
 Registro de los cambios realizados en el proyecto, en orden cronológico.
 
+# Reparación de `main` tras el merge de CS-63 (08/10/2026)
+
+El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de conflicto (`<<<<<<<`, `=======`, `>>>>>>>`) en `experienciaService.js`, `experiencia.html` y `experiencia.js`. El servidor no arrancaba y fallaban 22 de los 50 archivos de prueba. Queda resuelto conservando el trabajo de CS-30 y el de CS-63.
+
+### Cambios realizados
+
+- **Backend:**
+  - `experienciaService` vuelve a tener una sola `obtenerExperiencia(usuarioId, experienciaId)`, la de CS-30. Comprueba la sesión y el identificador y responde 404 «Contenido no disponible» si la experiencia no existe o no se puede ver.
+  - Se quitan la segunda versión de esa función, la segunda ruta `GET /api/experiencias/:id` (Express nunca llegaba a usarla, porque atiende la primera que coincide) y la importación de errores que no existen.
+  - `experienciaRepository.buscarPorId` vuelve a recibir el identificador ya validado por el servicio.
+- **`experiencia.html` y `js/experiencia.js` (CS-63):**
+  - Queda la versión completa de la rama: lista de valoraciones con aviso de error, «Útil» y «Reportar», y autor y ciudad que funcionan también con experiencias sin autor.
+  - «Útil» y «Reportar» funcionan solo en la pantalla: no guardan nada hasta que existan CS-02 y CS-04.
+  - Sin el script de Bootstrap desde el CDN, que la política de seguridad de contenidos (CSP) bloquea. La ventana de reporte se abre sin él.
+  - Se quitan un `id` repetido, un `</div>` sobrante y un `console.log`.
+- **Bienvenida:**
+  - «Ver detalle» es un enlace a `experiencia.html?id=…`.
+  - Se elimina el diálogo de detalle, con su sección de valoraciones de amigos y seguidores (CS-48), al que ya no se llegaba.
+- **Pruebas:**
+  - Las 4 pruebas de pantalla del diálogo se sustituyen por una que comprueba el enlace.
+  - La prueba de API de una experiencia que no se puede ver espera 404 «Contenido no disponible».
+
+### TDD y comprobación
+
+- Resolver los marcadores no cambia el comportamiento: la batería pasó de 22 archivos en rojo a todo en verde.
+- Enlace de «Ver detalle»: la prueba falló primero por el motivo esperado (`Expected "A"`, `Received "BUTTON"`) y pasó tras convertir el botón en enlace.
+
+### Pendiente
+
+- CS-48 no tiene pantalla mientras su sección no se añada a `experiencia.html`.
+- En CS-63:
+  - la lista general usa la ruta de CS-48, así que solo muestra valoraciones de amigos y seguidores;
+  - el comentario admite 255 caracteres y no los 1000 acordados;
+  - el autor de cada valoración enlaza a `perfil.html?id=`;
+  - la fecha no se muestra, porque se lee `creadoEn` y el campo se llama `creadaEn`.
+
+### Cómo comprobarlo
+
+```bash
+cd backend
+npm test        # 50 archivos y 418 pruebas en verde
+npm run dev     # bienvenida → «Ver detalle» abre experiencia.html
+```
+
 # Guía de aprendizaje atemporal — Documentado (07/10/2026)
 
 Se revisó `documentacion/hoja-ruta-aprendizaje.md` para que sirva a cualquier integrante y pueda seguirse sin un calendario ni una revisión concreta. Nueve módulos explican fundamentos de programación, Git, interfaz, HTTP, arquitectura, datos, seguridad, TDD y configuración/despliegue. Cada uno incluye un laboratorio independiente, una búsqueda del concepto en el PlanB vigente y una comprobación de comprensión. La práctica final recorre una funcionalidad desde el criterio actual hasta su prueba y resultado visible. Las herramientas actuales se presentan como ejemplos, con indicaciones para encontrar sus equivalentes si cambia la implementación. Se actualizó la descripción de la guía en el README y se registró el prompt de Matthew en `documentacion/prompts/matthew.md`.

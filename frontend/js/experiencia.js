@@ -26,22 +26,12 @@ async function cargarPaginaExperiencia() {
       api('/auth/yo')
     ]);
 
-<<<<<<< HEAD
-=======
-    console.log("Datos que llegan:", experiencia);
-
->>>>>>> CS-63
     miUsuarioId = yo.id;
 
     mensajeEstado.classList.add('d-none');
     contenidoExperiencia.classList.remove('d-none');
 
     tituloEl.textContent = experiencia.titulo;
-<<<<<<< HEAD
-    autorEl.textContent = experiencia.autor.nombreUsuario;
-    ciudadEl.textContent = experiencia.ciudad.nombre;
-    descEl.textContent = experiencia.descripcion;
-=======
 
         // Truco definitivo: Si el backend no trae el objeto autor, pero el autorId
         // coincide con nuestro ID, usamos nuestro propio nombre de perfil.
@@ -55,7 +45,6 @@ async function cargarPaginaExperiencia() {
 
         ciudadEl.textContent = experiencia.ciudad?.nombre || 'Ciudad desconocida';
         descEl.textContent = experiencia.descripcion;
->>>>>>> CS-63
 
     await cargarComentarios();
 
@@ -119,11 +108,6 @@ async function cargarComentarios() {
       btnCargarMas.classList.add('d-none');
     }
   } catch (error) {
-<<<<<<< HEAD
-    console.error('Error al cargar comentarios:', error);
-  }
-}
-=======
       console.error('Error al cargar comentarios:', error);
 
       // Mostramos una alerta visual al final de la lista de comentarios
@@ -133,7 +117,6 @@ async function cargarComentarios() {
       listaComentarios.appendChild(alertaError);
   }
 } // CORRECCIÓN: Faltaba esta llave de cierre de la función cargarComentarios
->>>>>>> CS-63
 
 // Crea la tarjeta del comentario usando textContent por seguridad
 function crearElementoComentario(valoracion) {
@@ -196,22 +179,6 @@ function crearElementoComentario(valoracion) {
   if (leDiUtil) btnUtil.classList.replace('btn-outline-success', 'btn-success');
   btnUtil.innerHTML = `👍 Útil <span class="badge text-bg-light ms-1">${cantidadUtiles}</span>`;
 
-<<<<<<< HEAD
-  // Evento simulado para marcar/desmarcar útil
-  btnUtil.addEventListener('click', () => {
-    leDiUtil = !leDiUtil;
-    cantidadUtiles += leDiUtil ? 1 : -1;
-
-    if (leDiUtil) {
-      btnUtil.classList.replace('btn-outline-success', 'btn-success');
-    } else {
-      btnUtil.classList.replace('btn-success', 'btn-outline-success');
-    }
-    btnUtil.innerHTML = `👍 Útil <span class="badge text-bg-light ms-1">${cantidadUtiles}</span>`;
-  });
-
-  contenedorUtil.appendChild(btnUtil);
-=======
   // Evento simulado para marcar/desmarcar útil (Con manejo de errores integrado)
   btnUtil.addEventListener('click', async () => {
     btnUtil.disabled = true;
@@ -267,7 +234,6 @@ function crearElementoComentario(valoracion) {
 
   contenedorUtil.appendChild(btnReportar);
 
->>>>>>> CS-63
   cuerpo.appendChild(contenedorUtil);
 
   tarjeta.appendChild(cuerpo);
@@ -368,8 +334,6 @@ formValoracion.addEventListener('submit', async (e) => {
     btnGuardarValoracion.disabled = false;
   }
 });
-<<<<<<< HEAD
-=======
 
 // --- OBJETIVO 8: LÓGICA DEL MODAL DE REPORTE ---
 let valoracionReporteId = null;
@@ -424,4 +388,3 @@ formReporte.addEventListener('submit', async (e) => {
     btnEnviarReporte.disabled = false;
   }
 });
->>>>>>> CS-63

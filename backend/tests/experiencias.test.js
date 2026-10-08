@@ -10,7 +10,6 @@ const app = require('../src/app');
 const usuarioRepository = require('../src/repositories/usuarioRepository');
 const ciudadRepository = require('../src/repositories/ciudadRepository');
 const experienciaRepository = require('../src/repositories/experienciaRepository');
-const prisma = require('../src/repositories/shared/prisma'); // Ajusta la ruta a tu instancia de Prisma
 const visibilidad = require('../src/services/shared/visibilidad');
 
 const CIUDAD = { id: 1, nombre: 'Madrid' };
@@ -186,7 +185,8 @@ describe('GET /api/experiencias/:id (CS-63)', () => {
 
       const response = await agente.get(`/api/experiencias/${expPrivada.id}`);
 
-      expect(response.status).toBe(403);
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({ error: 'Contenido no disponible' });
     });
 
     it('debe devolver un error 404 si la experiencia es inexistente', async () => {

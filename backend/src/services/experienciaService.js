@@ -11,13 +11,8 @@
 const ciudadRepository = require('../repositories/ciudadRepository');
 const experienciaRepository = require('../repositories/experienciaRepository');
 const usuarioRepository = require('../repositories/usuarioRepository');
-<<<<<<< HEAD
 const { puedeVerExperiencia } = require('./shared/visibilidad');
-=======
-const visibilidad =  require('./shared/visibilidad')
->>>>>>> CS-63
 const { crearError } = require('../errores');
-const { NotFoundError, ForbiddenError } = require('../errores')
 
 const TEXTO_CORTO_MAX = 191; // Columnas VARCHAR(191) de MySQL.
 const DESCRIPCION_MAX_BYTES = 65535; // Capacidad de la columna TEXT en UTF-8.
@@ -281,38 +276,11 @@ async function listarExperienciasPropias(usuarioId) {
   return experienciaRepository.listarPorAutor(usuarioId);
 }
 
-//Devuelve
-async function obtenerExperiencia(experienciaId, usuarioId) {
-  // 1. Convertimos el ID a número de forma segura
-  const idNumerico = Number(experienciaId);
-
-  // 2. Buscamos la experiencia
-  const experiencia = await experienciaRepository.buscarPorId(idNumerico);
-
-  if (!experiencia) {
-    const error = new Error('La experiencia no existe');
-    error.status = 404;
-    throw error;
-  }
-
-  // 3. CORRECCIÓN: Respetamos el orden (usuarioId, experiencia) que pide visibilidad.js
-  const esVisible = await visibilidad.puedeVerExperiencia(usuarioId, experiencia);
-
-  if (!esVisible) {
-    const error = new Error('No tienes permiso para ver esta experiencia');
-    error.status = 403;
-    throw error;
-  }
-
-  return experiencia;
-}
-
 module.exports = {
   listarExperienciasPropias,
   obtenerExperiencia,
   validarCreacion,
   validarEdicion,
   crearExperiencia,
-  editarExperiencia,
-  obtenerExperiencia
+  editarExperiencia
 };
