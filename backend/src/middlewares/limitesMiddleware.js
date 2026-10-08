@@ -1,7 +1,8 @@
 // Límites de peticiones por IP para frenar ataques de fuerza bruta y registros masivos.
 // Los contadores se guardan en memoria: se reinician al reiniciar el servidor.
 // Capa: middlewares (se ejecutan antes de la ruta, dentro de la capa de rutas).
-// Lo usa: routes/authRoutes.js (POST /login y POST /registro).
+// Lo usan: routes/authRoutes.js (POST /login y POST /registro) y routes/perfilRoutes.js
+//          (PUT /password, CS-64).
 // Usa: la librería express-rate-limit.
 //
 // Cuando una IP supera el límite, responde 429 («demasiadas peticiones») con el mensaje
@@ -33,4 +34,13 @@ const limiteRegistro = rateLimit({
   limit: 20,
 });
 
-module.exports = { limiteLogin, limiteRegistro };
+// Cambiar la contraseña (CS-64): 10 intentos fallidos cada 15 minutos, para que no se pueda
+// adivinar la actual a base de probar
+const limiteCambioPassword = rateLimit({
+  ...opcionesComunes,
+  windowMs: 15 * MINUTO,
+  limit: 10,
+  skipSuccessfulRequests: true,
+});
+
+module.exports = { limiteLogin, limiteRegistro, limiteCambioPassword };

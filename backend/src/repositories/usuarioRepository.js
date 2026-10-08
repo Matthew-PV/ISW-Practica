@@ -85,4 +85,9 @@ async function actualizarFoto(id, foto) {
   });
 }
 
-module.exports = { crear, buscarPorEmail, buscarPorId, buscarPorNombre, obtenerPerfil, obtenerPerfilPublico, actualizarPerfil, actualizarFoto };
+// CS-64: guarda el hash de la nueva contraseña (nunca la contraseña).
+async function actualizarPassword(id, passwordHash) {
+  await prisma.usuario.update({ where: { id }, data: { passwordHash } });
+}
+
+module.exports = { crear, buscarPorEmail, buscarPorId, buscarPorNombre, obtenerPerfil, obtenerPerfilPublico, actualizarPerfil, actualizarFoto, actualizarPassword };

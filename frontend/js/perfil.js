@@ -1,6 +1,7 @@
 // Página de mi perfil (perfil.html): muestra y permite editar nombreUsuario, ciudad y foto.
-// Se ejecuta nada más cargar la página. Usa `api` de shared/api.js y `mostrarExperienciasDe` de
-// shared/experiencias.js (CS-44: mis experiencias).
+// Se ejecuta nada más cargar la página. Usa `api` de shared/api.js, `mostrarExperienciasDe` de
+// shared/experiencias.js (CS-44: mis experiencias) y `mostrarRequisitosPassword` de
+// shared/password.js (CS-64: cambiar la contraseña).
 
 const formulario = document.getElementById('form-perfil');
 const cajaError = document.getElementById('error-perfil');
@@ -289,4 +290,52 @@ for (const tipo of ['amigos', 'seguidores']) {
 }
 
 cargarRelaciones();
+
+// CS-64: cambiar la contraseña. Hay que dar la actual y repetir la nueva; los requisitos de la
+// nueva se marcan mientras se escribe (el del nombre usa el que hay en el formulario del perfil).
+const formPassword = document.getElementById('form-password');
+const campoPasswordActual = document.getElementById('password-actual');
+const campoPasswordNueva = document.getElementById('password-nueva');
+const campoPasswordRepetida = document.getElementById('password-repetida');
+const cajaErrorPassword = document.getElementById('error-password');
+const cajaExitoPassword = document.getElementById('exito-password');
+const botonPassword = formPassword.querySelector('button[type="submit"]');
+
+const marcarRequisitosPassword = mostrarRequisitosPassword(
+  campoPasswordNueva,
+  document.getElementById('requisitos-password'),
+  () => document.getElementById('nombreUsuario').value
+);
+
+function mostrarErrorPassword(mensaje) {
+  cajaErrorPassword.textContent = mensaje;
+  cajaErrorPassword.classList.remove('d-none');
+}
+
+formPassword.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  cajaErrorPassword.classList.add('d-none');
+  cajaExitoPassword.classList.add('d-none');
+
+  if (campoPasswordNueva.value !== campoPasswordRepetida.value) {
+    mostrarErrorPassword('Las dos contraseñas nuevas no coinciden');
+    return;
+  }
+
+  botonPassword.disabled = true;
+  try {
+    await api('/perfil/password', {
+      method: 'PUT',
+      body: JSON.stringify({ actual: campoPasswordActual.value, nueva: campoPasswordNueva.value }),
+    });
+    formPassword.reset();
+    marcarRequisitosPassword();
+    cajaExitoPassword.textContent = 'Contraseña cambiada.';
+    cajaExitoPassword.classList.remove('d-none');
+  } catch (err) {
+    // Lo escrito se mantiene para poder corregirlo
+    mostrarErrorPassword(err.message);
+  }
+  botonPassword.disabled = false;
+});
 

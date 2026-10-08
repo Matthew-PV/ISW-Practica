@@ -1,12 +1,16 @@
 // Reglas de una contraseña segura (CS-64). Son las mismas al registrarse, al cambiar la contraseña
 // y al restablecerla, por eso están aquí y no en cada servicio.
 // Capa: servicios (services/shared).
-// Lo usa: services/authService.js.
-// Usa: errores.js.
+// Lo usan: services/authService.js y services/perfilService.js.
+// Usa: la librería bcrypt y errores.js.
 //
 // La pantalla muestra los mismos requisitos y los marca mientras se escribe
 // (frontend/js/shared/password.js), pero la comprobación que vale es la de aquí.
+const bcrypt = require('bcrypt');
 const { crearError } = require('../../errores');
+
+// Coste del cifrado con bcrypt: más alto es más seguro pero más lento
+const SALT_ROUNDS = 10;
 
 const BYTES_MIN = 8;
 // bcrypt solo usa los primeros 72 bytes: una contraseña más larga se confundiría con otra
@@ -38,4 +42,10 @@ function validarPassword(password, nombreUsuario) {
   }
 }
 
-module.exports = { validarPassword };
+// Devuelve el hash de la contraseña, que es lo único que se guarda: ni con acceso a la base de
+// datos se puede recuperar la contraseña.
+function cifrarPassword(password) {
+  return bcrypt.hash(password, SALT_ROUNDS);
+}
+
+module.exports = { validarPassword, cifrarPassword, SALT_ROUNDS };

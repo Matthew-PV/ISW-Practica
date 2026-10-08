@@ -13,11 +13,8 @@ const bcrypt = require('bcrypt');
 const usuarioRepository = require('../repositories/usuarioRepository');
 const captchaService = require('./captchaService');
 const { validarNombreUsuario } = require('./shared/nombreUsuario');
-const { validarPassword } = require('./shared/password');
+const { validarPassword, cifrarPassword, SALT_ROUNDS } = require('./shared/password');
 const { crearError } = require('../errores');
-
-// Coste del cifrado con bcrypt: más alto es más seguro pero más lento
-const SALT_ROUNDS = 10;
 
 // Email: algo@algo.algo, sin espacios ni caracteres invisibles o de control
 const EMAIL = /^[^\s@\p{C}]+@[^\s@\p{C}]+\.[^\s@\p{C}]+$/u;
@@ -81,8 +78,7 @@ async function registrar(datos, ip) {
     throw crearError('No se ha podido comprobar que no eres un robot. Inténtalo de nuevo.', 400);
   }
 
-  // Solo se guarda el hash: ni siquiera con acceso a la base de datos se puede recuperar la contraseña
-  const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
+  const passwordHash = await cifrarPassword(password);
   try {
     const usuario = await usuarioRepository.crear({ nombreUsuario, email, passwordHash });
     return datosPublicos(usuario);

@@ -53,6 +53,29 @@
     </form>
 
     <!-- Solicitudes de amistad pendientes. js/perfil.js las obtiene desde /api/amistades/solicitudes. -->
+    <!-- CS-64: cambiar la contraseña (js/perfil.js; los requisitos los marca js/shared/password.js) -->
+    <section class="mt-5" aria-labelledby="titulo-password">
+      <h2 id="titulo-password" class="h4">Cambiar contraseña</h2>
+      <form id="form-password">
+        <div class="mb-3">
+          <label for="password-actual" class="form-label">Contraseña actual</label>
+          <input type="password" class="form-control" id="password-actual" required autocomplete="current-password">
+        </div>
+        <div class="mb-3">
+          <label for="password-nueva" class="form-label">Contraseña nueva</label>
+          <input type="password" class="form-control" id="password-nueva" required autocomplete="new-password" aria-describedby="requisitos-password">
+          <ul id="requisitos-password" class="list-unstyled small mt-2 mb-0"></ul>
+        </div>
+        <div class="mb-3">
+          <label for="password-repetida" class="form-label">Repite la contraseña nueva</label>
+          <input type="password" class="form-control" id="password-repetida" required autocomplete="new-password">
+        </div>
+        <div id="error-password" class="alert alert-danger d-none" role="alert"></div>
+        <div id="exito-password" class="alert alert-success d-none"></div>
+        <button type="submit" class="btn btn-primary">Cambiar contraseña</button>
+      </form>
+    </section>
+
     <!-- CS-44: mis experiencias, también las privadas; las pinta js/shared/experiencias.js -->
     <section class="mt-5" aria-labelledby="titulo-experiencias">
       <h2 id="titulo-experiencias" class="h4">Mis experiencias</h2>
@@ -92,6 +115,7 @@
 
   <script src="js/shared/api.js"></script>
   <script src="js/shared/experiencias.js"></script>
+  <script src="js/shared/password.js"></script>
   <script src="js/perfil.js"></script>
 </body>
 </html>

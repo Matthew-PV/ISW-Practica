@@ -159,6 +159,17 @@ Sobre la página de José (`experiencia.html` y `js/experiencia.js`):
   - Las pruebas que registraban usuarios con `secreta123`, que ya no es válida porque no tiene mayúscula, usan `Secreta123`; las de inicio de sesión no cambian.
   - `tests/setup.js` añade `TextEncoder` al navegador simulado (jsdom no lo trae, pero los navegadores sí).
 
+### CS-64: cambiar la contraseña desde el perfil (objetivos 4 a 7)
+
+- **API:** `PUT /api/perfil/password` con `{ actual, nueva }` y sesión. Si la actual no es correcta, responde 400 «La contraseña actual no es correcta» y no cambia nada. La nueva cumple las mismas reglas que en el registro. Si todo va bien, responde 204 y solo se guarda el hash (`usuarioRepository.actualizarPassword`). Tiene su propio límite de 10 intentos fallidos cada 15 minutos (`limiteCambioPassword`).
+- El cifrado con bcrypt está ahora en `services/shared/password.js` (`cifrarPassword`), común al registro y al cambio.
+- **Pantalla:** «Mi perfil» tiene el formulario «Cambiar contraseña» (actual, nueva y repetida), con los requisitos marcados mientras se escribe. Si las dos nuevas no coinciden, se avisa sin enviar nada. Si el servidor la rechaza, se ve su mensaje y no se borra lo escrito.
+- **Pruebas:**
+  - `cambioPassword.test.js`, con repositorio en memoria y bcrypt real: el criterio completo, incluido que el login funciona con la nueva y falla con la antigua;
+  - `limiteCambioPassword.test.js`: 11 intentos fallidos → 429; va en su propio archivo para que el límite de login no le impida iniciar sesión;
+  - `cambioPasswordPantalla.test.js` (jsdom).
+  - Fallaron primero. Las pruebas que cargan `perfil.js` cargan también `js/shared/password.js`.
+
 ### Para quien continúe
 
 - Tras el `git pull`, aplicar la migración nueva desde `backend/`: `npx prisma migrate deploy` y `npx prisma generate`.

@@ -5,15 +5,18 @@
 //      repositories/fotoRepository.js (subir la foto a Cloudinary),
 //      repositories/amistadRepository.js y repositories/seguimientoRepository.js (perfil público,
 //      contadores y listados de CS-45), services/shared/nombreUsuario.js (reglas del nombre),
-//      services/shared/paginacion.js (cursor de los listados) y errores.js.
+//      services/shared/paginacion.js (cursor de los listados), services/shared/password.js
+//      (reglas y cifrado de la contraseña, CS-64), la librería bcrypt y errores.js.
 //
 // Todas las funciones reciben el `id` del usuario de la sesión: un usuario solo puede
 // ver y cambiar su propio perfil.
+const bcrypt = require('bcrypt');
 const usuarioRepository = require('../repositories/usuarioRepository');
 const fotoRepository = require('../repositories/fotoRepository');
 const amistadRepository = require('../repositories/amistadRepository');
 const seguimientoRepository = require('../repositories/seguimientoRepository');
 const { leerPaginacion, cortarPagina } = require('./shared/paginacion');
+const { validarPassword, cifrarPassword } = require('./shared/password');
 const { crearError } = require('../errores');
 const { validarNombreUsuario } = require('./shared/nombreUsuario');
 
@@ -186,4 +189,26 @@ async function listarSeguidoresPropios(usuarioId, paginacion) {
   return paginaDePersonas(filas, limite);
 }
 
-module.exports = { obtenerPerfilPropio, actualizarPerfilPropio, actualizarFotoPropia, obtenerPerfilPublico, FOTO_POR_DEFECTO, obtenerResumenRelaciones, listarAmigosPropios, listarSeguidoresPropios};
+// CS-64: cambia la contraseña del usuario de la sesión.
+// - `datos`: { actual, nueva }. Hay que dar la actual: si no es correcta, no cambia nada.
+// Errores 400: faltan datos, la actual no es correcta o la nueva no cumple los requisitos.
+// Error 401 si el usuario ya no existe.
+async function cambiarPassword(usuarioId, datos) {
+  const { actual, nueva } = datos ?? {};
+  if (typeof actual !== 'string' || actual === '' || typeof nueva !== 'string' || nueva === '') {
+    throw crearError('Faltan datos obligatorios', 400);
+  }
+  const usuario = await usuarioRepository.buscarPorId(usuarioId);
+  if (!usuario) {
+    throw crearError('No hay sesión iniciada', 401);
+  }
+  // Las contraseñas se guardan y se comparan normalizadas a NFC, como en el registro y el login
+  if (!(await bcrypt.compare(actual.normalize('NFC'), usuario.passwordHash))) {
+    throw crearError('La contraseña actual no es correcta', 400);
+  }
+  const password = nueva.normalize('NFC');
+  validarPassword(password, usuario.nombreUsuario);
+  await usuarioRepository.actualizarPassword(usuarioId, await cifrarPassword(password));
+}
+
+module.exports = { obtenerPerfilPropio, actualizarPerfilPropio, actualizarFotoPropia, obtenerPerfilPublico, FOTO_POR_DEFECTO, obtenerResumenRelaciones, listarAmigosPropios, listarSeguidoresPropios, cambiarPassword };

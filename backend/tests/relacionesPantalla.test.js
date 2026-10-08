@@ -9,7 +9,7 @@ const path = require('node:path');
 const FRONTEND = path.join(__dirname, '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('perfil.html');
-const SCRIPTS = leer('js/shared/api.js') + leer('js/shared/experiencias.js') + leer('js/perfil.js');
+const SCRIPTS = leer('js/shared/api.js') + leer('js/shared/experiencias.js') + leer('js/shared/password.js') + leer('js/perfil.js');
 const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', foto: null, ciudad: null };
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });

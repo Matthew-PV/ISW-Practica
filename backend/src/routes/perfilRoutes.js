@@ -2,7 +2,8 @@
 // Capa: rutas (routes).
 // Lo usa: routes/index.js.
 // Usa: services/perfilService.js (la lógica), middlewares/sesionMiddleware.js (exigir sesión)
-//      y middlewares/fotoMiddleware.js (recibir el archivo de la foto).
+//      middlewares/fotoMiddleware.js (recibir el archivo de la foto) y
+//      middlewares/limitesMiddleware.js (límite de intentos al cambiar la contraseña).
 //
 // Todas trabajan sobre el perfil propio: el id del usuario sale siempre de la sesión, nunca
 // de la petición, así que nadie puede consultar ni cambiar el perfil de otro.
@@ -11,6 +12,7 @@ const express = require('express');
 const perfilService = require('../services/perfilService');
 const { requiereSesion } = require('../middlewares/sesionMiddleware');
 const { recibirFoto } = require('../middlewares/fotoMiddleware');
+const { limiteCambioPassword } = require('../middlewares/limitesMiddleware');
 
 const router = express.Router();
 
@@ -61,6 +63,14 @@ router.get('/seguidores', async (req, res) => {
   const { despuesDe, limite } = req.query;
   const seguidores = await perfilService.listarSeguidoresPropios(req.session.usuarioId, { despuesDe, limite });
   res.json(seguidores);
+});
+
+// PUT /api/perfil/password — CS-64: cambia la contraseña. Cuerpo: { actual, nueva }.
+// 204 si se cambia; 400 si faltan datos, la actual no es correcta o la nueva no cumple los
+// requisitos; 429 tras demasiados intentos fallidos.
+router.put('/password', limiteCambioPassword, async (req, res) => {
+  await perfilService.cambiarPassword(req.session.usuarioId, req.body);
+  res.status(204).send();
 });
 
 module.exports = router;
