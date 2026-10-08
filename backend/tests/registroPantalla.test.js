@@ -10,7 +10,7 @@ const path = require('node:path');
 const FRONTEND = path.join(__dirname, '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('registro.html');
-const SCRIPTS = leer('js/shared/api.js') + leer('js/registro.js');
+const SCRIPTS = leer('js/shared/api.js') + leer('js/shared/password.js') + leer('js/registro.js');
 const ERROR_RED = 'No se ha podido conectar con el servidor. Inténtalo de nuevo.';
 const ERROR_CARGA_CAPTCHA = 'No se ha podido cargar el CAPTCHA. Revisa tu conexión y recarga la página.';
 
@@ -179,5 +179,40 @@ describe('carga del CAPTCHA', () => {
     opciones.callback('token-nuevo');
 
     expect(errorVisible()).toBe('El email ya está registrado');
+  });
+});
+
+
+describe('requisitos de la contraseña (CS-64)', () => {
+  // Requisitos que se ven cumplidos, en el orden de la lista
+  const cumplidos = () => [...document.querySelectorAll('#requisitos-password li')]
+    .filter((li) => li.dataset.cumple === 'true')
+    .map((li) => li.textContent.replace(/^\S+ /, ''));
+  const escribir = (campo, valor) => {
+    $(campo).value = valor;
+    $(campo).dispatchEvent(new Event('input'));
+  };
+
+  test('se muestran los cinco requisitos', () => {
+    expect([...document.querySelectorAll('#requisitos-password li')].map((li) => li.textContent.replace(/^\S+ /, ''))).toEqual([
+      'entre 8 y 72 caracteres', 'al menos una mayúscula', 'al menos una minúscula', 'al menos un número', 'sin el nombre de usuario',
+    ]);
+  });
+
+  test('se marcan mientras se escribe', () => {
+    escribir('#password', 'Secreta123');
+    expect(cumplidos()).toHaveLength(5);
+
+    escribir('#password', 'secreta123');
+    expect(cumplidos()).not.toContain('al menos una mayúscula');
+    expect(cumplidos()).toHaveLength(4);
+  });
+
+  test('el requisito del nombre se actualiza también al cambiar el nombre de usuario', () => {
+    escribir('#password', 'Ana12345X');
+    expect(cumplidos()).not.toContain('sin el nombre de usuario');
+
+    escribir('#nombreUsuario', 'luis');
+    expect(cumplidos()).toContain('sin el nombre de usuario');
   });
 });

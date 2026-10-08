@@ -148,6 +148,17 @@ Sobre la página de José (`experiencia.html` y `js/experiencia.js`):
 - Recorre también los tres cambios del objetivo 8, con la misma petición antes y después: una pública que pasa a privada, una amistad aceptada que se elimina y una solicitud pendiente que se acepta.
 - La regla ya estaba implementada (trabajo de Matthew). Para comprobar que las pruebas detectan un fallo, se hizo que una solicitud pendiente contara como amistad: fallaron 3 y se deshizo el cambio.
 
+### CS-64: contraseña segura en el registro (objetivos 1 a 3)
+
+- `services/shared/password.js` (`validarPassword`) exige entre 8 y 72 bytes, al menos una mayúscula, una minúscula y un número, y que no contenga el nombre de usuario (sin distinguir mayúsculas). Si falla, responde 400 con los requisitos que no se cumplen, por ejemplo «La contraseña no cumple estos requisitos: al menos un número.». Se aplica en el registro y se aplicará igual al cambiarla y al restablecerla.
+- `registro.html` muestra los cinco requisitos debajo de la contraseña y los marca (✓) mientras se escribe, también al cambiar el nombre de usuario. El código está en `js/shared/password.js`, para reutilizarlo en las otras pantallas de CS-64.
+- **Pruebas:**
+  - `password.test.js`: cada requisito, varios a la vez y los límites de 7, 8, 72 y 73 bytes, también con letras de dos bytes;
+  - en `validacion.test.js`, tres contraseñas débiles en el registro;
+  - en `registroPantalla.test.js`, la lista y su marcado.
+  - Las pruebas que registraban usuarios con `secreta123`, que ya no es válida porque no tiene mayúscula, usan `Secreta123`; las de inicio de sesión no cambian.
+  - `tests/setup.js` añade `TextEncoder` al navegador simulado (jsdom no lo trae, pero los navegadores sí).
+
 ### Para quien continúe
 
 - Tras el `git pull`, aplicar la migración nueva desde `backend/`: `npx prisma migrate deploy` y `npx prisma generate`.

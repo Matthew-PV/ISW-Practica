@@ -28,7 +28,9 @@
       </div>
       <div class="mb-3">
         <label for="password" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" id="password" required minlength="8" maxlength="72">
+        <input type="password" class="form-control" id="password" required minlength="8" maxlength="72" aria-describedby="requisitos-password">
+        <!-- CS-64: requisitos de la contraseña, marcados mientras se escribe (js/shared/password.js) -->
+        <ul id="requisitos-password" class="list-unstyled small mt-2 mb-0"></ul>
       </div>
       <!-- CAPTCHA de Cloudflare Turnstile, lo muestra iniciarCaptcha() de js/registro.js -->
       <div id="captcha" class="mb-3"></div>
@@ -42,6 +44,7 @@
   </main>
 
   <script src="js/shared/api.js"></script>
+  <script src="js/shared/password.js"></script>
   <script src="js/registro.js"></script>
   <!-- Va después de registro.js, que define iniciarCaptcha() -->
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=iniciarCaptcha" async defer></script>

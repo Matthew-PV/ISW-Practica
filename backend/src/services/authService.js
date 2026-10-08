@@ -2,7 +2,8 @@
 // Capa: servicios (services).
 // Lo usa: routes/authRoutes.js.
 // Usa: repositories/usuarioRepository.js (leer y crear usuarios), services/captchaService.js
-//      (comprobar el CAPTCHA), services/shared/nombreUsuario.js (reglas del nombre)
+//      (comprobar el CAPTCHA), services/shared/nombreUsuario.js (reglas del nombre),
+//      services/shared/password.js (reglas de la contraseña, CS-64)
 //      y errores.js (errores con código HTTP).
 //
 // Aquí están las reglas: qué datos son válidos, cómo se cifra la contraseña y qué se
@@ -12,6 +13,7 @@ const bcrypt = require('bcrypt');
 const usuarioRepository = require('../repositories/usuarioRepository');
 const captchaService = require('./captchaService');
 const { validarNombreUsuario } = require('./shared/nombreUsuario');
+const { validarPassword } = require('./shared/password');
 const { crearError } = require('../errores');
 
 // Coste del cifrado con bcrypt: más alto es más seguro pero más lento
@@ -20,8 +22,7 @@ const SALT_ROUNDS = 10;
 // Email: algo@algo.algo, sin espacios ni caracteres invisibles o de control
 const EMAIL = /^[^\s@\p{C}]+@[^\s@\p{C}]+\.[^\s@\p{C}]+$/u;
 const EMAIL_MAX = 191; // tamaño de la columna en MySQL
-const PASSWORD_MIN = 8;
-// bcrypt solo usa los primeros 72 bytes: una contraseña más larga se confundiría con otra
+// bcrypt solo usa los primeros 72 bytes: ninguna contraseña válida es más larga (ver shared/password.js)
 const PASSWORD_MAX_BYTES = 72;
 // Hash con el que se compara cuando el email no existe, para que el login tarde lo mismo
 // tanto si el email está registrado como si no (si no, el tiempo delataría qué emails existen)
@@ -73,9 +74,7 @@ async function registrar(datos, ip) {
   if (email.length > EMAIL_MAX || !EMAIL.test(email)) {
     throw crearError('El email no es válido', 400);
   }
-  if (password.length < PASSWORD_MIN || passwordDemasiadoLarga(password)) {
-    throw crearError('La contraseña debe tener entre 8 y 72 caracteres', 400);
-  }
+  validarPassword(password, nombreUsuario);
   // El CAPTCHA se comprueba antes de consultar la base de datos: sin él, alguien podría
   // probar emails de forma automática y ver cuáles responden «El email ya está registrado»
   if (!(await captchaService.verificar(datos.captcha, ip))) {

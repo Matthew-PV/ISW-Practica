@@ -19,3 +19,10 @@ jest.mock('../src/middlewares/limitesMiddleware', () => {
 // jest.fn() para que jest.resetAllMocks() no la anule; los tests la cambian con jest.spyOn.
 // tests/captcha.test.js prueba el servicio real.
 jest.mock('../src/services/captchaService', () => ({ verificar: async () => true }));
+
+// jsdom (el navegador simulado de las pruebas de pantallas) no trae TextEncoder, que sí tienen
+// todos los navegadores. Se usa el de Node para que el frontend funcione igual que en el
+// navegador (lo usa js/shared/password.js para contar los bytes de la contraseña).
+if (typeof window !== 'undefined' && typeof TextEncoder === 'undefined') {
+  global.TextEncoder = require('node:util').TextEncoder;
+}

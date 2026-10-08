@@ -5,7 +5,7 @@ const request = require('supertest');
 const app = require('../src/app');
 const usuarioRepository = require('../src/repositories/usuarioRepository');
 
-const VALIDO = { nombreUsuario: 'ana', email: 'ana@ejemplo.com', password: 'secreta123' };
+const VALIDO = { nombreUsuario: 'ana', email: 'ana@ejemplo.com', password: 'Secreta123' };
 
 beforeEach(() => {
   jest.resetAllMocks();
@@ -43,6 +43,20 @@ describe('registro: se rechaza con 400 y no se crea nada', () => {
   });
 });
 
+describe('registro: contraseña segura (CS-64)', () => {
+  test.each([
+    ['sin mayúscula', 'secreta123', 'al menos una mayúscula'],
+    ['sin número', 'Secretaaaa', 'al menos un número'],
+    ['con el nombre de usuario', 'Ana2026xyz', 'sin el nombre de usuario'],
+  ])('una contraseña %s responde 400 indicando el requisito y no crea nada', async (_, password, requisito) => {
+    const res = await registrar({ password });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe(`La contraseña no cumple estos requisitos: ${requisito}.`);
+    expect(usuarioRepository.crear).not.toHaveBeenCalled();
+  });
+});
+
 describe('registro: datos que sí se aceptan', () => {
   test.each([
     ['letras con tilde y ñ', 'josé_muñoz'],
@@ -67,7 +81,7 @@ describe('registro: datos que sí se aceptan', () => {
   });
 
   test('contraseña de 72 bytes exactos', async () => {
-    const res = await registrar({ password: 'x'.repeat(72) });
+    const res = await registrar({ password: `Aa1${'x'.repeat(69)}` });
 
     expect(res.status).toBe(201);
   });

@@ -1,4 +1,5 @@
-// Página de registro (registro.html). Usa `api` de shared/api.js.
+// Página de registro (registro.html). Usa `api` de shared/api.js y `mostrarRequisitosPassword`
+// de shared/password.js (CS-64).
 
 const formulario = document.getElementById('form-registro');
 const cajaError = document.getElementById('error-registro');
@@ -77,3 +78,13 @@ formulario.addEventListener('submit', async (e) => {
     window.turnstile?.reset();
   }
 });
+
+// CS-64: requisitos de la contraseña, marcados mientras se escribe. El de «sin el nombre de
+// usuario» depende también del nombre, así que se vuelve a marcar cuando este cambia.
+const campoNombre = document.getElementById('nombreUsuario');
+const marcarRequisitos = mostrarRequisitosPassword(
+  document.getElementById('password'),
+  document.getElementById('requisitos-password'),
+  () => campoNombre.value
+);
+campoNombre.addEventListener('input', marcarRequisitos);

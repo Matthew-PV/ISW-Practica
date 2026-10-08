@@ -46,7 +46,7 @@ describe('POST /api/auth/registro', () => {
 
     const res = await request(app)
       .post('/api/auth/registro')
-      .send({ nombreUsuario: 'otra', email: usuario.email, password: 'secreta123' });
+      .send({ nombreUsuario: 'otra', email: usuario.email, password: 'Secreta123' });
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe('El email ya está registrado');
@@ -57,7 +57,7 @@ describe('POST /api/auth/registro', () => {
 
     const res = await request(app)
       .post('/api/auth/registro')
-      .send({ nombreUsuario: 'ana', email: 'otra@ejemplo.com', password: 'secreta123' });
+      .send({ nombreUsuario: 'ana', email: 'otra@ejemplo.com', password: 'Secreta123' });
 
     expect(res.status).toBe(400);
     expect(res.body.error).toBe('El nombre de usuario ya está en uso');
@@ -70,7 +70,7 @@ describe('POST /api/auth/registro', () => {
 
     const res = await request(app)
       .post('/api/auth/registro')
-      .send({ nombreUsuario: 'ana', email: 'ana@ejemplo.com', password: 'secreta123' });
+      .send({ nombreUsuario: 'ana', email: 'ana@ejemplo.com', password: 'Secreta123' });
 
     expect(res.status).toBe(500);
     expect(res.body).toEqual({ error: 'Error interno del servidor' });
@@ -82,7 +82,7 @@ describe('POST /api/auth/registro', () => {
 
     const res = await request(app)
       .post('/api/auth/registro')
-      .send({ nombreUsuario: 'ana', email: 'ana@ejemplo.com', password: 'secreta123', captcha: 'malo' });
+      .send({ nombreUsuario: 'ana', email: 'ana@ejemplo.com', password: 'Secreta123', captcha: 'malo' });
 
     expect(res.status).toBe(400);
     expect(res.body.error).toMatch(/robot/);
@@ -94,12 +94,12 @@ describe('POST /api/auth/registro', () => {
 
     const res = await request(app)
       .post('/api/auth/registro')
-      .send({ nombreUsuario: 'ana', email: 'ana@ejemplo.com', password: 'secreta123' });
+      .send({ nombreUsuario: 'ana', email: 'ana@ejemplo.com', password: 'Secreta123' });
 
     expect(res.status).toBe(201);
     expect(res.body).toEqual(DATOS_PUBLICOS);
     const { passwordHash } = usuarioRepository.crear.mock.calls[0][0];
-    expect(await bcrypt.compare('secreta123', passwordHash)).toBe(true);
+    expect(await bcrypt.compare('Secreta123', passwordHash)).toBe(true);
   });
 });
 
