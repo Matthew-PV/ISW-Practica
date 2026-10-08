@@ -19,6 +19,7 @@ test('busca usuarios por texto, excluye al solicitante y no devuelve su email', 
       id: { not: 7 },
     },
     select: { id: true, nombreUsuario: true, foto: true },
+    orderBy: { nombreUsuario: 'asc' },
     take: 20,
   });
 });

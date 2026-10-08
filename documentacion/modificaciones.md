@@ -63,6 +63,12 @@ El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de confli
   - con MySQL real, `tests/mysql/interaccionesConcurrencia.test.js`: pareja cruzada, dos solicitudes cruzadas simultáneas, diez «seguir» simultáneos (uno 201 y nueve 400, ningún 500) y aceptar o borrar algo que ya no existe.
   - Todas fallaron primero: se creaba la segunda relación, uno de los «seguir» acababa en 500 y P2025 lanzaba un error.
 
+### CS-61: búsqueda de personas
+
+- `GET /api/usuarios?texto=…` exige texto: vacío, con solo espacios o ausente responde 400 «Escribe un nombre de usuario para buscar». Antes devolvía 20 usuarios cualesquiera. El texto se busca sin los espacios de los extremos.
+- Los resultados salen ordenados por nombre de usuario (`usuarioRepository.buscarPorNombre`).
+- Pruebas: `usuarioService.test.js` (texto recortado y cuatro textos no válidos), `interaccionesCriterio.test.js` (búsqueda sin texto por HTTP) y `tests/mysql/usuarioBusqueda.test.js` (orden con MySQL real). Fallaron primero y pasaron tras el cambio.
+
 ### Para quien continúe
 
 - Tras el `git pull`, aplicar la migración nueva desde `backend/`: `npx prisma migrate deploy` y `npx prisma generate`.

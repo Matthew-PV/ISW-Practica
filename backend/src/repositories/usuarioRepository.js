@@ -34,7 +34,7 @@ async function buscarPorId(id) {
   return prisma.usuario.findUnique({ where: { id } });
 }
 
-// Busca como máximo 20 usuarios cuyo nombre contiene el texto indicado. La
+// Busca como máximo 20 usuarios cuyo nombre contiene el texto indicado, ordenados por nombre. La
 // intercalación utf8mb4_unicode_ci de MySQL no distingue mayúsculas y minúsculas.
 // Solo selecciona campos seguros para que la búsqueda nunca devuelva emails.
 async function buscarPorNombre(texto, usuarioExcluidoId) {
@@ -44,6 +44,7 @@ async function buscarPorNombre(texto, usuarioExcluidoId) {
       id: { not: usuarioExcluidoId },
     },
     select: { id: true, nombreUsuario: true, foto: true },
+    orderBy: { nombreUsuario: 'asc' },
     take: 20,
   });
 }

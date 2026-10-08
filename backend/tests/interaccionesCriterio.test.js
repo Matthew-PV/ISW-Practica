@@ -120,6 +120,14 @@ test('la búsqueda contiene el texto, excluye a quien busca, limita a 20 y no mu
   expect(respuesta.body.every((usuario) => usuario.nombreUsuario.includes('ana') && usuario.email === undefined)).toBe(true);
 });
 
+test('la búsqueda sin texto responde 400 en lugar de devolver usuarios cualesquiera', async () => {
+  const ana = await agente(1);
+
+  const respuestas = await Promise.all([ana.get('/api/usuarios?texto='), ana.get('/api/usuarios')]);
+
+  expect(respuestas.map((respuesta) => respuesta.status)).toEqual([400, 400]);
+});
+
 test('una solicitud pendiente aparece solo entre las recibidas del destinatario', async () => {
   const ana = await agente(1);
   const beatriz = await agente(2);
