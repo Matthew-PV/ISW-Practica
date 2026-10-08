@@ -18,8 +18,8 @@ async function crear({ titulo, descripcion, ciudadId, tipo, momentoAdecuado, vis
 // Busca una experiencia por su id.
 async function buscarPorId(id) {
   return prisma.experiencia.findUnique({
-    where: { id },
-    include: { ciudad: true },
+    where: { id: parseInt(id,10) },
+    include: { ciudad: true, autor: true },
   });
 }
 

@@ -26,15 +26,36 @@ async function cargarPaginaExperiencia() {
       api('/auth/yo')
     ]);
 
+<<<<<<< HEAD
+=======
+    console.log("Datos que llegan:", experiencia);
+
+>>>>>>> CS-63
     miUsuarioId = yo.id;
 
     mensajeEstado.classList.add('d-none');
     contenidoExperiencia.classList.remove('d-none');
 
     tituloEl.textContent = experiencia.titulo;
+<<<<<<< HEAD
     autorEl.textContent = experiencia.autor.nombreUsuario;
     ciudadEl.textContent = experiencia.ciudad.nombre;
     descEl.textContent = experiencia.descripcion;
+=======
+
+        // Truco definitivo: Si el backend no trae el objeto autor, pero el autorId
+        // coincide con nuestro ID, usamos nuestro propio nombre de perfil.
+        let nombreAutor = 'Usuario anónimo';
+        if (experiencia.autor?.nombreUsuario) {
+          nombreAutor = experiencia.autor.nombreUsuario;
+        } else if (experiencia.autorId === yo.id) {
+          nombreAutor = yo.nombreUsuario;
+        }
+        autorEl.textContent = nombreAutor;
+
+        ciudadEl.textContent = experiencia.ciudad?.nombre || 'Ciudad desconocida';
+        descEl.textContent = experiencia.descripcion;
+>>>>>>> CS-63
 
     await cargarComentarios();
 
@@ -98,9 +119,21 @@ async function cargarComentarios() {
       btnCargarMas.classList.add('d-none');
     }
   } catch (error) {
+<<<<<<< HEAD
     console.error('Error al cargar comentarios:', error);
   }
 }
+=======
+      console.error('Error al cargar comentarios:', error);
+
+      // Mostramos una alerta visual al final de la lista de comentarios
+      const alertaError = document.createElement('div');
+      alertaError.className = 'alert alert-danger mt-3';
+      alertaError.textContent = 'Problema de conexión al cargar los comentarios. Inténtalo de nuevo.';
+      listaComentarios.appendChild(alertaError);
+  }
+} // CORRECCIÓN: Faltaba esta llave de cierre de la función cargarComentarios
+>>>>>>> CS-63
 
 // Crea la tarjeta del comentario usando textContent por seguridad
 function crearElementoComentario(valoracion) {
@@ -163,6 +196,7 @@ function crearElementoComentario(valoracion) {
   if (leDiUtil) btnUtil.classList.replace('btn-outline-success', 'btn-success');
   btnUtil.innerHTML = `👍 Útil <span class="badge text-bg-light ms-1">${cantidadUtiles}</span>`;
 
+<<<<<<< HEAD
   // Evento simulado para marcar/desmarcar útil
   btnUtil.addEventListener('click', () => {
     leDiUtil = !leDiUtil;
@@ -177,6 +211,63 @@ function crearElementoComentario(valoracion) {
   });
 
   contenedorUtil.appendChild(btnUtil);
+=======
+  // Evento simulado para marcar/desmarcar útil (Con manejo de errores integrado)
+  btnUtil.addEventListener('click', async () => {
+    btnUtil.disabled = true;
+    try {
+      // Cuando tengas el backend: await api(...)
+      leDiUtil = !leDiUtil;
+      cantidadUtiles += leDiUtil ? 1 : -1;
+
+      if (leDiUtil) {
+        btnUtil.classList.replace('btn-outline-success', 'btn-success');
+      } else {
+        btnUtil.classList.replace('btn-success', 'btn-outline-success');
+      }
+      btnUtil.innerHTML = `👍 Útil <span class="badge text-bg-light ms-1">${cantidadUtiles}</span>`;
+    } catch (error) {
+      console.error('Error al dar útil:', error);
+      // Deshacemos el cambio visual porque falló el servidor
+      leDiUtil = !leDiUtil;
+      cantidadUtiles += leDiUtil ? 1 : -1;
+      alert('Error de red: No se pudo registrar tu voto.');
+    } finally {
+      btnUtil.disabled = false;
+    }
+  });
+
+  contenedorUtil.appendChild(btnUtil);
+
+  // --- OBJETIVO 8: Botón Reportar ---
+  const btnReportar = document.createElement('button');
+  btnReportar.className = 'btn btn-sm btn-outline-danger ms-2';
+  btnReportar.innerHTML = `🚨 Reportar`;
+
+  if (autorComentarioId === miUsuarioId) {
+    btnReportar.disabled = true;
+  }
+
+  btnReportar.addEventListener('click', () => {
+    valoracionReporteId = valoracion.id;
+    comentarioYaReportado = valoracion.yaReportado || false;
+
+    // Reseteamos el formulario
+    formReporte.reset();
+    mensajeReporte.classList.add('d-none');
+    btnEnviarReporte.disabled = false;
+    btnEnviarReporte.classList.remove('d-none');
+
+    // MAGIA PURA: Forzamos la apertura del modal modificando su CSS directamente
+    const modal = document.getElementById('modal-reporte');
+    modal.style.display = 'block';
+    modal.style.backgroundColor = 'rgba(0,0,0,0.5)'; // Fondo oscuro semitransparente
+    setTimeout(() => modal.classList.add('show'), 10);
+  });
+
+  contenedorUtil.appendChild(btnReportar);
+
+>>>>>>> CS-63
   cuerpo.appendChild(contenedorUtil);
 
   tarjeta.appendChild(cuerpo);
@@ -277,3 +368,60 @@ formValoracion.addEventListener('submit', async (e) => {
     btnGuardarValoracion.disabled = false;
   }
 });
+<<<<<<< HEAD
+=======
+
+// --- OBJETIVO 8: LÓGICA DEL MODAL DE REPORTE ---
+let valoracionReporteId = null;
+let comentarioYaReportado = false;
+
+const formReporte = document.getElementById('form-reporte');
+const mensajeReporte = document.getElementById('mensaje-reporte');
+const btnEnviarReporte = document.getElementById('btn-enviar-reporte');
+const modalReporteEl = document.getElementById('modal-reporte');
+
+// Función para cerrar el modal manualmente
+function cerrarModalManual() {
+  modalReporteEl.classList.remove('show');
+  setTimeout(() => {
+    modalReporteEl.style.display = 'none';
+  }, 300); // Esperamos a que acabe la animación
+}
+
+// Escuchamos los clics en la "X" y en el botón "Cancelar" para cerrarlo
+const botonesCerrar = modalReporteEl.querySelectorAll('[data-bs-dismiss="modal"]');
+botonesCerrar.forEach(btn => btn.addEventListener('click', cerrarModalManual));
+
+formReporte.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  btnEnviarReporte.disabled = true;
+
+  try {
+    // Simulamos un pequeño retraso de red
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    mensajeReporte.classList.remove('d-none', 'alert-success', 'alert-warning');
+
+    if (comentarioYaReportado) {
+      mensajeReporte.classList.add('alert-warning');
+      mensajeReporte.textContent = 'Ya habías reportado este comentario anteriormente.';
+    } else {
+      mensajeReporte.classList.add('alert-success');
+      mensajeReporte.textContent = 'Comentario reportado correctamente. Gracias por avisarnos.';
+      comentarioYaReportado = true;
+      btnEnviarReporte.classList.add('d-none');
+
+      // Cerramos tras 2 segundos de éxito
+      setTimeout(() => {
+        cerrarModalManual();
+      }, 2000);
+    }
+
+  } catch (error) {
+    mensajeReporte.classList.remove('d-none', 'alert-success', 'alert-warning');
+    mensajeReporte.classList.add('alert-danger');
+    mensajeReporte.textContent = 'Error al enviar el reporte.';
+    btnEnviarReporte.disabled = false;
+  }
+});
+>>>>>>> CS-63

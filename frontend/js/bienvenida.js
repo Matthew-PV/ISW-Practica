@@ -148,24 +148,11 @@ async function cargarValoracionesDetalle() {
   }
 }
 
-// Abre el detalle de una experiencia y carga la primera página
-// de valoraciones de amigos y seguidores.
-async function abrirDetalle(experiencia) {
-  experienciaDetalle = experiencia;
-  paginaActualValoraciones = 1;
-
-  tituloDetalle.textContent = experiencia.titulo;
-  descripcionDetalle.textContent = experiencia.descripcion;
-
-  listaValoraciones.replaceChildren();
-
-  sinValoraciones.classList.add('d-none');
-  errorValoraciones.classList.add('d-none');
-  paginacionValoraciones.classList.add('d-none');
-
-  dialogoDetalle.showModal();
-
-  await cargarValoracionesDetalle();
+// Abre el detalle de una experiencia, carga sus datos completos desde la API
+// y luego muestra la primera página de valoraciones.
+// Redirige a la página de detalle de la experiencia (Objetivo 3)
+function abrirDetalle(experiencia) {
+  window.location.href = `experiencia.html?id=${experiencia.id}`;
 }
 
 // Crea la columna con la tarjeta de una experiencia.

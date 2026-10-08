@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="es">
+<<<<<<< HEAD
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,6 +8,21 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
 </head>
+=======
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>PlanB · Detalle de Experiencia</title>
+
+      <!-- CSS de Bootstrap (Visual) -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+      <!-- SCRIPT de Bootstrap (Motor para Modales) - LO MOVEMOS AQUÍ ARRIBA -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+      <link href="css/styles.css" rel="stylesheet">
+    </head>
+>>>>>>> CS-63
 <body>
   <nav class="navbar navbar-dark bg-dark">
     <div class="container">
@@ -75,7 +91,51 @@
     </div>
   </main>
 
+<<<<<<< HEAD
   <script src="js/shared/api.js"></script>
   <script src="js/experiencia.js"></script>
 </body>
 </html>
+=======
+  <!-- OBJETIVO 8: Modal de Reporte -->
+    <div class="modal fade" id="modal-reporte" tabindex="-1" aria-labelledby="modalReporteLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalReporteLabel">Reportar comentario</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body">
+            <p>Selecciona el motivo por el que deseas reportar este comentario:</p>
+            <form id="form-reporte">
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" name="motivoReporte" id="motivoSpam" value="SPAM" required>
+                <label class="form-check-label" for="motivoSpam">Spam o publicidad</label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" name="motivoReporte" id="motivoOfensivo" value="OFENSIVO">
+                <label class="form-check-label" for="motivoOfensivo">Contenido ofensivo o insultante</label>
+              </div>
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="radio" name="motivoReporte" id="motivoInapropiado" value="INAPROPIADO">
+                <label class="form-check-label" for="motivoInapropiado">Inapropiado u off-topic</label>
+              </div>
+
+              <!-- Aquí mostraremos el aviso de éxito o si ya estaba reportado -->
+              <div id="mensaje-reporte" class="alert d-none small"></div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" form="form-reporte" class="btn btn-danger" id="btn-enviar-reporte">Enviar reporte</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <script src="js/shared/api.js"></script>
+    <script src="js/experiencia.js"></script>
+  </body>
+  </html>
+>>>>>>> CS-63
