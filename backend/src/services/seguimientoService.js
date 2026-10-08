@@ -1,9 +1,11 @@
 // Reglas de negocio de los seguimientos.
 // Capa: servicios (services).
 // Lo usarán las rutas de seguimiento cuando se implementen.
-// Usa: repositories/usuarioRepository.js, repositories/seguimientoRepository.js y errores.js.
+// Usa: repositories/usuarioRepository.js, repositories/seguimientoRepository.js,
+//      services/shared/identificadores.js y errores.js.
 const usuarioRepository = require('../repositories/usuarioRepository');
 const seguimientoRepository = require('../repositories/seguimientoRepository');
+const { leerId } = require('./shared/identificadores');
 const { crearError } = require('../errores');
 
 // Comprueba que el usuario que actúa sigue existiendo.
@@ -16,8 +18,8 @@ async function comprobarSesion(usuarioId) {
 
 // Comprueba que la persona a seguir o dejar de seguir existe.
 async function comprobarUsuarioDestino(usuarioId) {
-  if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
-      !(await usuarioRepository.buscarPorId(usuarioId))) {
+  leerId(usuarioId, 'del usuario');
+  if (!(await usuarioRepository.buscarPorId(usuarioId))) {
     throw crearError('El usuario no existe', 404);
   }
 }

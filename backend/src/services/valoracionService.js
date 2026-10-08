@@ -4,7 +4,8 @@
 // Usa: repositories/valoracionRepository.js (guardar la valoración),
 //      repositories/usuarioRepository.js (comprobar que quien valora existe),
 //      repositories/experienciaRepository.js (comprobar que la experiencia existe),
-//      services/shared/visibilidad.js (comprobar que puede verla) y errores.js.
+//      services/shared/visibilidad.js (comprobar que puede verla),
+//      services/shared/identificadores.js (validar el id) y errores.js.
 //
 // Orden de trabajo: primero se valida todo lo que no necesita la base de datos (id,
 // puntuación y comentario) y solo después se consulta MySQL. Si algo falla no se guarda nada.
@@ -12,6 +13,7 @@ const valoracionRepository = require('../repositories/valoracionRepository');
 const usuarioRepository = require('../repositories/usuarioRepository');
 const experienciaRepository = require('../repositories/experienciaRepository');
 const { puedeVerExperiencia } = require('./shared/visibilidad');
+const { leerId } = require('./shared/identificadores');
 const { crearError } = require('../errores');
 const amistadRepository = require('../repositories/amistadRepository');
 const seguimientoRepository = require('../repositories/seguimientoRepository');
@@ -33,9 +35,7 @@ async function valorarExperiencia(usuarioId, experienciaId, datos) {
       !(await usuarioRepository.buscarPorId(usuarioId))) {
     throw crearError('No hay sesión iniciada', 401);
   }
-  if (!Number.isInteger(experienciaId) || experienciaId <= 0) {
-    throw crearError('El identificador de la experiencia no es válido', 400);
-  }
+  leerId(experienciaId, 'de la experiencia');
   // Number.isInteger descarta el texto "4", los decimales y la ausencia de valor
   const puntuacion = datos?.puntuacion;
   if (!Number.isInteger(puntuacion) || puntuacion < PUNTUACION_MIN || puntuacion > PUNTUACION_MAX) {
@@ -72,9 +72,7 @@ async function listarValoracionesRelacionadas(
     throw crearError('No hay sesión iniciada', 401);
   }
 
-  if (!Number.isInteger(experienciaId) || experienciaId <= 0) {
-    throw crearError('El identificador de la experiencia no es válido', 400);
-  }
+  leerId(experienciaId, 'de la experiencia');
 
   if (!Number.isInteger(pagina) || pagina <= 0 ||
       !Number.isInteger(limite) || limite <= 0) {

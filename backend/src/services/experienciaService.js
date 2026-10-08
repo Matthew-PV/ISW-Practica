@@ -3,7 +3,8 @@
 // Lo usa: routes/experienciaRoutes.js.
 // Usa: repositories/ciudadRepository.js (comprobar que la ciudad existe),
 //      repositories/experienciaRepository.js (guardar la experiencia),
-//      repositories/usuarioRepository.js (comprobar que el autor existe) y errores.js.
+//      repositories/usuarioRepository.js (comprobar que el autor existe),
+//      services/shared/visibilidad.js, services/shared/identificadores.js y errores.js.
 //
 // Orden de trabajo: primero se valida todo lo que no necesita la base de datos (textos,
 // longitudes, tipo de ciudadId) y solo después se consulta MySQL. Así una petición con
@@ -12,6 +13,7 @@ const ciudadRepository = require('../repositories/ciudadRepository');
 const experienciaRepository = require('../repositories/experienciaRepository');
 const usuarioRepository = require('../repositories/usuarioRepository');
 const { puedeVerExperiencia } = require('./shared/visibilidad');
+const { leerId } = require('./shared/identificadores');
 const { crearError } = require('../errores');
 
 const TEXTO_CORTO_MAX = 191; // Columnas VARCHAR(191) de MySQL.
@@ -213,9 +215,7 @@ async function editarExperiencia(usuarioId, experienciaId, datos) {
     throw crearError('No hay sesión iniciada', 401);
   }
 
-  if (!Number.isInteger(experienciaId) || experienciaId <= 0) {
-    throw crearError('El identificador de la experiencia no es válido', 400);
-  }
+  leerId(experienciaId, 'de la experiencia');
 
   const experiencia = await experienciaRepository.buscarPorId(experienciaId);
 
@@ -253,9 +253,7 @@ async function obtenerExperiencia(usuarioId, experienciaId) {
     throw crearError('No hay sesión iniciada', 401);
   }
 
-  if (!Number.isInteger(experienciaId) || experienciaId <= 0) {
-    throw crearError('El identificador de la experiencia no es válido', 400);
-  }
+  leerId(experienciaId, 'de la experiencia');
 
   const experiencia = await experienciaRepository.buscarPorId(experienciaId);
 

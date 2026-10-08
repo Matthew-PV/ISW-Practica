@@ -184,3 +184,38 @@ test('seguir es inmediato, no se duplica, no permite seguirse y no crea una amis
   expect((await beatriz.delete('/api/seguimientos/1')).status).toBe(404);
   expect((await ana.delete('/api/seguimientos/2')).status).toBe(204);
 });
+
+test('un identificador que no es un número entero responde 400 con un mensaje claro', async () => {
+  const ana = await agente(1);
+
+  const respuestas = await Promise.all([
+    ana.patch('/api/amistades/abc').send({ aceptar: true }),
+    ana.delete('/api/amistades/abc'),
+    ana.delete('/api/seguimientos/abc'),
+    ana.post('/api/amistades').send({ destinatarioId: '2' }),
+    ana.post('/api/seguimientos').send({ seguidoId: 2.5 }),
+  ]);
+
+  expect(respuestas.map((respuesta) => [respuesta.status, respuesta.body.error])).toEqual([
+    [400, 'El identificador de la solicitud de amistad no es válido'],
+    [400, 'El identificador de la amistad no es válido'],
+    [400, 'El identificador del usuario no es válido'],
+    [400, 'El identificador del usuario no es válido'],
+    [400, 'El identificador del usuario no es válido'],
+  ]);
+});
+
+test.each([['el texto "si"', { aceptar: 'si' }], ['el número 1', { aceptar: 1 }], ['la ausencia del campo', {}]])(
+  'aceptar con %s responde 400 y la solicitud sigue pendiente',
+  async (_descripcion, cuerpo) => {
+    const ana = await agente(1);
+    const beatriz = await agente(2);
+    const solicitud = (await ana.post('/api/amistades').send({ destinatarioId: 2 })).body;
+
+    const respuesta = await beatriz.patch(`/api/amistades/${solicitud.id}`).send(cuerpo);
+
+    expect(respuesta.status).toBe(400);
+    expect(respuesta.body.error).toBe('Indica si aceptas la solicitud con true o false');
+    expect((await beatriz.get('/api/amistades/solicitudes')).body).toHaveLength(1);
+  }
+);

@@ -2,7 +2,7 @@
 
 Registro de los cambios realizados en el proyecto, en orden cronológico.
 
-# Reparación de `main` tras el merge de CS-63 (08/10/2026)
+# Reparación de `main`, limpieza y correcciones de CS-61 (08/10/2026)
 
 El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de conflicto (`<<<<<<<`, `=======`, `>>>>>>>`) en `experienciaService.js`, `experiencia.html` y `experiencia.js`. El servidor no arrancaba y fallaban 22 de los 50 archivos de prueba. Queda resuelto conservando el trabajo de CS-30 y el de CS-63.
 
@@ -46,6 +46,12 @@ El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de confli
   - el comentario admite 255 caracteres y no los 1000 acordados;
   - el autor de cada valoración enlaza a `perfil.html?id=`;
   - la fecha no se muestra, porque se lee `creadoEn` y el campo se llama `creadaEn`.
+
+### CS-61: identificadores y respuesta a solicitudes
+
+- **Identificadores:** `services/shared/identificadores.js` (`leerId`) comprueba que un id de la URL o del cuerpo es un entero entre 1 y 2147483647. Si no, responde 400 «El identificador de … no es válido». Antes, `/api/amistades/abc` llegaba a Prisma y respondía 500. La usan los servicios de amistad, seguimiento, experiencia y valoración, que ya no repiten esa comprobación.
+- **`aceptar`:** `PATCH /api/amistades/:id` exige `{ "aceptar": true }` o `{ "aceptar": false }`. Cualquier otro valor responde 400 «Indica si aceptas la solicitud con true o false» y la solicitud sigue pendiente. Antes `"si"` la aceptaba, y `1` o la ausencia del campo la borraban.
+- **Pruebas:** `tests/identificadores.test.js`, y en `tests/interaccionesCriterio.test.js` los ids no válidos de cada ruta y tres valores de `aceptar` que no son booleanos. Fallaron primero (404 y 200) y pasaron tras el cambio.
 
 ### Cómo comprobarlo
 
@@ -289,7 +295,8 @@ Se ha empezado CS-01. Como necesita saber si quien valora puede ver la experienc
 
 ### Cambios realizados
 
-- **Datos (CS-22, objetivo 1):** nuevo enum `Visibilidad` (`PRIVADA`, `AMIGOS`, `PUBLICA`) y campo `visibilidad` en `Experiencia`, con valor por defecto `PUBLICA`. La migración `visibilidad_experiencia` añade la columna y las experiencias que ya existían quedan públicas.- **Datos (CS-01, objetivo 1):** nuevo modelo `Valoracion` (usuario, experiencia, puntuación entera, comentario opcional, fechas de creación y de última modificación). La restricción única por usuario y experiencia garantiza una sola valoración por pareja; el índice por experiencia acelera listar sus valoraciones. La migración `crear_valoracion` solo crea la tabla nueva.
+- **Datos (CS-22, objetivo 1):** nuevo enum `Visibilidad` (`PRIVADA`, `AMIGOS`, `PUBLICA`) y campo `visibilidad` en `Experiencia`, con valor por defecto `PUBLICA`. La migración `visibilidad_experiencia` añade la columna
+ y las experiencias que ya existían quedan públicas.- **Datos (CS-01, objetivo 1):** nuevo modelo `Valoracion` (usuario, experiencia, puntuación entera, comentario opcional, fechas de creación y de última modificación). La restricción única por usuario y experiencia garantiza una sola valoración por pareja; el índice por experiencia acelera listar sus valoraciones. La migración `crear_valoracion` solo crea la tabla nueva.
 - **Crear y modificar una valoración:** `PUT /api/experiencias/:id/valoracion` (con sesión), cuerpo `{ puntuacion, comentario? }`. Si el usuario aún no había valorado la experiencia se crea (201); si ya la había valorado se actualiza la misma (200), nunca se crea una segunda. El usuario sale siempre de la sesión. Capas: `valoracionRoutes.js` → `valoracionService.js` → `valoracionRepository.js`. El repositorio intenta crear la valoración y, si MySQL la rechaza por duplicada (error `P2002` de la restricción única), actualiza la existente. Como la comprobación la hace MySQL dentro del propio INSERT, con peticiones simultáneas solo una la crea y las demás la actualizan: nunca hay duplicados ni errores.
 - **Validaciones de la valoración:** si algo falla no se guarda nada. 401 si el usuario de la sesión ya no existe; 400 si el id no es válido, la puntuación no es un entero del 1 al 5 o el comentario no es texto; 404 «La experiencia no existe» tanto si no existe como si quien valora no puede verla (así no se revela su existencia); 403 si el autor intenta valorar su propia experiencia.
 - **Regla de visibilidad compartida:** `services/shared/visibilidad.js` (`puedeVerExperiencia`): el autor siempre; pública, cualquiera; amigos, solo con amistad aceptada (`sonAmigos` de CS-61); privada, nadie más. Pensada para reutilizarse en CS-02, CS-30 y CS-63.

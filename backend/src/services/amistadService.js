@@ -1,9 +1,11 @@
 // Reglas de negocio de las solicitudes de amistad.
 // Capa: servicios (services).
 // Lo usarán las rutas de amistad cuando se implementen.
-// Usa: repositories/usuarioRepository.js, repositories/amistadRepository.js y errores.js.
+// Usa: repositories/usuarioRepository.js, repositories/amistadRepository.js,
+//      services/shared/identificadores.js y errores.js.
 const usuarioRepository = require('../repositories/usuarioRepository');
 const amistadRepository = require('../repositories/amistadRepository');
+const { leerId } = require('./shared/identificadores');
 const { crearError } = require('../errores');
 
 // Envía una solicitud pendiente si los dos usuarios existen y no tienen ninguna
@@ -13,13 +15,13 @@ async function enviarSolicitud(solicitanteId, destinatarioId) {
       !(await usuarioRepository.buscarPorId(solicitanteId))) {
     throw crearError('No hay sesión iniciada', 401);
   }
+  leerId(destinatarioId, 'del usuario');
 
   if (solicitanteId === destinatarioId) {
     throw crearError('No puedes enviarte una solicitud de amistad', 400);
   }
 
-  if (!Number.isInteger(destinatarioId) || destinatarioId <= 0 ||
-      !(await usuarioRepository.buscarPorId(destinatarioId))) {
+  if (!(await usuarioRepository.buscarPorId(destinatarioId))) {
     throw crearError('El usuario no existe', 404);
   }
 
@@ -31,10 +33,16 @@ async function enviarSolicitud(solicitanteId, destinatarioId) {
 }
 
 // Acepta o rechaza una solicitud pendiente. Solo puede responder quien la recibió.
+// `aceptar` tiene que ser exactamente true o false: cualquier otro valor ("si", 1 o la
+// ausencia del campo) responde 400 en lugar de aceptar o borrar la solicitud por error.
 async function responderSolicitud(usuarioId, solicitudId, aceptar) {
   if (!Number.isInteger(usuarioId) || usuarioId <= 0 ||
       !(await usuarioRepository.buscarPorId(usuarioId))) {
     throw crearError('No hay sesión iniciada', 401);
+  }
+  leerId(solicitudId, 'de la solicitud de amistad');
+  if (typeof aceptar !== 'boolean') {
+    throw crearError('Indica si aceptas la solicitud con true o false', 400);
   }
 
   const solicitud = await amistadRepository.buscarPorId(solicitudId);
@@ -57,6 +65,7 @@ async function eliminarAmistad(usuarioId, amistadId) {
       !(await usuarioRepository.buscarPorId(usuarioId))) {
     throw crearError('No hay sesión iniciada', 401);
   }
+  leerId(amistadId, 'de la amistad');
 
   const amistad = await amistadRepository.buscarPorId(amistadId);
   if (!amistad) {
