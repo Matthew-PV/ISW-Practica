@@ -15,11 +15,15 @@ async function crear({ titulo, descripcion, ciudadId, tipo, momentoAdecuado, vis
   });
 }
 
-// Busca una experiencia por su id.
+// Busca una experiencia por su id, con su ciudad y los datos públicos de su autor
+// (nunca su email ni el hash de su contraseña, que llegarían a la respuesta de la API).
 async function buscarPorId(id) {
   return prisma.experiencia.findUnique({
     where: { id },
-    include: { ciudad: true, autor: true },
+    include: {
+      ciudad: true,
+      autor: { select: { id: true, nombreUsuario: true, foto: true } },
+    },
   });
 }
 

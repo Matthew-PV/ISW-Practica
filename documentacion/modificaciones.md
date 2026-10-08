@@ -23,11 +23,13 @@ El merge de la rama `CS-63` (`9f7b2f3`) llegó a `main` con marcadores de confli
 - **Pruebas:**
   - Las 4 pruebas de pantalla del diálogo se sustituyen por una que comprueba el enlace.
   - La prueba de API de una experiencia que no se puede ver espera 404 «Contenido no disponible».
+- **Datos privados del autor:** `GET /api/experiencias/:id` enviaba el `email` y el `passwordHash` del autor a cualquiera que pudiera ver la experiencia. `experienciaRepository.buscarPorId` trae ahora el autor solo con `id`, `nombreUsuario` y `foto`. Lo comprueba `tests/mysql/experienciaRepository.test.js`, con MySQL real, porque con el repositorio simulado no se ve qué columnas trae la consulta.
 
 ### TDD y comprobación
 
 - Resolver los marcadores no cambia el comportamiento: la batería pasó de 22 archivos en rojo a todo en verde.
 - Enlace de «Ver detalle»: la prueba falló primero por el motivo esperado (`Expected "A"`, `Received "BUTTON"`) y pasó tras convertir el botón en enlace.
+- Autor público: las dos pruebas de MySQL fallaron primero porque la respuesta incluía `email` y `passwordHash`, y pasaron tras limitar los campos del autor. `npm run test:mysql` queda con 4 pruebas en verde.
 
 ### Pendiente
 
