@@ -16,10 +16,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
   >
   > Además, el repositorio ha cambiado, y pronto se hará una recodificación grande, por lo que me gustaría abstraer los conocimientos necesarios lo máximo posible. Que el plan siga incluyendo explicación teórica con prueba práctica.
 
-- **Decisiones posteriores de Matthew:** eligió «General para el equipo» como destinatario y «Mixta» para combinar laboratorios independientes con búsquedas en el PlanB vigente. Después pidió implementar el plan acordado y, finalmente, registrar esta petición y proponer un mensaje de commit.
-- **Solicitud posterior de registro:**
+- **Correcciones relevantes:**
+  - Decisiones posteriores de Matthew: eligió «General para el equipo» como destinatario y «Mixta» para combinar laboratorios independientes con búsquedas en el PlanB vigente. Después pidió implementar el plan acordado y, finalmente, registrar esta petición y proponer un mensaje de commit.
 
-  > Perfecto, ¿puedes incluir este prompt en el registro, y darme un mensaje para el commit que haré?
+  - Solicitud posterior de registro:
+
+    > Perfecto, ¿puedes incluir este prompt en el registro, y darme un mensaje para el commit que haré?
 
 - **Resultado propuesto por la IA:** sustituir el calendario por nueve módulos de conceptos duraderos, cada uno con explicación, ejercicio independiente, búsqueda en PlanB y comprobación de comprensión; añadir una práctica final de extremo a extremo. Actualizar el enlace descriptivo del README y dejar constancia en `modificaciones.md`.
 - **TDD:** no aplicaba a una edición de documentación. El laboratorio de TDD de la guía sí muestra el fallo inicial, la implementación mínima y una refactorización con las mismas pruebas.
@@ -43,10 +45,10 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
   > ¿Puedes añadir tú la entrada del registro de prompts? Cuando termines, pasemos al objetivo 2.
 
 - **Resultado propuesto por la IA:** añadir `EstadoAmistad` con los valores `PENDIENTE` y `ACEPTADA`, el modelo `Amistad`, sus relaciones con Usuario, la restricción única de solicitud en la misma dirección y un índice para solicitudes recibidas. Se generó y aplicó la migración correspondiente.
-- **Decisiones y alcance:** no se añadieron rutas, servicios ni interfaz. La comprobación de que no exista una solicitud en sentido inverso se implementará en el servicio de envío, pues requiere consultar relaciones existentes en ambos sentidos.
 - **TDD:** se añadió primero una prueba de contrato del esquema; falló porque el modelo y el estado no existían. Tras el cambio pasó, se formateó el esquema con Prisma y se validó la migración en MySQL.
 - **Comprensión humana de las pruebas:** la prueba lee el esquema de Prisma y comprueba que declara los dos estados permitidos, solicitante, destinatario, fecha y la restricción de unicidad de una solicitud. La aplicación real de la migración confirmó la tabla, claves foráneas e índice en MySQL.
 - **Intervención humana:** Matthew delimitó el objetivo a la primera tarea de CS-61 y pidió que se registrara esta interacción antes de continuar con el objetivo 2.
+- **Decisiones:** no se añadieron rutas, servicios ni interfaz. La comprobación de que no exista una solicitud en sentido inverso se implementará en el servicio de envío, pues requiere consultar relaciones existentes en ambos sentidos.
 - **Comprobación final:** prueba específica correcta; Prisma validó el esquema y confirmó que la base de datos está actualizada; `npm test -- --runInBand` completó 18 suites y 183 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -56,18 +58,21 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 - **Agente/herramienta:** Codex de ChatGPT, navegador local integrado y control de interfaz.
 - **Entorno:** aplicación Codex en Windows, servidor de desarrollo local de PlanB y navegador integrado.
 - **Contexto aportado:** Matthew pidió terminar CS-61 con la comprobación visual y autorizó crear dos cuentas ficticias locales para probar el flujo autenticado. Tras el bloqueo inicial, confirmó que completó manualmente con éxito las comprobaciones pendientes.
-- **Prompts relevantes:**
+- **Prompt inicial:**
 
   > Perfecto, terminemos con el objetivo 16
+
+- **Correcciones relevantes:**
 
   > Sí, autorizado
 
   > He probado manualmente lo que faltaba con éxito. Recoge todas estas modificaciones en "modificaciones.md"
 
-- **Resultado de la comprobación:** `personas.html` se visualizó correctamente en escritorio y con ancho móvil de 375 px: título, campo y botón quedan accesibles y sin desbordamiento. El registro automatizado quedó bloqueado por el CAPTCHA, pero Matthew completó después con éxito la comprobación manual autenticada que faltaba.
-- **Decisiones y alcance:** no se intentó eludir el CAPTCHA ni insertar usuarios directamente en MySQL. La validación posterior de Matthew permite cerrar la comprobación manual de escritorio y móvil sin alterar las protecciones del proyecto.
+- **Resultado propuesto por la IA:** `personas.html` se visualizó correctamente en escritorio y con ancho móvil de 375 px: título, campo y botón quedan accesibles y sin desbordamiento. El registro automatizado quedó bloqueado por el CAPTCHA, pero Matthew completó después con éxito la comprobación manual autenticada que faltaba.
 - **TDD:** no aplica: es una tarea de verificación manual; las comprobaciones automáticas correspondientes ya se ejecutaron en el objetivo 15.
+- **Comprensión humana de las pruebas:** no registrada.
 - **Intervención humana:** Matthew autorizó expresamente crear datos ficticios locales y, tras el bloqueo inicial del CAPTCHA, confirmó que verificó manualmente con éxito los flujos pendientes.
+- **Decisiones:** no se intentó eludir el CAPTCHA ni insertar usuarios directamente en MySQL. La validación posterior de Matthew permite cerrar la comprobación manual de escritorio y móvil sin alterar las protecciones del proyecto.
 - **Comprobación final:** la comprobación manual queda completada. La última batería automática disponible terminó con 43 suites y 354 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -81,11 +86,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Pasemos all 15
 
+- **Correcciones relevantes:** no registradas.
 - **Resultado propuesto por la IA:** comprobar las pruebas de pantalla existentes: `personasPantalla.test.js` cubre buscar y no encontrar resultados; `solicitudesPantalla.test.js` cubre aceptar y rechazar solicitudes.
-- **Decisiones y alcance:** no se añadieron pruebas duplicadas ni se modificó código. Las pruebas de este objetivo ya se crearon mediante TDD al implementar los objetivos 12 y 13, por lo que la tarea consiste en comprobar y reconocer esa cobertura conjunta.
 - **TDD:** no se repitió una fase roja artificial: las seis comprobaciones ya habían tenido su fase roja al incorporarse sus comportamientos. Esta ejecución las caracteriza como cobertura del objetivo 15.
 - **Comprensión humana de las pruebas:** se simulan las respuestas de la API y se interactúa con el DOM; se verifica la consulta de búsqueda, el aviso vacío, los cuerpos `{ aceptar: true }` y `{ aceptar: false }`, y la actualización de la lista.
 - **Intervención humana:** Matthew seleccionó el objetivo 15 para verificar la cobertura de interfaz ya construida durante los objetivos anteriores.
+- **Decisiones:** no se añadieron pruebas duplicadas ni se modificó código. Las pruebas de este objetivo ya se crearon mediante TDD al implementar los objetivos 12 y 13, por lo que la tarea consiste en comprobar y reconocer esa cobertura conjunta.
 - **Comprobación final:** `npm test -- --runInBand tests/personasPantalla.test.js tests/solicitudesPantalla.test.js` completó 2 suites y 6 pruebas correctas; la batería completa terminó con 43 suites y 354 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -99,11 +105,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Perfecto, pasemos al objetivo 14
 
+- **Correcciones relevantes:** no registradas.
 - **Resultado propuesto por la IA:** añadir el enlace a `personas.html` en las barras de las pantallas autenticadas: bienvenida, perfil propio y perfil público. Se preservaron los enlaces ya presentes.
-- **Decisiones y alcance:** no se añadió un enlace a la propia pantalla `personas.html` ni se modificaron las páginas públicas de inicio de sesión y registro. Al no existir un componente de navegación compartido, se aplicó el mismo cambio pequeño en cada HTML afectado.
 - **TDD:** la prueba de navegación se creó antes y falló en las tres páginas porque el enlace no existía. Tras añadirlo pasó; no fue necesaria refactorización adicional.
 - **Comprensión humana de las pruebas:** cada caso carga el HTML de una pantalla autenticada y comprueba que su barra contiene exactamente un enlace a `personas.html` con el texto «Buscar personas».
 - **Intervención humana:** Matthew seleccionó el objetivo 14 para continuar la terminación de CS-61.
+- **Decisiones:** no se añadió un enlace a la propia pantalla `personas.html` ni se modificaron las páginas públicas de inicio de sesión y registro. Al no existir un componente de navegación compartido, se aplicó el mismo cambio pequeño en cada HTML afectado.
 - **Comprobación final:** `npm test -- --runInBand tests/navegacionPersonas.test.js` completó 1 suite y 3 pruebas correctas; la batería completa terminó con 43 suites y 354 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -117,11 +124,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Perfecto, pasemos al objetivo 13
 
+- **Correcciones relevantes:** no registradas.
 - **Resultado propuesto por la IA:** incorporar en el perfil propio una lista de solicitudes pendientes, con los botones «Aceptar» y «Rechazar». La carga usa `GET /api/amistades/solicitudes`; cada acción usa `PATCH /api/amistades/:id` y retira la solicitud respondida de la vista sin recargar.
-- **Decisiones y alcance:** la nueva sección es independiente del formulario de perfil y de las futuras zonas de CS-45. Los nombres se muestran con `textContent`. Se ajustó la simulación de la prueba existente de la foto porque el perfil realiza ahora una segunda consulta inicial legítima.
 - **TDD:** primero se añadieron las pruebas de pantalla; fallaron porque el perfil no consultaba ni representaba las solicitudes. Tras añadir la sección y su comportamiento pasaron. Una prueba previa de foto señaló la nueva consulta inicial y se actualizó su expectativa, sin cambiar lo que comprobaba.
 - **Comprensión humana de las pruebas:** la preparación simula perfil y solicitudes recibidas; la acción carga la página o pulsa Aceptar/Rechazar; el resultado esperado verifica la consulta, los botones, el cuerpo `{ aceptar }` y que la lista se vacía al responder.
 - **Intervención humana:** Matthew seleccionó el objetivo 13 para continuar la terminación de CS-61.
+- **Decisiones:** la nueva sección es independiente del formulario de perfil y de las futuras zonas de CS-45. Los nombres se muestran con `textContent`. Se ajustó la simulación de la prueba existente de la foto porque el perfil realiza ahora una segunda consulta inicial legítima.
 - **Comprobación final:** `npm test -- --runInBand tests/solicitudesPantalla.test.js tests/perfilPantalla.test.js` completó 2 suites y 7 pruebas correctas; la batería completa terminó con 42 suites y 351 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -135,11 +143,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Perfecto. Acabemos con CS-61. Avanza con el objetivo 12 y recógelo en el registro de prompts
 
+- **Correcciones relevantes:** no registradas.
 - **Resultado propuesto por la IA:** crear `frontend/personas.html` y `frontend/js/personas.js`. La pantalla consulta `GET /api/usuarios?texto=…`, muestra los usuarios encontrados sin email y enlaza cada uno a `usuario.html?nombre=…` usando un nombre codificado.
-- **Decisiones y alcance:** los resultados se crean con el DOM y `textContent`, no con HTML generado a partir de nombres de usuario. Se incluyen mensajes para búsquedas sin resultados y errores del servidor. El enlace de navegación general se deja para el objetivo 14.
 - **TDD:** primero se añadió la prueba de pantalla. Falló porque no existían `personas.html` ni `js/personas.js`; tras crear ambos pasó. No fue necesaria una refactorización adicional porque la implementación mínima quedó clara.
 - **Comprensión humana de las pruebas:** la preparación simula las respuestas de la búsqueda; la acción envía el formulario; el resultado esperado verifica la ruta consultada, los enlaces codificados, que no se muestra el email, que un nombre no se interpreta como HTML y los mensajes vacío y de error.
 - **Intervención humana:** Matthew eligió completar CS-61 por sus objetivos pendientes y solicitó el registro automático de esta interacción.
+- **Decisiones:** los resultados se crean con el DOM y `textContent`, no con HTML generado a partir de nombres de usuario. Se incluyen mensajes para búsquedas sin resultados y errores del servidor. El enlace de navegación general se deja para el objetivo 14.
 - **Comprobación final:** `npm test -- --runInBand tests/personasPantalla.test.js` completó 3 pruebas correctas; la batería completa terminó con 40 suites y 345 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -153,11 +162,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Finalmente, haremos la 11. Cuando la termines, registra estos últimos cambios en modificaciones
 
+- **Correcciones relevantes:** no registradas.
 - **Resultado propuesto por la IA:** añadir una prueba de integración HTTP que usa rutas y servicios reales, con repositorios simulados en memoria. Cubre sin sesión, búsqueda limitada y segura, solicitudes, duplicados, aceptación, rechazo, eliminación y seguimiento.
-- **Decisiones y alcance:** al ser una tarea de pruebas sobre comportamientos ya implementados, se aplicó caracterización: la prueba pasó desde su primera ejecución. Los repositorios se simulan para que la prueba no dependa de MySQL, pero se ejecutan las rutas y los servicios reales.
 - **TDD:** no aplica una fase roja forzada porque no se añadió comportamiento nuevo; los ocho casos caracterizan el criterio existente y habrían detectado cualquier regresión. La batería completa se ejecutó después en verde.
 - **Comprensión humana de las pruebas:** la preparación crea usuarios y relaciones en memoria; la acción hace peticiones HTTP con o sin sesión; el resultado esperado reproduce los casos del criterio de validación y comprueba los estados 200, 201, 204, 400, 403 y 401 pertinentes.
 - **Intervención humana:** Matthew eligió terminar CS-61 con la comprobación de criterio y pidió actualizar el registro resumido de modificaciones.
+- **Decisiones:** al ser una tarea de pruebas sobre comportamientos ya implementados, se aplicó caracterización: la prueba pasó desde su primera ejecución. Los repositorios se simulan para que la prueba no dependa de MySQL, pero se ejecutan las rutas y los servicios reales.
 - **Comprobación final:** `npm test -- --runInBand tests/interaccionesCriterio.test.js` completó 8 pruebas correctas; la batería completa terminó con 27 suites y 237 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -171,11 +181,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Avancemos con el objetivo 10
 
+- **Correcciones relevantes:** no registradas.
 - **Resultado propuesto por la IA:** crear rutas bajo `/api/usuarios`, `/api/amistades` y `/api/seguimientos`, además de `usuarioService` para mantener la separación entre rutas y repositorios. Se exponen búsqueda, envío, listado, respuesta y borrado de amistades, y seguir o dejar de seguir.
-- **Decisiones y alcance:** todos los grupos usan `requiereSesion`. Las bajas responden 204, las creaciones 201 y las consultas o respuestas 200. Se añadió `GET /api/amistades/solicitudes` para exponer el listado pendiente ya disponible en el repositorio. No se añadió interfaz.
 - **TDD:** las pruebas fallaron inicialmente porque faltaban el servicio y las rutas. Tras implementar las delegaciones mínimas pasaron. La batería completa detectó que el simulador de búsqueda dependía del orden de pruebas; se corrigió para aislarlo y volvió a pasar completa.
 - **Comprensión humana de las pruebas:** sin sesión, cada ruta devuelve 401; con sesión, cada prueba simula su servicio y comprueba que la ruta pasa el id de sesión y los parámetros correctos, junto con el estado HTTP esperado.
 - **Intervención humana:** Matthew seleccionó el objetivo 10 y continuó con el flujo TDD y registro aplicado a CS-61.
+- **Decisiones:** todos los grupos usan `requiereSesion`. Las bajas responden 204, las creaciones 201 y las consultas o respuestas 200. Se añadió `GET /api/amistades/solicitudes` para exponer el listado pendiente ya disponible en el repositorio. No se añadió interfaz.
 - **Comprobación final:** las pruebas nuevas de búsqueda, servicio de amistad y rutas pasaron; la batería completa terminó con 26 suites y 229 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -189,11 +200,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Ahora haremos el objetivo 9
 
+- **Correcciones relevantes:** no registradas.
 - **Resultado propuesto por la IA:** añadir `sonAmigos` a `amistadService`; busca la relación en ambos sentidos mediante el repositorio y devuelve true exclusivamente si su estado es `ACEPTADA`.
-- **Decisiones y alcance:** es una consulta interna reutilizable, por lo que no comprueba sesión ni expone una ruta. Las solicitudes pendientes y la ausencia de relación devuelven false.
 - **TDD:** primero se añadieron pruebas para amistad aceptada, solicitud pendiente y ausencia de relación; fallaron porque la función no existía. Tras implementarla, pasaron las tres pruebas y la batería completa.
 - **Comprensión humana de las pruebas:** la preparación simula el estado de la relación entre dos usuarios; la acción consulta `sonAmigos`; el resultado esperado solo es true para una relación aceptada.
 - **Intervención humana:** Matthew seleccionó el objetivo 9 y mantuvo el flujo de TDD y registro aplicado previamente.
+- **Decisiones:** es una consulta interna reutilizable, por lo que no comprueba sesión ni expone una ruta. Las solicitudes pendientes y la ausencia de relación devuelven false.
 - **Comprobación final:** `npm test -- --runInBand tests/amistadService.test.js` completó 16 pruebas correctas; la batería completa terminó con 24 suites y 217 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -207,11 +219,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Ahora hagamos la 8
 
+- **Correcciones relevantes:** no registradas.
 - **Resultado propuesto por la IA:** crear `seguimientoService` con `seguirUsuario` y `dejarDeSeguir`, que comprueban sesión, existencia del destino, que no sea la misma persona y existencia o ausencia previa del seguimiento según la acción.
-- **Decisiones y alcance:** seguir un usuario ya seguido se rechaza con 400; dejar de seguir una relación inexistente se rechaza con 404. No se añadieron rutas, interfaz ni controles de acceso adicionales.
 - **TDD:** primero se escribió una prueba con repositorios simulados; falló porque el servicio no existía. Tras implementar las reglas mínimas, las seis pruebas específicas pasaron. No fue necesaria una refactorización adicional.
 - **Comprensión humana de las pruebas:** la preparación simula dos usuarios y el estado de su seguimiento; la acción intenta seguir o dejar de seguir; el resultado esperado solo modifica el repositorio cuando la relación es válida.
 - **Intervención humana:** Matthew seleccionó el objetivo 8 y pidió mantener el mismo flujo de trabajo que los objetivos previos.
+- **Decisiones:** seguir un usuario ya seguido se rechaza con 400; dejar de seguir una relación inexistente se rechaza con 404. No se añadieron rutas, interfaz ni controles de acceso adicionales.
 - **Comprobación final:** `npm test -- --runInBand tests/seguimientoService.test.js` completó 6 pruebas correctas; la batería completa terminó con 24 suites y 214 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -225,11 +238,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Buenos días. Trabajemos en el objetivo 7 de la misma manera que antes.
 
+- **Correcciones relevantes:** no registradas.
 - **Resultado propuesto por la IA:** ampliar `amistadRepository` con la búsqueda por identificador y `amistadService` con `responderSolicitud` y `eliminarAmistad`.
-- **Decisiones y alcance:** solo una solicitud en estado pendiente puede aceptarse o rechazarse, y solo la persona destinataria puede hacerlo. Solo una amistad aceptada puede eliminarse, y cualquiera de sus dos participantes puede hacerlo. No se añadieron rutas ni interfaz.
 - **TDD:** primero se añadieron pruebas que fallaron porque las funciones no existían. Tras implementar las consultas y validaciones mínimas, pasaron las pruebas específicas y la batería completa. No fue necesaria una refactorización adicional.
 - **Comprensión humana de las pruebas:** la preparación simula solicitudes pendientes, amistades aceptadas y usuarios participantes o ajenos; la acción responde o elimina; el resultado esperado permite solo a quien corresponde y evita cambios en los demás casos.
 - **Intervención humana:** Matthew seleccionó el objetivo 7 y pidió continuar con el proceso aplicado anteriormente.
+- **Decisiones:** solo una solicitud en estado pendiente puede aceptarse o rechazarse, y solo la persona destinataria puede hacerlo. Solo una amistad aceptada puede eliminarse, y cualquiera de sus dos participantes puede hacerlo. No se añadieron rutas ni interfaz.
 - **Comprobación final:** las pruebas de repositorio completaron 6 casos y las de servicio 13; la batería completa se ejecutó correctamente.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -243,11 +257,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Ahora pasemos con el objetivo 6. Una vez lo termines y registres el prompt, me gustaría que modificaras el documento de modificaciones con los cambios del repositorio desde la última vez que se actualizo ese documento, incluyendo esta conversación.
 
+- **Correcciones relevantes:** no registradas.
 - **Resultado propuesto por la IA:** crear `amistadService.enviarSolicitud`, que comprueba la sesión, la existencia del destinatario, que no sea la misma persona y que no exista una relación pendiente o aceptada en ninguno de los sentidos antes de delegar la creación al repositorio.
-- **Decisiones y alcance:** el servicio contiene las reglas de negocio y el repositorio conserva el acceso a Prisma. No se añadieron rutas ni interfaz. Las solicitudes o amistades ya existentes se rechazan con error 400 y un destinatario inexistente con 404.
 - **TDD:** primero se escribió una prueba con repositorios simulados; falló porque el servicio no existía. Tras implementar la validación mínima, las seis pruebas específicas pasaron. No fue necesaria una refactorización adicional.
 - **Comprensión humana de las pruebas:** la preparación simula usuarios y una relación previa; la acción intenta enviar la solicitud; el resultado esperado es crearla solo en el caso válido y rechazarla sin guardar en los demás casos.
 - **Intervención humana:** Matthew delimitó el objetivo y autorizó el registro automático y la posterior actualización resumida de modificaciones.
+- **Decisiones:** el servicio contiene las reglas de negocio y el repositorio conserva el acceso a Prisma. No se añadieron rutas ni interfaz. Las solicitudes o amistades ya existentes se rechazan con error 400 y un destinatario inexistente con 404.
 - **Comprobación final:** `npm test -- --runInBand tests/amistadService.test.js` completó 6 pruebas correctas; la batería completa terminó con 23 suites y 200 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -261,11 +276,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Perfecto, ahora pasaremos al objetivo 5, de igual manera que los anteriores.
 
+- **Correcciones relevantes:** no registradas.
 - **Resultado propuesto por la IA:** añadir `buscarPorNombre` a `usuarioRepository`, con filtro de nombre contenido, exclusión del usuario solicitante, límite de 20 resultados y selección exclusiva de id, nombre de usuario y foto.
-- **Decisiones y alcance:** MySQL usa la intercalación `utf8mb4_unicode_ci`, por lo que la búsqueda no distingue mayúsculas y minúsculas sin introducir operadores específicos de otro motor. No se añadieron ruta, servicio ni pantalla.
 - **TDD:** primero se añadió una prueba con Prisma simulado; falló porque la función no existía. Tras añadir la consulta mínima, pasó. No fue necesaria una refactorización adicional.
 - **Comprensión humana de las pruebas:** la prueba simula una búsqueda y comprueba que Prisma recibe el texto contenido, la exclusión de la propia persona, el límite de 20 y solo los campos seguros, sin email.
 - **Intervención humana:** Matthew delimitó la tarea al objetivo 5 y autorizó mantener el mismo flujo de registro automático.
+- **Decisiones:** MySQL usa la intercalación `utf8mb4_unicode_ci`, por lo que la búsqueda no distingue mayúsculas y minúsculas sin introducir operadores específicos de otro motor. No se añadieron ruta, servicio ni pantalla.
 - **Comprobación final:** `npm test -- --runInBand tests/usuarioBusquedaRepository.test.js` completó una prueba correcta; la batería completa terminó con 22 suites y 194 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -279,11 +295,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > ¡Vamos a muy buen ritmo! Ahora pasaremos al objetivo 4. Trabaja igual que con el objetivo 3, registrándolo automáticamente.
 
+- **Correcciones relevantes:** no registradas.
 - **Resultado propuesto por la IA:** crear `backend/src/repositories/seguimientoRepository.js` con operaciones para crear y borrar un seguimiento mediante la clave única de seguidor y seguido, y para devolver si existe.
-- **Decisiones y alcance:** `sigueA` devuelve un booleano para simplificar al futuro servicio. No se añadieron rutas, interfaz, control de sesión ni la validación de que una persona no se siga a sí misma.
 - **TDD:** primero se escribió una prueba con Prisma simulado; falló porque el repositorio no existía. Tras implementar las tres operaciones, las cuatro pruebas específicas pasaron. No fue necesaria una refactorización adicional.
 - **Comprensión humana de las pruebas:** cada prueba simula la llamada a Prisma y comprueba que se consulta o modifica exactamente el seguimiento formado por los dos identificadores. Se comprueban tanto la existencia como la ausencia de un registro.
 - **Intervención humana:** Matthew eligió continuar con el objetivo 4 y autorizó documentar automáticamente esta interacción.
+- **Decisiones:** `sigueA` devuelve un booleano para simplificar al futuro servicio. No se añadieron rutas, interfaz, control de sesión ni la validación de que una persona no se siga a sí misma.
 - **Comprobación final:** `npm test -- --runInBand tests/seguimientoRepository.test.js` completó 4 pruebas correctas; la batería completa terminó con 21 suites y 193 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -297,11 +314,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Perfecto, registra el prompt del objetivo 2 también. Pasemos ahora al objetivo 3. Una vez realizado el objetivo 3, actualiza automáticamente el registro de prompts.
 
+- **Correcciones relevantes:** no registradas.
 - **Resultado propuesto por la IA:** crear `backend/src/repositories/amistadRepository.js` con las cinco operaciones de persistencia. La lista muestra solo solicitudes pendientes y expone del solicitante únicamente id, nombre de usuario y foto.
-- **Decisiones y alcance:** el repositorio no decide permisos, estados válidos ni respuestas HTTP; esas reglas corresponderán al servicio. La búsqueda consulta las dos direcciones para que el servicio pueda detectar una relación existente entre las mismas personas.
 - **TDD:** primero se escribió una prueba con Prisma simulado; falló porque el repositorio no existía. Tras implementar las consultas mínimas, las cinco pruebas específicas pasaron. No fue necesario refactorizar más allá de comentarios que explican la responsabilidad de cada consulta.
 - **Comprensión humana de las pruebas:** cada prueba prepara una función simulada de Prisma, llama a una operación del repositorio y comprueba la consulta enviada. Se cubren creación, búsqueda A-B y B-A, aceptación, borrado y listado de solicitudes pendientes sin email ni contraseña.
 - **Intervención humana:** Matthew autorizó el registro automático de esta tarea y delimitó el trabajo a la capa de repositorio.
+- **Decisiones:** el repositorio no decide permisos, estados válidos ni respuestas HTTP; esas reglas corresponderán al servicio. La búsqueda consulta las dos direcciones para que el servicio pueda detectar una relación existente entre las mismas personas.
 - **Comprobación final:** `npm test -- --runInBand tests/amistadRepository.test.js` completó 5 pruebas correctas; la batería completa terminó con 20 suites y 189 pruebas correctas.
 - **Resultado en Git:** pendiente de revisión, preparación y commit por Matthew.
 
@@ -315,11 +333,12 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > ¿Puedes añadir tú la entrada del registro de prompts? Cuando termines, pasemos al objetivo 2.
 
+- **Correcciones relevantes:** no registradas.
 - **Resultado propuesto por la IA:** añadir el modelo `Seguimiento`, las relaciones direccionales con Usuario, la restricción única para seguidor y seguido, el índice de seguidores y la migración aplicada en MySQL.
-- **Decisiones y alcance:** seguir no requiere aceptación y permite que dos personas se sigan mutuamente. La prohibición de seguirse a uno mismo y las rutas se implementarán en objetivos posteriores.
 - **TDD:** la prueba del contrato de esquema falló primero porque el modelo no existía. Tras añadirlo, pasó; Prisma validó el esquema y aplicó la migración.
 - **Comprensión humana de las pruebas:** la prueba comprueba que el esquema declara quién sigue, quién es seguido, la fecha y la unicidad de cada seguimiento. La migración confirmó la tabla, las claves foráneas y el índice en MySQL.
 - **Intervención humana:** Matthew pidió registrar el resultado del objetivo 1 y avanzar inmediatamente con el objetivo 2.
+- **Decisiones:** seguir no requiere aceptación y permite que dos personas se sigan mutuamente. La prohibición de seguirse a uno mismo y las rutas se implementarán en objetivos posteriores.
 - **Comprobación final:** prueba específica correcta; la base de datos quedó al día y `npm test -- --runInBand` completó 19 suites y 184 pruebas correctas.
 - **Resultado en Git:** incorporado después en el commit `cd0c569 CS-61 Tarea 2 Modelo Seguimiento`.
 
@@ -348,10 +367,10 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
   > Por favor, recoge todo lo hablado hoy en mi registro de prompts. Mantendré este chat para la creación de nuevas tareas de CS y resolución de dependencias, y crearé un chat nuevo únicamente para el desarrollo de tareas. ¿Algún contexto que deba darle al nuevo chat?
 
 - **Resultado propuesto por la IA:** definir tareas pequeñas y ordenadas para las historias pendientes, construir el mapa de dependencias y comparar una planificación parcial con otra que añadía CS-44 y CS-02. Tras la decisión de Matthew, se mantuvo la opción reducida y se propusieron diez tareas para CS-30, centradas en una comprobación compartida de visibilidad y amistad que puedan reutilizar CS-01 y CS-48.
-- **Decisiones y alcance:** CS-62 y CS-63 podrán avanzar, pero no se considerarán completas mientras falten CS-44 y CS-02. CS-30 reutilizará CS-22 y CS-61, no añadirá modelos propios y deberá ocultar por igual las experiencias inexistentes y aquellas que el solicitante no pueda consultar. Este chat se conservará para planificación y dependencias; la implementación se realizará en chats separados y acotados por tarea.
 - **TDD:** no aplicable a la planificación. Para CS-30 se acordó comenzar por pruebas que cubran autor, visibilidad pública, privada y para amigos, solicitud pendiente, amistad aceptada o eliminada y seguimiento sin amistad.
 - **Comprensión humana de las pruebas:** la preparación crea una experiencia, su autor, otro usuario y distintos estados de relación; la acción consulta la experiencia; el resultado esperado es devolverla solo cuando la visibilidad y la relación actuales lo permitan, sin filtrar datos en los demás casos.
 - **Intervención humana:** Matthew decidió no ampliar la semana con CS-44 y CS-02 por falta de tiempo, aceptó que CS-62 y CS-63 queden parciales y separó la conversación de planificación de las futuras conversaciones de desarrollo.
+- **Decisiones:** CS-62 y CS-63 podrán avanzar, pero no se considerarán completas mientras falten CS-44 y CS-02. CS-30 reutilizará CS-22 y CS-61, no añadirá modelos propios y deberá ocultar por igual las experiencias inexistentes y aquellas que el solicitante no pueda consultar. Este chat se conservará para planificación y dependencias; la implementación se realizará en chats separados y acotados por tarea.
 - **Comprobación final:** criterios y tareas contrastados con la copia vigente del Excel, utilizada únicamente en modo de lectura. No se modificó código ni se ejecutaron pruebas de software.
 - **Resultado en Git:** pendiente.
 
@@ -383,7 +402,8 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Ya hemos externalizado el Excel y lo hemos sacado del repositorio. Además, hemos cambiado su formato para incluir propietario, tiempo estimado y tiempo real por cada tarea. A partir de ahora trabajaré con la versión online, pasándote una copia cada vez que trabajemos. Refleja estos cambios en mi documentación. Después, lista de una en una las tareas de CS-22, CS-61, CS-45, CS-62, CS-01, CS-63 y CS-48 para copiarlas manualmente al Excel remoto.
 
-- **Restricciones relevantes:** CS-22 se limita al campo y selector de visibilidad; CS-62 incluirá el listado de CS-44; CS-01 excluye avisos y valoración media; CS-63 excluye «Útil» y reportes.
+- **Correcciones relevantes:**
+  - Restricciones relevantes: CS-22 se limita al campo y selector de visibilidad; CS-62 incluirá el listado de CS-44; CS-01 excluye avisos y valoración media; CS-63 excluye «Útil» y reportes.
 - **Resultado propuesto por la IA:** actualizar la documentación y la protección de Git, consultar la copia sin modificarla y comenzar la planificación únicamente por CS-22.
 - **TDD:** no aplicable a esta actualización documental y de planificación. La implementación posterior de cada tarea deberá comenzar por una prueba que falle.
 - **Comprensión humana de las pruebas:** no se incorporan pruebas de software en esta sesión de planificación.
@@ -401,7 +421,7 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Planea una hoja de ruta para que pueda comprender todas las herramientas del proyecto lo mejor posible. Para hacerla lo más realista y acertada posible, preguntame antes cosas como el tiempo disponible, el nivel de profundidad de conocimientos u otras cosas que consideres relevantes para crear esta hoja de ruta
 
-- **Corrección relevante:**
+- **Correcciones relevantes:**
 
   > En algún momento incorporaremos desarrollo de frontend mediante Bootstrap. ¿Puedes incluir eso en la hoja de ruta y generar un documento con todo el contenido y los ejercicios prácticos? Este será el que seguiré paso a paso para alcanzar los objetivos propuestos
 
@@ -533,27 +553,27 @@ Las interacciones siguientes proceden de la conversación conservada en Codex. C
 
   > Revisa la nueva arquitectura y documentación del repositorio, y considera si es necesario cambiar el prompt de contexto para nuevos chats.
 
-- **Texto de contexto incluido en el mismo prompt:**
+  - Texto de contexto incluido en el mismo prompt:
 
-  > El equipo que desarrolla PlanB está formado por estudiantes con poca experiencia práctica en desarrollo y despliegue de aplicaciones. Al colaborar en este proyecto:
-  >
-  > - No presupongas conocimientos técnicos avanzados.
-  > - Explica en lenguaje claro los conceptos y términos técnicos la primera vez que aparezcan.
-  > - Cuando realices un cambio, explica brevemente qué se ha cambiado, para qué sirve, cómo encaja en la arquitectura y cómo puede comprobarse.
-  > - Señala las decisiones relevantes, alternativas y consecuencias, especialmente en seguridad, base de datos, autenticación, despliegue y cambios difíciles de revertir.
-  > - Distingue claramente entre lo imprescindible para la práctica, las mejoras recomendables y las ampliaciones opcionales.
-  > - Proporciona instrucciones concretas y ordenadas cuando sea necesaria alguna acción manual.
-  > - No introduzcas tecnologías o complejidad adicional sin una necesidad clara.
-  > - Respeta la arquitectura acordada: rutas → servicios → repositorios → Prisma → MySQL. Solo los repositorios deben acceder a Prisma.
-  > - Usa como referencia, por este orden: las instrucciones actuales del equipo, los criterios de validación de las historias de usuario, la arquitectura documentada y la propuesta conceptual.
-  > - Relaciona las pruebas con los criterios de validación de cada historia.
-  > - Revisa que el código generado sea comprensible y mantenible por estudiantes, evitando abstracciones innecesarias.
-  > - Si la documentación y el código se contradicen, indícalo antes de asumir cuál es correcto.
-  > - No modifiques ni elimines trabajo existente que no forme parte de la tarea.
-  > - Nunca incluyas secretos, contraseñas o archivos `.env` en Git.
-  > - No menciones en la documentación ni en los entregables el uso de agentes de inteligencia artificial, salvo que el usuario lo solicite expresamente.
-  >
-  > El objetivo no es únicamente terminar funcionalidades. También debes ayudar al usuario a entender el proyecto, conservar el control sobre las decisiones y poder explicárselas al resto del equipo.
+    > El equipo que desarrolla PlanB está formado por estudiantes con poca experiencia práctica en desarrollo y despliegue de aplicaciones. Al colaborar en este proyecto:
+    >
+    > - No presupongas conocimientos técnicos avanzados.
+    > - Explica en lenguaje claro los conceptos y términos técnicos la primera vez que aparezcan.
+    > - Cuando realices un cambio, explica brevemente qué se ha cambiado, para qué sirve, cómo encaja en la arquitectura y cómo puede comprobarse.
+    > - Señala las decisiones relevantes, alternativas y consecuencias, especialmente en seguridad, base de datos, autenticación, despliegue y cambios difíciles de revertir.
+    > - Distingue claramente entre lo imprescindible para la práctica, las mejoras recomendables y las ampliaciones opcionales.
+    > - Proporciona instrucciones concretas y ordenadas cuando sea necesaria alguna acción manual.
+    > - No introduzcas tecnologías o complejidad adicional sin una necesidad clara.
+    > - Respeta la arquitectura acordada: rutas → servicios → repositorios → Prisma → MySQL. Solo los repositorios deben acceder a Prisma.
+    > - Usa como referencia, por este orden: las instrucciones actuales del equipo, los criterios de validación de las historias de usuario, la arquitectura documentada y la propuesta conceptual.
+    > - Relaciona las pruebas con los criterios de validación de cada historia.
+    > - Revisa que el código generado sea comprensible y mantenible por estudiantes, evitando abstracciones innecesarias.
+    > - Si la documentación y el código se contradicen, indícalo antes de asumir cuál es correcto.
+    > - No modifiques ni elimines trabajo existente que no forme parte de la tarea.
+    > - Nunca incluyas secretos, contraseñas o archivos `.env` en Git.
+    > - No menciones en la documentación ni en los entregables el uso de agentes de inteligencia artificial, salvo que el usuario lo solicite expresamente.
+    >
+    > El objetivo no es únicamente terminar funcionalidades. También debes ayudar al usuario a entender el proyecto, conservar el control sobre las decisiones y poder explicárselas al resto del equipo.
 
 - **Correcciones relevantes:** ninguna dentro de esa interacción; la decisión de documentar expresamente la IA llegó después.
 - **Resultado propuesto por la IA:** actualizar el contexto para reflejar rutas, middlewares, servicios, repositorios, código compartido, frontend, Cloudinary, migraciones, semillas y diferencias entre funcionalidad implementada y futura.

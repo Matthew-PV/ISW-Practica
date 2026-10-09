@@ -1,6 +1,21 @@
-# Prompts Jose Fernando Nevarez 
+# Prompts de Jose Fernando Nevarez
 
-## CS-63 
+Identificador habitual: JOSE.
+
+## 2026-10-08 — CS-63: detalles de experiencia y valoraciones
+
+- **Historia u objetivo:** CS-63, sus objetivos según el reporte de implementación que sigue.
+- **Agente/herramienta:** no registrado.
+- **Entorno:** no registrado.
+- **Contexto aportado:** no registrado.
+- **Prompt inicial:** no registrado.
+- **Correcciones relevantes:** no registradas.
+- **Resultado propuesto por la IA:** no registrado. El reporte de implementación de José se conserva tal cual al final de esta entrada.
+- **TDD:** no registrado.
+- **Comprensión humana de las pruebas:** no registrada.
+- **Intervención humana:** no registrada.
+- **Comprobación final:** según el reporte, objetivos 10 (pruebas de pantalla con jsdom) y 11 (comprobación manual en escritorio y móvil).
+- **Resultado en Git:** commits de José en la rama `CS-63`, de `7c5c731` a `b3d096f`, y su merge en `main` (`9f7b2f3`).
 
 ### Reporte de Implementación: Historia de Usuario CS-63 (Detalles de Experiencia y Valoraciones)
 

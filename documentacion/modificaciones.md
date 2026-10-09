@@ -38,6 +38,16 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 
 # 2026-10-09
 
+## Registro de prompts: todas las entradas con los campos de la plantilla
+
+**Autor:** Joaquín de Vicente Abad, con Claude Code
+**Historia:** sin historia
+
+### Cambios
+- `prompts/matthew.md`: «Decisiones y alcance» pasa a «Decisiones» y «Corrección relevante» a «Correcciones relevantes», en el orden de la plantilla. Los campos propios («Decisiones posteriores de Matthew», «Solicitud posterior de registro», «Restricciones relevantes», «Texto de contexto incluido en el mismo prompt») quedan como subapartado, con su nombre, dentro del campo de la plantilla que les corresponde. En la entrada del objetivo 16 de CS-61, el primer prompt de «Prompts relevantes» pasa a «Prompt inicial» y los otros dos a «Correcciones relevantes». Los campos que faltaban se añaden como «no registrado». El texto no cambia.
+- `prompts/jose.md`: su reporte de implementación de CS-63 se conserva tal cual dentro de una entrada con los campos de la plantilla. Como el reporte no cita prompts, agente ni entorno, esos campos quedan como «no registrado».
+- El resto de archivos ya seguían la plantilla.
+
 ## Registro diario: formato común y entradas anteriores reordenadas
 
 **Autor:** Joaquín de Vicente Abad, con Claude Code
