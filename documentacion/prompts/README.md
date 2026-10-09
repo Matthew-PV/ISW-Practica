@@ -9,7 +9,7 @@ El registro se divide en un archivo por integrante para que siga siendo legible 
 - [Jorge Delgado Castellanos](jorge.md) — JOR / jorjonudo.
 - [Lucía Alexandra Guzmán Álvarez](lucia.md) — LUC.
 - [Joaquín de Vicente Abad](joaquin.md) — JOA.
-- [Integrante 6](integrante-6.md) — identidad y código pendientes de confirmar.
+- [Jose Fernando Nevarez](integrante-6.md) — JOSE.
 - [Plantilla de entrada](plantilla.md).
 
 ## Reglas
