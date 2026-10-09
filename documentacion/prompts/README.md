@@ -9,7 +9,7 @@ El registro se divide en un archivo por integrante para que siga siendo legible 
 - [Jorge Delgado Castellanos](jorge.md) — JOR / jorjonudo.
 - [Lucía Alexandra Guzmán Álvarez](lucia.md) — LUC.
 - [Joaquín de Vicente Abad](joaquin.md) — JOA.
-- [Jose Fernando Nevarez](integrante-6.md) — JOSE.
+- [Jose Fernando Nevarez](jose.md) — JOSE.
 - [Plantilla de entrada](plantilla.md).
 
 ## Reglas
@@ -18,7 +18,8 @@ El registro se divide en un archivo por integrante para que siga siendo legible 
 - Se registran los prompts que definen una tarea o cambian de forma importante su solución; no hace falta copiar una conversación completa.
 - Se conserva la redacción original siempre que no contenga información sensible.
 - Los secretos, cookies, credenciales, contenido de `.env` y datos personales innecesarios se sustituyen por `[DATO OMITIDO]`.
-- Cada entrada resume la intervención humana, la explicación y comprensión de las pruebas, las comprobaciones realizadas y el resultado en Git.
+- Cada entrada sigue la [plantilla](plantilla.md) y resume la intervención humana, la explicación y comprensión de las pruebas, las comprobaciones realizadas y el resultado en Git.
+- Las decisiones no se repiten aquí: se escriben en el [registro diario](../modificaciones.md), con su motivo y quién las tomó, y la entrada enlaza a ellas.
 - Las entradas se ordenan de la más reciente a la más antigua.
 - No se inventan prompts pasados. Un resumen de una interacción que ya no se conserva se identifica como **resumen reconstruido por el integrante** y no se presenta como cita literal.
 

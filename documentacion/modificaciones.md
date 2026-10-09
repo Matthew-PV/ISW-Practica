@@ -1,8 +1,46 @@
 # Modificaciones — PlanB
 
-Registro de los cambios realizados en el proyecto, en orden cronológico.
+Registro diario de los cambios del proyecto: qué cambió, por qué y quién lo decidió. Lo más reciente va arriba. Las reglas están en `AGENTS.md`, sección 9.1.
+
+Plantilla de una sección (las secciones `###` vacías se omiten, salvo «Cambios»):
+
+```markdown
+# AAAA-MM-DD
+
+## CS-XX: título breve de la tarea
+
+**Autor:** nombre completo, con <agente> si lo hubo
+**Historia:** CS-XX, objetivos N a M (o «sin historia») · **Commits:** `abc1234`, `def5678`
+
+### Cambios
+- Qué cambió, por capa o archivo.
+
+### Decisiones
+#### Título de la decisión
+- **Contexto:** problema, criterio o petición que la motivó.
+- **Decisión:** qué se hizo.
+- **Alternativas:** opciones consideradas y por qué no se eligieron; «ninguna» si no las hubo.
+- **Consecuencias:** qué implica: migraciones, límites, trabajo pendiente, lo que deja de valer.
+- **Decidió:** persona responsable («…, a propuesta de <agente>» si la propuesta fue del agente).
+
+### Comprobación
+- TDD: qué prueba falló primero y por qué, y qué la hizo pasar. Batería completa.
+- Comprobación manual, si la hubo.
+
+### Para quien continúe
+- Pasos tras el `git pull` (migraciones, `.env`, dependencias) y avisos.
+
+### Pendiente
+- Lo que queda sin hacer o sin comprobar.
+```
 
 # Perfiles enlazados, pruebas, limpieza del código y documentación completa (09/10/2026)
+
+### Registro del trabajo con decisiones justificadas
+
+- `AGENTS.md` §9 pasa a «Registro del trabajo»: el registro diario y el de prompts, con reglas comunes para cualquier persona o agente. Las decisiones se escriben en formato ADR en este archivo; la documentación técnica describe el sistema sin justificarlo. §8 y §10 remiten al registro diario.
+- Plantilla del registro en la cabecera de este archivo; campo «Decisiones» en `prompts/plantilla.md`; el índice de prompts enlaza `jose.md` (antes, `integrante-6.md`, que no existe).
+- `metodologia.md` §4.3, §5 y §8: el registro diario forma parte de la revisión y del criterio de finalización.
 
 ### Libro de historias: la copia del repositorio queda obsoleta
 

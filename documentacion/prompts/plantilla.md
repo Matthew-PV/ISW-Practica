@@ -18,6 +18,7 @@ Copiar el siguiente bloque al principio del archivo del integrante responsable:
 - **TDD:** prueba escrita primero, fallo observado y cambio mínimo que la hizo pasar; o motivo por el que no se aplicó.
 - **Comprensión humana de las pruebas:** explicación breve de la preparación, la acción y el resultado esperado.
 - **Intervención humana:** qué revisó, cambió, aceptó o rechazó el integrante.
+- **Decisiones:** las tomadas en la tarea, como enlace a su sección de `modificaciones.md` (día y título); «ninguna» si no las hubo.
 - **Comprobación final:** pruebas automáticas y manuales realizadas, con su resultado.
 - **Resultado en Git:** enlace o identificador del commit/PR; «pendiente» si aún no existe.
 ```

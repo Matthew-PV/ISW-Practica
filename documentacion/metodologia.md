@@ -250,7 +250,7 @@ Antes de considerar terminada la tarea, el integrante:
 5. Comprueba manualmente la interfaz cuando el comportamiento visible haya cambiado.
 6. Verifica que no se hayan añadido secretos, archivos temporales o cambios ajenos.
 7. Actualiza la historia de usuario y la documentación que corresponda.
-8. Registra la interacción relevante en su archivo de `documentacion/prompts/`.
+8. Apunta el cambio y sus decisiones en el registro diario (`documentacion/modificaciones.md`) y registra la interacción relevante en su archivo de `documentacion/prompts/`.
 9. Crea un commit cuyo mensaje describa el resultado.
 
 Si una comprobación no puede realizarse, se deja escrita como pendiente; no se da por superada.
@@ -266,6 +266,8 @@ Se registra:
 * un resumen del resultado y de la intervención humana;
 * las pruebas realizadas;
 * el commit o pull request, cuando exista.
+
+El registro diario (`documentacion/modificaciones.md`) recoge, además, qué cambió en el proyecto y cada decisión con su contexto, las alternativas, las consecuencias y quién la tomó. Así cualquier persona o agente puede entender después por qué algo está hecho de cierta forma. Su formato está en `AGENTS.md` (sección 9.1) y en la cabecera del propio archivo.
 
 No es necesario registrar saludos, preguntas puramente explicativas que no afecten al resultado ni cada intento intermedio. Tampoco se registran secretos, datos de acceso, contenido del `.env`, cookies, datos personales innecesarios o texto confidencial.
 
@@ -403,6 +405,7 @@ Una tarea asistida por IA está terminada cuando:
 * el integrante entiende el bloque de pruebas incorporado;
 * el integrante puede explicar el cambio y sus consecuencias;
 * la documentación y la historia de usuario están actualizadas cuando corresponde;
+* el cambio y sus decisiones están en el registro diario;
 * la interacción relevante está incluida en el registro de prompts;
 * el repositorio no contiene secretos ni archivos accidentales.
 

@@ -135,13 +135,32 @@ No escribas una prueba que pase desde el principio sin demostrar que detecta la 
 - No incluyas archivos temporales, `node_modules`, `.env`, cookies ni bloqueos creados fuera del paquete al que pertenecen.
 - Los mensajes de commit deben explicar el resultado y, cuando sea útil, mencionar la historia u objetivo correspondiente.
 - Antes de cada push, y siempre después de un merge o de resolver un conflicto, ejecuta `npm test` desde `backend/` y comprueba que no queda ningún marcador de conflicto. Este comando, desde la raíz, no debe mostrar nada: `git grep -nE '^(<<<<<<<|=======|>>>>>>>)( |$)'`.
+- Cada cambio del proyecto se apunta, en el mismo commit, en el registro diario `documentacion/modificaciones.md` (ver la sección 9.1).
 - Quien cambie una ruta, un modelo de datos, un flujo o una pantalla actualiza en el mismo commit su documentación: `documentacion/api.md`, el diagrama ER de `documentacion/arquitectura.md`, `documentacion/flujos.md` o `documentacion/frontend.md`.
 
-## 9. Registro del uso de IA
+## 9. Registro del trabajo
 
-La colaboración con IA forma parte de la metodología del equipo y se documenta en `documentacion/prompts/`, con un archivo separado por integrante.
+El equipo deja dos registros para que cualquier persona o agente pueda saber qué cambió, por qué y quién lo decidió:
+
+- `documentacion/modificaciones.md`: el registro diario del proyecto, con sus decisiones justificadas.
+- `documentacion/prompts/`: las interacciones con IA, un archivo por integrante.
+
+La documentación técnica (`arquitectura.md`, `api.md`, `flujos.md`, `frontend.md`, `glosario.md`) describe el sistema tal como es, sin justificar decisiones: los motivos van en el registro diario. Si no entiendes por qué algo está hecho de cierta forma, búscalo ahí (por historia, archivo o título) antes de cambiarlo. `git blame` y `git log -S "texto"` llevan del código a su commit, y el commit, a su sección del registro.
+
+### 9.1. Registro diario (`modificaciones.md`)
+
+- Se actualiza en el mismo commit que el cambio que describe y sigue la plantilla de la cabecera del archivo.
+- Un título `# AAAA-MM-DD` por día, con lo más reciente arriba, y dentro una sección `##` por tarea y autor. Si el día ya existe, añade tu sección dentro; si tu sección de esa tarea ya existe ese día, amplíala.
+- Cada sección indica el autor (y el agente, si lo hubo), la historia y los commits de la tarea. El commit que añade la propia sección no hace falta: se localiza con `git blame`.
+- Las decisiones se escriben en formato ADR (*Architecture Decision Record*, registro de decisiones): contexto, decisión, alternativas, consecuencias y quién decidió. Si la propuesta vino de un agente, se indica: «Joaquín, a propuesta de Claude».
+- Se registra una decisión cuando se elige entre opciones razonables, se fija una convención o regla, se cambia algo acordado, se aceptan límites o trabajo pendiente, o afecta a datos, seguridad o autenticación. Los cambios mecánicos no necesitan decisión.
+- No se inventa nada. Al reordenar o dar formato a entradas antiguas se conservan sus datos; el autor y los commits salen de Git, y una decisión solo se escribe si el texto o el commit ya contaban su motivo.
+- No se cambia el contenido de la sección de otra persona; solo su formato.
+
+### 9.2. Registro de prompts (`prompts/`)
 
 - Al terminar una tarea asistida por IA, recuerda al integrante registrar el prompt inicial y las correcciones que hayan influido de forma importante en el resultado.
+- Cada entrada sigue `documentacion/prompts/plantilla.md`. Su campo «Decisiones» remite a las decisiones del registro diario (día y título); no las repite.
 - No inventes, reconstruyas ni atribuyas prompts que el integrante no haya aportado.
 - No registres secretos, datos personales innecesarios, contenido de `.env`, cookies ni credenciales.
 - El registro debe enlazar la historia de usuario, commit o pull request cuando exista y resumir qué aceptó, modificó o rechazó la persona responsable.
@@ -155,8 +174,8 @@ Al finalizar, comunica de forma breve:
 
 1. Resultado conseguido.
 2. Archivos y capas afectados.
-3. Decisiones o riesgos importantes.
+3. Decisiones o riesgos importantes, que también quedan en el registro diario.
 4. Pruebas ejecutadas y resultado.
 5. Pasos manuales pendientes, si existen.
-6. Entrada que debería añadirse al archivo de prompts del integrante, sin inventar su contenido.
+6. Sección añadida al registro diario y entrada que debería añadirse al archivo de prompts del integrante, sin inventar su contenido.
 7. Evidencia del ciclo rojo, verde y refactorización, o motivo por el que no se aplicó TDD.
