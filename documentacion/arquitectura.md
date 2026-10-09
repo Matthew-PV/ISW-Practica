@@ -526,7 +526,7 @@ ISW-Practica/
 │       └── shared/            # código común a varias páginas (api.js, pantalla.js...)
 ├── docker-compose.yml         # MySQL para desarrollo
 └── documentacion/
-    ├── customer-stories/      # documentos de partida y copia del libro de historias
+    ├── customer-stories/      # documentos de partida y copia obsoleta del libro de historias
     └── *.md                   # propuesta, arquitectura, api, flujos, frontend, glosario...
 ```
 

@@ -21,7 +21,7 @@ Su uso no elimina la responsabilidad del equipo. Cada integrante sigue siendo re
 
 ## 3. Gestión de las historias de usuario
 
-`Customer_Stories_PlanB.xlsx` se mantiene en el OneDrive compartido del equipo como única versión con la que se trabaja: allí se marcan el estado, los responsables y los tiempos. La copia de `documentacion/customer-stories/` es solo una guía general de las historias; no se usa para trabajar ni se marca en ella ningún progreso.
+`Customer_Stories_PlanB.xlsx` se mantiene en el OneDrive compartido del equipo como única versión con la que se trabaja: allí se marcan el estado, los responsables y los tiempos. La copia de `documentacion/customer-stories/` está obsoleta: no se consulta, no se actualiza y no se marca en ella ningún progreso.
 
 Cada fila de tarea incluye:
 
@@ -31,10 +31,10 @@ Cada fila de tarea incluye:
 
 Para trabajar con una historia:
 
-1. El integrante facilita una copia actualizada del libro al agente cuando necesite consultarla.
-2. La copia se usa como referencia de solo lectura, salvo petición expresa de editarla.
-3. El integrante traslada manualmente al libro online las tareas o cambios acordados.
-4. No se marca progreso en la copia del repositorio: si hay que cambiar algo del libro, se entrega como una lista de cambios para pasarla al libro online.
+1. Los criterios se leen en el libro online. Si el agente no tiene acceso a él, el integrante le copia la historia o le facilita una exportación recién descargada, que se usa solo para consultar.
+2. Si el agente tiene acceso al libro en Excel para la web, puede editarlo directamente, pero confirma cada cambio con el integrante antes de hacerlo: el resto del equipo lo ve al momento. Los cambios en muchas celdas se hacen con un Office Script.
+3. Si no tiene acceso, entrega los cambios como una lista y el integrante los traslada al libro online.
+4. La copia del repositorio no se consulta ni se actualiza.
 
 Si la copia facilitada, el código y la documentación se contradicen, se informa de la diferencia antes de decidir qué actualizar. Una copia conservada de una sesión anterior no se considera vigente.
 

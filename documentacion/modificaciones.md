@@ -4,6 +4,10 @@ Registro de los cambios realizados en el proyecto, en orden cronológico.
 
 # Perfiles enlazados, pruebas, limpieza del código y documentación completa (09/10/2026)
 
+### Libro de historias: la copia del repositorio queda obsoleta
+
+- `AGENTS.md` §3, `metodologia.md` §3, `README.md` y `arquitectura.md`: la copia de `documentacion/customer-stories/Customer_Stories_PlanB.xlsx` está obsoleta y no se consulta. Los criterios se leen y los cambios se hacen en el libro online. Un agente con acceso a Excel para la web trabaja sobre él y confirma cada cambio con el integrante; los cambios en muchas celdas se hacen con un Office Script. Un agente sin acceso pide los criterios al integrante y entrega los cambios como una lista.
+
 ### Documentación: API, flujos, pantallas y glosario
 
 - **`arquitectura.md`** al día, con diagramas Mermaid: contexto del sistema, capas y archivos por área, modelo de datos (ER) con sus restricciones, regla de visibilidad y mapa de pruebas.
