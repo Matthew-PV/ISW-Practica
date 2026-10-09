@@ -2,6 +2,35 @@
 
 Identificador habitual: JOA.
 
+## 2026-10-09 — Libro de historias online y registro del trabajo con decisiones ADR
+
+- **Historia u objetivo:** sin historia asociada; forma de trabajo del equipo con el libro de historias y con los registros que se dejan para otros agentes.
+- **Agente/herramienta:** Claude Code en la aplicación de escritorio de Claude (pestaña Code), con el modelo Claude Opus 5.5.
+- **Entorno:** Linux y terminal fish.
+- **Contexto aportado:** `AGENTS.md` y `CLAUDE.md` (cargados automáticamente), el repositorio actualizado y el `PLAN.md` local del plan de auditoría del 08/10.
+- **Prompt inicial:**
+
+  > Vamos a trabajar, primero quiero preguntar, quiero que trabajes sobre un excel, tenemos la necesidad de edicion en vivo online. En este caso usamos one-drive. No hay manera de que trabajes sobre ello? que alternativas hay? un repo no sirve, no debe haber pasos de sincronizacion, debe ser en vivio
+
+- **Correcciones relevantes:**
+  - Tras la respuesta con las alternativas (Excel para la web desde el navegador, Office Scripts, conector de Microsoft 365, API Graph, Google Sheets):
+
+    > Necesito entonces actualizar detalles de trabajo sobre este directorio / proyecto. Primero, para futuras interacciones anota en el claude.md que no se usa el excel descargado, que ese esta deprecado, usamos el online.  Tengo la pestaña "automatizar" asi que puedes trabajar con ello. Ademas, quiero cambiar en AGENTS el enfoque si este fuera incorrecto. Me refiero a el registro de prompts y el  resumen diario. Me gustaria que fueran orientados y/o explicitos sobre las decisiones tomadas. La idea es que otros agentes al igual que este puedan rastrear / saber que, si no se entiende una decision tomada aparece ahi justificada o rastrear quien fue. Hazme todas las preguntas necesarias pero eso, quiero cambiar la interaccion con las stories (personalmente) y actualizar (incluso retroactivamente) los registros que dejamos para otros agentes. A lo mejor los prompts estan bien puro, pero los logs (actividad diaria) no. Y para eso cambiar AGENTS.MD. Por cierto, esto queda registrado no? Ya que CLAUDE:md carga Agents y con ello su flujo de trabajo?
+
+  - Respuestas a las preguntas del agente. Opciones elegidas: la nota del Excel va en `AGENTS.md` §3 (y no en `CLAUDE.md`); la documentación técnica describe y el registro justifica; un día → una sección por tarea → decisiones ADR dentro; fechas `AAAA-MM-DD` con lo más reciente arriba; en los prompts, campo «Decisiones», unificar los archivos, volver a registrar sus prompts y corregir el índice; en las entradas antiguas, solo lo verificable. Respuestas escritas:
+
+    > Me gusta el estilo ADR.
+
+    > Todo, pero mas bien de formato, no inventamos nada. Pasamos todo a un mismo formato (recuerda que hay ina plantilla y demas que tambien hay que actualizar) la idea es que ya sea claude / codex o quien sea mantenga una estructura ordenada y comun a todos
+
+- **Resultado propuesto por la IA:** trabajar sobre el libro online en Excel para la web (Claude in Chrome y Office Scripts) y marcar como obsoleta la copia del repositorio. En `AGENTS.md` §9, un registro diario con decisiones en formato ADR (contexto, decisión, alternativas, consecuencias y quién decidió) y reglas comunes para cualquier agente. Plantilla en la cabecera de `modificaciones.md` y todo el archivo pasado a ese formato sin inventar nada: autor y commits sacados de Git, y decisiones solo donde ya constaba el motivo. Los archivos de prompts siguen la plantilla común. La forma personal de trabajar con el libro va en `CLAUDE.local.md`, fuera de Git.
+- **TDD:** no aplicable: solo cambió documentación. Se sustituyó por comprobaciones con scripts: que no se perdiera ninguna frase de `modificaciones.md` ni de `matthew.md`, que existieran todos los hashes citados y que no hubiera enlaces rotos entre documentos.
+- **Comprensión humana de las pruebas:** no se añadieron pruebas de software.
+- **Intervención humana:** Joaquín decidió el alcance (libro online, decisiones justificadas y actualización retroactiva), eligió las opciones de formato propuestas, cambió el destino de la nota del Excel de `CLAUDE.md` a `AGENTS.md` y limitó el trabajo retroactivo a dar formato, sin inventar contenido. Pidió volver a registrar sus prompts.
+- **Decisiones:** en [modificaciones.md](../modificaciones.md), 2026-10-09: «Registro diario: formato común y entradas anteriores reordenadas», «Registro del trabajo con decisiones justificadas» y «Libro de historias: la copia del repositorio queda obsoleta».
+- **Comprobación final:** `npm test` desde `backend/`: 52 suites y 568 pruebas correctas. Sin marcadores de conflicto ni enlaces rotos.
+- **Resultado en Git:** `6d59885`, `9f6f75a`, `a4f6e3e`, `b05c30c` y el commit que añade esta entrada.
+
 ## 2026-10-06 — CS-01 Valorar una experiencia (con la parte necesaria de CS-22)
 
 - **Historia u objetivo:** CS-01 «Valorar una experiencia». Como prerrequisito, el objetivo de CS-22 que añade el campo de visibilidad a `Experiencia`.
