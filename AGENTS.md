@@ -51,6 +51,7 @@ El libro de historias `Customer_Stories_PlanB.xlsx` está en el OneDrive compart
 
 - Si tienes acceso al libro en Excel para la web (por ejemplo, a través del navegador del integrante), trabaja directamente sobre él. Confirma cada cambio con el integrante antes de hacerlo, porque el resto del equipo lo ve al momento. Los cambios que afectan a muchas celdas se hacen con un Office Script (pestaña «Automatizar»); los scripts del equipo están en `documentacion/office-scripts/`.
 - Si no tienes acceso, pide al integrante los criterios actuales (copiados del libro o en una exportación recién descargada) y entrega los cambios como una lista para que los pase al libro online. No reconstruyas los criterios desde documentos antiguos ni desde la copia del repositorio.
+- Si propones o revisas los objetivos de una historia, plantéalos como macrotareas, según `documentacion/metodologia.md` §3.4: entre 3 y 6 por historia, cada uno con un resultado comprobable de 1 a 4 horas que incluye sus pruebas, nunca uno por capa, archivo o paso de TDD.
 
 ## 4. Arquitectura obligatoria
 

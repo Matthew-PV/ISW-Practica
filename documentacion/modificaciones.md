@@ -36,6 +36,81 @@ Plantilla de una sección (las secciones `###` vacías se omiten, salvo «Cambio
 
 Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar su contenido: el autor y los commits salen de Git (`git blame` y `git log`), el agente solo figura si consta en el registro de prompts de su autor y una decisión solo aparece si la entrada original ya contaba su motivo.
 
+# 2026-10-10
+
+## Libro de historias: entregas, tiempos por persona e historias de la entrega 3
+
+**Autor:** Joaquín de Vicente Abad, con Claude Code
+**Historia:** sin historia (feedback de la entrega 2)
+
+### Cambios
+- **Libro online:**
+  - hoja «Tiempos», detrás del Índice, con la tabla «Entregas» (E1 «Acceso y perfil», E2 «Círculo social» y E3 «Parte visual y BBDD online», sin fechas) y las horas de cada persona por entrega, más «Otros» y «Total»;
+  - columna «Entrega» en el Índice (H), con desplegable. E1: CS-47, CS-49, CS-57, CS-59 y CS-60. E2: CS-01, CS-22, CS-30, CS-44, CS-45, CS-48, CS-61, CS-62, CS-63, CS-64 y CS-68. E3: CS-65, CS-66, CS-67 y CS-69;
+  - la ayuda de «Plantilla» y de las 64 páginas (A14) incluye la guía de macrotareas;
+  - historias nuevas: CS-65 «Diseño visual de PlanB» (4 objetivos), CS-66 «Aplicar el diseño al frontend» (5) y CS-67 «Migrar la base de datos a online» (3), sin responsable ni tiempo estimado;
+  - CS-60 se queda con sus objetivos de E1. Los objetivos 3 a 5 pasan a CS-68 «Organización interna · E2» y el 6, a CS-69 «Organización interna · E3», con su responsable y sus tiempos;
+  - correcciones según Git, sin tocar tiempos: CS-30, objetivos 5 a 10 hechos (Matthew el 5 y el 6, Joaquín del 7 al 10); CS-63, objetivos 1 a 11 hechos (José donde no había responsable); CS-44, dos objetivos hechos por Joaquín, que no tenía ninguno.
+- **Repositorio:** `documentacion/office-scripts/prepararEntregas.ts`; `metodologia.md` §3.1 (columna «Entrega» y hoja «Tiempos»), §3.3 (entrega nueva e historias de organización por entrega), §3.4 nueva «Cómo escribir los objetivos» y §3.5; `AGENTS.md` §3; `README.md`.
+
+### Decisiones
+#### La entrega se asigna por historia
+- **Contexto:** el feedback de la entrega 2 pide «Tiempos totales por entregas» y ver el trabajo de cada integrante en cada una.
+- **Decisión:** columna «Entrega» en el Índice; las horas de una persona en una entrega suman sus objetivos de las historias de esa entrega.
+- **Alternativas:** una entrega por objetivo, exacta aunque una historia cruce entregas, pero con un dato más que rellenar en cada objetivo.
+- **Consecuencias:** una historia que cruce entregas cuenta entera en una. Por eso la organización interna va en una historia por entrega.
+- **Decidió:** Joaquín (Claude había propuesto la entrega por objetivo).
+
+#### Entregas sin fechas
+- **Contexto:** las fechas de las entregas pueden ir variando.
+- **Decisión:** cada entrega tiene solo su orden (E1, E2…) y un nombre.
+- **Alternativas:** fechas de inicio y fin en cada entrega, que según Joaquín solo añaden carga.
+- **Consecuencias:** ninguna fórmula depende de fechas.
+- **Decidió:** Joaquín.
+
+#### Horas por persona en una hoja aparte
+- **Contexto:** hacía falta ver el tiempo de cada persona por entrega.
+- **Decisión:** hoja «Tiempos» con la tabla persona × entrega, más el filtro de la columna «Entrega» del Índice para ver las historias de una entrega.
+- **Alternativas:** un bloque en el Índice con un desplegable para elegir la entrega, o las dos cosas a la vez.
+- **Consecuencias:** se ven todas las entregas a la vez. Las fórmulas recorren las páginas con `INDIRECT`, como el Tiempo total del Índice.
+- **Decidió:** Joaquín, a propuesta de Claude.
+
+#### Una historia de organización interna por entrega
+- **Contexto:** CS-60 tenía objetivos de E1 (metodología y libro), de E2 (asignación de tareas) y de E3 (alcance de la entrega 3), y con la entrega por historia contaría entera en una.
+- **Decisión:** CS-60 se queda en E1 y sus objetivos de E2 y E3 pasan a CS-68 y CS-69.
+- **Alternativas:** una columna «Entrega» opcional en los objetivos que mandara sobre la de la historia, o CS-60 entera en una entrega.
+- **Consecuencias:** cada entrega nueva tiene su «Organización interna · EX».
+- **Decidió:** Joaquín.
+
+#### Objetivos como macrotareas
+- **Contexto:** el feedback de la entrega 2 pide «más macrotareas que microtareas». Por ejemplo, CS-61 se planificó en 16 objetivos, uno por modelo, repositorio, ruta o tipo de prueba.
+- **Decisión:** de 3 a 6 objetivos por historia, cada uno un resultado comprobable de 1 a 4 horas que incluye sus pruebas; nunca uno por capa, archivo o paso de TDD.
+- **Alternativas:** ninguna registrada.
+- **Consecuencias:** `AGENTS.md` pide a los agentes seguir la guía. No se reescriben historias antiguas: ninguna de las pendientes tenía objetivos.
+- **Decidió:** Joaquín, a propuesta de Claude (las cifras de la guía).
+
+#### Historias nuevas para la entrega 3
+- **Contexto:** el feedback de la entrega 2 pide migrar la base de datos a online y una historia nueva para la parte visual, porque el frontend es mínimo y solo muestra las funcionalidades.
+- **Decisión:** CS-65 cierra el diseño (inventario, wireframes, guía de estilo y maquetas), CS-66 lo aplica a las 9 pantallas y CS-67 migra la base de datos. Las tres van en E3, sin responsable ni estimación: los pone quien se ofrezca.
+- **Alternativas:** dejar CS-66 para una entrega posterior.
+- **Consecuencias:** el criterio de CS-67 obliga a que las pruebas con MySQL sigan usando la base local, porque borran datos.
+- **Decidió:** Joaquín, a propuesta de Claude.
+
+### Comprobación
+- Las horas por persona y entrega se recalcularon en Python sobre una exportación del libro descargada el 10/10. «Tiempos» dio los mismos valores antes y después de mover los objetivos de CS-60 (al final, E1 9,63 h, E2 13,59 h y E3 0,83 h).
+- Un script de solo lectura confirmó los estados y objetivos de CS-30, CS-44, CS-60, CS-63 y CS-65 a CS-69, y las 20 historias con entrega (5 en E1, 11 en E2 y 4 en E3).
+- Revisión visual del Índice, de «Tiempos» y de CS-65. «Crear páginas» creó CS-65 a CS-69 con la columna nueva en el Índice.
+
+### Para quien continúe
+- Al crear una historia, elegir su «Entrega» en el Índice: sin ella, sus horas no aparecen en «Tiempos».
+- Poner Responsable y Tiempo total en cada objetivo terminado: sin responsable, sus horas van a «Otros».
+
+### Pendiente
+- Tiempo total de CS-30 (objetivos 6 a 10), CS-63 (1 a 11) y CS-44 (1 y 2): los pone quien hizo cada objetivo.
+- 6,38 h de E1 en «Otros»: objetivos sin responsable de CS-47, CS-49, CS-57 y CS-59.
+- CS-63, objetivos 5 y 6: el responsable es Matthew, pero según Git los hizo José. No se ha cambiado.
+- Responsable y estimación de CS-65, CS-66 y CS-67.
+
 # 2026-10-09
 
 ## Registro de prompts: todas las entradas con los campos de la plantilla

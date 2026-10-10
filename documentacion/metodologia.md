@@ -55,8 +55,16 @@ El libro está preparado para Excel para la web: solo usa fórmulas, tablas de E
 |Tiempo estimado|Horas previstas para toda la historia|A mano|
 |Tiempo total|Suma del «Tiempo total» de los objetivos de su página, en horas|Automático|
 |Estado|En espera, En progreso, Finalizada o Sin página|Automático|
+|Entrega|Entrega en la que se trabaja la historia (E1, E2…), en la columna H|Desplegable, con la lista de la hoja «Tiempos»|
 
 Arriba a la derecha, «Próxima ref.» muestra la siguiente referencia libre.
+
+**Tiempos.** La hoja «Tiempos» tiene dos partes:
+
+1. La tabla «Entregas», con las entregas en orden y sin fechas: E1 «Acceso y perfil», E2 «Círculo social», E3 «Parte visual y BBDD online»… Es la lista del desplegable «Entrega» del Índice.
+2. Las horas de cada persona (filas) en cada entrega (columnas, hasta diez): suma el Tiempo total de los objetivos que tiene como responsable en las historias de esa entrega. La fila «Otros» recoge los objetivos sin responsable o con un nombre fuera de la lista del equipo, y la fila «Total» coincide con la suma del Tiempo total de esas historias en el Índice. Todo se calcula solo.
+
+Para ver solo las historias de una entrega se filtra la columna «Entrega» del Índice.
 
 El estado se calcula a partir de los objetivos de la página:
 
@@ -117,7 +125,7 @@ Los desplegables y los colores cubren hasta la fila 500 del Índice y hasta 300 
 
 1. Escribir el título en la fila vacía que hay justo debajo de la tabla del Índice. La tabla crece sola y la fila muestra «Sin página».
 2. Pulsar el botón «Crear páginas». El botón pone la referencia, crea la página copiando «Plantilla» con la referencia y la fecha del día, enlaza el título y abre la página nueva.
-3. Rellenar Riesgo, Prioridad y Tiempo estimado en el Índice, y Propietario, Prior Reference, Task Description y Criterio de Validación en la página.
+3. Rellenar Riesgo, Prioridad, Tiempo estimado y Entrega en el Índice, y Propietario, Prior Reference, Task Description y Criterio de Validación en la página.
 
 Si el botón no está disponible, la página se crea a mano: clic derecho en «Plantilla» → «Duplicar», renombrar la copia con la referencia que indica «Próxima ref.» y escribir esa referencia en la celda B2 de la página y en la columna Ref de su fila del Índice.
 
@@ -127,13 +135,30 @@ Si el botón no está disponible, la página se crea a mano: clic derecho en «P
 
 **Enlaces que no funcionan.** Pulsar «Crear páginas» vuelve a crear los enlaces de todos los títulos del Índice y el «↑ Índice» de cada página, con el título actual como texto. Si se sube a OneDrive un archivo editado fuera de Excel, Excel puede repararlo al abrirlo y quitar el botón («Removed Part: Data store»). En ese caso, volver a agregarlo desde el panel del script y pulsarlo.
 
-### 3.4. Precauciones
+**Entrega nueva.** Añadir una fila al final de la tabla «Entregas» de la hoja «Tiempos», con la siguiente referencia (E4, E5…) y su nombre. Aparece en el desplegable del Índice y como columna en las horas por persona. Como la entrega se asigna por historia, el trabajo de organización del equipo va en una historia «Organización interna · EX» por entrega: CS-60 es la de E1, CS-68 la de E2 y CS-69 la de E3.
+
+La hoja «Tiempos» y la columna «Entrega» se crearon con `documentacion/office-scripts/prepararEntregas.ts`, de un solo uso. Si se vuelve a ejecutar, no duplica ni sobrescribe nada.
+
+### 3.4. Cómo escribir los objetivos
+
+Los objetivos son **macrotareas**: cada uno es un resultado completo que se puede comprobar por sí solo, no un paso suelto.
+
+* Un objetivo termina en algo que se ve o se prueba de principio a fin: una funcionalidad con sus datos, servicio, ruta, pantalla y pruebas; un documento cerrado; un diseño aprobado.
+* Tamaño orientativo: entre 1 y 4 horas (60 a 240 min). Si se estima en menos de una hora, probablemente es un paso de otro objetivo; si pasa de un día, se divide por resultados, no por capas.
+* Entre 3 y 6 objetivos por historia.
+* No se crea un objetivo por capa o archivo («crear el modelo», «crear el repositorio», «crear la ruta») ni por paso de TDD («escribir las pruebas»). Las pruebas forman parte de cada objetivo, que se da por terminado cuando pasan.
+* Entre todos los objetivos cubren el criterio de validación de la historia: cada frase del criterio corresponde a algún objetivo.
+
+Ejemplo: CS-61 se planificó en 16 objetivos (modelo de amistad, modelo de seguimiento, repositorios, búsqueda en el repositorio, enviar solicitud, aceptar y rechazar, seguir, `sonAmigos`, rutas, pruebas de API, pantalla de personas, solicitudes recibidas, enlace «Buscar personas», pruebas de pantalla y comprobación manual). Como macrotareas serían 4: buscar personas y abrir su perfil; enviar, aceptar, rechazar y eliminar solicitudes de amistad; seguir y dejar de seguir; y comprobar el criterio completo en escritorio y móvil.
+
+### 3.5. Precauciones
 
 * No escribir en las celdas grises de las páginas ni en las columnas Tiempo total y Estado del Índice: contienen fórmulas y se perderían.
 * No escribir a mano en la columna Objetivo de las páginas: el número lo pone una fórmula, y el Índice cuenta los objetivos por ese número. Un «Objetivo 3» escrito a mano no cuenta, y la historia no llega a «Finalizada».
 * No renombrar las páginas: el Índice las encuentra por su nombre, que debe coincidir con la referencia.
 * No insertar ni mover columnas en las páginas. El Índice lee de cada página las columnas A (número de objetivo), C (Finalizado), D (Responsable) y F (Tiempo total).
 * No insertar filas en la cabecera de «Plantilla»: el botón escribe la referencia en B2 y la fecha en B10.
+* En la hoja «Tiempos» solo se escribe en la tabla «Entregas»; el resto son fórmulas.
 * El Índice se puede ordenar y filtrar. En Excel para la web, un filtro lo ven todas las personas que tienen el libro abierto; para filtrar solo para uno mismo se usa Vista → Vista de hoja → Nueva.
 
 ## 4\. Flujo de una tarea

@@ -90,14 +90,14 @@ Las instrucciones comunes para los agentes que colaboren en el repositorio está
 
 El libro de historias de usuario (`Customer_Stories_PlanB.xlsx`) que usa el equipo está en el **OneDrive compartido**: allí se llevan el estado de cada tarea, su responsable voluntario, el tiempo estimado y el tiempo real.
 
-La copia de `documentacion/customer-stories/Customer_Stories_PlanB.xlsx` está obsoleta: no se consulta ni se actualiza. Los cambios se hacen directamente en el libro online. La misma carpeta guarda los documentos individuales de partida (`01-PlanteamientoInicial/`), y `documentacion/office-scripts/crearPaginas.ts` es el script del botón «Crear páginas» del libro online (ver [metodología](documentacion/metodologia.md)).
+La copia de `documentacion/customer-stories/Customer_Stories_PlanB.xlsx` está obsoleta: no se consulta ni se actualiza. Los cambios se hacen directamente en el libro online. La misma carpeta guarda los documentos individuales de partida (`01-PlanteamientoInicial/`), `documentacion/office-scripts/crearPaginas.ts` es el script del botón «Crear páginas» del libro online y `prepararEntregas.ts`, el que añadió la hoja «Tiempos» con las horas de cada persona por entrega (ver [metodología](documentacion/metodologia.md)).
 
 ## Estructura del repositorio
 
 * `backend/` — servidor Node.js + Express: API REST, lógica de negocio, persistencia con Prisma y pruebas.
 * `frontend/` — páginas HTML, CSS y JavaScript con Bootstrap.
 * `docker-compose.yml` — MySQL para desarrollo local.
-* `documentacion/` — documentación del proyecto, documentos de partida de las historias de usuario y copia obsoleta del libro (`customer-stories/`) y el script del libro online (`office-scripts/`).
+* `documentacion/` — documentación del proyecto, documentos de partida de las historias de usuario y copia obsoleta del libro (`customer-stories/`) y los scripts del libro online (`office-scripts/`).
 
 ## Licencia
 
