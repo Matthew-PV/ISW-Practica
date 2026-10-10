@@ -2,6 +2,54 @@
 
 Identificador habitual: JOA.
 
+## 2026-10-10 — Entrega 3: tiempos por entrega, macrotareas e historias nuevas en el libro online
+
+- **Historia u objetivo:** sin historia asociada; feedback de la entrega 2 y objetivo de la entrega 3 en el libro de historias.
+- **Agente/herramienta:** Claude Code en la aplicación de escritorio de Claude (pestaña Code), con el modelo Claude Opus 5.5. El libro online se editó desde el navegador integrado de la aplicación, porque Claude in Chrome no conectaba.
+- **Entorno:** Linux y terminal fish; Excel para la web con Office Scripts.
+- **Contexto aportado:** `AGENTS.md`, `CLAUDE.md` y `CLAUDE.local.md` (cargados automáticamente), el libro online abierto en el navegador integrado y el feedback de la entrega 2.
+- **Prompt inicial:**
+
+  > Estamos con la entrega de esta semana. Necesito de momento editar el excel online. Recuerda que hay un script para automatizar la creacion de nuevas stories.
+  >
+  > El feedback y objetivo de esta semana son:
+  >
+  > "- Migrar base de datos a online
+  > - Parte visual (Nueva CS)
+  > - Más macrotareas que microtareas
+  > - Tiempos totales por entregas"
+  >
+  > Queremos añadir, para cada semana el trabajo total de cada integrante, o en el indice, el tiempo de cada persona con un campo que permita filtrar por semana.
+  >
+  > Las semanas no tienen que ser estrictas, podemos hablar de entregas por ejemplo. Se ve claramente como la primera semana se busco una pagina de login y la segunda amplio a un circulo social.
+  >
+  > Crea un plan para añadir esto al excel, modificar documentacion para que en el futuro al crear los objetivos reduzcamos la cantidad "Más macrotareas que microtareas" y comprobar las tareas existentes y añadir nuevas para poder cumplir el objetivo de esta nueva entrega. Que es organizar la parte visual, cerrar un diseño con wireframes, plantillas de colores etc...
+  >
+  > Ahora mismo el frontend es minimo para mostrar todas las funcionalidades, no existe de verdad como algo profesional.
+
+- **Correcciones relevantes:**
+  - Respuestas a la primera tanda de preguntas del agente: entrega **por historia** (el agente recomendaba por objetivo); hoja «Tiempos» con las horas por persona y filtro en el Índice; crear las tres historias nuevas (diseño visual, aplicar el diseño y migrar la base de datos). Sobre las entregas:
+
+    > Si, pero no pongas fechas, simplemente un orden, las fechas pueden ir variando y solo añaden carga para el detalle
+
+  - Al no conectar Claude in Chrome, abrió el libro en el navegador integrado:
+
+    > ya lo tienes abierto
+
+  - Autorizó descargar una copia para leer el libro en local («Sí, descárgala»).
+  - Segunda tanda de preguntas: una historia de organización interna por entrega para repartir CS-60 (el agente recomendaba una columna de entrega opcional en los objetivos); corregir solo CS-30, CS-63 y CS-44 según Git, sin proponer responsables para los objetivos antiguos de E1; aprobar las historias nuevas tal cual.
+  - Al terminar:
+
+    > sí, haz push y escribe la entrada de prompts
+
+- **Resultado propuesto por la IA:** un script estructural (`prepararEntregas.ts`) que crea la hoja «Tiempos» y la columna «Entrega» y añade la guía de macrotareas a la ayuda de las páginas. Un script de datos que crea, con el botón «Crear páginas», CS-65 a CS-69, mueve los objetivos de E2 y E3 de CS-60 y marca como hechos los objetivos de CS-30, CS-44 y CS-63. La guía de macrotareas se añade a `metodologia.md` §3.4 y a `AGENTS.md` §3.
+- **TDD:** no aplicable: no cambió código de la aplicación. Se sustituyó por un recálculo en Python de las horas por persona y entrega sobre una exportación del libro, un script de solo lectura sobre el libro online y una revisión visual.
+- **Comprensión humana de las pruebas:** no se añadieron pruebas de software.
+- **Intervención humana:** Joaquín fijó el alcance a partir del feedback. Eligió la entrega por historia y las entregas sin fechas, frente a lo que proponía el agente, y la historia de organización por entrega para CS-60. Limitó las correcciones de datos a CS-30, CS-63 y CS-44 y aprobó las historias nuevas.
+- **Decisiones:** en [modificaciones.md](../modificaciones.md), 2026-10-10: «Libro de historias: entregas, tiempos por persona e historias de la entrega 3».
+- **Comprobación final:** «Tiempos» coincide con el recálculo en Python (E1 9,63 h, E2 13,59 h, E3 0,83 h). `npm test` y la comprobación de marcadores de conflicto, antes del push.
+- **Resultado en Git:** `d586d5d` y el commit que añade esta entrada.
+
 ## 2026-10-09 — Libro de historias online y registro del trabajo con decisiones ADR
 
 - **Historia u objetivo:** sin historia asociada; forma de trabajo del equipo con el libro de historias y con los registros que se dejan para otros agentes.

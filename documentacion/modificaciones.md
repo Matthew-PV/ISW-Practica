@@ -51,7 +51,7 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
   - historias nuevas: CS-65 «Diseño visual de PlanB» (4 objetivos), CS-66 «Aplicar el diseño al frontend» (5) y CS-67 «Migrar la base de datos a online» (3), sin responsable ni tiempo estimado;
   - CS-60 se queda con sus objetivos de E1. Los objetivos 3 a 5 pasan a CS-68 «Organización interna · E2» y el 6, a CS-69 «Organización interna · E3», con su responsable y sus tiempos;
   - correcciones según Git, sin tocar tiempos: CS-30, objetivos 5 a 10 hechos (Matthew el 5 y el 6, Joaquín del 7 al 10); CS-63, objetivos 1 a 11 hechos (José donde no había responsable); CS-44, dos objetivos hechos por Joaquín, que no tenía ninguno.
-- **Repositorio:** `documentacion/office-scripts/prepararEntregas.ts`; `metodologia.md` §3.1 (columna «Entrega» y hoja «Tiempos»), §3.3 (entrega nueva e historias de organización por entrega), §3.4 nueva «Cómo escribir los objetivos» y §3.5; `AGENTS.md` §3; `README.md`.
+- **Repositorio:** `documentacion/office-scripts/prepararEntregas.ts`; `metodologia.md` §3.1 (columna «Entrega» y hoja «Tiempos»), §3.3 (entrega nueva e historias de organización por entrega), §3.4 nueva «Cómo escribir los objetivos» y §3.5; `AGENTS.md` §3; `README.md`; entrada de esta tarea en `prompts/joaquin.md`.
 
 ### Decisiones
 #### La entrega se asigna por historia
