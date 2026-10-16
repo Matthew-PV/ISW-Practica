@@ -4,6 +4,33 @@ Identificador habitual: MAT / Matthew-PV.
 
 Las interacciones siguientes proceden de la conversación conservada en Codex. Cuando no consta la fecha exacta de la interacción, `2026-10-02` indica la fecha en la que se incorporó al registro, no necesariamente la fecha en que se escribió el prompt original. Se omiten mensajes de cortesía y confirmaciones que no influyeron en el trabajo.
 
+## 2026-10-16 — Diseñar el sitemap de PlanB
+
+- **Historia u objetivo:** CS-65, objetivo 2: diseñar el sitemap de la aplicación.
+- **Agente/herramienta:** Codex, GPT-6.
+- **Entorno:** aplicación Codex en Windows, PowerShell y documentación Mermaid/Markdown.
+- **Contexto aportado:** copia actual del libro de historias de OneDrive y dibujo del sitemap elaborado por Matthew explorando manualmente PlanB. Se contrastaron con las páginas, enlaces y scripts actuales y con `documentacion/frontend.md`.
+- **Prompt inicial:**
+
+  > ¡Buenos días! Hoy vamos a trabajar sobre el Objetivo 2 de la nueva CS-65. Es decir, el Sitemap de PlanB. Este es el sitemap que he hecho explorando manualmente.
+  > Me gustaría implementar dicho sitemap en el repositorio, como un fichero "sitemap.mmd", es decir, Mermaid. Trabajemos juntos en ver qué páginas y flujos incluir.
+
+- **Correcciones relevantes:**
+
+  > Prefiero un mapa solo de páginas y navegación, más limpio. Me parece bien implementarlo en documentación
+
+  > Me gustaría mantenerlo más limpio eliminando las interrogaciones y reescribiendo los puntos de conexión para evitar confusiones. ¿Puedes generarme otro boceto?
+
+  > Genial, con este último boceto implementa el plan anterior
+
+- **Resultado propuesto por la IA:** crear `documentacion/sitemap.mmd` con las nueve páginas y su navegación; sustituir el mapa duplicado en `frontend.md` por un enlace y las notas de lectura; registrar la tarea en el diario.
+- **TDD:** no aplica: solo cambia documentación. La comprobación consiste en contrastar el diagrama con las páginas y enlaces implementados y revisar su estructura.
+- **Comprensión humana de las pruebas:** se comprueba que cada caja corresponda a un archivo existente y cada flecha a un enlace o redirección real. El acceso mediante correo y las notas comunes deben distinguirse de los enlaces directos.
+- **Intervención humana:** Matthew aportó el dibujo, eligió limitar el mapa a páginas, pidió retirar parámetros y conexiones desde grupos, revisó el último boceto y autorizó su integración.
+- **Decisiones:** [2026-10-16 — CS-65: sitemap de páginas y navegación](../modificaciones.md#cs-65-sitemap-de-páginas-y-navegación).
+- **Comprobación final:** contrastados los recorridos con el código y comprobados los nueve archivos representados, el enlace documental y los espacios con Git. El boceto fue revisado en la conversación; el renderizado del archivo final queda pendiente de un visor Mermaid disponible. No se ejecutó la batería de la aplicación por tratarse de documentación.
+- **Resultado en Git:** pendiente del commit de Matthew.
+
 ## 2026-10-07 — Convertir la hoja de aprendizaje en una guía atemporal
 
 - **Historia u objetivo:** sin historia asociada; actualización de la guía de aprendizaje del equipo.

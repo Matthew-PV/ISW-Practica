@@ -7,43 +7,13 @@ El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilo
 
 ## Mapa de navegación
 
-Las cajas son páginas; las flechas, enlaces o redirecciones. Las cinco páginas con sesión comparten la misma barra superior (PlanB e Inicio llevan a `bienvenida.html`; además, «Buscar personas» y «Mi perfil»), que no se dibuja para no llenar el mapa de flechas.
+El [sitemap de PlanB](sitemap.mmd) es la referencia del mapa de navegación, en formato Mermaid. Contiene las nueve páginas actuales, agrupadas en «Acceso» y «Con sesión». Las cajas representan páginas; las flechas, enlaces o redirecciones. La flecha discontinua indica el acceso a restablecer la contraseña mediante el enlace recibido por correo.
 
-```mermaid
-flowchart TB
-  subgraph sin["Sin sesión"]
-    index["index.html<br/>Iniciar sesión"]
-    registro["registro.html<br/>Crear cuenta"]
-    recuperar["recuperar.html<br/>Pedir enlace"]
-    restablecer["restablecer.html?token=<br/>Nueva contraseña"]
-  end
-  subgraph con["Con sesión"]
-    bienvenida["bienvenida.html<br/>Mis experiencias"]
-    perfil["perfil.html<br/>Mi perfil"]
-    personas["personas.html<br/>Buscar personas"]
-    usuario["usuario.html?nombre=<br/>Perfil de otro"]
-    experiencia["experiencia.html?id=<br/>Detalle y valoraciones"]
-  end
-  email(["Email de recuperación"])
+**Navegación común:** las cinco páginas con sesión comparten la barra superior: PlanB e Inicio llevan a `bienvenida.html`; además, permite ir a «Buscar personas» y «Mi perfil». Estas conexiones se explican aquí y en los comentarios del sitemap para evitar repetir flechas.
 
-  index -- "«Regístrate»" --> registro
-  registro -- "«Inicia sesión»" --> index
-  index -- "«¿Has olvidado tu contraseña?»" --> recuperar
-  recuperar -- "«Volver a iniciar sesión»" --> index
-  recuperar -. "envía" .-> email
-  email -. "enlace" .-> restablecer
-  restablecer -- "tras cambiarla" --> index
-  index -- "login correcto" --> bienvenida
-  registro -- "registro correcto" --> bienvenida
-  bienvenida -- "«Ver detalle»" --> experiencia
-  perfil -- "una de mis experiencias" --> experiencia
-  usuario -- "una de sus experiencias" --> experiencia
-  perfil -- "nombre de un amigo,<br/>seguidor o solicitante" --> usuario
-  personas -- "un resultado" --> usuario
-  experiencia -- "autor o autor<br/>de una valoración" --> usuario
-  usuario -- "si es mi propio perfil" --> perfil
-  con -. "sin sesión (401)" .-> index
-```
+**Sesión no válida:** si una página con sesión recibe 401, vuelve al inicio de sesión. Esta regla se expresa como nota, sin conexiones desde grupos completos.
+
+El sitemap muestra solo los nombres de archivo. Las URL de detalle incluyen parámetros: `usuario.html?nombre=...` identifica a la persona, `experiencia.html?id=...` identifica la experiencia y `restablecer.html?token=...` recibe el código del enlace de recuperación.
 
 Un enlace a un usuario lleva a `perfil.html` si es el propio usuario y a `usuario.html?nombre=...` si es otro: lo decide `crearEnlacePerfil` (en `js/shared/pantalla.js`). Si una página con sesión recibe 401, vuelve a `index.html` con `irAlLogin`.
 

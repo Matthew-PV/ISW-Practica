@@ -36,6 +36,31 @@ Plantilla de una sección (las secciones `###` vacías se omiten, salvo «Cambio
 
 Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar su contenido: el autor y los commits salen de Git (`git blame` y `git log`), el agente solo figura si consta en el registro de prompts de su autor y una decisión solo aparece si la entrada original ya contaba su motivo.
 
+# 2026-10-16
+
+## CS-65: sitemap de páginas y navegación
+
+**Autor:** Matthew Puente Villegas Michavil, con Codex (GPT-6)
+**Historia:** CS-65, objetivo 2
+
+### Cambios
+- Nuevo `documentacion/sitemap.mmd` con las nueve páginas actuales de PlanB, agrupadas en acceso y páginas con sesión, y sus enlaces y redirecciones.
+- `documentacion/frontend.md` enlaza el sitemap como referencia en lugar de duplicar el diagrama. Explica la navegación común, el retorno por sesión no válida y los parámetros de las URL.
+- Interacción y acuerdos registrados en `documentacion/prompts/matthew.md`.
+
+### Decisiones
+#### Un sitemap centrado en páginas y navegación
+- **Contexto:** Matthew aportó un dibujo de su exploración manual para preparar el diseño visual de CS-65 y pidió convertirlo en Mermaid. El frontend ya tenía un mapa de navegación en su documentación.
+- **Decisión:** representar solo las nueve páginas implementadas y sus recorridos; omitir parámetros de URL en las cajas y expresar la barra común y la sesión no válida mediante notas. Conservar una sola fuente del mapa en `sitemap.mmd`, enlazada desde `frontend.md`.
+- **Alternativas:** incluir acciones internas como bucles; mostrar los parámetros en las cajas; conectar grupos completos; mantener otro mapa en Markdown. Se descartaron para reducir ruido visual, puntos de conexión confusos y duplicación documental.
+- **Consecuencias:** los formularios, diálogos y estados internos siguen documentados en `frontend.md` y `flujos.md`. Quien añada una página o cambie su navegación deberá actualizar el sitemap y sus notas.
+- **Decidió:** Matthew, a propuesta de Codex, tras revisar y ajustar dos bocetos.
+
+### Comprobación
+- Contrastadas las páginas y los recorridos con los HTML y scripts actuales: acceso, recuperación por correo, perfiles y detalle de experiencias.
+- Comprobados los archivos representados y el enlace local al sitemap; `git diff --check` sin errores de espacios.
+- TDD y batería de la aplicación no aplican: solo cambia documentación. El boceto Mermaid se revisó en la conversación; el archivo final queda pendiente de comprobar en un visor Mermaid, ya que no hay un renderizador instalado en este entorno.
+
 # 2026-10-10
 
 ## Libro de historias: entregas, tiempos por persona e historias de la entrega 3
