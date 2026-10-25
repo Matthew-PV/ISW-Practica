@@ -6,6 +6,42 @@ Las interacciones siguientes proceden de la conversación con Claude Code de los
 
 **Pendiente:** añadir, si se conservan los prompts, las interacciones de las primeras tareas de FLA05 (consulta del perfil propio, su prueba, edición del perfil y primera versión de la pantalla «Mi perfil»), realizadas entre el 28 de septiembre y el 1 de octubre.
 
+## 2026-10-25 — CS-65: borradores de diseño y arte y esquemas de las pantallas sociales
+
+- **Historia u objetivo:** CS-65 (diseño visual de PlanB), aportación a los objetivos 3 (esquemas de las pantallas, en móvil y escritorio) y 4 (guía de estilo). Es un borrador: ningún objetivo queda cerrado.
+- **Agente/herramienta:** Claude Code; modelo Claude Sonnet 5.5.
+- **Entorno:** macOS, aplicación de escritorio de Claude (pestaña Code) y terminal zsh.
+- **Contexto aportado:** capturas de las fichas de las historias nuevas del libro de historias online (diseño visual, implementación del diseño y base de datos online), `documentacion/frontend.md` y el sitemap de Matthew (`documentacion/sitemap.mmd`). También pasé mensajes del equipo sobre cómo repartir el trabajo de diseño; por decisión mía **no se transcriben en este registro**.
+- **Prompt inicial:**
+
+  > Estas son las nuevas tareas que tenemos que hacer, ¿cuál ves que podemos hacer?
+
+- **Correcciones relevantes:**
+
+  > No, puedo elegir. (Al preguntarme el agente si tenía alguna tarea asignada.)
+
+  > Espera, primero, ¿qué objetivo crees que podemos empezar?
+
+  > Enséñamelo por aquí. (El inventario de pantallas, antes de crear ningún archivo.)
+
+  > ¿Me puedes dar ejemplos de webs parecidas o cómo podríamos hacerlo?
+
+  > Dime ideas.
+
+  > Quiero más bocetos.
+
+  > ¿Qué es un sitemap?
+
+  > Hazlo tú y lo documentamos para que todos sepan.
+
+- **Resultado propuesto por la IA:** inventario de las 9 pantallas con sus estados y flujos, a partir de `frontend.md`; referencias de productos parecidos y tres estilos posibles; ideas de diseño para `usuario.html`, `perfil.html` y `personas.html`; bocetos de esas pantallas en móvil y escritorio, con dos variantes para `usuario.html`; y dos borradores de documentos, `diseno.md` (estructura) y `arte.md` (aspecto, vacío a propósito). Los esquemas se guardaron como SVG en blanco y negro en `documentacion/diseno/`.
+- **TDD:** no aplicable: es documentación y dibujos vectoriales, sin código.
+- **Comprensión humana de las pruebas:** no se incorporan pruebas.
+- **Intervención humana:** Flavia eligió trabajar sobre las pantallas sociales, pidió ver primero el inventario y los bocetos en la conversación, y pidió que se documentara para el equipo. *(A confirmar y completar por Flavia: si ha revisado el contenido de los dos documentos y los esquemas, y qué cambió o rechazó.)* Los esquemas son una propuesta del agente a partir del inventario, **no un dibujo a mano de Flavia**, que es lo que describe el reparto del equipo.
+- **Decisiones:** [2026-10-25, «CS-65: borradores de diseño y arte, y esquemas de las pantallas sociales»](../modificaciones.md): separar la estructura (`diseno.md`) del aspecto (`arte.md`), con nombres provisionales, y guardar los esquemas como SVG en blanco y negro.
+- **Comprobación final:** los cuatro SVG son XML válido y usan solo negro y blanco; los enlaces de los documentos apuntan a archivos existentes; no hay marcadores de conflicto ni credenciales; `npm test` desde `backend/` pasó con 52 suites y 568 pruebas. **Sin comprobar:** que el equipo haya revisado los documentos y esquemas, que los nombres de archivo sean los definitivos y cualquier decisión de colores o estilo, que sigue por tomar.
+- **Resultado en Git:** commit `75452b7`. La entrada de este registro: pendiente.
+
 ## 2026-10-06 — CS-62: perfil de otro usuario (objetivos 1 a 7, 9, 11 y 12)
 
 - **Historia u objetivo:** CS-62, «Perfil de otro usuario». Criterios afectados: ver nombre, foto, ciudad y contadores sin email; botón de amistad según la relación; botón de seguir; sus experiencias visibles; «Usuario no encontrado» y redirección si es el propio perfil. Los objetivos 8 y 10 los cubrieron otras historias (ver «Comprobación final»).
