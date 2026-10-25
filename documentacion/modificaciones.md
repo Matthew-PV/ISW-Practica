@@ -36,6 +36,49 @@ Plantilla de una sección (las secciones `###` vacías se omiten, salvo «Cambio
 
 Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar su contenido: el autor y los commits salen de Git (`git blame` y `git log`), el agente solo figura si consta en el registro de prompts de su autor y una decisión solo aparece si la entrada original ya contaba su motivo.
 
+# 2026-10-25
+
+## CS-65: borradores de diseño y arte, y esquemas de las pantallas sociales
+
+**Autor:** Flavia Méndez Tsutsumi, con Claude Code (Claude Sonnet 5.5)
+**Historia:** CS-65, aportación a los objetivos 3 y 4 (borrador, sin cerrar)
+
+### Cambios
+- Nuevo `documentacion/diseno.md`: estructura de las pantallas. Explica cómo se lee un esquema, las reglas que lo condicionan, los elementos comunes y una sección por pantalla con responsable, esquemas, estados y enlaces del sitemap. Termina con las decisiones abiertas.
+- Nuevo `documentacion/arte.md`: cómo debe verse PlanB. Tiene las reglas de consistencia y las tablas de paleta, tipografía y componentes **vacías a propósito**, porque el equipo aún no ha decidido nada.
+- Nueva carpeta `documentacion/diseno/` con cuatro esquemas en blanco y negro, en móvil (375 px) y escritorio (1280 px): `usuario-a.svg`, `usuario-b.svg` (dos variantes para elegir), `perfil.svg` y `personas.svg`.
+- `README.md` enlaza los dos documentos nuevos.
+
+### Decisiones
+#### Separar la estructura (diseno.md) del aspecto (arte.md)
+- **Contexto:** el equipo quiere que todas las pantallas sean consistentes y que los esquemas en blanco y negro no se mezclen con decisiones de color o de forma. La tarjeta del libro de historias habla de un único `diseno.md` con la guía de estilo.
+- **Decisión:** dos archivos: `diseno.md` para la colocación de los elementos y `arte.md` para colores, tipografía, bordes y componentes. Los nombres son provisionales.
+- **Alternativas:** un solo `diseno.md`, como dice la tarjeta; no se eligió porque mezcla estructura y estilo, que se deciden en momentos distintos.
+- **Consecuencias:** hay que acordar con el equipo si se mantienen dos archivos y cómo se llaman. Si se vuelve a uno solo, `arte.md` pasa a ser un apartado de `diseno.md`.
+- **Decidió:** Flavia, a propuesta de Claude, a falta de que el equipo lo confirme.
+
+#### Esquemas como SVG en blanco y negro dentro del repositorio
+- **Contexto:** los esquemas se dibujan primero a mano y luego hay que guardarlos de forma que todo el equipo los vea y los revise.
+- **Decisión:** SVG (vectorial, texto editable y versionable en Git) con solo negro y blanco, en `documentacion/diseno/`. Sin colores ni imágenes, para hablar solo de la colocación.
+- **Alternativas:** capturas en PNG (no se pueden editar ni comparar bien en Git) o una herramienta externa de diseño (obligaría a todos a tener cuenta y los esquemas no vivirían junto al código).
+- **Consecuencias:** los SVG se editan como texto o se regeneran; los colores, cuando se decidan, irán en `arte.md` y no en los esquemas.
+- **Decidió:** Flavia, a propuesta de Claude.
+
+### Comprobación
+- No hay código nuevo, así que no hay ciclo rojo, verde y refactorización.
+- Los cuatro SVG son XML válido (`xmllint`) y solo usan los colores `#000` y `#fff`. Se abrió `perfil.svg` en el navegador y se vio bien.
+- Se comprobó que los enlaces de `diseno.md` y `arte.md` apuntan a archivos que existen. En Git el sitemap se llama `sitemap.mmd`, en minúscula.
+
+### Para quien continúe
+- Para añadir un esquema: dibujarlo en papel, pasarlo a SVG en `documentacion/diseno/` con el mismo estilo (solo negro y blanco) y enlazarlo desde su sección de `diseno.md`.
+- Cuando el equipo decida un color, una forma de borde o una fuente, se apunta en `arte.md` antes de usarlo en las pantallas.
+
+### Pendiente
+- Elegir entre las variantes A y B de `usuario.html` en la revisión conjunta.
+- Decidir si hay una landing page antes del inicio de sesión (hoy `index.html` es el login), si la barra de navegación en móvil va abajo o arriba, y si los archivos son dos o uno.
+- Esquemas del resto de pantallas: `index`, `registro`, `recuperar`, `restablecer`, `bienvenida` (la hace Matthew) y `experiencia`. Los de Flavia son todavía una propuesta, no un dibujo a mano suyo.
+- Todo el contenido de `arte.md`: paleta con contraste AA, tipografía y componentes.
+
 # 2026-10-16
 
 ## CS-65: sitemap de páginas y navegación
