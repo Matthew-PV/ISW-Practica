@@ -13,7 +13,9 @@
 - Mismo tipo de borde en botones, campos y tarjetas.
 - Un solo botón principal por pantalla; el resto, secundarios.
 - Los mismos avisos, con los mismos colores, en todas las pantallas.
-- Contraste mínimo **AA** en texto y botones.
+- Contraste mínimo **AA**: 4,5:1 en texto y botones, y 3:1 en bordes de campos, iconos y otros componentes de interfaz.
+- Datos de partida (calculados con los colores por defecto de Bootstrap 5.3): textos y botones cumplen, algunos justo (el azul primario da 4,50:1 y el verde de éxito, 4,53:1); **el borde de los campos de formulario (`#ced4da`) da 1,49:1 y no cumple**, así que la paleta debe fijar un borde más oscuro.
+- La navegación en móvil es una barra inferior (ver [diseno.md](diseno.md)); la sección activa se distingue por forma (línea gruesa y negrita), no solo por color.
 - Todo se comprueba en 375, 768 y 1280 px.
 
 ## Paleta

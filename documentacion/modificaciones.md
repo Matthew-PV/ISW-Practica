@@ -36,6 +36,66 @@ Plantilla de una sección (las secciones `###` vacías se omiten, salvo «Cambio
 
 Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar su contenido: el autor y los commits salen de Git (`git blame` y `git log`), el agente solo figura si consta en el registro de prompts de su autor y una decisión solo aparece si la entrada original ya contaba su motivo.
 
+# 2026-10-26
+
+## CS-65: esquemas de las nueve pantallas, navegación en móvil y requisitos mínimos de diseño
+
+**Autor:** Flavia Méndez Tsutsumi, con Claude Code (Claude Sonnet 5.5)
+**Historia:** CS-65, objetivo 2 (bocetos y wireframes para móvil y escritorio, incluida la navegación en móvil)
+
+### Cambios
+- Siete esquemas SVG nuevos en `documentacion/diseno/`, en blanco y negro, en móvil (375 px) y escritorio (1280 px): `index.svg`, `registro.svg`, `recuperar.svg`, `restablecer.svg`, `bienvenida.svg` (con el diálogo de crear y editar), `experiencia.svg` y `navegacion-movil.svg`.
+- Con los cuatro del 25/10 (`usuario-a`, `usuario-b`, `perfil` y `personas`) están dibujadas las nueve pantallas de PlanB.
+- `navegacion-movil.svg` se rehace con la propuesta recomendada (barra inferior en móvil y barra superior desde 768 px), con sus medidas y reglas, y la alternativa descartada.
+- Los esquemas de las pantallas con sesión (`bienvenida`, `perfil`, `personas`, `experiencia` y `usuario`) llevan ahora la barra inferior en su versión móvil en lugar del icono ≡, con la sección activa marcada.
+- Nuevo `usuario.svg`: combina la variante A en móvil y la B en escritorio. `usuario-a.svg` y `usuario-b.svg` se conservan como alternativas.
+- `documentacion/diseno.md` enlaza cada esquema desde su sección, con la idea, los estados y los enlaces del sitemap, y añade la sección «Requisitos mínimos de un buen diseño de frontend»: 11 requisitos, cómo los cumple el diseño y en qué estado está el código hoy.
+- `documentacion/arte.md` recoge los dos datos de contraste que condicionan la paleta.
+
+### Decisiones
+#### Navegación en móvil: barra inferior fija
+- **Contexto:** el objetivo pide diseñar la navegación en móvil y su adaptación al escritorio. Hoy la barra superior lleva tres enlaces que en móvil no caben bien. El JavaScript de Bootstrap está bloqueado por la política de seguridad, así que un menú desplegable de Bootstrap no es una opción.
+- **Decisión:** barra fija abajo con Inicio, Buscar y Perfil en móvil (menos de 768 px) y barra superior con los tres enlaces desde 768 px. La sección activa se marca con una línea gruesa y negrita, no solo con color, y el enlace lleva `aria-current="page"`. Cada zona mide al menos 44 × 44 px y la barra, 56 px de alto, y respeta la zona segura del móvil. Solo aparece en las cinco pantallas con sesión.
+- **Alternativas:** menú ≡ desplegable con `<details>`. Se descartó porque esconde la navegación (hace falta un toque más para verla) y los tres destinos ya caben abajo. Se conserva dibujado como alternativa.
+- **Consecuencias:** el contenido necesita un margen inferior igual a la altura de la barra. Afecta a las cinco pantallas con sesión y a `styles.css`. Las páginas de acceso no la llevan.
+- **Decidió:** Flavia, delegando la elección en Claude; la recomendación es de Claude y el equipo la confirma en la revisión conjunta.
+
+#### `usuario.html`: combinar las variantes A y B
+- **Contexto:** había dos variantes: A (cabecera centrada) y B (persona en una tarjeta lateral fija en escritorio).
+- **Decisión:** una sola maqueta que se adapta: la cabecera centrada y las experiencias apiladas en móvil (A), y la tarjeta lateral fija con las experiencias a la derecha en escritorio (B).
+- **Alternativas:** quedarse con A o con B en los dos tamaños; se descartó porque la tarjeta lateral no aprovecha bien una pantalla estrecha y la cabecera centrada desaprovecha la anchura del escritorio.
+- **Consecuencias:** `usuario.html` necesitará una cuadrícula de dos columnas desde 768 px. Las variantes originales quedan como referencia.
+- **Decidió:** Flavia, delegando la elección en Claude; el equipo la confirma.
+
+#### Revisar el diseño con una lista de requisitos mínimos
+- **Contexto:** Flavia pidió asegurarse de que el diseño cumple los mínimos de un buen frontend.
+- **Decisión:** fijar 11 requisitos, basados en WCAG 2.2 nivel AA y buenas prácticas, y comprobar contra ellos tanto los esquemas como el código actual. Se calculó el contraste con la fórmula de WCAG y se revisó el HTML con la herramienta `grep`.
+- **Alternativas:** limitarse a dibujar los esquemas; se descartó porque dejaba sin señalar los fallos que ya tiene el código y que el diseño debe corregir.
+- **Consecuencias:** quedan documentadas cinco correcciones para la historia de implementación: nombre y `aria-current` en la barra, enlace «Saltar al contenido», `role="alert"` en los avisos, borde de campos con contraste 3:1 y botones de 44 px en móvil.
+- **Decidió:** Flavia, a propuesta de Claude.
+
+#### Dibujar también las pantallas que tienen otro responsable
+- **Contexto:** el reparto del equipo asigna cada pantalla a una persona (la bienvenida, a Matthew) y los esquemas se dibujan primero a mano, en papel.
+- **Decisión:** completar las nueve pantallas con propuestas de Flavia a partir de `frontend.md` y el sitemap, marcadas como propuesta y sustituibles por el dibujo de quien tenga cada pantalla.
+- **Alternativas:** dibujar solo las pantallas de Flavia; se descartó porque dejaba sin cubrir el objetivo 2 completo.
+- **Consecuencias:** no son dibujos a mano de cada persona, que es lo que describe el reparto; si alguien dibuja la suya, sustituye a la propuesta.
+- **Decidió:** Flavia, a propuesta de Claude.
+
+### Comprobación
+- No hay código nuevo, así que no hay ciclo rojo, verde y refactorización.
+- Los doce SVG son XML válido (`xmllint`) y solo usan `#000` y `#fff`. Se revisaron a la vista: se corrigió el diálogo de la bienvenida, que se solapaba con el marco del móvil al alargarlo por la barra inferior, y dos notas largas que se salían del lienzo.
+- Contraste calculado con los colores por defecto de Bootstrap: textos y botones cumplen AA (algunos con 4,50 y 4,53 frente al mínimo de 4,5) y el borde de los campos de formulario (`#ced4da`) da 1,49:1, por debajo del 3:1 exigido a los componentes de interfaz.
+- Revisión del HTML de las nueve páginas: todas tienen `lang`, `viewport`, un `h1`, `main` e imágenes con `alt`; ninguna tiene `aria-current`, ningún `nav` tiene `aria-label`, no hay enlace «Saltar al contenido» y cuatro páginas no tienen ningún aviso con `role="alert"`.
+- `npm test` desde `backend/` no se ha vuelto a ejecutar porque no hay código nuevo.
+
+### Pendiente
+- Que el equipo confirme la navegación en móvil (barra inferior), la combinación de `usuario.html` y si hay landing page.
+- No está dibujado el diálogo de «Reportar» de `experiencia.html`.
+- Los esquemas son propuestas generadas a partir de la documentación, no dibujos a mano de cada persona.
+- Todo el contenido de `arte.md` sigue sin decidir, salvo los dos datos de contraste.
+- Aplicar el diseño y corregir los cinco puntos de accesibilidad es trabajo de la historia de implementación.
+- El objetivo 2 del libro de historias no debe marcarse como finalizado hasta que el equipo revise los esquemas.
+
 # 2026-10-25
 
 ## CS-65: borradores de diseño y arte, y esquemas de las pantallas sociales
