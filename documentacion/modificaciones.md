@@ -62,6 +62,44 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 
 # 2026-10-26
 
+## CS-65: inventario de las nueve pantallas (objetivo 5)
+
+**Autor:** Flavia Méndez Tsutsumi, con Claude Code (Claude Sonnet 5.5)
+**Historia:** CS-65, objetivo 5 (inventario de las nueve pantallas con sus estados y flujos, a partir de `frontend.md`, la identidad visual y el sitemap). Con él se cierra el trabajo de la historia: según Flavia, los objetivos 1 a 4 están dados por buenos.
+
+### Cambios
+- Nuevo `documentacion/inventario-pantallas.md` con cinco apartados: las nueve pantallas con su esquema, una matriz de estados (cargando, vacío, error y «Contenido no disponible», más los propios de cada pantalla), los flujos tomados del sitemap, los componentes de la guía de estilo y el botón principal de cada pantalla, y las lagunas detectadas.
+- `README.md` y `documentacion/diseno.md` enlazan el documento.
+
+### Decisiones
+#### El inventario se hace revisando el código, no copiando la documentación
+- **Contexto:** el objetivo pide los estados de cada pantalla «a partir de `frontend.md`». Ese documento describe cómo está hecho hoy, pero no dice qué estados faltan.
+- **Decisión:** partir de `frontend.md` y el sitemap, y comprobar cada estado en el HTML y el JavaScript de cada pantalla. En el inventario cada estado se marca como existente (✔), ausente (✗) o no aplicable (—).
+- **Alternativas:** resumir `frontend.md` sin revisar el código; se descartó porque habría dado por hecho estados que no existen y no habría encontrado las lagunas.
+- **Consecuencias:** el inventario recoge cinco lagunas que el diseño ya contempla y que hay que implementar: no hay estado «Cargando» salvo en `experiencia`, la bienvenida vacía no explica nada, `personas` no tiene texto antes de buscar, cuatro pantallas no anuncian sus errores a lectores de pantalla, y «Útil» y «Reportar» no guardan nada.
+- **Decidió:** Flavia, a propuesta de Claude.
+
+#### Un documento propio, no un apartado de `frontend.md`
+- **Contexto:** el inventario compara lo que hay con lo diseñado; `frontend.md` describe solo lo que hay.
+- **Decisión:** `inventario-pantallas.md` como documento propio, enlazado desde `frontend.md`, `diseno.md` y el README, sin duplicar los diagramas de estados que ya están en `frontend.md`.
+- **Alternativas:** ampliar `frontend.md`; se descartó para no mezclar la descripción del estado actual con las propuestas.
+- **Consecuencias:** cuando cambie una pantalla hay que actualizar dos documentos, `frontend.md` y este; la sección «Para quien continúe» lo recuerda.
+- **Decidió:** Flavia, a propuesta de Claude.
+
+### Comprobación
+- No hay código nuevo, así que no hay ciclo rojo, verde y refactorización.
+- Estados revisados en las nueve páginas con `grep` sobre su HTML y su JavaScript, y comprobados a mano los textos de «Cargando experiencia…», «Creando cuenta…», «Subiendo foto…», «No se ha especificado ninguna experiencia.» y el botón de cada formulario. Flujos comparados con las flechas de `sitemap.mmd`.
+- No se ha abierto cada pantalla en el navegador para comprobar los estados: es una revisión del código.
+- Los enlaces del documento apuntan a archivos existentes y `npm test` sigue en verde.
+
+### Para quien continúe
+- Al añadir o cambiar una pantalla, actualizar las tablas de este documento, su esquema en `documentacion/diseno/` y su flecha en el sitemap.
+- Cuando se implemente un estado de la sección de lagunas, cambiar su ✗ por ✔ en la matriz de estados.
+
+### Pendiente
+- Implementar las cinco lagunas, que forma parte de la historia de implementación del diseño.
+- Marcar el objetivo 5 en el libro de historias, y la historia como terminada cuando todos sus objetivos lo estén.
+
 ## CS-65: guía de estilo e identidad visual (arte.md)
 
 **Autor:** Flavia Méndez Tsutsumi, con Claude Code (Claude Sonnet 5.5)

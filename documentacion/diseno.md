@@ -2,6 +2,7 @@
 
 > Qué elementos tiene cada pantalla y cómo se colocan, en móvil y en escritorio. Es solo estructura: sin colores, sin imágenes y sin código. Cómo se ve cada cosa (colores, bordes, tipografía) está en [arte.md](arte.md).
 > Documentos relacionados: [sitemap.mmd](sitemap.mmd), [frontend.md](frontend.md) (cómo está hecho hoy) y [flujos.md](flujos.md).
+> Inventario de las nueve pantallas con sus estados y flujos: [inventario-pantallas.md](inventario-pantallas.md).
 > Estado: el equipo ha dado por buenos los esquemas (indicado por Flavia el 26/10/2026). La guía de estilo, en [arte.md](arte.md), es una propuesta para aprobar.
 
 ## Cómo se lee un esquema
