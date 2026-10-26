@@ -164,7 +164,8 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 - `npm test` desde `backend/` no se ha vuelto a ejecutar porque no hay código nuevo.
 
 ### Pendiente
-- Que el equipo confirme las cuatro recomendaciones: barra inferior en móvil, la combinación de `usuario.html`, no crear landing page (con frase de presentación) y dos archivos de documentación.
+- Aprobadas por Flavia el 26/10/2026, y reflejadas en los esquemas que el equipo dio por buenos: barra inferior en móvil, combinación de `usuario.html` y no crear landing page (con frase de presentación).
+- Sigue pendiente decidir si se mantienen dos archivos de documentación: es la única recomendación que contradice algo ya escrito, porque la tarjeta del objetivo 3 del libro sitúa la guía en `diseno.md`.
 - Cambiar en el libro de historias la ruta de la guía de estilo del objetivo 3 (de `diseno.md` a `arte.md`); lo edita quien tenga el libro.
 - No está dibujado el diálogo de «Reportar» de `experiencia.html`.
 - Los esquemas son propuestas generadas a partir de la documentación, no dibujos a mano de cada persona.

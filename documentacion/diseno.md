@@ -29,7 +29,7 @@ Cada esquema se dibuja en **móvil (375 px)** y en **escritorio (1280 px)**. Un 
 
 | Elemento | Dónde aparece | Estado |
 |---|---|---|
-| Navegación (Inicio, Buscar personas, Mi perfil) | Las 5 pantallas con sesión | **Recomendada:** barra inferior en móvil y superior desde 768 px. Medidas y reglas en [diseno/navegacion-movil.svg](diseno/navegacion-movil.svg). Los esquemas de las pantallas con sesión ya la llevan |
+| Navegación (Inicio, Buscar personas, Mi perfil) | Las 5 pantallas con sesión | **Aprobada (Flavia, 26/10/2026):** barra inferior en móvil y superior desde 768 px. Medidas y reglas en [diseno/navegacion-movil.svg](diseno/navegacion-movil.svg). Los esquemas de las pantallas con sesión ya la llevan |
 | Avisos (error, éxito, información) | Todas | Dibujados como recuadro de línea discontinua en cada esquema |
 | Lista con «Cargar más» | Bienvenida, perfil, usuario, experiencia | Dibujada en cada esquema |
 | Diálogo | Bienvenida (crear y editar), experiencia (reportar) | Crear y editar: en [diseno/bienvenida.svg](diseno/bienvenida.svg). El de reportar, por dibujar |
@@ -44,7 +44,7 @@ Una sección por pantalla, con el mismo formato.
 - **Idea:** formulario centrado en una tarjeta, con la barra reducida al nombre PlanB porque aún no hay sesión. Sobre el título lleva una frase de presentación (texto de ejemplo: «Comparte y descubre planes por tu ciudad»), de modo que quien llega sepa qué es PlanB sin una página aparte. «Crear cuenta» es un **botón secundario visible**, no un enlace de texto, porque para quien llega a registrarse es la segunda acción más importante de la pantalla.
 - **Estados:** normal, error con el mensaje del servidor.
 - **Enlaces (sitemap):** registro, recuperar contraseña, bienvenida.
-- **Decisión:** no hay landing page; la frase de presentación hace su papel. Recomendada: el equipo la confirma y valida el texto.
+- **Decisión:** no hay landing page; la frase de presentación hace su papel. Aprobada (Flavia, 26/10/2026); el texto exacto de la frase lo valida el equipo.
 
 ### registro.html: crear una cuenta
 - **Responsable del esquema:** Flavia (propuesta)
@@ -87,11 +87,11 @@ Una sección por pantalla, con el mismo formato.
 
 ### usuario.html: perfil de otra persona
 - **Responsable del esquema:** Flavia
-- **Esquema recomendado (móvil y escritorio):** [diseno/usuario.svg](diseno/usuario.svg). Combina las dos variantes: en móvil, cabecera centrada y experiencias apiladas (A); en escritorio, la persona en una tarjeta lateral fija y las experiencias a la derecha (B).
+- **Esquema aprobado (móvil y escritorio):** [diseno/usuario.svg](diseno/usuario.svg). Combina las dos variantes: en móvil, cabecera centrada y experiencias apiladas (A); en escritorio, la persona en una tarjeta lateral fija y las experiencias a la derecha (B).
 - **Variantes originales, como alternativa:** [diseno/usuario-a.svg](diseno/usuario-a.svg) (cabecera centrada también en escritorio) y [diseno/usuario-b.svg](diseno/usuario-b.svg) (tarjeta lateral también en móvil).
 - **Estados:** perfil, «Usuario no encontrado», cuatro versiones del botón de amistad (ninguna, enviada, recibida, amigos), «Seguir» o «Dejar de seguir», y «No hay experiencias que puedas ver».
 - **Enlaces (sitemap):** detalle de una experiencia; si es el propio usuario, `perfil.html`.
-- **Decisión:** recomendada la combinación de `usuario.svg`; el equipo la confirma en la revisión conjunta.
+- **Decisión:** aprobada la combinación de `usuario.svg` (Flavia, 26/10/2026).
 
 ### experiencia.html: una experiencia
 - **Responsable del esquema:** Flavia (propuesta)
@@ -127,7 +127,7 @@ Lista con la que se revisa cada esquema y, después, cada pantalla. Parte de las
 
 | Pregunta | Quién decide | Estado |
 |---|---|---|
-| ¿Hay una landing page antes del inicio de sesión? | Equipo | Recomendado **no** crear una página nueva y presentar PlanB con una frase en `index.html`; falta confirmarlo |
-| Navegación en móvil: barra inferior fija (recomendada) o menú ≡ desplegable. Ver [diseno/navegacion-movil.svg](diseno/navegacion-movil.svg) | Equipo | Recomendada la barra inferior; falta confirmarlo |
-| `usuario.html`: combinación de `usuario.svg` (móvil A, escritorio B) o una de las variantes originales | Equipo | Recomendada la combinación; falta confirmarlo |
+| ¿Hay una landing page antes del inicio de sesión? | Equipo | **Aprobado (Flavia, 26/10/2026):** no crear una página nueva y presentar PlanB con una frase en `index.html`. Encaja con las nueve pantallas del libro y del sitemap |
+| Navegación en móvil: barra inferior fija (recomendada) o menú ≡ desplegable. Ver [diseno/navegacion-movil.svg](diseno/navegacion-movil.svg) | Equipo | **Aprobada (Flavia, 26/10/2026):** la barra inferior, ya reflejada en los esquemas que el equipo dio por buenos |
+| `usuario.html`: combinación de `usuario.svg` (móvil A, escritorio B) o una de las variantes originales | Equipo | **Aprobada (Flavia, 26/10/2026):** la combinación, reflejada en los mismos esquemas |
 | ¿`diseno.md` y `arte.md` separados o un solo archivo? | Equipo | Recomendado **dos archivos**: `diseno.md` (estructura) y `arte.md` (guía de estilo). Hay que cambiar la ruta de la guía en la tarjeta del objetivo 3 del libro, que dice `diseno.md`; falta confirmarlo |
