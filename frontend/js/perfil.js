@@ -30,6 +30,8 @@ async function cargarPerfil() {
   } catch {
     // Sin sesión (o el servidor no responde): se vuelve al login
     window.location.href = '/';
+  } finally {
+    ocultarCargando();
   }
 }
 

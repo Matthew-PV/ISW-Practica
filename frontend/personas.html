@@ -30,6 +30,9 @@
       </div>
     </form>
 
+    <!-- Antes de buscar se explica qué escribir; mientras se busca, «Cargando…» (js/personas.js) -->
+    <p id="ayuda-busqueda" class="text-secondary">Escribe parte de un nombre.</p>
+    <p id="cargando" class="text-secondary d-none" role="status">Cargando…</p>
     <div id="error-busqueda" class="alert alert-danger d-none" role="alert"></div>
     <p id="sin-resultados" class="text-secondary d-none">No se han encontrado personas.</p>
     <div id="resultados" class="list-group" aria-live="polite"></div>

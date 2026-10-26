@@ -21,6 +21,7 @@
 
   <main class="container contenedor-formulario py-5">
     <h1 class="h3 mb-4">Mi perfil</h1>
+    <p id="cargando" class="text-secondary" role="status">Cargando…</p>
 
     <div class="text-center mb-4">
       <img id="foto-perfil" src="" alt="Foto de perfil" class="rounded-circle d-none" width="120" height="120">
@@ -31,7 +32,7 @@
       <label for="foto" class="form-label">Foto de perfil (JPG, PNG o WebP, máximo 5 MB)</label>
       <input type="file" class="form-control" id="foto" accept="image/jpeg,image/png,image/webp">
       <div id="ayuda-foto" class="form-text">Se guarda en cuanto la eliges.</div>
-      <div id="error-foto" class="alert alert-danger d-none mt-2"></div>
+      <div id="error-foto" role="alert" class="alert alert-danger d-none mt-2"></div>
       <div id="exito-foto" class="alert alert-success d-none mt-2"></div>
     </div>
 
@@ -48,7 +49,7 @@
         <label for="ciudad" class="form-label">Ciudad</label>
         <input type="text" class="form-control" id="ciudad" maxlength="191">
       </div>
-      <div id="error-perfil" class="alert alert-danger d-none"></div>
+      <div id="error-perfil" role="alert" class="alert alert-danger d-none"></div>
       <div id="exito-perfil" class="alert alert-success d-none"></div>
       <button type="submit" class="btn btn-primary w-100">Guardar cambios</button>
     </form>

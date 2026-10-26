@@ -3,7 +3,7 @@
 // Se abre con usuario.html?nombre=ana. Si el usuario no existe lo indica, y si es el propio usuario
 // va a perfil.html. Debajo, sus experiencias que puedo ver (CS-44). Usa `api` de shared/api.js y
 // `mostrarExperienciasDe` y `recargarExperiencias` de shared/experiencias.js, y `mostrarMensaje`,
-// `ocultarMensaje` e `irAlLogin` de shared/pantalla.js.
+// `ocultarMensaje`, `ocultarCargando` e `irAlLogin` de shared/pantalla.js.
 
 const nombre = new URLSearchParams(window.location.search).get('nombre');
 const botonesAmistad = document.getElementById('botones-amistad');
@@ -95,6 +95,10 @@ async function cargarPerfil() {
   try {
     const perfil = await api(`/usuarios/${encodeURIComponent(nombre)}`);
     mostrarPerfil(perfil);
+    // Hasta que llega el perfil la página no enseña datos de relleno (0 amigos, foto vacía...)
+    if (!perfil.esPropio) {
+      document.getElementById('perfil-usuario').classList.remove('d-none');
+    }
     return !perfil.esPropio;
   } catch (err) {
     if (err.status === 404) {
@@ -105,6 +109,8 @@ async function cargarPerfil() {
       irAlLogin();
     }
     return false;
+  } finally {
+    ocultarCargando();
   }
 }
 

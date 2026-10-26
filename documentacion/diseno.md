@@ -115,14 +115,14 @@ Lista con la que se revisa cada esquema y, después, cada pantalla. Parte de las
 | 5 | **Uso con teclado y foco visible** | Todo se alcanza con Tab y el foco se ve | Elementos nativos (`button`, `a`, `details`, `dialog`) | **Sin enlace «Saltar al contenido»**; el foco depende del estilo por defecto de Bootstrap, sin revisar a mano |
 | 6 | **Estructura semántica** | `lang`, un solo `h1`, `main`, `nav` con nombre y etiquetas en los campos | Cada pantalla tiene un título principal y campos con etiqueta | Las 9 páginas cumplen `lang="es"`, un `h1`, `main` e imágenes con `alt`. Falta el nombre de los `nav` |
 | 7 | **No depender solo del color** | La información sigue clara en blanco y negro | Activo = línea + negrita; errores = texto, no solo color; lo desactivado se indica con texto | «Solicitud enviada» ya se distingue por el texto |
-| 8 | **Estados y avisos** | Cada pantalla resuelve cargando, vacío, error y «Contenido no disponible», y los errores se anuncian a lectores de pantalla | Cada esquema dibuja sus avisos; los estados están en [frontend.md](frontend.md) | `mostrarMensaje` no añade `role="alert"`; **4 de las 9 páginas no tienen ningún aviso con `role="alert"` o `aria-live`** |
+| 8 | **Estados y avisos** | Cada pantalla resuelve cargando, vacío, error y «Contenido no disponible», y los errores se anuncian a lectores de pantalla | Cada esquema dibuja sus avisos; los estados están en [frontend.md](frontend.md) | Corregido el 26/10/2026: todos los avisos de error llevan `role="alert"` (lo comprueba una prueba) y las pantallas con datos tienen estado «Cargando…» |
 | 9 | **Jerarquía clara** | Un solo botón principal por pantalla | Botón principal relleno en negro; el resto, con contorno | Hoy se mezclan colores de Bootstrap (primario, éxito, peligro) sin una regla común |
 | 10 | **Legible y estable** | Cuerpo de texto de 16 px, columnas de texto estrechas y sin saltos al cargar las imágenes | Formularios en una columna estrecha | Las imágenes de perfil llevan `width` y `height`; el cuerpo usa los 16 px de Bootstrap |
 | 11 | **Sin JavaScript de Bootstrap** | Nada del diseño depende de sus componentes | Diálogos con `<dialog>` y plegables con `<details>`; la barra son enlaces normales | Cumple |
 
 **Cómo se midió el contraste:** fórmula de luminancia relativa de WCAG con los colores por defecto de Bootstrap 5.3. No se ha medido sobre capturas de pantalla.
 
-**Qué hay que corregir al aplicar el diseño** (entra en la historia de implementación, no en esta): nombre y `aria-current` en la barra, enlace «Saltar al contenido», `role="alert"` en los avisos, borde de campos con contraste 3:1, y botones de 44 px en móvil.
+**Qué hay que corregir al aplicar el diseño** (entra en la historia de implementación, no en esta): nombre y `aria-current` en la barra, enlace «Saltar al contenido», borde de campos con contraste 3:1, y botones de 44 px en móvil. Los `role="alert"` en los avisos ya están hechos.
 
 ## Decisiones pendientes
 

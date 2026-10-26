@@ -106,38 +106,38 @@ Pruebas: `recuperacion.test.js`.
 
 ### `bienvenida.html`: mis experiencias
 
-* Saluda al usuario y muestra sus experiencias en una rejilla, de 10 en 10, con «Cargar más» (`#mas-experiencias`).
+* Saluda al usuario y muestra sus experiencias en una rejilla, de 10 en 10, con «Cargar más» (`#mas-experiencias`). Mientras llegan los datos se ve «Cargando…» (`#cargando`) y, si no hay ninguna experiencia, `#sin-experiencias` dice «Todavía no has publicado experiencias.» junto a la tarjeta «+».
 * La primera tarjeta, «+», abre el `<dialog>` `#dialogo-experiencia` para crear una experiencia. «Editar» abre el mismo diálogo relleno con sus datos.
 * Debajo del selector de visibilidad, `#descripcion-visibilidad` explica la opción elegida.
 * Al guardar, la tarjeta nueva aparece la primera y la editada se sustituye en su sitio, sin recargar la página.
 * El desplegable de ciudades se llena con `GET /api/ciudades`.
 
-Pruebas: `bienvenida.test.js`.
+Pruebas: `bienvenida.test.js` y `estados.test.js`.
 
 ### `perfil.html`: mi perfil
 
-* **Datos:** nombre de usuario y ciudad editables, email solo de lectura, y la foto, que se sube nada más elegirla.
+* **Datos:** nombre de usuario y ciudad editables, email solo de lectura, y la foto, que se sube nada más elegirla. Hasta que llegan los datos se ve «Cargando…» (`#cargando`).
 * **Cambiar la contraseña:** actual, nueva y repetida, con la lista de requisitos.
 * **Mis experiencias:** con `mostrarExperienciasDe`, incluidas las privadas.
 * **Solicitudes recibidas:** cada una con «Aceptar» y «Rechazar». Al aceptar se recargan los contadores, la lista de amigos y mis experiencias.
 * **Amigos y seguidores:** contadores y dos listas de 20 en 20 con «Cargar más». Cada nombre lleva a su perfil.
 
-Pruebas: `perfil.foto.test.js`, `perfil.password.test.js`, `perfil.relaciones.test.js`, `perfil.solicitudes.test.js` y `shared/experiencias.test.js`.
+Pruebas: `perfil.foto.test.js`, `perfil.password.test.js`, `perfil.relaciones.test.js`, `perfil.solicitudes.test.js`, `estados.test.js` y `shared/experiencias.test.js`.
 
 ### `personas.html`: buscar personas
 
-Un buscador por parte del nombre (como mucho 20 resultados). Cada resultado es un enlace a su perfil.
+Un buscador por parte del nombre (como mucho 20 resultados). Cada resultado es un enlace a su perfil. Antes de buscar, `#ayuda-busqueda` explica qué escribir («Escribe parte de un nombre.»); mientras se busca se ve «Cargando…» (`#cargando`).
 
-Pruebas: `personas.test.js`.
+Pruebas: `personas.test.js` y `estados.test.js`.
 
 ### `usuario.html?nombre=`: perfil de otro usuario
 
-* Foto, nombre, ciudad y contadores de amigos y seguidores. Si el usuario no existe, solo se muestra `#no-encontrado`; si es el propio usuario, va a `perfil.html`.
+* Foto, nombre, ciudad y contadores de amigos y seguidores. Hasta que llega el perfil se ve «Cargando…» (`#cargando`) y no los datos de relleno. Si el usuario no existe, solo se muestra `#no-encontrado`; si es el propio usuario, va a `perfil.html`.
 * En `#botones-amistad` aparecen los botones que corresponden a la relación (ver [E2](flujos.md#e2-la-relación-vista-desde-el-perfil-de-otro-usuario)). «Eliminar amigo» pide confirmación.
 * `#boton-seguir` alterna entre «Seguir» y «Dejar de seguir».
 * Tras cada acción se vuelve a pedir el perfil, para que los contadores y botones sean los reales, y también «Sus experiencias», porque al cambiar la amistad cambian las que se pueden ver.
 
-Pruebas: `usuario.test.js` y `shared/experiencias.test.js`.
+Pruebas: `usuario.test.js`, `estados.test.js` y `shared/experiencias.test.js`.
 
 ### `experiencia.html?id=`: una experiencia
 
@@ -154,7 +154,7 @@ Pruebas: `experiencia.test.js` y `experiencia.formulario.test.js`.
 | Archivo | Ofrece | Lo usan |
 |---|---|---|
 | `api.js` | `api(ruta, opciones)`: llama a `/api` + `ruta` con `fetch` y la cookie de sesión. Envía `Content-Type: application/json` salvo con `FormData`, en cuyo caso la cabecera la pone el navegador. Devuelve el JSON (o `null` si no hay cuerpo); si falla, lanza un `Error` con el mensaje del servidor y `error.status`. | Todas las páginas |
-| `pantalla.js` | `mostrarMensaje(caja, texto)` y `ocultarMensaje(caja)`; `irAlLogin()`; `crearEnlacePerfil(enlace, usuario, miUsuarioId)`; `listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar })`, que devuelve `{ cargar, reiniciar }` y no repite un elemento que ya está en la lista. | Las páginas con sesión y `experiencias.js` |
+| `pantalla.js` | `mostrarMensaje(caja, texto)` y `ocultarMensaje(caja)`; `mostrarCargando()` y `ocultarCargando()`, que muestran y ocultan el texto `#cargando` de la página; `irAlLogin()`; `crearEnlacePerfil(enlace, usuario, miUsuarioId)`; `listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar })`, que devuelve `{ cargar, reiniciar }` y no repite un elemento que ya está en la lista. La lista está vacía cuando no tiene ningún hijo con `data-id-elemento`, de modo que la tarjeta «+» de la bienvenida no cuenta. | Las páginas con sesión y `experiencias.js` |
 | `experiencias.js` | `mostrarExperienciasDe(nombreUsuario)` y `recargarExperiencias()`: la lista «Cargar más» de experiencias de un autor. La página debe tener `#lista-experiencias`, `#sin-experiencias`, `#mas-experiencias` y `#error-experiencias`. | `perfil.js`, `usuario.js` |
 | `password.js` | `mostrarRequisitosPassword(campo, lista, obtenerNombre)`: marca los requisitos cumplidos mientras se escribe. Son los mismos que comprueba el backend, que es quien decide. | `registro.js`, `perfil.js`, `restablecer.js` |
 
@@ -163,6 +163,7 @@ Los módulos se cargan con `<script>` normales (no son módulos ES) y exponen su
 ## Reglas del frontend
 
 * **Sin scripts en línea.** La política CSP de Helmet los bloquea: nada de `onclick=` ni `<script>` con código dentro del HTML. Los eventos se asignan con `addEventListener` en el JS de la página.
+* **Avisos de error con `role="alert"`.** Todo elemento cuyo `id` empieza por `error-` lleva `role="alert"` para que se anuncie a los lectores de pantalla; `estados.test.js` lo comprueba en las nueve páginas.
 * **Texto de usuarios con `textContent`.** Nunca con `innerHTML`, para que un nombre o comentario con HTML se vea como texto y no se ejecute. `innerHTML` solo se usa para estructuras fijas sin datos, como el esqueleto de una tarjeta.
 * **Ventanas con `<dialog>`.** La CSP no deja cargar el JavaScript de Bootstrap desde el CDN, así que los diálogos usan el elemento nativo `<dialog>` con `showModal()` y `close()`.
 * **La seguridad está en el backend.** Ocultar un botón (por ejemplo, el formulario de valorar en una experiencia propia) solo mejora la interfaz: el servidor comprueba siempre los permisos.

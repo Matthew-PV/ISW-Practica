@@ -14,6 +14,15 @@ function ocultarMensaje(caja) {
   caja.classList.add('d-none');
 }
 
+// Muestra u oculta el texto «Cargando…» (#cargando) de una página mientras llegan sus datos.
+function mostrarCargando() {
+  document.getElementById('cargando')?.classList.remove('d-none');
+}
+
+function ocultarCargando() {
+  document.getElementById('cargando')?.classList.add('d-none');
+}
+
 // Sin sesión no se puede usar la página: se vuelve al inicio de sesión.
 function irAlLogin() {
   window.location.href = '/';
@@ -53,7 +62,8 @@ function listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar }) {
         }
       }
       siguiente = pagina.siguiente;
-      vacio?.classList.toggle('d-none', lista.children.length !== 0);
+      // Solo cuentan los elementos de la lista: la bienvenida lleva además la tarjeta «+» dentro de la rejilla
+      vacio?.classList.toggle('d-none', lista.querySelector('[data-id-elemento]') !== null);
       botonMas.classList.toggle('d-none', siguiente === null);
     } catch (err) {
       alFallar(err);
@@ -79,4 +89,4 @@ function listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar }) {
 // Funciones que usan los scripts de las páginas, que se cargan después de este. En el navegador
 // ya serían globales; se dejan en window de forma explícita para que también lo sean cuando las
 // pruebas cargan el archivo como módulo (para medir su cobertura).
-Object.assign(window, { mostrarMensaje, ocultarMensaje, irAlLogin, crearEnlacePerfil, listaConCargarMas });
+Object.assign(window, { mostrarMensaje, ocultarMensaje, mostrarCargando, ocultarCargando, irAlLogin, crearEnlacePerfil, listaConCargarMas });

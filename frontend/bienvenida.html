@@ -23,7 +23,8 @@
     <h1 class="h3 mb-4">¡Bienvenido, <span id="nombre-usuario"></span>!</h1>
 
     <h2 class="h5 mb-3">Mis experiencias</h2>
-    <div id="error-lista" class="alert alert-danger d-none"></div>
+    <p id="cargando" class="text-secondary" role="status">Cargando…</p>
+    <div id="error-lista" role="alert" class="alert alert-danger d-none"></div>
 
     <div id="rejilla" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3">
       <div class="col" id="columna-nueva">
@@ -37,6 +38,7 @@
         </button>
       </div>
     </div>
+    <p id="sin-experiencias" class="text-secondary text-center mt-3 d-none">Todavía no has publicado experiencias.</p>
     <!-- CS-44: las siguientes páginas de mis experiencias -->
     <div class="text-center mt-3">
       <button type="button" id="mas-experiencias" class="btn btn-outline-secondary d-none">Cargar más</button>
@@ -115,7 +117,7 @@
       </div>
 
       <div
-        id="error-experiencia"
+        id="error-experiencia" role="alert"
         class="alert alert-danger d-none"
       ></div>
 

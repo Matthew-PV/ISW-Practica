@@ -23,8 +23,10 @@
     <!-- Se muestra solo si el usuario no existe (js/usuario.js) -->
     <div id="no-encontrado" class="alert alert-warning text-center d-none">Usuario no encontrado</div>
 
-    <!-- Los datos se rellenan desde js/usuario.js con el perfil que devuelve el backend -->
-    <div id="perfil-usuario" class="text-center">
+    <p id="cargando" class="text-secondary text-center" role="status">Cargando…</p>
+
+    <!-- Los datos se rellenan desde js/usuario.js con el perfil que devuelve el backend; hasta entonces no se muestra -->
+    <div id="perfil-usuario" class="text-center d-none">
       <img id="foto-usuario" src="img/foto-por-defecto.svg" alt="Foto de perfil" class="rounded-circle mb-3" width="120" height="120">
       <h1 id="nombre-usuario" class="h3"></h1>
       <p id="ciudad" class="text-secondary"></p>
@@ -36,7 +38,7 @@
       <div id="botones-amistad" class="d-flex justify-content-center gap-2 mb-3"></div>
       <!-- El botón de seguir lo crea js/usuario.js; seguir no depende de la amistad -->
       <div id="boton-seguir" class="d-flex justify-content-center mb-3"></div>
-      <div id="error-usuario" class="alert alert-danger d-none"></div>
+      <div id="error-usuario" role="alert" class="alert alert-danger d-none"></div>
 
       <!-- CS-44: sus experiencias que puedo ver; las pinta js/shared/experiencias.js -->
       <section class="mt-5 text-start" aria-labelledby="titulo-experiencias">

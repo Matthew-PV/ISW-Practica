@@ -6,6 +6,75 @@ Las interacciones siguientes proceden de la conversación con Claude Code de los
 
 **Pendiente:** añadir, si se conservan los prompts, las interacciones de las primeras tareas de FLA05 (consulta del perfil propio, su prueba, edición del perfil y primera versión de la pantalla «Mi perfil»), realizadas entre el 28 de septiembre y el 1 de octubre.
 
+## 2026-10-26 — CS-65: estados que faltaban en las pantallas (lagunas del inventario)
+
+- **Historia u objetivo:** CS-65, objetivo 5: cubrir las lagunas detectadas en el inventario de pantallas (estado «Cargando», mensaje de vacío, ayuda antes de buscar y avisos de error accesibles).
+- **Agente/herramienta:** Claude Code; modelo Claude Sonnet 5.5.
+- **Entorno:** macOS, aplicación de escritorio de Claude (pestaña Code), terminal zsh y Docker Desktop.
+- **Contexto aportado:** el inventario de pantallas (`documentacion/inventario-pantallas.md`) con sus cinco lagunas, el código de `frontend/` y las pruebas de pantalla de `backend/tests/frontend/`.
+- **Prompt inicial:**
+
+  > Termínalas todas y registremos todos los prompts. Quiero que cada vez que subamos algo se suban los prompts en el mismo commit.
+
+- **Correcciones relevantes:** ninguna.
+- **Resultado propuesto por la IA:** cuatro de las cinco lagunas: «Cargando…» en `bienvenida`, `perfil`, `personas` y `usuario`; el mensaje «Todavía no has publicado experiencias.» en la bienvenida; «Escribe parte de un nombre.» antes de buscar en `personas`; y `role="alert"` en los ocho avisos de error que no lo tenían, vigilado por una prueba sobre las nueve páginas. La quinta (los botones «Útil» y «Reportar», que no guardan nada) no se tocó porque depende de CS-02 y CS-04, que son de otras historias. Se corrigió además el inventario, que decía «cuatro pantallas» sin `role="alert"` cuando eran ocho avisos en seis pantallas.
+- **TDD:** se escribió primero `backend/tests/frontend/estados.test.js` (22 pruebas). Fallaron 19, por no existir `#cargando`, `#sin-experiencias`, `#ayuda-busqueda` ni los `role="alert"`; las 3 que ya pasaban eran páginas que sí tenían el rol y quedan como caracterización. Con los cambios mínimos pasaron las 22. No hubo refactorización.
+- **Comprensión humana de las pruebas:** *(a confirmar y completar por Flavia con sus palabras)*. La prueba general lee el HTML de las nueve páginas y comprueba que todo aviso cuyo `id` empieza por `error-` lleva `role="alert"`. Las de cada pantalla simulan el servidor con `fetch`: dejan la respuesta pendiente para ver que se muestra «Cargando…», la resuelven para ver que desaparece, y también la hacen fallar. Las de la bienvenida comprueban que el mensaje de vacío aparece sin experiencias y desaparece al crear la primera.
+- **Intervención humana:** Flavia pidió terminar las lagunas y que, desde ahora, los prompts se suban en el mismo commit que el trabajo. *(A confirmar y completar por Flavia: si ha revisado los cambios en las pantallas y qué modificó o rechazó.)*
+- **Decisiones:** [2026-10-26, «CS-65: estados que faltaban en las pantallas (lagunas del inventario)»](../modificaciones.md): un «Cargando…» común, `usuario.html` oculto hasta que llega el perfil, lista vacía según sus propios elementos y `role="alert"` vigilado por una prueba.
+- **Comprobación final:** `npm test` desde `backend/`: 53 suites y 590 pruebas. `npm run test:cobertura` (con las pruebas de MySQL real): 68 suites y 651 pruebas, con 96,36 % de líneas y 94,95 % de ramas, por encima de los mínimos. **Sin comprobar:** el aspecto en el navegador con los textos nuevos y el comportamiento con un lector de pantalla real.
+- **Resultado en Git:** este registro viaja en el mismo commit que el trabajo, como pidió Flavia; el hash se conoce al subirlo.
+
+## 2026-10-26 — CS-65: inventario de las nueve pantallas (objetivo 5)
+
+- **Historia u objetivo:** CS-65, objetivo 5: inventario de las nueve pantallas con sus estados y flujos, a partir de `frontend.md`, la identidad visual y el sitemap.
+- **Agente/herramienta:** Claude Code; modelo Claude Sonnet 5.5.
+- **Entorno:** macOS, aplicación de escritorio de Claude (pestaña Code), terminal zsh y Docker Desktop.
+- **Contexto aportado:** `documentacion/frontend.md`, `sitemap.mmd`, `arte.md` y el código de `frontend/`.
+- **Prompt inicial:**
+
+  > Quiero que completemos la historia 65 completa, solo nos queda el último objetivo.
+
+- **Correcciones relevantes:**
+
+  > ¿Estos cambios no deberían reflejarse en la web? (Tras ver la demo con la aplicación sin el diseño nuevo.)
+
+- **Resultado propuesto por la IA:** `documentacion/inventario-pantallas.md` con las nueve pantallas, una matriz de estados comprobada en el código, los flujos del sitemap, los componentes de la guía de estilo y las lagunas encontradas; y su enlace desde el README, `diseno.md` y `frontend.md`. A la pregunta sobre la web, la respuesta fue que el diseño se aplica en la siguiente historia, la de implementarlo, una vez aprobado.
+- **TDD:** no aplicable: es documentación.
+- **Comprensión humana de las pruebas:** no se incorporan pruebas.
+- **Intervención humana:** Flavia indicó cuál era el último objetivo y pidió cerrarlo. *(A confirmar por Flavia: si revisó el inventario.)*
+- **Decisiones:** [2026-10-26, «CS-65: inventario de las nueve pantallas (objetivo 5)»](../modificaciones.md): hacerlo revisando el código y en un documento propio.
+- **Comprobación final:** estados revisados en el HTML y el JavaScript de las nueve páginas y flujos comparados con el sitemap; enlaces comprobados; `npm test` en verde. **Sin comprobar:** cada pantalla abierta en el navegador.
+- **Resultado en Git:** commit `6496eab`.
+
+## 2026-10-26 — CS-65: criterio de público joven, aprobaciones y demostración
+
+- **Historia u objetivo:** CS-65, decisiones de diseño (navegación en móvil, `usuario.html`, landing page y archivos) y una demostración de lo hecho en CS-62 y CS-65.
+- **Agente/herramienta:** Claude Code; modelo Claude Sonnet 5.5.
+- **Entorno:** macOS, aplicación de escritorio de Claude (pestaña Code), terminal zsh y Docker Desktop.
+- **Contexto aportado:** las decisiones recomendadas en `diseno.md`, los esquemas y la guía de estilo.
+- **Prompt inicial:**
+
+  > Elige la recomendación que consideres correcta para nuestra app, que tiene un público joven.
+
+- **Correcciones relevantes:**
+
+  > Aprueba las que sean más cercanas a nuestro proyecto.
+
+  > Enseña cómo funciona todo lo que hemos hecho: una demo.
+
+- **Otros prompts del día, sin cambios en Git:**
+
+  > Prepara un documento para el equipo actualizándoles con todo lo que hemos hecho y mencionando los siguientes pasos y las cosas que están por hacer. Que sea con bullet points y solo texto por terminal. (Con indicaciones de qué no incluir y de no proponer nada todavía.)
+
+- **Resultado propuesto por la IA:** se confirmaron con el criterio del público joven la barra inferior en móvil, la cabecera de perfil de `usuario.html` y la ausencia de landing page, y «Crear cuenta» pasó a ser un botón visible en el inicio de sesión. Se aprobaron esas tres decisiones, por encajar con las nueve pantallas del libro y con los esquemas dados por buenos, y se dejó pendiente la de los dos archivos, que contradice la tarjeta del objetivo 3. La demostración recorrió con la aplicación real el inicio de sesión, la búsqueda, la amistad, el seguimiento, la visibilidad de las experiencias y las protecciones, y se compararon con la propuesta de diseño. También se redactó el mensaje de actualización para el equipo.
+- **TDD:** no aplicable: son decisiones de diseño y una demostración, sin código nuevo.
+- **Comprensión humana de las pruebas:** no se incorporan pruebas.
+- **Intervención humana:** Flavia delegó las elecciones en el agente y pidió aprobar solo las que encajaran con el proyecto. La aprobación es suya y no sustituye a la del equipo. *(A confirmar por Flavia.)* Durante la demostración se crearon una amistad y un seguimiento entre dos usuarios de prueba y se eliminaron al terminar.
+- **Decisiones:** [2026-10-26, «CS-65: esquemas de las nueve pantallas…»](../modificaciones.md), en la decisión «Criterio de público joven para las decisiones de diseño», y el estado de las decisiones en `diseno.md`.
+- **Comprobación final:** `index.svg` válido y revisado a la vista; durante la demostración todos los flujos funcionaron y la base de datos de prueba quedó limpia. **Sin comprobar:** que el equipo haya confirmado las tres decisiones aprobadas.
+- **Resultado en Git:** commits `0a58199` (criterio de público joven y botón «Crear cuenta») y `eadaf3c` (decisiones aprobadas).
+
 ## 2026-10-26 — CS-65: esquemas de las nueve pantallas, navegación en móvil y requisitos mínimos
 
 - **Historia u objetivo:** CS-65, objetivo 2 del libro de historias (bocetos y wireframes para móvil y escritorio, incluida la navegación en móvil). Es la numeración actual: en la entrada del 25/10 figuraba como objetivos 3 y 4 porque el libro se reordenó después.

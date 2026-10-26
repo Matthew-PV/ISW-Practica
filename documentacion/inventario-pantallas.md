@@ -2,7 +2,7 @@
 
 > Las nueve pantallas con sus estados (cargando, vacío, error y «Contenido no disponible») y sus flujos. Es el objetivo 5 de la historia CS-65 (diseño visual).
 > Fuentes: [frontend.md](frontend.md) (cómo está hecho hoy), [sitemap.mmd](sitemap.mmd) (flujos), [arte.md](arte.md) (identidad visual) y el código de `frontend/`, que se revisó pantalla a pantalla para comprobar los estados. Los esquemas están en [diseno.md](diseno.md) y en [diseno/](diseno/).
-> Revisado el 26/10/2026.
+> Revisado el 26/10/2026. Actualizado ese mismo día al cubrir las lagunas de la sección 5.
 
 ## Cómo leer las tablas
 
@@ -38,13 +38,13 @@ Los cuatro estados que pide la tarjeta, más los propios de cada pantalla.
 | `registro` | — | — | ✔ validación, duplicado y CAPTCHA no disponible | — | ✔ «Creando cuenta…» mientras se envía; requisitos de la contraseña marcados al escribir |
 | `recuperar` | — | — | ✔ aviso de error | — | ✔ éxito, con el mismo mensaje exista o no la cuenta |
 | `restablecer` | — | — | ✔ aviso de error | — | ✔ sin token en la dirección (aviso y formulario oculto); contraseñas que no coinciden; éxito con enlace al inicio de sesión |
-| `bienvenida` | ✗ | ✗ solo queda la tarjeta «+», sin texto | ✔ error de la lista y error del diálogo | — | Diálogo de crear o editar abierto; «Cargar más» |
-| `perfil` | ✗ | ✔ cuatro: sin experiencias, sin solicitudes, sin amigos y sin seguidores | ✔ seis avisos (foto, datos, contraseña, experiencias, solicitudes y relaciones) | — | ✔ «Subiendo foto…»; avisos de éxito en foto, datos y contraseña; «Cargar más» |
-| `personas` | ✗ | ✔ «No se han encontrado personas.» | ✔ aviso de error | — | Antes de buscar (hoy sin texto de ayuda) |
-| `usuario` | ✗ | ✔ «No hay experiencias que puedas ver.» | ✔ error de la acción y error de la lista | ✔ **«Usuario no encontrado»** | Si es el propio usuario, va a `perfil.html`; cuatro versiones del botón de amistad; «Seguir» o «Dejar de seguir» |
+| `bienvenida` | ✔ «Cargando…» | ✔ «Todavía no has publicado experiencias.», junto a la tarjeta «+» | ✔ error de la lista y error del diálogo | — | Diálogo de crear o editar abierto; «Cargar más» |
+| `perfil` | ✔ «Cargando…» | ✔ cuatro: sin experiencias, sin solicitudes, sin amigos y sin seguidores | ✔ seis avisos (foto, datos, contraseña, experiencias, solicitudes y relaciones) | — | ✔ «Subiendo foto…»; avisos de éxito en foto, datos y contraseña; «Cargar más» |
+| `personas` | ✔ «Cargando…» mientras busca | ✔ «No se han encontrado personas.» | ✔ aviso de error | — | ✔ antes de buscar: «Escribe parte de un nombre.» |
+| `usuario` | ✔ «Cargando…», sin datos de relleno hasta que llega el perfil | ✔ «No hay experiencias que puedas ver.» | ✔ error de la acción y error de la lista | ✔ **«Usuario no encontrado»** | Si es el propio usuario, va a `perfil.html`; cuatro versiones del botón de amistad; «Seguir» o «Dejar de seguir» |
 | `experiencia` | ✔ «Cargando experiencia…» | ✔ sin valoraciones de amigos y sin comentarios | ✔ aviso en la valoración y errores de carga | ✔ **«Contenido no disponible»** (404) | Sin identificador en la dirección; sin sesión (401); el autor no ve el formulario; reporte; «Útil» y «Reportar» no guardan nada todavía |
 
-**En todas las pantallas con sesión,** un 401 devuelve al inicio de sesión.
+**En todas las pantallas con sesión,** un 401 devuelve al inicio de sesión. **Todos los avisos de error llevan `role="alert"`**, y una prueba lo comprueba en las nueve páginas.
 
 ## 3. Flujos
 
@@ -89,20 +89,20 @@ Qué componentes de [arte.md](arte.md) usa cada pantalla, y cuál es su botón p
 
 Hoy ninguna pantalla lleva todavía esta identidad: la aplicación usa los colores por defecto de Bootstrap. Aplicarla es la historia de implementación.
 
-## 5. Lagunas detectadas
+## 5. Lagunas detectadas y su estado
 
-Estados que la tarjeta pide y que **hoy no existen**. El diseño ya los contempla; hay que implementarlos.
+Estados que la tarjeta pide y que **no existían** al revisar el código el 26/10/2026. Cuatro de las cinco se han cubierto ese mismo día.
 
-| # | Laguna | Dónde | Qué propone el diseño |
-|---|---|---|---|
-| 1 | **No hay estado «Cargando»**: mientras llegan los datos la pantalla queda vacía | `bienvenida`, `perfil`, `personas`, `usuario` (solo `experiencia` lo tiene) | Un texto de carga breve («Cargando…») en la zona de datos, igual en todas |
-| 2 | **La bienvenida sin experiencias no explica nada**: solo se ve la tarjeta «+» | `bienvenida` | Una frase junto al «+», por ejemplo «Todavía no has publicado experiencias» |
-| 3 | **`personas` antes de buscar no tiene texto de ayuda** | `personas` | «Escribe parte de un nombre», como en el esquema |
-| 4 | **Los avisos de error no se anuncian a lectores de pantalla** en cuatro pantallas | `index`, `registro`, `bienvenida`, `experiencia` | `role="alert"` en todos los avisos de error |
-| 5 | «Útil» y «Reportar» **no guardan nada** | `experiencia` | Reservarles su sitio sin que parezca que funcionan, hasta CS-02 y CS-04 |
+| # | Laguna | Dónde | Qué hace el diseño | Estado |
+|---|---|---|---|---|
+| 1 | **No había estado «Cargando»**: mientras llegaban los datos la pantalla quedaba vacía | `bienvenida`, `perfil`, `personas`, `usuario` (solo `experiencia` lo tenía) | Un texto «Cargando…» igual en todas, en `#cargando` | ✔ Cubierta (26/10/2026) |
+| 2 | **La bienvenida sin experiencias no explicaba nada**: solo se veía la tarjeta «+» | `bienvenida` | «Todavía no has publicado experiencias.» | ✔ Cubierta (26/10/2026) |
+| 3 | **`personas` antes de buscar no tenía texto de ayuda** | `personas` | «Escribe parte de un nombre.» | ✔ Cubierta (26/10/2026) |
+| 4 | **Ocho avisos de error no se anunciaban a lectores de pantalla**, en seis pantallas | `index`, `registro`, `bienvenida` (2), `perfil` (2), `usuario` y `experiencia` | `role="alert"` en todos los avisos de error | ✔ Cubierta (26/10/2026), con una prueba que revisa las nueve páginas |
+| 5 | «Útil» y «Reportar» **no guardan nada** | `experiencia` | Reservarles su sitio sin que parezca que funcionan | ⏳ Pendiente: depende de CS-02 y CS-04, que son de otras historias |
 
 ## Para quien continúe
 
 - Al añadir una pantalla, se añade una fila en cada tabla de este documento, un esquema en [diseno/](diseno/) y su flecha en el [sitemap](sitemap.mmd).
-- Cuando se implemente un estado de la sección 5, se cambia su ✗ por ✔ en la sección 2.
+- La única laguna que queda abierta es la 5; cuando se implementen CS-02 y CS-04, se actualiza su estado en la sección 5.
 - Los estados de las pantallas se describen con más detalle, y con sus diagramas, en [frontend.md](frontend.md).

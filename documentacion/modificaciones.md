@@ -62,6 +62,62 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 
 # 2026-10-26
 
+## CS-65: estados que faltaban en las pantallas (lagunas del inventario)
+
+**Autor:** Flavia Méndez Tsutsumi, con Claude Code (Claude Sonnet 5.5)
+**Historia:** CS-65, objetivo 5 (cubrir las lagunas detectadas en el inventario de pantallas)
+
+### Cambios
+- **«Cargando…»:** `bienvenida`, `perfil`, `personas` y `usuario` muestran un texto `#cargando` mientras llegan los datos y lo quitan al terminar o al fallar. `shared/pantalla.js` ofrece `mostrarCargando()` y `ocultarCargando()`.
+- **Bienvenida sin experiencias:** `#sin-experiencias` dice «Todavía no has publicado experiencias.» junto a la tarjeta «+», y desaparece al crear la primera.
+- **`personas` antes de buscar:** `#ayuda-busqueda` dice «Escribe parte de un nombre.» y se oculta tras la primera búsqueda.
+- **Avisos de error:** los ocho avisos que no lo tenían llevan `role="alert"` (`index`, `registro`, `bienvenida` ×2, `perfil` ×2, `usuario` y `experiencia`).
+- **`usuario.html`** no enseña datos de relleno («0 amigos · 0 seguidores», foto vacía) hasta que llega el perfil.
+- `listaConCargarMas` cuenta como elementos solo los que llevan `data-id-elemento`. Las tarjetas de la bienvenida creadas o editadas a mano también lo llevan.
+- Nuevo `backend/tests/frontend/estados.test.js` (22 pruebas). `frontend.md`, `inventario-pantallas.md` y `diseno.md` reflejan los cambios.
+
+### Decisiones
+#### Un texto «Cargando…» común en lugar de un componente por página
+- **Contexto:** cuatro pantallas con datos quedaban vacías mientras llegaban, y solo `experiencia` tenía estado de carga.
+- **Decisión:** un `<p id="cargando" role="status">` en cada página y dos funciones comunes en `pantalla.js` que lo muestran y lo ocultan. La página con sesión lo oculta en un `finally`, así que también desaparece si la carga falla.
+- **Alternativas:** una rueda de carga de Bootstrap o esqueletos de contenido; se descartaron porque añaden más HTML y estilo por página sin aportar información, y un texto con `role="status"` ya se anuncia a lectores de pantalla.
+- **Consecuencias:** la apariencia final del texto se decidirá con la guía de estilo. Una página nueva que cargue datos debe llevar su `#cargando` y llamar a `ocultarCargando()`.
+- **Decidió:** Flavia, a propuesta de Claude.
+
+#### `usuario.html` oculta el contenido hasta que llega el perfil
+- **Contexto:** la página mostraba «0 amigos · 0 seguidores» y la foto por defecto mientras cargaba, lo que es engañoso si luego la persona tiene 30 amigos.
+- **Decisión:** el contenedor `#perfil-usuario` parte oculto y se muestra cuando el perfil llega y no es el propio. El aviso «Usuario no encontrado» y la redirección al propio perfil siguen igual.
+- **Alternativas:** dejar los datos de relleno visibles con «Cargando…» encima; se descartó porque mezcla información falsa con el aviso de carga.
+- **Consecuencias:** la página queda en blanco, con «Cargando…», un instante más largo en conexiones lentas.
+- **Decidió:** Flavia, a propuesta de Claude.
+
+#### Una lista está vacía cuando no tiene elementos propios
+- **Contexto:** la rejilla de la bienvenida contiene la tarjeta «+», así que `listaConCargarMas` nunca la veía vacía.
+- **Decisión:** contar solo los hijos con `data-id-elemento`. Para que las tarjetas creadas o editadas a mano cuenten, también llevan ese atributo.
+- **Alternativas:** sacar la tarjeta «+» fuera de la rejilla, que cambiaría su diseño; o comprobar el vacío a mano en la bienvenida, que duplicaba la regla.
+- **Consecuencias:** además, una experiencia recién creada ya no se repite si luego se pulsa «Cargar más».
+- **Decidió:** Flavia, a propuesta de Claude.
+
+#### `role="alert"` en el HTML y una prueba que lo vigila
+- **Contexto:** ocho avisos de error no se anunciaban a lectores de pantalla.
+- **Decisión:** añadir el atributo a cada aviso y una prueba que revisa las nueve páginas: todo elemento cuyo `id` empieza por `error-` debe llevarlo.
+- **Alternativas:** ponerlo desde `mostrarMensaje`; se descartó porque no cubre los avisos que se muestran por otro camino y porque la prueba sobre el HTML detecta cualquier aviso nuevo que lo olvide.
+- **Consecuencias:** quien añada un aviso de error con ese prefijo debe incluir el rol, o la prueba fallará.
+- **Decidió:** Flavia, a propuesta de Claude.
+
+### Comprobación
+- **Rojo:** se escribieron primero las 22 pruebas y fallaron 19, por no existir `#cargando`, `#sin-experiencias`, `#ayuda-busqueda` ni los `role="alert"`. Las 3 que ya pasaban son las páginas que sí tenían el rol (`recuperar`, `restablecer` y `personas`) y quedan como caracterización.
+- **Verde:** los cambios mínimos hicieron pasar las 22. No hubo refactorización.
+- `npm test`: 53 suites y 590 pruebas. `npm run test:cobertura`, con las pruebas de MySQL real: 68 suites y 651 pruebas, con 96,36 % de líneas y 94,95 % de ramas, por encima de los mínimos.
+- No se ha comprobado el aspecto en un navegador con los textos nuevos ni con un lector de pantalla real.
+
+### Para quien continúe
+- Una página nueva que cargue datos necesita su `<p id="cargando" role="status">` y llamar a `ocultarCargando()` al terminar.
+- Un aviso de error nuevo debe tener un `id` que empiece por `error-` y `role="alert"`.
+
+### Pendiente
+- «Útil» y «Reportar» siguen sin guardar nada: dependen de CS-02 y CS-04, que son de otras historias. Es la única laguna abierta del inventario.
+
 ## CS-65: inventario de las nueve pantallas (objetivo 5)
 
 **Autor:** Flavia Méndez Tsutsumi, con Claude Code (Claude Sonnet 5.5)

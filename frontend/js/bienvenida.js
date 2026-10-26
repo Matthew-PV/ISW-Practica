@@ -1,11 +1,12 @@
 // Página de bienvenida (bienvenida.html): saluda al usuario con sesión, muestra sus experiencias
 // por páginas (CS-44) y permite crearlas (CS-49) y editarlas (CS-57), con su visibilidad (CS-22).
 // «Ver detalle» enlaza a la página de cada experiencia (experiencia.html, CS-63).
-// Usa `api` de shared/api.js y `listaConCargarMas`, `mostrarMensaje`, `ocultarMensaje` e
+// Usa `api` de shared/api.js y `listaConCargarMas`, `mostrarMensaje`, `ocultarMensaje`, `ocultarCargando` e
 // `irAlLogin` de shared/pantalla.js.
 
 const rejilla = document.getElementById('rejilla');
 const columnaNueva = document.getElementById('columna-nueva');
+const sinExperiencias = document.getElementById('sin-experiencias');
 const cajaErrorLista = document.getElementById('error-lista');
 
 const dialogo = document.getElementById('dialogo-experiencia');
@@ -42,6 +43,8 @@ function crearTarjeta(experiencia) {
   const columna = document.createElement('div');
   columna.className = 'col';
   columna.dataset.id = experiencia.id;
+  // Cuenta como elemento de la lista aunque se cree o se edite a mano (y evita repetirla en «Cargar más»)
+  columna.dataset.idElemento = experiencia.id;
   columna.innerHTML = `
     <div class="card h-100 tarjeta-experiencia">
       <div class="card-body d-flex flex-column">
@@ -104,6 +107,7 @@ formulario.addEventListener('submit', async (e) => {
       const experiencia = await api('/experiencias', { method: 'POST', body: JSON.stringify(datos) });
       // La nueva es la más reciente: va la primera, justo después de la tarjeta «+»
       columnaNueva.after(crearTarjeta(experiencia));
+      ocultarMensaje(sinExperiencias);
     }
     dialogo.close();
   } catch (err) {
@@ -117,6 +121,7 @@ formulario.addEventListener('submit', async (e) => {
 let autorExperiencias = null;
 const listadoExperiencias = listaConCargarMas({
   lista: rejilla,
+  vacio: sinExperiencias,
   botonMas: document.getElementById('mas-experiencias'),
   pedir: async (cursor) => {
     const despuesDe = cursor === null ? '' : `&despuesDe=${cursor}`;
@@ -139,6 +144,8 @@ async function cargarExperiencias(nombreUsuario) {
     }
   } catch (err) {
     mostrarMensaje(cajaErrorLista, err.message);
+  } finally {
+    ocultarCargando();
   }
 }
 
