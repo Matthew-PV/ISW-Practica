@@ -41,7 +41,7 @@ Una sección por pantalla, con el mismo formato.
 ### index.html: iniciar sesión
 - **Responsable del esquema:** Flavia (propuesta)
 - **Esquema (móvil y escritorio):** [diseno/index.svg](diseno/index.svg)
-- **Idea:** formulario centrado en una tarjeta, con la barra reducida al nombre PlanB porque aún no hay sesión. Sobre el título lleva una frase de presentación (texto de ejemplo: «Comparte y descubre planes por tu ciudad»), de modo que quien llega sepa qué es PlanB sin una página aparte.
+- **Idea:** formulario centrado en una tarjeta, con la barra reducida al nombre PlanB porque aún no hay sesión. Sobre el título lleva una frase de presentación (texto de ejemplo: «Comparte y descubre planes por tu ciudad»), de modo que quien llega sepa qué es PlanB sin una página aparte. «Crear cuenta» es un **botón secundario visible**, no un enlace de texto, porque para quien llega a registrarse es la segunda acción más importante de la pantalla.
 - **Estados:** normal, error con el mensaje del servidor.
 - **Enlaces (sitemap):** registro, recuperar contraseña, bienvenida.
 - **Decisión:** no hay landing page; la frase de presentación hace su papel. Recomendada: el equipo la confirma y valida el texto.

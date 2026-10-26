@@ -104,7 +104,7 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 - Nuevo `usuario.svg`: combina la variante A en móvil y la B en escritorio. `usuario-a.svg` y `usuario-b.svg` se conservan como alternativas.
 - `documentacion/diseno.md` enlaza cada esquema desde su sección, con la idea, los estados y los enlaces del sitemap, y añade la sección «Requisitos mínimos de un buen diseño de frontend»: 11 requisitos, cómo los cumple el diseño y en qué estado está el código hoy.
 - `documentacion/arte.md` recoge los dos datos de contraste que condicionan la paleta.
-- `index.svg` añade una frase de presentación sobre el título del inicio de sesión (texto de ejemplo).
+- `index.svg` añade una frase de presentación sobre el título del inicio de sesión (texto de ejemplo) y convierte «Crear cuenta» en un botón secundario visible.
 
 ### Decisiones
 #### Navegación en móvil: barra inferior fija
@@ -140,6 +140,13 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 - **Decisión:** mantener dos archivos. `diseno.md` recoge la estructura de las pantallas (objetivo 2) y `arte.md`, la guía de estilo (objetivo 3).
 - **Alternativas:** un solo `diseno.md` con las dos partes, para no tocar la tarjeta; se descartó porque la estructura y el estilo se aprueban en momentos distintos y con criterios distintos, y mezclarlos obligaría a reabrir uno cada vez que se cambia el otro.
 - **Consecuencias:** hay que cambiar en el libro de historias la ruta de la guía de estilo del objetivo 3, de `documentacion/diseno.md` a `documentacion/arte.md`. Si el equipo prefiere un solo archivo, `arte.md` pasa a ser un apartado de `diseno.md`.
+- **Decidió:** Flavia, delegando la elección en Claude; el equipo la confirma.
+
+#### Criterio de público joven para las decisiones de diseño
+- **Contexto:** la aplicación se dirige a un público joven y universitario, que usa sobre todo el móvil, espera hacer las cosas en pocos pasos y conoce patrones de otras redes sociales.
+- **Decisión:** se confirman con ese criterio la barra de navegación inferior en móvil, la cabecera de perfil con foto, contadores y botones de `usuario.html`, y la ausencia de landing page. Como consecuencia, «Crear cuenta» pasa de enlace de texto a botón secundario visible en el inicio de sesión. La guía añade el público como parte de la identidad.
+- **Alternativas:** una landing page con más presentación, que alargaría el camino hasta registrarse; se descartó por alcance y por ese mismo motivo. Un registro más corto: no se estudia aquí, porque los requisitos de la contraseña y el CAPTCHA se fijaron en CS-59 y CS-64.
+- **Consecuencias:** el inicio de sesión tiene dos acciones claras: «Entrar» (principal) y «Crear cuenta» (secundaria). Un modo oscuro, habitual en este público, queda como mejora opcional futura, sin implementar ahora.
 - **Decidió:** Flavia, delegando la elección en Claude; el equipo la confirma.
 
 #### Dibujar también las pantallas que tienen otro responsable

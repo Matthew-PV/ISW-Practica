@@ -17,6 +17,7 @@ PlanB es una red social para compartir y descubrir planes por una ciudad. La ide
 - **Un solo color principal, un verde azulado**, que recuerda a una ciudad, al agua y a los mapas, y se usa solo en lo importante.
 - Grises neutros para todo lo demás. Sin degradados ni sombras pesadas: la jerarquía se consigue con el tamaño, el peso y el espacio.
 - **Un solo estilo de borde redondeado** en toda la aplicación.
+- **Pensada para un público joven y universitario:** móvil primero, acciones en pocos pasos, lenguaje cercano (tú) y patrones que ya conoce de otras redes sociales, como la barra inferior y la cabecera de perfil con contadores.
 
 ## Reglas de consistencia
 
