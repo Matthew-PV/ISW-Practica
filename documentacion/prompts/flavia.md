@@ -6,6 +6,30 @@ Las interacciones siguientes proceden de la conversación con Claude Code de los
 
 **Pendiente:** añadir, si se conservan los prompts, las interacciones de las primeras tareas de FLA05 (consulta del perfil propio, su prueba, edición del perfil y primera versión de la pantalla «Mi perfil»), realizadas entre el 28 de septiembre y el 1 de octubre.
 
+## 2026-10-26 — CS-65: esquemas de las nueve pantallas, navegación en móvil y requisitos mínimos
+
+- **Historia u objetivo:** CS-65, objetivo 2 del libro de historias (bocetos y wireframes para móvil y escritorio, incluida la navegación en móvil). Es la numeración actual: en la entrada del 25/10 figuraba como objetivos 3 y 4 porque el libro se reordenó después.
+- **Agente/herramienta:** Claude Code; modelo Claude Sonnet 5.5.
+- **Entorno:** macOS, aplicación de escritorio de Claude (pestaña Code) y terminal zsh.
+- **Contexto aportado:** el enlace al libro de historias online y capturas de su tabla de objetivos. El agente no pudo abrir el libro porque SharePoint pide verificar la identidad; se trabajó con las capturas. También `documentacion/diseno.md`, `documentacion/arte.md` y los esquemas del día anterior.
+- **Prompt inicial:**
+
+  > ¿Cómo marco esta tarea en el Excel? Comprueba y dime.
+
+- **Correcciones relevantes:**
+
+  > No, terminemos esta tarea. Quiero que sigas donde nos quedamos y que elijas lo que mejor nos convenga, y también actúa como un creador de frontend experto: asegúrate de que cumples los requisitos mínimos para un buen diseño de frontend.
+
+  > Hazlo. (Para preparar esta entrada del registro, con solo mis mensajes.)
+
+- **Resultado propuesto por la IA:** orientación sobre cómo marcar el objetivo en el libro (sin «Finalizado» hasta la revisión del equipo); decisión de la navegación en móvil (barra inferior fija en móvil y barra superior desde 768 px); un `usuario.svg` que combina las variantes A (móvil) y B (escritorio); la barra inferior aplicada a los esquemas de las pantallas con sesión; `navegacion-movil.svg` rehecho con medidas y reglas; una lista de 11 requisitos mínimos de frontend en `diseno.md`, con una revisión del código actual; y los datos de contraste en `arte.md`.
+- **TDD:** no aplicable: es documentación y dibujos vectoriales, sin código.
+- **Comprensión humana de las pruebas:** no se incorporan pruebas.
+- **Intervención humana:** Flavia delegó en el agente la elección de la navegación en móvil y de la variante de `usuario.html`, y pidió que se revisara el diseño con criterio de experto en frontend. No quiso corregir en ese momento los números de objetivo de las entradas anteriores. *(A confirmar y completar por Flavia: si ha revisado los esquemas y la lista de requisitos, y qué cambió o rechazó.)* Las dos elecciones son recomendaciones: el equipo debe confirmarlas.
+- **Decisiones:** [2026-10-26, «CS-65: esquemas de las nueve pantallas, navegación en móvil y requisitos mínimos de diseño»](../modificaciones.md): barra inferior fija en móvil, combinación de las variantes A y B de `usuario.html`, y revisión con una lista de requisitos mínimos.
+- **Comprobación final:** los doce SVG son XML válido y usan solo negro y blanco; se revisaron a la vista y se corrigió un diálogo que se solapaba con el marco del móvil; el contraste se calculó con la fórmula de WCAG y el HTML de las nueve páginas se revisó con `grep`; `npm test` desde `backend/` pasó con 52 suites y 568 pruebas. **Sin comprobar:** que el equipo haya revisado los esquemas, los tamaños de los botones medidos en pantalla (se calcularon con los valores por defecto de Bootstrap) y el comportamiento con un lector de pantalla.
+- **Resultado en Git:** commit `9716265`. La entrada de este registro: pendiente.
+
 ## 2026-10-25 — CS-65: borradores de diseño y arte y esquemas de las pantallas sociales
 
 - **Historia u objetivo:** CS-65 (diseño visual de PlanB), aportación a los objetivos 3 (esquemas de las pantallas, en móvil y escritorio) y 4 (guía de estilo). Es un borrador: ningún objetivo queda cerrado.
