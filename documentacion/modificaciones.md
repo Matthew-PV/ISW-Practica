@@ -38,6 +38,30 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 
 # 2026-10-26
 
+## CS-67: elección del servicio de base de datos online
+
+**Autor:** Lucía Alexandra Guzmán Álvarez, con Claude (aplicación de escritorio)
+**Historia:** CS-67, objetivo 1
+
+### Cambios
+- Ninguno en el código: se elige el servicio donde estará la base de datos online de PlanB.
+
+### Decisiones
+#### Aiven, plan gratuito de MySQL
+- **Contexto:** CS-67 pide un servicio online compatible con MySQL y Prisma, con conexión cifrada (TLS) y accesible para todo el equipo, comparando opciones gratuitas y documentando sus límites, su caducidad y los requisitos de cuenta.
+- **Decisión:** Aiven, plan gratuito de MySQL. Según su documentación, consultada el 26/10/2026: 1 CPU, 1 GB de RAM y 1 GB de almacenamiento; hasta 76 conexiones a la vez; un servicio de cada tipo por organización; copias de seguridad incluidas; sin tarjeta y sin fecha de caducidad. Aiven puede apagar el servicio si no se usa (avisa antes y se vuelve a encender desde su panel) y puede cambiar el proveedor o la región.
+- **Alternativas:**
+  - Azure para estudiantes: MySQL gratis 12 meses (750 horas al mes) y 100 $ de crédito, con el correo de la universidad y sin tarjeta. Se descarta porque caduca al año y obliga a autorizar en su cortafuegos las direcciones desde las que se conecta cada integrante.
+  - TiDB Cloud Starter: el plan gratuito más amplio (25 GiB), pero es compatible con MySQL, no MySQL. Se descarta por el riesgo de diferencias con las migraciones de Prisma.
+  - PlanetScale: ya no tiene plan gratuito.
+- **Consecuencias:** la base online es pequeña y puede apagarse por inactividad, suficiente para un proyecto de clase. La copia de seguridad propia del objetivo 4 no depende de la de Aiven. Las pruebas con MySQL (`npm run test:mysql`) siguen usando la base local de Docker, porque borran datos. Al crearla (objetivo 2) queda por confirmar que la conexión exige TLS y cómo se comparte el acceso con el equipo.
+- **Decidió:** Lucía, a propuesta de Claude; el equipo dio su conformidad en el grupo el 26/10/2026.
+
+### Pendiente
+- Objetivos 2 a 4 de CS-67.
+
+# 2026-10-26
+
 ## CS-65: guía de estilo e identidad visual (arte.md)
 
 **Autor:** Flavia Méndez Tsutsumi, con Claude Code (Claude Sonnet 5.5)
