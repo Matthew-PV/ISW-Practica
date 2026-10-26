@@ -38,6 +38,42 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 
 # 2026-10-26
 
+## CS-67: base de datos en Aiven y conexión de PlanB
+
+**Autor:** Lucía Alexandra Guzmán Álvarez, con Claude (aplicación de escritorio)
+**Historia:** CS-67, objetivo 2
+
+### Cambios
+- Servicio `planb-mysql` en Aiven (plan Free-1-1gb, MySQL 8.4, región Europa) con las 12 migraciones aplicadas y las 201 ciudades del catálogo.
+- `backend/.env.example` explica cómo conectarse a la base online con un archivo propio, `backend/.env.online`, que no se sube a Git. El README remite a esas instrucciones.
+
+### Decisiones
+#### Un archivo `.env.online` aparte, sin tocar `.env`
+- **Contexto:** `npm run dev` y `npm run test:mysql` leen `.env`, y las pruebas con MySQL borran datos: nunca deben apuntar a la base online.
+- **Decisión:** `.env` sigue apuntando a Docker. La base online se usa con `backend/.env.online`, que el `.gitignore` ya excluye (`.env.*`), y los comandos llevan `node --env-file=.env.online`.
+- **Alternativas:** cambiar `DATABASE_URL` en `.env` para usar la online. Se descarta porque es fácil olvidarlo y lanzar después las pruebas contra la base compartida.
+- **Consecuencias:** todavía no hay un script de npm para la base online, y las pruebas no se protegen solas si alguien cambia `.env`; ambas cosas quedan para el objetivo 4.
+- **Decidió:** Lucía, a propuesta de Claude.
+
+#### Conexión cifrada sin verificar el certificado en macOS
+- **Contexto:** el criterio exige TLS. Con `sslaccept=strict` y el certificado del proyecto, Prisma responde en macOS «P1011: Error opening a TLS connection: The certificate was not trusted». Con `openssl`, el certificado del servidor se verifica bien, incluido el nombre del host, pero no lleva la extensión «Extended Key Usage» de servidor, que macOS exige.
+- **Decisión:** en macOS se usa `sslaccept=accept_invalid_certs`: la conexión va cifrada, pero no se comprueba la identidad del servidor.
+- **Alternativas:** `sslaccept=strict` con el certificado, que no funciona en macOS y en Windows y Linux debería funcionar, aún sin comprobar; conectar Prisma mediante un adaptador de Node que verifique con OpenSSL, que cambia código compartido y queda como posible mejora; no usar la base online desde Mac, que deja fuera a parte del equipo.
+- **Consecuencias:** desde Mac no hay protección frente a la suplantación del servidor. El certificado se conserva en `backend/prisma/aiven-ca.pem`, sin subirlo a Git, por si se adopta la verificación completa.
+- **Decidió:** Lucía, a propuesta de Claude.
+
+### Comprobación
+- `prisma migrate deploy` contra Aiven: 12 migraciones aplicadas. `prisma/seed.js`: 201 ciudades creadas.
+- PlanB arrancado con `.env.online`: registro de una cuenta y creación de una experiencia. Con `npm run dev` (base local) esa cuenta no existe, lo que confirma que son bases distintas.
+
+### Para quien continúe
+- Desde `backend/`, con `.env.online` ya creado: `node --env-file=.env.online node_modules/prisma/build/index.js migrate deploy` aplica las migraciones a la base online y `node --env-file=.env.online src/server.js` arranca PlanB conectado a ella. La línea `Datasource … at` debe mostrar la dirección de aivencloud.
+- Aiven puede apagar el servicio si no se usa; se vuelve a encender desde su consola.
+
+### Pendiente
+- Dar acceso al resto del equipo y comprobar desde dos ordenadores (objetivo 3).
+- Proteger las pruebas con MySQL frente a la base online, copia de seguridad y procedimiento de trabajo compartido (objetivo 4).
+
 ## CS-67: elección del servicio de base de datos online
 
 **Autor:** Lucía Alexandra Guzmán Álvarez, con Claude (aplicación de escritorio)

@@ -67,6 +67,8 @@ npm run test:cobertura        # todas, con el informe de cobertura en backend/co
 
 Tras un `git pull` que traiga migraciones o dependencias nuevas: `npm install`, `npx prisma migrate deploy` y `npx prisma generate`.
 
+Por defecto PlanB usa el MySQL de Docker. Para conectarlo a la base de datos online compartida (Aiven), sigue las instrucciones del final de `backend/.env.example`. Las pruebas siguen usando siempre la base local.
+
 ## Documentación
 
 Toda la documentación detallada vive en [`documentacion/`](documentacion/):
