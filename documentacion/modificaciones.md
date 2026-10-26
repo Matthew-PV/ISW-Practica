@@ -117,7 +117,7 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 ## CS-65: borradores de diseño y arte, y esquemas de las pantallas sociales
 
 **Autor:** Flavia Méndez Tsutsumi, con Claude Code (Claude Sonnet 5.5)
-**Historia:** CS-65, aportación a los objetivos 3 y 4 (borrador, sin cerrar)
+**Historia:** CS-65, aportación a los objetivos 3 y 4 (borrador, sin cerrar) *(numeración de esa fecha; tras reordenarse el libro son los objetivos 2 y 3)*
 
 ### Cambios
 - Nuevo `documentacion/diseno.md`: estructura de las pantallas. Explica cómo se lee un esquema, las reglas que lo condicionan, los elementos comunes y una sección por pantalla con responsable, esquemas, estados y enlaces del sitemap. Termina con las decisiones abiertas.
