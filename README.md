@@ -77,7 +77,7 @@ Toda la documentación detallada vive en [`documentacion/`](documentacion/):
 * [Pantallas](documentacion/frontend.md) — mapa de navegación, qué archivos y llamadas usa cada página, sus estados y las reglas del frontend.
 * [Glosario](documentacion/glosario.md) — los términos técnicos del proyecto, explicados y con dónde aparecen en PlanB.
 * [Diseño](documentacion/diseno.md) — estructura de las pantallas y esquemas en blanco y negro (borrador).
-* [Arte](documentacion/arte.md) — cómo debe verse PlanB: paleta, tipografía y componentes (borrador, por decidir).
+* [Arte](documentacion/arte.md) — cómo debe verse PlanB: paleta con contraste calculado, tipografía y componentes (propuesta para aprobar).
 * [Modificaciones](documentacion/modificaciones.md) — registro de los cambios realizados: qué se ha hecho, cómo probarlo y notas para quien siga trabajando.
 * [Propuesta inicial](documentacion/propuesta-inicial.md) — planteamiento conceptual del producto: problema, público objetivo, objetivos, módulos funcionales, modelo de datos, comparación con soluciones existentes, límites de alcance y riesgos. Describe la idea, no lo que ya existe.
 * [Metodología de trabajo con IA](documentacion/metodologia.md) — proceso común, responsabilidades, revisión y forma de trabajo de cada integrante.

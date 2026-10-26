@@ -38,6 +38,59 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 
 # 2026-10-26
 
+## CS-65: guía de estilo e identidad visual (arte.md)
+
+**Autor:** Flavia Méndez Tsutsumi, con Claude Code (Claude Sonnet 5.5)
+**Historia:** CS-65, objetivo 3 (identidad visual y guía de estilo). La tarjeta del libro sitúa la guía en `diseno.md`; aquí está en `arte.md` (ver la decisión de los dos archivos).
+
+### Cambios
+- `documentacion/arte.md` pasa de esqueleto vacío a **propuesta completa**: identidad, reglas de consistencia, paleta con sus variables CSS y el contraste calculado de cada par, tipografía, espaciado, bordes, componentes base (botones, campos, tarjeta, barras de navegación, avisos, lista con «Cargar más», etiquetas de visibilidad, diálogo, anillo de foco e iconos), tono de los textos y qué cambia respecto a hoy.
+- Nuevo `documentacion/diseno/guia-estilo.svg`: lámina con los colores, la escala tipográfica y los componentes dibujados.
+- `documentacion/diseno.md` indica que el equipo ha dado por buenos los esquemas y enlaza la guía. El README describe `arte.md` como propuesta para aprobar.
+
+### Decisiones
+#### Paleta: un verde azulado como único color principal
+- **Contexto:** hoy PlanB usa los colores por defecto de Bootstrap. Con ellos, algunos textos y botones cumplen el contraste AA solo justo (4,50:1 y 4,53:1) y el borde de los campos de formulario no llega al 3:1 exigido (da 1,49:1).
+- **Decisión:** principal `#0F766E` (verde azulado, asociado a ciudad y mapas), neutros grises, un color por significado (peligro, éxito, aviso e información) y un azul solo para el foco del teclado. Todos los pares se calcularon con la fórmula de WCAG: ninguno falla y el menor margen es 4,83:1 en el borde de campo y 4,97:1 en texto sobre superficie.
+- **Alternativas:** mantener los colores de Bootstrap (se descartó por el contraste justo y el borde de campo, que incumple); un azul como el de Bootstrap (se descartó porque no da identidad propia).
+- **Consecuencias:** al aplicarla hay que sustituir los colores de Bootstrap por estas variables. El color nunca es la única señal: lo activo lleva además línea y negrita, y los avisos, siempre texto.
+- **Decidió:** Flavia, delegando la elección en Claude; el equipo la aprueba (es el objetivo 3).
+
+#### Fuente del sistema y escala tipográfica fija
+- **Contexto:** la guía debe fijar la tipografía y los tamaños.
+- **Decisión:** pila de fuentes del sistema, cuerpo de 16 px con interlineado 1,5 y escala 28 / 22 / 18 / 16 / 14 px, solo en peso normal y negrita.
+- **Alternativas:** una fuente descargada de un servicio externo; se descartó porque añade una dependencia, retrasa la carga y no se ha comprobado que la política de seguridad de la aplicación la permita.
+- **Consecuencias:** el aspecto cambia un poco según el dispositivo, a cambio de carga inmediata y cero dependencias.
+- **Decidió:** Flavia, delegando la elección en Claude; el equipo la aprueba.
+
+#### Un solo estilo de borde redondeado y sin sombras
+- **Contexto:** el equipo pidió consistencia; no tiene sentido que unos botones sean rectos y otros redondeados.
+- **Decisión:** radio de 8 px en botones y campos, 12 px en tarjetas y diálogos, píldora en las etiquetas y sin sombras (solo un borde superior en la barra inferior del móvil).
+- **Alternativas:** bordes rectos; se descartaron porque resultan más duros y no encajan con una red social. Sombras para dar profundidad; se descartaron para mantener la interfaz plana y ligera.
+- **Consecuencias:** en la implementación hay que unificar los radios, hoy mezclados.
+- **Decidió:** Flavia, delegando la elección en Claude; el equipo la aprueba.
+
+#### Sin biblioteca de iconos
+- **Contexto:** la tarjeta menciona iconos entre lo que debe fijar la guía.
+- **Decisión:** no incorporar ninguna biblioteca. Los pocos iconos necesarios serán SVG en línea de 24 px y trazo de 2 px, siempre con su texto.
+- **Alternativas:** una biblioteca de iconos; se descartó porque `AGENTS.md` pide no añadir dependencias sin una necesidad clara y la interfaz funciona con texto.
+- **Consecuencias:** la barra inferior puede llevar solo texto o texto con un icono sencillo.
+- **Decidió:** Flavia, delegando la elección en Claude; el equipo la aprueba.
+
+### Comprobación
+- No hay código nuevo, así que no hay ciclo rojo, verde y refactorización.
+- Se calcularon 23 pares de color con la fórmula de contraste de WCAG: cumplen todos los exigibles. La lámina se revisó a la vista y se corrigieron textos de avisos más largos que su caja y una barra que casi tocaba otro elemento.
+- El navegador integrado no abrió `guia-estilo.svg`, así que se revisó desde una copia mostrada en la conversación; el archivo es XML válido.
+
+### Para quien continúe
+- Aprobada la guía, se aplica a todas las pantallas a la vez en la historia de implementación, empezando por la bienvenida como página piloto.
+- Las variables CSS de `arte.md` son propuestas: cómo se montan sobre Bootstrap se decide en esa historia.
+
+### Pendiente
+- Que el equipo apruebe la guía (objetivo 3).
+- No se ha comprobado la apariencia real con estos colores en el navegador: solo hay láminas dibujadas.
+- Cambiar en el libro de historias la ruta de la guía de estilo (de `diseno.md` a `arte.md`).
+
 ## CS-65: esquemas de las nueve pantallas, navegación en móvil y requisitos mínimos de diseño
 
 **Autor:** Flavia Méndez Tsutsumi, con Claude Code (Claude Sonnet 5.5)
