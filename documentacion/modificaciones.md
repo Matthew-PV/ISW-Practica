@@ -51,6 +51,7 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 - Nuevo `usuario.svg`: combina la variante A en móvil y la B en escritorio. `usuario-a.svg` y `usuario-b.svg` se conservan como alternativas.
 - `documentacion/diseno.md` enlaza cada esquema desde su sección, con la idea, los estados y los enlaces del sitemap, y añade la sección «Requisitos mínimos de un buen diseño de frontend»: 11 requisitos, cómo los cumple el diseño y en qué estado está el código hoy.
 - `documentacion/arte.md` recoge los dos datos de contraste que condicionan la paleta.
+- `index.svg` añade una frase de presentación sobre el título del inicio de sesión (texto de ejemplo).
 
 ### Decisiones
 #### Navegación en móvil: barra inferior fija
@@ -74,6 +75,20 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 - **Consecuencias:** quedan documentadas cinco correcciones para la historia de implementación: nombre y `aria-current` en la barra, enlace «Saltar al contenido», `role="alert"` en los avisos, borde de campos con contraste 3:1 y botones de 44 px en móvil.
 - **Decidió:** Flavia, a propuesta de Claude.
 
+#### Sin landing page: frase de presentación en el inicio de sesión
+- **Contexto:** `index.html` es el inicio de sesión y quien llega no sabe qué es PlanB. El equipo planteó una landing page con una explicación y el botón de iniciar sesión arriba a la derecha. El libro de historias cubre las nueve pantallas actuales y ningún criterio pide una página nueva.
+- **Decisión:** no crear una landing page. El inicio de sesión lleva una frase de presentación sobre el título, tomada de la descripción del README (texto de ejemplo: «Comparte y descubre planes por tu ciudad»), y mantiene el enlace «Crear cuenta».
+- **Alternativas:** una landing completa; se descartó porque sería una décima pantalla con su diseño, su implementación y sus pruebas, sin ningún criterio que la exija, y el alcance de la práctica son las nueve pantallas. No añadir ninguna presentación; se descartó porque quien llega no sabría qué es la aplicación.
+- **Consecuencias:** el sitemap no cambia. Si sobra tiempo, la landing puede añadirse después como mejora opcional. El texto definitivo de la frase lo decide el equipo.
+- **Decidió:** Flavia, delegando la elección en Claude; el equipo la confirma.
+
+#### Dos archivos: diseno.md (estructura) y arte.md (guía de estilo)
+- **Contexto:** la tarjeta del objetivo 3 del libro sitúa la guía de estilo en `documentacion/diseno.md`, mientras que el equipo planteó dos archivos, uno de diseño y otro de arte.
+- **Decisión:** mantener dos archivos. `diseno.md` recoge la estructura de las pantallas (objetivo 2) y `arte.md`, la guía de estilo (objetivo 3).
+- **Alternativas:** un solo `diseno.md` con las dos partes, para no tocar la tarjeta; se descartó porque la estructura y el estilo se aprueban en momentos distintos y con criterios distintos, y mezclarlos obligaría a reabrir uno cada vez que se cambia el otro.
+- **Consecuencias:** hay que cambiar en el libro de historias la ruta de la guía de estilo del objetivo 3, de `documentacion/diseno.md` a `documentacion/arte.md`. Si el equipo prefiere un solo archivo, `arte.md` pasa a ser un apartado de `diseno.md`.
+- **Decidió:** Flavia, delegando la elección en Claude; el equipo la confirma.
+
 #### Dibujar también las pantallas que tienen otro responsable
 - **Contexto:** el reparto del equipo asigna cada pantalla a una persona (la bienvenida, a Matthew) y los esquemas se dibujan primero a mano, en papel.
 - **Decisión:** completar las nueve pantallas con propuestas de Flavia a partir de `frontend.md` y el sitemap, marcadas como propuesta y sustituibles por el dibujo de quien tenga cada pantalla.
@@ -89,7 +104,8 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 - `npm test` desde `backend/` no se ha vuelto a ejecutar porque no hay código nuevo.
 
 ### Pendiente
-- Que el equipo confirme la navegación en móvil (barra inferior), la combinación de `usuario.html` y si hay landing page.
+- Que el equipo confirme las cuatro recomendaciones: barra inferior en móvil, la combinación de `usuario.html`, no crear landing page (con frase de presentación) y dos archivos de documentación.
+- Cambiar en el libro de historias la ruta de la guía de estilo del objetivo 3 (de `diseno.md` a `arte.md`); lo edita quien tenga el libro.
 - No está dibujado el diálogo de «Reportar» de `experiencia.html`.
 - Los esquemas son propuestas generadas a partir de la documentación, no dibujos a mano de cada persona.
 - Todo el contenido de `arte.md` sigue sin decidir, salvo los dos datos de contraste.

@@ -40,10 +40,10 @@ Una sección por pantalla, con el mismo formato.
 ### index.html: iniciar sesión
 - **Responsable del esquema:** Flavia (propuesta)
 - **Esquema (móvil y escritorio):** [diseno/index.svg](diseno/index.svg)
-- **Idea:** formulario centrado en una tarjeta, con la barra reducida al nombre PlanB porque aún no hay sesión.
+- **Idea:** formulario centrado en una tarjeta, con la barra reducida al nombre PlanB porque aún no hay sesión. Sobre el título lleva una frase de presentación (texto de ejemplo: «Comparte y descubre planes por tu ciudad»), de modo que quien llega sepa qué es PlanB sin una página aparte.
 - **Estados:** normal, error con el mensaje del servidor.
 - **Enlaces (sitemap):** registro, recuperar contraseña, bienvenida.
-- **Decisión pendiente:** si hay una landing page antes de esta pantalla.
+- **Decisión:** no hay landing page; la frase de presentación hace su papel. Recomendada: el equipo la confirma y valida el texto.
 
 ### registro.html: crear una cuenta
 - **Responsable del esquema:** Flavia (propuesta)
@@ -126,7 +126,7 @@ Lista con la que se revisa cada esquema y, después, cada pantalla. Parte de las
 
 | Pregunta | Quién decide | Estado |
 |---|---|---|
-| ¿Hay una landing page antes del inicio de sesión? Hoy `index.html` es el login | Equipo | Abierta |
+| ¿Hay una landing page antes del inicio de sesión? | Equipo | Recomendado **no** crear una página nueva y presentar PlanB con una frase en `index.html`; falta confirmarlo |
 | Navegación en móvil: barra inferior fija (recomendada) o menú ≡ desplegable. Ver [diseno/navegacion-movil.svg](diseno/navegacion-movil.svg) | Equipo | Recomendada la barra inferior; falta confirmarlo |
 | `usuario.html`: combinación de `usuario.svg` (móvil A, escritorio B) o una de las variantes originales | Equipo | Recomendada la combinación; falta confirmarlo |
-| ¿`diseno.md` y `arte.md` separados o un solo archivo? | Equipo | Abierta |
+| ¿`diseno.md` y `arte.md` separados o un solo archivo? | Equipo | Recomendado **dos archivos**: `diseno.md` (estructura) y `arte.md` (guía de estilo). Hay que cambiar la ruta de la guía en la tarjeta del objetivo 3 del libro, que dice `diseno.md`; falta confirmarlo |
