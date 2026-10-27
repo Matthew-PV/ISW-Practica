@@ -1,24 +1,24 @@
 # Glosario — PlanB
 
 > Términos técnicos que aparecen en el código y la documentación, explicados en lenguaje claro.
-> Cada uno indica dónde aparece en PlanB. Documentos relacionados: [arquitectura](arquitectura.md), [flujos](flujos.md), [API](api.md) y [pantallas](frontend.md).
+> Cada uno indica dónde aparece en PlanB. Documentos relacionados: [arquitectura](../arquitectura.md), [flujos](../flujos.md), [API](../api.md) y [pantallas](../frontend.md).
 
 ## Arquitectura y backend
 
 ### API REST
 Conjunto de direcciones (rutas) a las que el navegador envía peticiones HTTP para leer o cambiar datos. Cada ruta combina un método (`GET` leer, `POST` crear, `PUT`/`PATCH` modificar, `DELETE` borrar) y una dirección.
 
-**En PlanB:** todas empiezan por `/api`; la lista completa está en [api.md](api.md).
+**En PlanB:** todas empiezan por `/api`; la lista completa está en [api.md](../api.md).
 
 ### Endpoint
 Cada combinación de método y dirección de una API, por ejemplo `POST /api/amistades`. En este proyecto se dice también «ruta».
 
-**En PlanB:** hay 31; el índice está en [api.md](api.md#índice).
+**En PlanB:** hay 31; el índice está en [api.md](../api.md#índice).
 
 ### Monolito por capas
 Una sola aplicación (un único servidor) organizada en capas que se llaman siempre en el mismo orden, cada una con una responsabilidad.
 
-**En PlanB:** rutas → servicios → repositorios → MySQL o servicios externos. Ver [arquitectura](arquitectura.md).
+**En PlanB:** rutas → servicios → repositorios → MySQL o servicios externos. Ver [arquitectura](../arquitectura.md).
 
 ### Ruta (capa)
 Código que recibe una petición HTTP, saca los datos de ella y llama a un servicio. No decide nada.
@@ -63,7 +63,7 @@ Script que carga datos fijos necesarios para usar la aplicación.
 ### Clave foránea
 Columna que guarda el id de una fila de otra tabla y la base de datos comprueba que esa fila existe. Por ejemplo, `Experiencia.ciudadId` apunta a una `Ciudad`.
 
-**En PlanB:** todas usan `onDelete: Restrict`, así que no se puede borrar una fila a la que otra apunta. Se ven en el diagrama ER de [arquitectura](arquitectura.md).
+**En PlanB:** todas usan `onDelete: Restrict`, así que no se puede borrar una fila a la que otra apunta. Se ven en el diagrama ER de [arquitectura](../arquitectura.md).
 
 ### Índice
 Estructura que la base de datos mantiene para encontrar filas sin recorrer toda la tabla, como el índice de un libro.
@@ -88,7 +88,7 @@ Código de Prisma para «la fila a la que apunta esta clave foránea no existe»
 ### Condición de carrera
 Error que solo aparece cuando dos peticiones llegan casi a la vez y cada una cree que la otra no existe. Por ejemplo, dos solicitudes de amistad cruzadas.
 
-**En PlanB:** se evitan dejando que MySQL decida con una restricción única o con un `UPDATE` condicionado. Ver [F7](flujos.md#f7-solicitud-de-amistad) y [F11](flujos.md#f11-recuperar-y-restablecer-la-contraseña).
+**En PlanB:** se evitan dejando que MySQL decida con una restricción única o con un `UPDATE` condicionado. Ver [F7](../flujos.md#f7-solicitud-de-amistad) y [F11](../flujos.md#f11-recuperar-y-restablecer-la-contraseña).
 
 ### Transacción
 Grupo de operaciones de base de datos que se aplican todas o ninguna.
@@ -115,7 +115,7 @@ Función que crea un error con un código HTTP, para que `app.js` responda con e
 ### Código de estado HTTP
 Número que acompaña a cada respuesta: 200 bien, 201 creado, 204 bien sin contenido, 400 datos no válidos, 401 sin sesión, 403 sin permiso, 404 no encontrado, 429 demasiados intentos, 500 error del servidor.
 
-**En PlanB:** cada ficha de [api.md](api.md) lista los suyos.
+**En PlanB:** cada ficha de [api.md](../api.md) lista los suyos.
 
 ### JSON
 Formato de texto para intercambiar datos, con la misma forma que los objetos de JavaScript.
@@ -187,7 +187,7 @@ Algoritmo para guardar contraseñas: añade un valor aleatorio (*salt*) y es len
 ### Token de recuperación
 Valor aleatorio de un solo uso que va en el enlace del email para restablecer la contraseña.
 
-**En PlanB:** 32 bytes aleatorios; en la base de datos solo se guarda su hash, caduca a los 30 minutos y solo sirve una vez. Ver [E4](flujos.md#e4-enlace-de-recuperación-de-la-contraseña).
+**En PlanB:** 32 bytes aleatorios; en la base de datos solo se guarda su hash, caduca a los 30 minutos y solo sirve una vez. Ver [E4](../flujos.md#e4-enlace-de-recuperación-de-la-contraseña).
 
 ### SHA-256
 Función *hash* rápida. Sirve para guardar valores aleatorios largos, como un token, que no se pueden adivinar; no sirve para contraseñas, que se guardan con bcrypt, que es lento a propósito.
@@ -209,7 +209,7 @@ Biblioteca de Node.js para enviar correo por SMTP.
 ### Visibilidad
 Quién puede ver una experiencia: `PRIVADA` (solo su autor), `AMIGOS` (su autor y sus amigos con la amistad aceptada) o `PUBLICA` (cualquier usuario con sesión).
 
-**En PlanB:** CS-22; la regla está en `services/shared/visibilidad.js`. Ver [arquitectura](arquitectura.md).
+**En PlanB:** CS-22; la regla está en `services/shared/visibilidad.js`. Ver [arquitectura](../arquitectura.md).
 
 ### Contenido no disponible
 Respuesta 404 que se da tanto si una experiencia no existe como si el usuario no puede verla, para no revelar que existe.
@@ -234,7 +234,7 @@ Dos cosas distintas: `Usuario.ciudad` es un texto libre que cada uno escribe en 
 ### Paginación por cursor
 Forma de pedir una lista por partes. En vez de «dame la página 3», se pide «dame los 10 siguientes después del elemento con id 57». El valor que marca dónde seguir es el cursor.
 
-**En PlanB:** parámetros `despuesDe` y `limite`, respuesta con `siguiente`. `services/shared/paginacion.js`. Ver [F9](flujos.md#f9-listas-con-cargar-más).
+**En PlanB:** parámetros `despuesDe` y `limite`, respuesta con `siguiente`. `services/shared/paginacion.js`. Ver [F9](../flujos.md#f9-listas-con-cargar-más).
 
 ### OFFSET (paginación por número de página)
 La forma clásica de pedir la página 3: «sáltate los 20 primeros y dame 10». Si entre dos peticiones se añade un elemento, todo se desplaza y uno se repite o se pierde; y saltar muchas filas es lento.
@@ -283,7 +283,7 @@ La representación de la página que el JavaScript puede leer y cambiar (element
 ### `textContent` e `innerHTML`
 `textContent` escribe texto tal cual; `innerHTML` interpreta el texto como HTML. Con datos de usuarios solo se usa `textContent`.
 
-**En PlanB:** ver [reglas del frontend](frontend.md#reglas-del-frontend).
+**En PlanB:** ver [reglas del frontend](../frontend.md#reglas-del-frontend).
 
 ### `fetch`
 Función del navegador para hacer peticiones HTTP desde JavaScript.
@@ -340,7 +340,7 @@ Porcentaje del código que se ejecuta durante las pruebas. Una cobertura alta no
 ### BICEP
 Lista para no olvidar casos al escribir pruebas: **B**oundaries (límites, como 1000 y 1001 caracteres), **I**nverse (comprobar el resultado por otro camino), **C**ross-check (contrastar con otra fuente), **E**rror conditions (errores) y **P**erformance (rendimiento).
 
-**En PlanB:** [arquitectura](arquitectura.md) tiene un ejemplo de PlanB para cada letra.
+**En PlanB:** [arquitectura](../arquitectura.md) tiene un ejemplo de PlanB para cada letra.
 
 ### Prueba tautológica
 Prueba que no puede fallar porque comprueba lo mismo que prepara (por ejemplo, simular que una función devuelve 5 y comprobar que devuelve 5). Da una falsa sensación de seguridad.

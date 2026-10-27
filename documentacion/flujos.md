@@ -1,7 +1,7 @@
 # Flujos y estados — PlanB
 
 > Cómo se mueve una petición por el sistema, capa por capa, y por qué estados pasan los datos.
-> Documentos relacionados: [arquitectura](arquitectura.md), [referencia de la API](api.md), [pantallas](frontend.md) y [glosario](glosario.md).
+> Documentos relacionados: [arquitectura](arquitectura.md), [referencia de la API](api.md), [pantallas](frontend.md) y [glosario](anexo/glosario.md).
 
 ## Cómo leer los diagramas
 

@@ -1,182 +1,102 @@
 # Instrucciones para agentes — PlanB
 
-Este archivo es el contexto de trabajo común para cualquier agente de inteligencia artificial que colabore en el repositorio. Se aplica a todo el proyecto. Si una tarea contiene instrucciones más concretas, se siguen esas instrucciones sin contradecir las reglas de seguridad y arquitectura de este documento.
+PlanB lo desarrolla un equipo de estudiantes que usa agentes de IA como apoyo. El objetivo no es solo terminar funcionalidades: la persona debe entender el proyecto, conservar el control de las decisiones y poder explicar lo que entra en el repositorio. El agente propone y ejecuta; la persona revisa y decide.
 
-## 1. Objetivo de la colaboración
+## Comandos
 
-PlanB está desarrollado por un equipo de estudiantes que utiliza agentes de IA como herramienta de apoyo. El objetivo no es solo terminar funcionalidades: el agente debe ayudar al equipo a entender el proyecto, conservar el control de las decisiones y poder explicar el trabajo realizado.
+Desde `backend/`:
 
-- No presupongas conocimientos técnicos avanzados.
+- `npm test`: toda la batería (Jest + Supertest + jsdom).
+- `npm run test:mysql`: pruebas con MySQL real (necesita `docker compose up -d`).
+- `npm run test:cobertura`: todas las pruebas con informe; falla por debajo de los mínimos de `package.json`.
+- `npm run dev`: servidor de desarrollo.
+- `npm run db:migrate`, `npm run db:seed`, `npm run db:studio`: Prisma (migraciones, catálogo de ciudades repetible sin duplicados, visor).
+
+## Cómo trabajar
+
 - Explica en lenguaje claro los conceptos técnicos la primera vez que aparezcan.
-- Antes de realizar un cambio, identifica la historia de usuario y sus criterios de validación cuando existan.
-- Después de realizarlo, resume qué cambió, para qué sirve, cómo encaja en la arquitectura y cómo se comprobó.
-- Distingue entre lo imprescindible para la práctica, las mejoras recomendables y las ampliaciones opcionales.
-- Señala decisiones, alternativas y consecuencias relevantes, especialmente en seguridad, datos, autenticación, despliegue y cambios difíciles de revertir.
-- No introduzcas tecnologías, dependencias ni abstracciones nuevas sin una necesidad clara.
-- No modifiques ni elimines trabajo ajeno que no forme parte de la tarea.
+- Antes de cambiar nada, identifica la historia de usuario y sus criterios de validación si existen.
+- No afirmes que algo funciona sin haberlo comprobado: di qué ejecutaste y qué quedó sin verificar.
+- Sin tecnologías, dependencias ni abstracciones nuevas sin necesidad clara. No toques trabajo ajeno.
 
-La IA propone y ejecuta tareas técnicas, pero no sustituye la revisión del integrante responsable. No afirmes que algo funciona si no se ha comprobado; indica con precisión qué se verificó y qué quedó sin verificar.
+## No leer
 
-## 2. Protocolo para poner en contexto a un integrante
+No leas esto salvo que la tarea lo pida expresamente:
 
-Cuando una persona abra un chat nuevo y pida «ponme en contexto», «ayúdame a empezar a trabajar», «¿qué tengo que hacer para empezar?» o una petición equivalente, no comiences dando instrucciones genéricas ni modificando archivos.
+- `documentacion/anexo/`: histórico (`modificaciones.md`), prompts del equipo, glosario, hoja de ruta de aprendizaje, propuesta inicial, libro de historias, herramientas e instalación. Única excepción: `anexo/fichas-integrantes.md` al poner a alguien en contexto (ver más abajo).
+- `documentacion/customer-stories/` (copia obsoleta del libro de historias) y `documentacion/office-scripts/`.
+- `.planes/` (borradores locales).
 
-1. Pregunta primero: **«¿Quién eres dentro del equipo?»** Acepta el nombre, el identificador de historias o el usuario de GitHub.
-2. Localiza su ficha en `documentacion/metodologia.md` y su archivo en `documentacion/prompts/`.
-3. Si su ficha está completa, resume brevemente:
-   - el estado actual de PlanB relevante para trabajar;
-   - las fuentes que debe consultar;
-   - sus pasos concretos para actualizar el repositorio, dependencias, base de datos y pruebas según su sistema operativo y entorno;
-   - las precauciones sobre cambios locales, `.env`, migraciones y archivos que no deben subirse;
-   - el flujo TDD y la obligación de entender el bloque de pruebas.
-4. Si su ficha está incompleta, indícalo y pregunta por sistema operativo, editor, terminal y agente antes de dar comandos específicos. No supongas que usa Windows, macOS, Linux, PowerShell, Bash o la terminal de Visual Studio.
-5. Pregunta qué historia u objetivo va a trabajar solo después de haberle dado los pasos iniciales. Entonces consulta únicamente la documentación necesaria para esa tarea.
+## Poner en contexto a un integrante
 
-No vuelvas a preguntar la identidad si ya consta de forma inequívoca en el chat actual. No muestres a un integrante datos personales innecesarios ni el contenido completo de los registros de otros miembros.
+Si alguien pide «ponme en contexto», «¿cómo empiezo?» o similar, no modifiques archivos ni des instrucciones genéricas:
 
-## 3. Fuentes de verdad
+1. Pregunta **«¿Quién eres dentro del equipo?»** (nombre, identificador de historias o usuario de GitHub), salvo que ya conste en el chat.
+2. Busca su ficha en `documentacion/anexo/fichas-integrantes.md`. Si está completa, resume el estado relevante del proyecto, sus pasos para actualizar repositorio, dependencias, base de datos y pruebas según su entorno, las precauciones (cambios locales, `.env`, migraciones) y el flujo TDD. Si está incompleta, pregunta sistema operativo, editor, terminal y agente antes de dar comandos.
+3. Solo después pregunta qué historia u objetivo va a trabajar y consulta la documentación necesaria para esa tarea.
 
-Consulta únicamente la documentación necesaria para la tarea y usa este orden de prioridad:
+No muestres datos personales de otros miembros.
 
-1. Las instrucciones actuales del equipo y del usuario.
-2. Los criterios de validación de la historia de usuario correspondiente, en el libro de historias (ver el párrafo siguiente).
-3. El código y las pruebas actuales, que indican lo que realmente está implementado.
-4. `documentacion/arquitectura.md`, para las reglas técnicas estables.
-5. Las entradas más recientes de `documentacion/modificaciones.md`, para cambios y pasos operativos recientes.
-6. `documentacion/propuesta-inicial.md`, como visión conceptual del producto, no como prueba de que una función exista.
+## Fuentes de verdad
 
-`README.md` resume el estado actual y la puesta en marcha. Para consultar cómo funciona algo ya implementado: `documentacion/api.md` (rutas), `documentacion/flujos.md` (secuencias y estados), `documentacion/frontend.md` (pantallas) y `documentacion/glosario.md` (términos técnicos). Si la documentación, las historias y el código se contradicen, indícalo antes de decidir cuál actualizar. Distingue siempre entre funcionalidad implementada, trabajo pendiente y diseño futuro.
+En este orden: instrucciones actuales de la persona; criterios de la historia; el código y las pruebas; `documentacion/arquitectura.md` (reglas técnicas estables); `git log` (qué cambió y por qué) y `documentacion/decisiones/` (decisiones). `README.md` resume el estado y la puesta en marcha. Para algo ya implementado: `documentacion/api.md` (rutas), `flujos.md` (secuencias y estados) y `frontend.md` (pantallas). Si se contradicen, dilo antes de decidir cuál actualizar; distingue implementado, pendiente y diseño futuro.
 
-El libro de historias `Customer_Stories_PlanB.xlsx` está en el OneDrive compartido y es el único que se usa: allí se llevan el estado, el responsable voluntario, el tiempo estimado por esa persona y el tiempo total empleado de cada tarea, y de allí se leen los criterios de validación. La copia de `documentacion/customer-stories/Customer_Stories_PlanB.xlsx` está **obsoleta**: no se consulta, no se actualiza y no se marca en ella ningún progreso.
+**Historias de usuario.** El libro `Customer_Stories_PlanB.xlsx` está en el OneDrive compartido y es el único vigente (estado, responsable, tiempos y criterios). Si tienes acceso a Excel para la web, trabaja ahí y confirma cada cambio con la persona antes de hacerlo (el equipo lo ve al momento); los cambios masivos van con un Office Script. Sin acceso, pide los criterios actuales a la persona y entrega los cambios como lista. Estructura del libro: `documentacion/anexo/libro-de-historias.md`. Los objetivos de una historia son macrotareas: entre 3 y 6, cada una con un resultado comprobable de 1 a 4 horas que incluye sus pruebas, nunca una por capa, archivo o paso de TDD (`documentacion/metodologia.md`).
 
-- Si tienes acceso al libro en Excel para la web (por ejemplo, a través del navegador del integrante), trabaja directamente sobre él. Confirma cada cambio con el integrante antes de hacerlo, porque el resto del equipo lo ve al momento. Los cambios que afectan a muchas celdas se hacen con un Office Script (pestaña «Automatizar»); los scripts del equipo están en `documentacion/office-scripts/`.
-- Si no tienes acceso, pide al integrante los criterios actuales (copiados del libro o en una exportación recién descargada) y entrega los cambios como una lista para que los pase al libro online. No reconstruyas los criterios desde documentos antiguos ni desde la copia del repositorio.
-- Si propones o revisas los objetivos de una historia, plantéalos como macrotareas, según `documentacion/metodologia.md` §3.4: entre 3 y 6 por historia, cada uno con un resultado comprobable de 1 a 4 horas que incluye sus pruebas, nunca uno por capa, archivo o paso de TDD.
+## Arquitectura obligatoria
 
-## 4. Arquitectura obligatoria
+Monolito web por capas. El flujo del backend es `rutas → servicios → repositorios → Prisma/MySQL o servicio externo`.
 
-PlanB es un monolito web por capas. El flujo normal del backend es:
-
-`rutas → servicios → repositorios → Prisma/MySQL o servicio externo`
-
-- `backend/src/routes/*Routes.js`: reciben HTTP, extraen los datos de la petición y llaman a servicios. No contienen reglas de negocio ni acceden a repositorios directamente.
-- `backend/src/middlewares/*Middleware.js`: resuelven tareas comunes de las rutas, como exigir sesión, limitar peticiones o recibir archivos.
-- `backend/src/services/*Service.js`: contienen validaciones y reglas de negocio y coordinan repositorios.
-- `backend/src/repositories/*Repository.js`: son la frontera con Prisma, MySQL, Cloudinary y otros mecanismos externos de persistencia. Solo esta capa debe acceder a ellos.
-- Las reglas o conexiones compartidas van en la carpeta `shared/` de su capa.
+- `backend/src/routes/*Routes.js`: reciben HTTP, extraen datos y llaman a servicios. Sin reglas de negocio ni acceso a repositorios.
+- `backend/src/middlewares/*Middleware.js`: tareas comunes de las rutas (sesión, límite de peticiones, archivos).
+- `backend/src/services/*Service.js`: validaciones, reglas de negocio y coordinación de repositorios.
+- `backend/src/repositories/*Repository.js`: única frontera con Prisma, MySQL, Cloudinary y otros mecanismos externos.
+- Lo compartido va en la carpeta `shared/` de su capa. Los archivos nuevos respetan los sufijos `Routes.js`, `Middleware.js`, `Service.js` y `Repository.js`.
 
 Reutiliza antes de duplicar:
 
-- `requiereSesion` en `backend/src/middlewares/sesionMiddleware.js`. Además de exigir sesión, comprueba que su usuario sigue existiendo; los servicios no repiten esa comprobación.
-- `validarNombreUsuario` en `backend/src/services/shared/nombreUsuario.js`.
-- El cliente Prisma y el almacén de sesiones de `backend/src/repositories/shared/`.
-- `crearError` en `backend/src/errores.js` para errores con estado HTTP.
-- `leerId` en `backend/src/services/shared/identificadores.js` para validar identificadores.
-- `leerPaginacion` y `cortarPagina` en `backend/src/services/shared/paginacion.js` para cualquier lista por páginas.
-- `validarPassword` y `cifrarPassword` en `backend/src/services/shared/password.js`.
-- `USUARIO_PUBLICO` en `backend/src/repositories/shared/camposPublicos.js` cada vez que una consulta devuelva a otro usuario.
+- `requiereSesion` (`middlewares/sesionMiddleware.js`): exige sesión y comprueba que el usuario sigue existiendo; los servicios no lo repiten.
+- `validarNombreUsuario` (`services/shared/nombreUsuario.js`), `validarPassword` y `cifrarPassword` (`services/shared/password.js`), `leerId` (`services/shared/identificadores.js`), `leerPaginacion` y `cortarPagina` (`services/shared/paginacion.js`).
+- Cliente Prisma y almacén de sesiones (`repositories/shared/`); `USUARIO_PUBLICO` (`repositories/shared/camposPublicos.js`) en cualquier consulta que devuelva a otro usuario.
+- `crearError` (`backend/src/errores.js`) para errores con estado HTTP.
 
 Convenciones de la API (detalle en `documentacion/api.md`):
 
-- Una experiencia que no existe o que el usuario no puede ver responde lo mismo: 404 «Contenido no disponible», con `experienciaService.obtenerExperiencia`. Todo lo que cuelga de una experiencia (sus valoraciones) pasa por esa función.
-- Las listas se paginan por cursor: `?despuesDe=&limite=` en la URL y `{ <lista>, siguiente }` en la respuesta, con el repositorio pidiendo `limite + 1` filas ordenadas por id descendente. No se usa OFFSET.
-- De otro usuario solo se devuelven `{ id, nombreUsuario, foto }`; nunca su email ni su contraseña cifrada.
-- Los errores de concurrencia de Prisma (P2002, P2025) se traducen a 400 o 404, nunca a 500 (ver `repositories/shared/carreras.js`).
+- Una experiencia que no existe o que el usuario no puede ver responde igual: 404 «Contenido no disponible», con `experienciaService.obtenerExperiencia`. Todo lo que cuelga de una experiencia (sus valoraciones) pasa por esa función.
+- Listas paginadas por cursor: `?despuesDe=&limite=` y `{ <lista>, siguiente }`; el repositorio pide `limite + 1` filas por id descendente. Sin OFFSET.
+- De otro usuario solo `{ id, nombreUsuario, foto }`; nunca email ni contraseña cifrada.
+- Los errores de concurrencia de Prisma (P2002, P2025) se traducen a 400 o 404, nunca a 500 (`repositories/shared/carreras.js`).
 
-Cada archivo nuevo debe respetar los sufijos `Routes.js`, `Middleware.js`, `Service.js` o `Repository.js`. Mantén el código sencillo y comprensible para estudiantes; evita abstracciones prematuras.
+## Frontend
 
-## 5. Frontend
+- Cada `frontend/x.html` tiene su comportamiento en `frontend/js/x.js`; lo compartido, en `frontend/js/shared/`. Carga primero `shared/api.js` y reutilízalo para llamar a la API.
+- La CSP de Helmet prohíbe scripts en línea: sin `onclick` ni bloques `<script>` en el HTML.
+- Texto de usuarios con `textContent`, nunca como HTML.
+- Con `FormData`, no fijes `Content-Type`: lo añade el navegador.
+- Si el cambio afecta a la interfaz, comprueba escritorio y móvil.
 
-- Cada página `frontend/x.html` tiene su comportamiento en `frontend/js/x.js`.
-- El código usado por varias páginas va en `frontend/js/shared/`.
-- Las llamadas a la API deben reutilizar `frontend/js/shared/api.js`; cada página carga primero ese archivo y después su JavaScript propio.
-- La política CSP de Helmet impide scripts en línea: no uses atributos como `onclick` ni bloques `<script>` dentro del HTML.
-- Inserta texto aportado por usuarios con `textContent`, no como HTML.
-- Cuando se envíe `FormData`, no fijes manualmente `Content-Type`: el navegador añade el límite correcto del formulario.
-- Comprueba las pantallas en tamaños de escritorio y móvil cuando el cambio afecte a la interfaz.
+## Datos, configuración y seguridad
 
-## 6. Datos, configuración y seguridad
+- Ningún secreto, contraseña, cookie de sesión ni `.env` en Git, documentación, pruebas o respuestas. `backend/.env.example` solo lleva nombres y valores de ejemplo seguros; actualízalo si se añade una variable.
+- Todo cambio de `backend/prisma/schema.prisma` que altere la base de datos incluye su migración.
+- `Usuario.ciudad` es texto libre del perfil; el modelo `Ciudad` es el catálogo estructurado de las experiencias. No los confundas.
+- Conserva sesiones, validaciones y permisos de autor. El frontend puede ocultar acciones, pero la autorización se comprueba siempre en el backend.
 
-- Nunca incluyas secretos, contraseñas, cookies de sesión ni archivos `.env` en Git, documentación, pruebas o respuestas.
-- `backend/.env.example` solo contiene nombres y valores de ejemplo seguros; actualízalo si se añade una variable necesaria.
-- Todo cambio de `backend/prisma/schema.prisma` que altere la base de datos debe incluir su migración de Prisma.
-- El catálogo inicial de ciudades se carga con `npm run db:seed` y debe seguir siendo repetible sin duplicados.
-- `Usuario.ciudad` es texto libre del perfil; el modelo `Ciudad` es el catálogo estructurado usado por las experiencias. No los confundas.
-- Conserva las sesiones, validaciones, permisos de autor y protecciones existentes. El frontend puede ocultar acciones, pero la autorización siempre se comprueba en el backend.
+## Pruebas (TDD)
 
-## 7. Desarrollo guiado por pruebas (TDD)
+Para cada comportamiento nuevo o corrección: **rojo** (prueba que falla por el motivo esperado), **verde** (cambio mínimo para que pase), **refactorización** (más claridad sin cambiar el comportamiento, volviendo a ejecutar). Antes de implementar, explica a la persona el bloque de prueba (datos o simulaciones, acción, resultado esperado): debe poder explicar qué comportamiento protege. No escribas una prueba que pase desde el principio (salvo que caracterices algo existente) ni la cambies para acomodar una implementación incorrecta. Si TDD no es viable (p. ej. una comprobación visual), dilo y define la verificación alternativa antes de cambiar el código.
 
-Para cada comportamiento nuevo o corrección se sigue, siempre que sea aplicable, el ciclo TDD (*Test-Driven Development*, desarrollo guiado por pruebas):
+Dónde va cada prueba, en `backend/tests/`: `services/` y `services/shared/` (unitarias, repositorios simulados), `routes/` y `middlewares/` (Supertest, servicios reales y repositorios simulados), `criterios/` (un archivo por historia, de punta a punta por HTTP), `mysql/` (MySQL real: restricciones, transacciones, concurrencia) y `frontend/` (jsdom). Ejecuta primero las pruebas del cambio y después `npm test`.
 
-1. **Rojo:** escribir primero una prueba que represente el criterio de validación y comprobar que falla por el motivo esperado.
-2. **Verde:** implementar el cambio mínimo necesario para que la prueba pase.
-3. **Refactorización:** mejorar la claridad sin cambiar el comportamiento y volver a ejecutar las pruebas.
+## Git y registro del trabajo
 
-Antes de implementar, explica al integrante responsable el bloque de prueba: preparación de datos o simulaciones, acción que se ejecuta y resultado que se espera. El humano debe poder explicar al menos qué comportamiento protege la prueba. Si TDD no es viable para una parte concreta —por ejemplo, una comprobación visual puramente manual—, indícalo y define la verificación alternativa antes de cambiar el código.
+- Revisa `git status` antes de editar y preserva cambios locales ajenos. Cambios pequeños, un objetivo por commit, archivos añadidos uno a uno. No reescribas historial, borres ramas ni descartes cambios sin autorización expresa.
+- Antes de cada push y tras cada merge o conflicto: `npm test` desde `backend/` y `git grep -nE '^(<<<<<<<|=======|>>>>>>>)( |$)'` sin resultados.
+- **El commit es el registro de lo que cambió.** Título `CS-XX: resultado en una línea` (sin `CS-XX` si no hay historia), en español. Cuerpo, salvo cambios triviales: qué cambia y por qué, cómo se comprobó (comando y resultado) y lo pendiente o sin comprobar. Si incluye una decisión, termina con `Decisión: documentacion/decisiones/AAAA-MM-DD-titulo.md`.
+- **Decisiones.** Cuando se elige entre opciones razonables, se fija una convención, se acepta un límite o se toca algo de datos, seguridad o autenticación, crea un archivo en `documentacion/decisiones/` con la plantilla de esa carpeta (contexto, decisión, alternativas, consecuencias, quién decidió; si la propuesta fue tuya: «…, a propuesta de <agente>»). Un archivo por decisión; no edites los de otras personas. No inventes motivos. Para saber por qué algo es como es: `git log -S "texto"`, `git blame` y `documentacion/decisiones/`.
+- **Documentación de referencia.** Quien cambie una ruta, un modelo de datos, un flujo o una pantalla actualiza en el mismo commit `documentacion/api.md`, el diagrama ER de `arquitectura.md`, `flujos.md` o `frontend.md`. Describen el sistema tal como es, sin justificar decisiones.
+- **Prompts.** Al terminar una tarea con IA, recuerda a la persona anotar en su archivo de `documentacion/anexo/prompts/` una entrada corta (plantilla allí): prompt inicial literal, correcciones que cambiaron el resultado y enlace al commit. No inventes ni reconstruyas prompts; no registres secretos ni datos personales.
 
-No escribas una prueba que pase desde el principio sin demostrar que detecta la ausencia o el defecto del comportamiento, salvo que estés caracterizando una funcionalidad ya existente. No cambies la prueba para acomodar una implementación incorrecta.
+## Al terminar una tarea
 
-### Tipos de pruebas y comprobación
-
-- Relaciona las pruebas con los criterios de validación de la historia de usuario.
-- Servicios: pruebas unitarias con repositorios simulados cuando corresponda.
-- API: Jest y Supertest.
-- Pantallas: Jest con jsdom, además de comprobación manual cuando sea relevante.
-- Dónde va cada prueba, dentro de `backend/tests/`: `services/` y `services/shared/` (unitarias, repositorios simulados), `routes/` y `middlewares/` (Supertest con servicios reales y repositorios simulados), `criterios/` (un archivo por historia, de principio a fin por HTTP), `mysql/` (con MySQL real: restricciones, transacciones y concurrencia) y `frontend/` (jsdom). Las ayudas comunes están en `helpers/`.
-- `npm run test:mysql` ejecuta las de `mysql/` (necesita `docker compose up -d`) y `npm run test:cobertura` las ejecuta todas con el informe de cobertura; falla si la cobertura baja de los mínimos de `package.json`.
-- Ejecuta primero las pruebas específicas del cambio y después toda la batería con `npm test` desde `backend/`.
-- No cambies una prueba solo para ocultar un fallo. Si cambia un comportamiento acordado, explica por qué deben cambiar tanto el código como su expectativa.
-- Informa del comando ejecutado, el resultado y cualquier parte que no haya podido comprobarse.
-
-## 8. Forma de trabajar con Git
-
-- Revisa el estado del repositorio antes de editar y preserva cambios locales ajenos.
-- Realiza cambios pequeños y relacionados con una sola tarea.
-- No reescribas el historial, borres ramas ni descartes cambios sin autorización expresa.
-- No incluyas archivos temporales, `node_modules`, `.env`, cookies ni bloqueos creados fuera del paquete al que pertenecen.
-- Los mensajes de commit deben explicar el resultado y, cuando sea útil, mencionar la historia u objetivo correspondiente.
-- Antes de cada push, y siempre después de un merge o de resolver un conflicto, ejecuta `npm test` desde `backend/` y comprueba que no queda ningún marcador de conflicto. Este comando, desde la raíz, no debe mostrar nada: `git grep -nE '^(<<<<<<<|=======|>>>>>>>)( |$)'`.
-- Cada cambio del proyecto se apunta, en el mismo commit, en el registro diario `documentacion/modificaciones.md` (ver la sección 9.1).
-- Quien cambie una ruta, un modelo de datos, un flujo o una pantalla actualiza en el mismo commit su documentación: `documentacion/api.md`, el diagrama ER de `documentacion/arquitectura.md`, `documentacion/flujos.md` o `documentacion/frontend.md`.
-
-## 9. Registro del trabajo
-
-El equipo deja dos registros para que cualquier persona o agente pueda saber qué cambió, por qué y quién lo decidió:
-
-- `documentacion/modificaciones.md`: el registro diario del proyecto, con sus decisiones justificadas.
-- `documentacion/prompts/`: las interacciones con IA, un archivo por integrante.
-
-La documentación técnica (`arquitectura.md`, `api.md`, `flujos.md`, `frontend.md`, `glosario.md`) describe el sistema tal como es, sin justificar decisiones: los motivos van en el registro diario. Si no entiendes por qué algo está hecho de cierta forma, búscalo ahí (por historia, archivo o título) antes de cambiarlo. `git blame` y `git log -S "texto"` llevan del código a su commit, y el commit, a su sección del registro.
-
-### 9.1. Registro diario (`modificaciones.md`)
-
-- Se actualiza en el mismo commit que el cambio que describe y sigue la plantilla de la cabecera del archivo.
-- Un título `# AAAA-MM-DD` por día, con lo más reciente arriba, y dentro una sección `##` por tarea y autor. Si el día ya existe, añade tu sección dentro; si tu sección de esa tarea ya existe ese día, amplíala.
-- Cada sección indica el autor (y el agente, si lo hubo), la historia y los commits de la tarea. El commit que añade la propia sección no hace falta: se localiza con `git blame`.
-- Las decisiones se escriben en formato ADR (*Architecture Decision Record*, registro de decisiones): contexto, decisión, alternativas, consecuencias y quién decidió. Si la propuesta vino de un agente, se indica: «Joaquín, a propuesta de Claude».
-- Se registra una decisión cuando se elige entre opciones razonables, se fija una convención o regla, se cambia algo acordado, se aceptan límites o trabajo pendiente, o afecta a datos, seguridad o autenticación. Los cambios mecánicos no necesitan decisión.
-- No se inventa nada. Al reordenar o dar formato a entradas antiguas se conservan sus datos; el autor y los commits salen de Git, y una decisión solo se escribe si el texto o el commit ya contaban su motivo.
-- No se cambia el contenido de la sección de otra persona; solo su formato.
-
-### 9.2. Registro de prompts (`prompts/`)
-
-- Al terminar una tarea asistida por IA, recuerda al integrante registrar el prompt inicial y las correcciones que hayan influido de forma importante en el resultado.
-- Cada entrada sigue `documentacion/prompts/plantilla.md`. Su campo «Decisiones» remite a las decisiones del registro diario (día y título); no las repite.
-- No inventes, reconstruyas ni atribuyas prompts que el integrante no haya aportado.
-- No registres secretos, datos personales innecesarios, contenido de `.env`, cookies ni credenciales.
-- El registro debe enlazar la historia de usuario, commit o pull request cuando exista y resumir qué aceptó, modificó o rechazó la persona responsable.
-- Un volcado completo de una conversación no sustituye un registro breve y comprensible.
-
-La forma de trabajo y las responsabilidades se describen en `documentacion/metodologia.md`.
-
-## 10. Entrega de una tarea
-
-Al finalizar, comunica de forma breve:
-
-1. Resultado conseguido.
-2. Archivos y capas afectados.
-3. Decisiones o riesgos importantes, que también quedan en el registro diario.
-4. Pruebas ejecutadas y resultado.
-5. Pasos manuales pendientes, si existen.
-6. Sección añadida al registro diario y entrada que debería añadirse al archivo de prompts del integrante, sin inventar su contenido.
-7. Evidencia del ciclo rojo, verde y refactorización, o motivo por el que no se aplicó TDD.
+Informa brevemente: resultado, archivos y capas afectados, decisiones o riesgos (y el archivo de `decisiones/` si lo hay), comandos de prueba ejecutados con su resultado, evidencia de rojo/verde/refactorización (o por qué no se aplicó TDD) y pasos manuales pendientes. Propón el mensaje de commit y la entrada de prompts, sin inventar su contenido.

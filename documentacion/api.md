@@ -1,7 +1,7 @@
 # Referencia de la API — PlanB
 
 > Todas las rutas que ofrece el backend: qué reciben, qué devuelven y con qué errores responden.
-> Documentos relacionados: [arquitectura](arquitectura.md), [flujos](flujos.md), [pantallas](frontend.md) y [glosario](glosario.md).
+> Documentos relacionados: [arquitectura](arquitectura.md), [flujos](flujos.md), [pantallas](frontend.md) y [glosario](anexo/glosario.md).
 > El código de cada ruta está en `backend/src/routes/`; el comentario que la precede indica el servicio al que llama.
 
 ## Convenciones

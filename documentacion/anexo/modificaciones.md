@@ -1,40 +1,9 @@
-# Modificaciones — PlanB
+# Modificaciones — PlanB (histórico)
 
-Registro diario de los cambios del proyecto: qué cambió, por qué y quién lo decidió. Lo más reciente va arriba. Las reglas están en `AGENTS.md`, sección 9.1.
-
-Plantilla de una sección (las secciones `###` vacías se omiten, salvo «Cambios»):
-
-```markdown
-# AAAA-MM-DD
-
-## CS-XX: título breve de la tarea
-
-**Autor:** nombre completo, con <agente> si lo hubo
-**Historia:** CS-XX, objetivos N a M (o «sin historia») · **Commits:** `abc1234`, `def5678`
-
-### Cambios
-- Qué cambió, por capa o archivo.
-
-### Decisiones
-#### Título de la decisión
-- **Contexto:** problema, criterio o petición que la motivó.
-- **Decisión:** qué se hizo.
-- **Alternativas:** opciones consideradas y por qué no se eligieron; «ninguna» si no las hubo.
-- **Consecuencias:** qué implica: migraciones, límites, trabajo pendiente, lo que deja de valer.
-- **Decidió:** persona responsable («…, a propuesta de <agente>» si la propuesta fue del agente).
-
-### Comprobación
-- TDD: qué prueba falló primero y por qué, y qué la hizo pasar. Batería completa.
-- Comprobación manual, si la hubo.
-
-### Para quien continúe
-- Pasos tras el `git pull` (migraciones, `.env`, dependencias) y avisos.
-
-### Pendiente
-- Lo que queda sin hacer o sin comprobar.
-```
+Registro diario de los cambios hasta el 2026-10-27, conservado tal cual. **Ya no se actualiza**: desde esa fecha el registro es el historial de Git (título y cuerpo de cada commit) y las decisiones van en [`../decisiones/`](../decisiones/plantilla.md). Reglas en [metodología](../metodologia.md#registro-del-trabajo).
 
 Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar su contenido: el autor y los commits salen de Git (`git blame` y `git log`), el agente solo figura si consta en el registro de prompts de su autor y una decisión solo aparece si la entrada original ya contaba su motivo.
+
 
 # 2026-10-27
 

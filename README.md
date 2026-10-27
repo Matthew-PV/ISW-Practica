@@ -77,15 +77,12 @@ Toda la documentación detallada vive en [`documentacion/`](documentacion/):
 * [Referencia de la API](documentacion/api.md) — cada ruta con su servicio, lo que recibe, lo que devuelve y sus errores.
 * [Flujos y estados](documentacion/flujos.md) — diagramas de secuencia de los flujos principales (registro, login, valorar, amistad, recuperar la contraseña...) y de los estados de amistades, valoraciones y enlaces de recuperación.
 * [Pantallas](documentacion/frontend.md) — mapa de navegación (la raíz `/` es la landing `index.html`; el inicio de sesión está en `iniciar-sesion.html`), qué archivos y llamadas usa cada página, sus estados y las reglas del frontend.
-* [Glosario](documentacion/glosario.md) — los términos técnicos del proyecto, explicados y con dónde aparecen en PlanB.
 * [Diseño](documentacion/diseno.md) — estructura de las pantallas y esquemas en blanco y negro (borrador).
 * [Inventario de pantallas](documentacion/inventario-pantallas.md) — las diez pantallas con sus estados, flujos, componentes de la guía de estilo y las lagunas por cubrir.
 * [Arte](documentacion/arte.md) — cómo debe verse PlanB: paleta con contraste calculado, tipografía y componentes (propuesta para aprobar).
-* [Modificaciones](documentacion/modificaciones.md) — registro de los cambios realizados: qué se ha hecho, cómo probarlo y notas para quien siga trabajando.
-* [Propuesta inicial](documentacion/propuesta-inicial.md) — planteamiento conceptual del producto: problema, público objetivo, objetivos, módulos funcionales, modelo de datos, comparación con soluciones existentes, límites de alcance y riesgos. Describe la idea, no lo que ya existe.
-* [Metodología de trabajo con IA](documentacion/metodologia.md) — proceso común, responsabilidades, revisión y forma de trabajo de cada integrante.
-* [Registro de prompts](documentacion/prompts/README.md) — índice, plantilla y un archivo por integrante para las interacciones con IA que hayan influido en el proyecto.
-* [Guía de aprendizaje](documentacion/hoja-ruta-aprendizaje.md) — recorrido flexible para entender los fundamentos de PlanB, practicar cada concepto y reconocerlo en la versión vigente del proyecto.
+* [Metodología de trabajo con IA](documentacion/metodologia.md) — flujo de una tarea, cómo se registran los cambios (commits) y responsabilidades.
+* [Decisiones](documentacion/decisiones/plantilla.md) — un archivo por decisión del equipo, con su motivo.
+* [Anexo](documentacion/anexo/) — material que los agentes no necesitan para programar: histórico de modificaciones, registro de prompts, glosario, guía de aprendizaje, propuesta inicial, fichas de integrantes, libro de historias y herramientas e instalación.
 
 Los diagramas están escritos en Mermaid: GitHub los dibuja directamente y, en Visual Studio Code, se ven con la extensión «Markdown Preview Mermaid Support».
 
@@ -95,7 +92,7 @@ Las instrucciones comunes para los agentes que colaboren en el repositorio está
 
 El libro de historias de usuario (`Customer_Stories_PlanB.xlsx`) que usa el equipo está en el **OneDrive compartido**: allí se llevan el estado de cada tarea, su responsable voluntario, el tiempo estimado y el tiempo real.
 
-La copia de `documentacion/customer-stories/Customer_Stories_PlanB.xlsx` está obsoleta: no se consulta ni se actualiza. Los cambios se hacen directamente en el libro online. La misma carpeta guarda los documentos individuales de partida (`01-PlanteamientoInicial/`), `documentacion/office-scripts/crearPaginas.ts` es el script del botón «Crear páginas» del libro online y `prepararEntregas.ts`, el que añadió la hoja «Tiempos» con las horas de cada persona por entrega (ver [metodología](documentacion/metodologia.md)).
+La copia de `documentacion/customer-stories/Customer_Stories_PlanB.xlsx` está obsoleta: no se consulta ni se actualiza. Los cambios se hacen directamente en el libro online. La misma carpeta guarda los documentos individuales de partida (`01-PlanteamientoInicial/`), `documentacion/office-scripts/crearPaginas.ts` es el script del botón «Crear páginas» del libro online y `prepararEntregas.ts`, el que añadió la hoja «Tiempos» con las horas de cada persona por entrega (ver [libro de historias](documentacion/anexo/libro-de-historias.md)).
 
 ## Estructura del repositorio
 

@@ -1,0 +1,8 @@
+# El registro del trabajo pasa a los commits y a decisiones sueltas
+
+**Fecha:** 2026-10-27 · **Historia:** sin historia · **Decidió:** Joaquín de Vicente Abad, a propuesta de Claude
+
+- **Contexto:** `modificaciones.md` llegó a 224 KB y 78 secciones, se editaba en 146 de 293 commits (siempre en la misma zona, con conflictos), guardaba hashes que no pueden incluir su propio commit y repetía lo que ya dicen Git y las pruebas. Los commits eran de una línea y el porqué estaba fuera de ellos. `AGENTS.md` y `metodologia.md` pesaban 52 KB entre los dos y se cargan en el contexto de los agentes.
+- **Decisión:** el cuerpo de cada commit cuenta qué cambia, por qué y cómo se comprobó. Solo las decisiones van a un archivo propio en `documentacion/decisiones/`. El registro diario anterior queda como histórico en `documentacion/anexo/`, junto con el material que los agentes no necesitan para programar (prompts, glosario, hoja de ruta de aprendizaje, propuesta inicial, fichas de integrantes, libro de historias, herramientas e instalación). `AGENTS.md` pasa a reglas cortas e indica no leer el anexo.
+- **Alternativas:** mantener `modificaciones.md` con una plantilla más corta (sigue siendo un archivo compartido y con conflictos); un `CHANGELOG.md` generado desde Git (no recoge decisiones); borrar el histórico (se pierde el porqué de decisiones pasadas).
+- **Consecuencias:** quien use un agente debe pedirle que redacte commits con cuerpo. Los hashes de las secciones antiguas siguen sirviendo mientras no se reescriba el historial. Los enlaces a archivos movidos cambian a `documentacion/anexo/`.
