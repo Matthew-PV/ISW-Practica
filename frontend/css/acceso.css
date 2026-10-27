@@ -11,3 +11,28 @@
   gap: var(--espacio-12);
   color: var(--color-texto);
 }
+
+.acceso-lineas li {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-12);
+}
+
+/* Marca de verificación ciruela sobre un círculo naranja */
+.acceso-lineas li::before {
+  content: "";
+  flex: none;
+  width: 24px;
+  height: 24px;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232A1E3F' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12.5l4 4 8-9'/%3E%3C/svg%3E") center / 16px no-repeat,
+    var(--color-primario);
+  border-radius: 50%;
+}
+
+.acceso-ilustracion {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  margin-top: var(--espacio-16);
+}
