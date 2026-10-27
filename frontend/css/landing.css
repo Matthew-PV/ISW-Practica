@@ -1,0 +1,77 @@
+/* Landing pública (index.html). Solo variables del tema. */
+
+.landing {
+  width: min(1100px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: var(--espacio-48) 0;
+}
+
+/* Portada: texto a la izquierda y marco de captura a la derecha */
+.landing-portada {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: var(--espacio-48);
+}
+
+.landing-portada h1 {
+  margin-bottom: var(--espacio-16);
+}
+
+.landing-subtitulo {
+  margin-bottom: var(--espacio-24);
+  color: var(--color-texto-suave);
+}
+
+/* Tres bloques de valor */
+.landing-bloques {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--espacio-32);
+  margin-top: var(--espacio-48);
+}
+
+.bloque-landing svg {
+  display: block;
+  margin-bottom: var(--espacio-12);
+}
+
+.bloque-landing h2 {
+  margin-bottom: var(--espacio-8);
+}
+
+.bloque-landing p {
+  margin: 0;
+  color: var(--color-texto-suave);
+}
+
+/* Cómo funciona */
+.landing-pasos {
+  margin-top: var(--espacio-48);
+}
+
+.landing-pasos ol {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--espacio-32);
+  margin: 0;
+  padding-left: var(--espacio-24);
+}
+
+/* Cierre */
+.landing-cierre {
+  margin-top: var(--espacio-48);
+  text-align: center;
+}
+
+.landing-cierre-acciones {
+  display: flex;
+  justify-content: center;
+  gap: var(--espacio-12);
+}
+
+.landing-pie {
+  padding: var(--espacio-24);
+  text-align: center;
+  color: var(--color-texto-suave);
+}

@@ -38,6 +38,50 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 
 # 2026-10-27
 
+## CS-66: páginas con el diseño aplicado
+
+**Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
+**Historia:** CS-66
+
+### Cambios
+- `index.html`: landing estática con cabecera sin sesión, portada con marco de captura, tres bloques, «Cómo funciona», cierre y pie (`css/landing.css`).
+- Acceso (`iniciar-sesion`, `registro`, `recuperar`, `restablecer`): pantalla dividida sin barra de cabecera, con la marca en la columna izquierda (`css/acceso.css`). Botones de envío con «Entrando…», «Creando cuenta…», «Enviando…», «Guardando…» y `aria-busy`.
+- `bienvenida.html`: «Tus experiencias» como `h1`, rejilla de 4 columnas con la tarjeta «+», tarjetas con etiqueta de visibilidad y «Ver detalle» como botón; «Guardar» pasa a «Guardando…».
+- `experiencia.html`: una columna de 720 px, formulario compacto y pestañas «De amigos y seguidores | Todas» (`css/experiencia.css`).
+- `perfil.html` y `usuario.html`: cabecera de perfil con contadores, banda de solicitudes, secciones apiladas, «Ajustes» plegado con «Cerrar sesión»; las tarjetas de experiencia de `shared/experiencias.js` son las mismas que las de Inicio (`css/perfil.css`).
+- `personas.html`: «Buscar» con campo grande, pestañas Personas y Experiencias, «Buscando…» con ayuda que desaparece, fundido de 150 ms, `?q=` desde la cabecera y descarte de respuestas atrasadas; `buscarExperiencias` devuelve vacío (`css/buscar.css`).
+- Pruebas nuevas en `landing`, `bienvenida`, `iniciar-sesion`, `registro`, `recuperacion`, `experiencia`, `personas`, `perfil.cabecera`, `usuario.cabecera` y `shared/experiencias`.
+
+### Decisiones
+#### Perfil sin pestañas y sin botón principal
+- **Contexto:** el perfil tiene «Aceptar», «Rechazar», «Guardar cambios» y «Cambiar contraseña», y la regla de diseño es un solo botón principal por pantalla.
+- **Decisión:** secciones apiladas, sin pestañas; todos esos botones son secundarios (`btn-outline-*`); en `usuario.html` solo es principal «Añadir amigo» o «Aceptar», según la relación.
+- **Alternativas:** pestañas de Instagram; se descartan por trabajar de más.
+- **Consecuencias:** el perfil no tiene una acción principal destacada.
+- **Decidió:** Joaquín, a propuesta de Claude.
+
+#### «Experiencias» de Buscar vacía por una función única
+- **Contexto:** la búsqueda de experiencias depende de CS-23, CS-24 y CS-26.
+- **Decisión:** la pestaña se ve y `buscarExperiencias` devuelve `Promise.resolve([])`, con «Todavía no hay experiencias que mostrar.»; CS-24 la sustituirá por la llamada real.
+- **Alternativas:** ocultar la pestaña o simular datos; se descartan para no inventar contenido.
+- **Consecuencias:** hueco conocido hasta CS-24.
+- **Decidió:** Joaquín.
+
+#### Landing como concepto con marcos de captura
+- **Contexto:** acabará con capturas reales.
+- **Decisión:** marco con el rótulo «Captura de PlanB», sin cifras ni testimonios; el único botón principal es el «Crear cuenta» de la portada.
+- **Alternativas:** capturas o cifras inventadas; se descartan.
+- **Consecuencias:** hay que sustituir el marco cuando haya capturas.
+- **Decidió:** Joaquín.
+
+### Comprobación
+- TDD: pruebas nuevas en rojo antes de implementar en cada página (p. ej. `personas.test.js` 5 de 11 en rojo, `perfil.cabecera` y `usuario.cabecera` 16 de 21, `landing.test.js` 5 de 9), después en verde. `npm test`: 58 suites, 720 pruebas, 0 fallos.
+- Auditoría visual de las diez páginas a 1024, 1280 y 1440 px con clics: R2 a R6 en cero.
+- Revisión de la oleada: dos graves (marca de la landing a la derecha y tarjetas de perfil y usuario) corregidos; tres menores de Buscar sin corregir.
+
+### Pendiente
+- Menores de Buscar: «Cargando…» y el aviso dentro del panel Personas, pruebas de cuatro comportamientos y la etiqueta «Nombre de usuario» en la pestaña Experiencias.
+
 ## CS-66: base visual compartida y cabecera
 
 **Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)

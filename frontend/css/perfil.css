@@ -1,0 +1,18 @@
+/* Estilos comunes de perfil.html y usuario.html (se cargan después de styles.css).
+   Solo variables --color-* y --espacio-*. */
+
+/* Foto más grande que la de styles.css (96 px) */
+.cabecera-perfil img {
+  width: 120px;
+  height: 120px;
+}
+
+/* La banda de solicitudes lleva las esquinas redondeadas como las tarjetas */
+.banda-solicitudes {
+  border-radius: var(--radio-tarjeta);
+}
+
+/* «Ajustes» plegado */
+.ajustes-perfil[open] > .resumen-boton {
+  margin-bottom: var(--espacio-24);
+}

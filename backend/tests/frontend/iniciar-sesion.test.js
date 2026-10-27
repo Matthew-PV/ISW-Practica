@@ -73,3 +73,41 @@ test('al reintentar se oculta el error del intento anterior', async () => {
 
   expect(errorVisible()).toBeNull();
 });
+
+// Rediseño (CS-65): pantalla dividida, acciones y estado de espera
+test('es una pantalla dividida con un único h1 y la marca enlaza a index.html', () => {
+  expect($('.pantalla-dividida')).not.toBeNull();
+  expect($('.pantalla-dividida-marca')).not.toBeNull();
+  expect($('.pantalla-dividida-formulario h1').textContent).toBe('Iniciar sesión');
+  expect(document.querySelectorAll('h1')).toHaveLength(1);
+  expect($('.pantalla-dividida-marca a').getAttribute('href')).toBe('index.html');
+  expect($('.pantalla-dividida-marca a').textContent).toBe('PlanB');
+  expect(document.querySelector('header, nav')).toBeNull();
+});
+
+test('«Entrar» es el único botón principal y «Crear cuenta» es secundario y lleva a registro.html', () => {
+  expect(document.querySelectorAll('.btn-primary')).toHaveLength(1);
+  expect(boton().classList.contains('btn-primary')).toBe(true);
+  const crear = $('a[href="registro.html"]');
+  expect(crear.textContent).toBe('Crear cuenta');
+  expect(crear.classList.contains('btn')).toBe(true);
+  expect(crear.classList.contains('btn-outline-primary')).toBe(true);
+  expect($('a[href="recuperar.html"]').textContent).toBe('¿Has olvidado tu contraseña?');
+});
+
+test('mientras se envía, «Entrar» pasa a «Entrando…» con aria-busy y se restaura si falla', async () => {
+  expect(boton().textContent).toBe('Entrar');
+  let resolver;
+  window.fetch.mockReturnValue(new Promise((r) => { resolver = r; }));
+
+  boton().click();
+  await terminar();
+  expect(boton().textContent).toBe('Entrando…');
+  expect(boton().getAttribute('aria-busy')).toBe('true');
+
+  resolver(await respuesta(401, { error: 'Email o contraseña incorrectos' }));
+  await terminar();
+  expect(boton().textContent).toBe('Entrar');
+  expect(boton().disabled).toBe(false);
+  expect(boton().hasAttribute('aria-busy')).toBe(false);
+});

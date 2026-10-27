@@ -11,6 +11,7 @@ const campoRepetida = document.getElementById('password-repetida');
 const cajaError = document.getElementById('error-restablecer');
 const cajaExito = document.getElementById('exito-restablecer');
 const boton = formulario.querySelector('button[type="submit"]');
+const textoBoton = boton.textContent;
 
 mostrarRequisitosPassword(campoNueva, document.getElementById('requisitos-password'), () => '');
 
@@ -34,7 +35,9 @@ formulario.addEventListener('submit', async (e) => {
     return;
   }
 
+  boton.textContent = 'Guardando…';
   boton.disabled = true;
+  boton.setAttribute('aria-busy', 'true');
   try {
     const { mensaje } = await api('/auth/restablecer', {
       method: 'POST',
@@ -51,5 +54,7 @@ formulario.addEventListener('submit', async (e) => {
     // Lo escrito se mantiene: si el problema son los requisitos, se puede corregir y reintentar
     mostrarError(err.message);
   }
+  boton.textContent = textoBoton;
   boton.disabled = false;
+  boton.removeAttribute('aria-busy');
 });

@@ -47,10 +47,25 @@ test('en el perfil de otra persona se ven sus experiencias, enlazadas a su pági
 
   const enlaces = $$('#lista-experiencias a');
   expect(enlaces.map((enlace) => enlace.getAttribute('href'))).toEqual(['experiencia.html?id=7', 'experiencia.html?id=3']);
-  expect(enlaces[0].textContent).toContain('Ruta de tapas');
-  expect(enlaces[0].textContent).toContain('Madrid · Amigos');
+  expect(enlaces[0].closest('.tarjeta-experiencia').textContent).toContain('Ruta de tapas');
+  expect(enlaces[0].closest('.tarjeta-experiencia').textContent).toContain('Madrid');
   expect(visible('#mas-experiencias')).toBe(false);
   expect(visible('#sin-experiencias')).toBe(false);
+});
+
+test('cada experiencia es la misma tarjeta que en bienvenida: etiqueta de visibilidad y «Ver detalle»', async () => {
+  await abrirPerfilDeAna({
+    '/api/experiencias?autor=ana': [200, { experiencias: [experiencia(7, 'Ruta de tapas', 'AMIGOS')], siguiente: null }],
+  });
+
+  const tarjeta = $('#lista-experiencias .tarjeta-experiencia');
+  expect(tarjeta.querySelector('.etiqueta-amigos').textContent).toBe('Amigos');
+  expect(tarjeta.textContent).not.toContain('·');
+  const ver = tarjeta.querySelector('a.btn.btn-outline-primary');
+  expect(ver.textContent).toBe('Ver detalle');
+  expect(ver.getAttribute('href')).toBe('experiencia.html?id=7');
+  expect(tarjeta.textContent).not.toContain('Editar');
+  expect($('#lista-experiencias .list-group-item')).toBeNull();
 });
 
 test('un título con HTML se muestra como texto', async () => {
@@ -59,7 +74,7 @@ test('un título con HTML se muestra como texto', async () => {
   });
 
   expect($('#lista-experiencias img')).toBeNull();
-  expect($('#lista-experiencias a').textContent).toContain('<img src=x onerror=alert(1)>');
+  expect($('#lista-experiencias .tarjeta-experiencia').textContent).toContain('<img src=x onerror=alert(1)>');
 });
 
 test('«Cargar más» pide la página siguiente, la añade sin repetir y desaparece al final', async () => {
@@ -105,8 +120,8 @@ describe('Mis experiencias (perfil.html)', () => {
   test('muestra mis experiencias, también las privadas', async () => {
     await abrir('perfil.html', 'js/perfil.js', RUTAS_PERFIL, '/perfil.html');
 
-    expect($('#lista-experiencias a').textContent).toContain('Mi plan secreto');
-    expect($('#lista-experiencias a').textContent).toContain('Privada');
+    expect($('#lista-experiencias .tarjeta-experiencia').textContent).toContain('Mi plan secreto');
+    expect($('#lista-experiencias .tarjeta-experiencia').textContent).toContain('Privada');
   });
 
   test('tras cambiar mi nombre, «Cargar más» pide las siguientes con el nombre nuevo', async () => {

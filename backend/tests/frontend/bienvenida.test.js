@@ -242,3 +242,73 @@ test('mis experiencias se cargan por páginas: «Cargar más» añade las siguie
   expect($('#mas-experiencias').classList.contains('d-none')).toBe(true);
   paginaSiguiente = null;
 });
+
+// Rediseño (CS-65): etiqueta de visibilidad en cada tarjeta, con clase y texto propios
+test.each([
+  ['PUBLICA', 'etiqueta-publica', 'Pública'],
+  ['AMIGOS', 'etiqueta-amigos', 'Amigos'],
+  ['PRIVADA', 'etiqueta-privada', 'Privada'],
+])('la tarjeta de una experiencia %s lleva la etiqueta %s con el texto «%s»', async (visibilidad, clase, texto) => {
+  $('.tarjeta-experiencia .boton-editar').click();
+  // Se crea otra tarjeta desde el formulario de edición: la respuesta simulada trae esa visibilidad
+  window.fetch.mockImplementationOnce(() => respuesta(200, { ...EXPERIENCIA, visibilidad }));
+  $('#form-experiencia').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  await terminar();
+
+  const etiqueta = $(`.tarjeta-experiencia .${clase}`);
+  expect(etiqueta).not.toBeNull();
+  expect(etiqueta.textContent).toBe(texto);
+});
+
+test('Ver detalle de una experiencia con id 7 enlaza a experiencia.html?id=7 con aspecto de botón secundario', async () => {
+  // Una experiencia nueva con id 7 entra por el alta
+  $('#boton-nueva').click();
+  window.fetch.mockImplementationOnce(() => respuesta(201, { ...EXPERIENCIA, id: 7 }));
+  $('#form-experiencia').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  await terminar();
+
+  const enlace = $('[data-id="7"] .boton-ver');
+  expect(enlace.getAttribute('href')).toBe('experiencia.html?id=7');
+  expect(enlace.classList.contains('btn-outline-primary')).toBe(true);
+});
+
+describe('Guardar con espera (R11)', () => {
+  const enviar = () => {
+    $('#boton-nueva').click();
+    $('#form-experiencia').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  };
+
+  test('«Guardar» pasa a «Guardando…», desactivado, mientras espera y se restaura al resolver', async () => {
+    let resolver;
+    window.fetch.mockImplementationOnce(() => new Promise((r) => { resolver = r; }));
+    enviar();
+    const boton = $('#form-experiencia button[type="submit"]');
+    expect(boton.textContent.trim()).toBe('Guardando…');
+    expect(boton.disabled).toBe(true);
+    expect(boton.getAttribute('aria-busy')).toBe('true');
+
+    resolver(await respuesta(201, { ...EXPERIENCIA, id: 99 }));
+    await terminar();
+    expect(boton.textContent.trim()).toBe('Guardar');
+    expect(boton.disabled).toBe(false);
+    expect(boton.hasAttribute('aria-busy')).toBe(false);
+  });
+
+  test('«Guardar» se restaura también si la petición falla', async () => {
+    window.fetch.mockImplementationOnce(() => respuesta(400, { error: 'Datos no válidos' }));
+    enviar();
+    await terminar();
+    const boton = $('#form-experiencia button[type="submit"]');
+    expect(boton.textContent.trim()).toBe('Guardar');
+    expect(boton.disabled).toBe(false);
+    expect(boton.hasAttribute('aria-busy')).toBe(false);
+  });
+});
+
+test('la rejilla usa .rejilla-experiencias y la tarjeta «+» es la primera con su texto', () => {
+  const rejilla = $('#rejilla');
+  expect(rejilla.classList.contains('rejilla-experiencias')).toBe(true);
+  expect(rejilla.firstElementChild.id).toBe('columna-nueva');
+  expect($('#boton-nueva .tarjeta-nueva-signo').textContent).toBe('+');
+  expect($('#boton-nueva').textContent).toContain('Nueva experiencia');
+});

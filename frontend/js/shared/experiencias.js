@@ -7,31 +7,52 @@
 
 const cajaErrorExperiencias = document.getElementById('error-experiencias');
 
-const NOMBRE_VISIBILIDAD = { PRIVADA: 'Privada', AMIGOS: 'Amigos', PUBLICA: 'Pública' };
-
 // Autor del listado: el nombre con el que se piden las páginas
 let autorExperiencias = null;
 
-// Crea el enlace a la página de una experiencia. Los textos se incorporan con textContent para
-// que nunca se interpreten como HTML.
-function crearEnlaceExperiencia(experiencia) {
-  const enlace = document.createElement('a');
-  enlace.className = 'list-group-item list-group-item-action';
-  enlace.href = `experiencia.html?id=${experiencia.id}`;
-  enlace.dataset.experienciaId = experiencia.id;
+// Etiqueta de cada visibilidad (clases definidas en styles.css); igual que en bienvenida.js
+const ETIQUETAS_VISIBILIDAD = {
+  PUBLICA: { clase: 'etiqueta-publica', texto: 'Pública' },
+  AMIGOS: { clase: 'etiqueta-amigos', texto: 'Amigos' },
+  PRIVADA: { clase: 'etiqueta-privada', texto: 'Privada' },
+};
 
-  const titulo = document.createElement('div');
-  titulo.className = 'fw-semibold';
+// Crea la tarjeta de una experiencia, la misma que se ve en bienvenida.html pero sin «Editar»:
+// desde aquí solo se consulta. Los textos se incorporan con textContent para que nunca se
+// interpreten como HTML.
+function crearTarjetaExperiencia(experiencia) {
+  const tarjeta = document.createElement('div');
+  tarjeta.className = 'card h-100 tarjeta-experiencia';
+  tarjeta.dataset.experienciaId = experiencia.id;
+
+  const cuerpo = document.createElement('div');
+  cuerpo.className = 'card-body d-flex flex-column';
+
+  const titulo = document.createElement('h3');
+  titulo.className = 'card-title h6';
   titulo.textContent = experiencia.titulo;
 
-  const detalle = document.createElement('small');
-  detalle.className = 'text-secondary';
-  detalle.textContent = [experiencia.ciudad?.nombre, NOMBRE_VISIBILIDAD[experiencia.visibilidad]]
-    .filter(Boolean)
-    .join(' · ');
+  const ciudad = document.createElement('p');
+  ciudad.className = 'card-subtitle small text-body-secondary mb-2';
+  ciudad.textContent = experiencia.ciudad?.nombre ?? '';
 
-  enlace.append(titulo, detalle);
-  return enlace;
+  const { clase, texto } = ETIQUETAS_VISIBILIDAD[experiencia.visibilidad];
+  const etiqueta = document.createElement('span');
+  etiqueta.className = clase;
+  etiqueta.textContent = texto;
+  const parrafoEtiqueta = document.createElement('p');
+  parrafoEtiqueta.className = 'mb-2';
+  parrafoEtiqueta.append(etiqueta);
+
+  const ver = document.createElement('a');
+  ver.className = 'btn btn-outline-primary btn-sm mt-auto';
+  ver.href = `experiencia.html?id=${experiencia.id}`;
+  ver.dataset.experienciaId = experiencia.id;
+  ver.textContent = 'Ver detalle';
+
+  cuerpo.append(titulo, ciudad, parrafoEtiqueta, ver);
+  tarjeta.append(cuerpo);
+  return tarjeta;
 }
 
 const listadoExperiencias = listaConCargarMas({
@@ -44,7 +65,7 @@ const listadoExperiencias = listaConCargarMas({
     const { experiencias, siguiente } = await api(`/experiencias?autor=${encodeURIComponent(autorExperiencias)}${despuesDe}`);
     return { elementos: experiencias, siguiente };
   },
-  crear: crearEnlaceExperiencia,
+  crear: crearTarjetaExperiencia,
   alFallar: (err) => mostrarMensaje(cajaErrorExperiencias, err.message),
 });
 

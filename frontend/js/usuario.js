@@ -48,9 +48,9 @@ function mostrarBotonesAmistad(perfil) {
     crearBoton(botonesAmistad, 'Añadir amigo', 'btn-primary', () =>
       actuar('/amistades', { method: 'POST', body: JSON.stringify({ destinatarioId: perfil.id }) }));
   } else if (amistad === 'enviada') {
-    crearBoton(botonesAmistad, 'Solicitud enviada', 'btn-secondary', () => {}).disabled = true;
+    crearBoton(botonesAmistad, 'Solicitud enviada', 'btn-outline-secondary', () => {}).disabled = true;
   } else if (amistad === 'recibida') {
-    crearBoton(botonesAmistad, 'Aceptar', 'btn-success', () => responder(true));
+    crearBoton(botonesAmistad, 'Aceptar', 'btn-primary', () => responder(true));
     crearBoton(botonesAmistad, 'Rechazar', 'btn-outline-danger', () => responder(false));
   } else if (amistad === 'amigos') {
     crearBoton(botonesAmistad, 'Eliminar amigo', 'btn-outline-danger', () => {

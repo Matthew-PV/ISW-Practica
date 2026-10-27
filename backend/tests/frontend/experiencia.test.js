@@ -12,7 +12,7 @@ const { cargarScripts } = require('../helpers/pantalla');
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('experiencia.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/experiencia.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/experiencia.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -265,5 +265,58 @@ describe('CS-30 (objetivo 9): «Contenido no disponible»', () => {
     expect($('#detalle-descripcion').textContent).toBe('');
     expect($('#lista-comentarios').children).toHaveLength(0);
     expect(visible('#contenido-experiencia')).toBe(false);
+  });
+});
+
+describe('T4.3: pestañas y estado de «Guardar»', () => {
+  test('«De amigos y seguidores» está activa al cargar y «Todas» la sustituye al pulsarla', async () => {
+    await abrir();
+    const [amigos, todas] = $$('[role="tablist"] [role="tab"]');
+    expect(amigos.textContent.trim()).toBe('De amigos y seguidores');
+    expect(todas.textContent.trim()).toBe('Todas');
+    const panelAmigos = document.getElementById(amigos.getAttribute('aria-controls'));
+    const panelTodas = document.getElementById(todas.getAttribute('aria-controls'));
+    expect(amigos.getAttribute('aria-selected')).toBe('true');
+    expect(panelAmigos.hidden).toBe(false);
+    expect(panelTodas.hidden).toBe(true);
+    expect(panelAmigos.contains($('#lista-valoraciones-amigos'))).toBe(true);
+    expect(panelTodas.contains($('#lista-comentarios'))).toBe(true);
+
+    todas.click();
+
+    expect(todas.getAttribute('aria-selected')).toBe('true');
+    expect(amigos.getAttribute('aria-selected')).toBe('false');
+    expect(panelTodas.hidden).toBe(false);
+    expect(panelAmigos.hidden).toBe(true);
+  });
+
+  test('«Guardar» pasa a «Guardando…», desactivado, mientras espera y se restaura al resolver', async () => {
+    let resolver;
+    await abrir({ [`PUT ${BASE}/valoracion`]: () => new Promise((r) => { resolver = r; }) });
+    const boton = $('#btn-guardar-valoracion');
+    expect(boton.textContent).toBe('Guardar');
+    $('#val-puntuacion').value = '4';
+    $('#form-valoracion').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    await terminar();
+    expect(boton.textContent).toBe('Guardando…');
+    expect(boton.disabled).toBe(true);
+    expect(boton.getAttribute('aria-busy')).toBe('true');
+
+    resolver(await respuesta(200, { id: 1, puntuacion: 4 }));
+    await terminar();
+    await terminar();
+    expect(boton.disabled).toBe(false);
+    expect(boton.hasAttribute('aria-busy')).toBe(false);
+    expect(boton.textContent).not.toBe('Guardando…');
+  });
+
+  test('«Guardar» se restaura si la petición falla', async () => {
+    await abrir({ [`PUT ${BASE}/valoracion`]: [400, { error: 'Datos no válidos' }] });
+    $('#val-puntuacion').value = '4';
+    await enviarValoracion();
+    const boton = $('#btn-guardar-valoracion');
+    expect(boton.textContent).toBe('Guardar');
+    expect(boton.disabled).toBe(false);
+    expect(boton.hasAttribute('aria-busy')).toBe(false);
   });
 });

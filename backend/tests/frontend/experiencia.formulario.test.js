@@ -47,6 +47,7 @@ describe('CS-63: Pantalla de Detalles de Experiencia', () => {
     // Inyectamos el JS de la página
     // experiencia.js usa las piezas comunes de shared/pantalla.js, que la página carga antes
     const scriptCodigo = fs.readFileSync(path.resolve(__dirname, '../../../frontend/js/shared/pantalla.js'), 'utf8')
+      + fs.readFileSync(path.resolve(__dirname, '../../../frontend/js/shared/pestanas.js'), 'utf8')
       + fs.readFileSync(path.resolve(__dirname, '../../../frontend/js/experiencia.js'), 'utf8');
     const script = document.createElement('script');
     script.textContent = scriptCodigo;
@@ -80,6 +81,7 @@ describe('CS-63: Pantalla de Detalles de Experiencia', () => {
 
     // experiencia.js usa las piezas comunes de shared/pantalla.js, que la página carga antes
     const scriptCodigo = fs.readFileSync(path.resolve(__dirname, '../../../frontend/js/shared/pantalla.js'), 'utf8')
+      + fs.readFileSync(path.resolve(__dirname, '../../../frontend/js/shared/pestanas.js'), 'utf8')
       + fs.readFileSync(path.resolve(__dirname, '../../../frontend/js/experiencia.js'), 'utf8');
     const script = document.createElement('script');
     script.textContent = scriptCodigo;

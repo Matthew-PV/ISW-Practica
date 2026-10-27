@@ -5,6 +5,13 @@
 // Usa `api` de shared/api.js y `listaConCargarMas`, `crearEnlacePerfil`, `mostrarMensaje`,
 // `ocultarMensaje` e `irAlLogin` de shared/pantalla.js.
 
+// Etiqueta de visibilidad (clases de styles.css)
+const ETIQUETAS_VISIBILIDAD = {
+  PUBLICA: { clase: 'etiqueta-publica', texto: 'Pública' },
+  AMIGOS: { clase: 'etiqueta-amigos', texto: 'Amigos' },
+  PRIVADA: { clase: 'etiqueta-privada', texto: 'Privada' },
+};
+
 // Obtener parámetros de la URL
 const parametros = new URLSearchParams(window.location.search);
 const experienciaId = parametros.get('id');
@@ -16,6 +23,7 @@ const contenidoExperiencia = document.getElementById('contenido-experiencia');
 const tituloEl = document.getElementById('detalle-titulo');
 const autorEl = document.getElementById('detalle-autor');
 const ciudadEl = document.getElementById('detalle-ciudad');
+const visibilidadEl = document.getElementById('detalle-visibilidad');
 const descEl = document.getElementById('detalle-descripcion');
 const cajaFormulario = document.getElementById('caja-formulario-valoracion');
 const listaComentarios = document.getElementById('lista-comentarios');
@@ -47,6 +55,11 @@ async function cargarPaginaExperiencia() {
       autorEl.textContent = 'Usuario anónimo';
     }
     ciudadEl.textContent = experiencia.ciudad?.nombre || 'Ciudad desconocida';
+    const etiqueta = ETIQUETAS_VISIBILIDAD[experiencia.visibilidad];
+    if (etiqueta) {
+      visibilidadEl.className = etiqueta.clase;
+      visibilidadEl.textContent = etiqueta.texto;
+    }
     descEl.textContent = experiencia.descripcion;
 
     // El autor no puede valorar su propia experiencia: solo los demás ven el formulario
@@ -78,6 +91,7 @@ function mostrarNoDisponible() {
   autorEl.textContent = '';
   autorEl.removeAttribute('href');
   ciudadEl.textContent = '';
+  visibilidadEl.textContent = '';
   descEl.textContent = '';
   listaComentarios.replaceChildren();
   listaAmigos.replaceChildren();
@@ -234,6 +248,9 @@ const listadoAmigos = listaConCargarMas({
   },
 });
 
+// Pestañas «De amigos y seguidores» y «Todas»
+activarPestanas(document.querySelector('[role="tablist"]'));
+
 // --- OBJETIVO 5 y 6: FORMULARIO, CONTADOR Y GUARDADO ---
 const formValoracion = document.getElementById('form-valoracion');
 const inputPuntuacion = document.getElementById('val-puntuacion');
@@ -285,7 +302,10 @@ formValoracion.addEventListener('submit', async (e) => {
   }
 
   ocultarMensaje(errorValoracion);
+  const textoGuardar = btnGuardarValoracion.textContent;
   btnGuardarValoracion.disabled = true;
+  btnGuardarValoracion.setAttribute('aria-busy', 'true');
+  btnGuardarValoracion.textContent = 'Guardando…';
 
   const datos = { puntuacion: Number(inputPuntuacion.value) };
   if (inputComentario.value.trim() !== '') {
@@ -306,11 +326,13 @@ formValoracion.addEventListener('submit', async (e) => {
     }, 2000);
   } catch (error) {
     // Lo escrito no se borra: se puede volver a intentar
+    btnGuardarValoracion.textContent = textoGuardar;
     if (!tratarErrorDeAcceso(error)) {
       mostrarMensaje(errorValoracion, error.message || 'Error al guardar la valoración');
     }
   } finally {
     btnGuardarValoracion.disabled = false;
+    btnGuardarValoracion.removeAttribute('aria-busy');
   }
 });
 

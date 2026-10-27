@@ -113,6 +113,7 @@ summary:focus-visible,
 .form-check-input:focus-visible,
 .form-control:focus,
 .form-select:focus {
+  border-color: var(--color-foco);
   outline: 2px solid var(--color-foco);
   outline-offset: 2px;
   box-shadow: none;
@@ -467,7 +468,7 @@ fieldset:disabled .btn {
   align-items: center;
   gap: var(--espacio-16);
   height: 56px;
-  max-width: 1200px;
+  max-width: 960px;
   margin: 0 auto;
   padding: 0 var(--espacio-24);
 }
@@ -589,6 +590,7 @@ body.pagina-buscar .cabecera-enlace {
 
 /* Botones en la barra sin sesión (landing): borde claro para distinguirse del fondo oscuro */
 .cabecera-acciones {
+  order: 3;
   display: flex;
   gap: var(--espacio-8);
   margin-left: auto;
@@ -714,6 +716,8 @@ body.pagina-buscar .cabecera-enlace {
 .pantalla-dividida-marca a:first-child {
   font-size: 28px;
   font-weight: 700;
+  color: var(--color-texto);
+  text-decoration: none;
 }
 
 .pantalla-dividida-formulario {

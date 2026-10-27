@@ -54,8 +54,9 @@ formulario.addEventListener('submit', async (e) => {
   // Se oculta el error del intento anterior y se desactiva el botón para no enviar dos veces.
   // El botón muestra que el registro está en curso
   cajaError.classList.add('d-none');
+  boton.textContent = 'Creando cuenta…';
   boton.disabled = true;
-  boton.innerHTML = '<span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>Creando cuenta...';
+  boton.setAttribute('aria-busy', 'true');
 
   const datos = {
     nombreUsuario: document.getElementById('nombreUsuario').value,
@@ -74,6 +75,7 @@ formulario.addEventListener('submit', async (e) => {
     mostrarError(err.message);
     boton.disabled = false;
     boton.textContent = textoBoton;
+    boton.removeAttribute('aria-busy');
     // Cada respuesta del CAPTCHA solo vale una vez: tras un error hay que resolverlo de nuevo
     window.turnstile?.reset();
   }

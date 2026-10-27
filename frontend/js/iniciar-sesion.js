@@ -3,6 +3,7 @@
 const formulario = document.getElementById('form-login');
 const cajaError = document.getElementById('error-login');
 const boton = formulario.querySelector('button[type="submit"]');
+const textoBoton = boton.textContent;
 
 // Al pulsar «Entrar» se envían el email y la contraseña al backend
 formulario.addEventListener('submit', async (e) => {
@@ -10,7 +11,10 @@ formulario.addEventListener('submit', async (e) => {
   e.preventDefault();
   // Se oculta el error del intento anterior y se desactiva el botón para no enviar dos veces
   cajaError.classList.add('d-none');
+  // Acción con espera: «Entrando…» y desactivado hasta que acabe
+  boton.textContent = 'Entrando…';
   boton.disabled = true;
+  boton.setAttribute('aria-busy', 'true');
 
   const datos = {
     email: document.getElementById('email').value,
@@ -25,6 +29,8 @@ formulario.addEventListener('submit', async (e) => {
     // Se muestra el mensaje del backend y se vuelve a habilitar el botón para reintentar
     cajaError.textContent = err.message;
     cajaError.classList.remove('d-none');
+    boton.textContent = textoBoton;
     boton.disabled = false;
+    boton.removeAttribute('aria-busy');
   }
 });
