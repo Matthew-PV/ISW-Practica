@@ -27,3 +27,9 @@
 .campo-comentario:focus {
   min-height: 112px;
 }
+
+/* Bloque de categoría de la cabecera: más alto que el de las tarjetas y con las cuatro esquinas redondeadas */
+.detalle-categoria .bloque-categoria {
+  height: 144px;
+  border-radius: var(--radio-tarjeta);
+}

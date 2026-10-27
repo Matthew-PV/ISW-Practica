@@ -3,7 +3,7 @@
 // experiencia no existe o no se puede ver, solo se muestra «Contenido no disponible» (CS-30).
 // «Útil» y «Reportar» funcionan solo en la pantalla: no guardan nada hasta CS-02 y CS-04.
 // Usa `api` de shared/api.js y `listaConCargarMas`, `crearEnlacePerfil`, `mostrarMensaje`,
-// `ocultarMensaje` e `irAlLogin` de shared/pantalla.js.
+// `ocultarMensaje`, `irAlLogin` y `crearBloqueCategoria` de shared/pantalla.js.
 
 // Etiqueta de visibilidad (clases de styles.css)
 const ETIQUETAS_VISIBILIDAD = {
@@ -48,6 +48,7 @@ async function cargarPaginaExperiencia() {
     contenidoExperiencia.classList.remove('d-none');
 
     tituloEl.textContent = experiencia.titulo;
+    document.getElementById('detalle-categoria').replaceChildren(crearBloqueCategoria(experiencia.tipo));
     // Las experiencias antiguas pueden no tener autor
     if (experiencia.autor) {
       crearEnlacePerfil(autorEl, experiencia.autor, miUsuarioId);

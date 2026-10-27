@@ -84,6 +84,12 @@ describe('CS-63: la experiencia y sus valoraciones', () => {
     expect($('#detalle-descripcion').textContent).toBe('Por el centro');
   });
 
+  test('la cabecera lleva el bloque de color de su categoría', async () => {
+    await abrir({ [`GET ${BASE}`]: [200, { ...EXPERIENCIA, tipo: 'Museo' }] });
+
+    expect($('#detalle-categoria .bloque-categoria').dataset.categoria).toBe('cultura');
+  });
+
   test('cada valoración muestra su autor enlazado a su perfil, la puntuación, el texto y la fecha', async () => {
     await abrir();
 
