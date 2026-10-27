@@ -36,6 +36,36 @@ Plantilla de una sección (las secciones `###` vacías se omiten, salvo «Cambio
 
 Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar su contenido: el autor y los commits salen de Git (`git blame` y `git log`), el agente solo figura si consta en el registro de prompts de su autor y una decisión solo aparece si la entrada original ya contaba su motivo.
 
+# 2026-10-27
+
+## CS-66: diseño provisional de las pantallas de acceso
+
+**Autor:** Matthew Puente Villegas Michavil, con Codex (GPT-5)
+**Historia:** CS-66, objetivo 1 · **Commits:** pendiente (esta entrada se incluirá en el mismo commit)
+
+### Cambios
+- `frontend/css/styles.css` incorpora las variables de color, tipografía, bordes, botones, campos, avisos y foco de teclado de la guía actual para las pantallas de acceso.
+- `index.html`, `registro.html`, `recuperar.html` y `restablecer.html` pasan a usar una tarjeta de formulario común, una barra de acceso, controles de 44 px y el enlace «Saltar al contenido». El inicio de sesión añade la frase de presentación y el botón secundario «Crear cuenta».
+- `backend/tests/frontend/diseno.acceso.test.js` comprueba la estructura y reglas visuales compartidas, la ausencia de manejadores en línea y de JavaScript de Bootstrap.
+- `documentacion/frontend.md` explica el alcance y que la guía aplicada es provisional.
+
+### Decisiones
+#### Aplicar temporalmente la guía actual solo al flujo de acceso
+- **Contexto:** `arte.md` sigue marcada como propuesta pendiente de aprobación, pero Matthew pidió avanzar con el objetivo 1 de CS-66 usando esa guía de forma temporal.
+- **Decisión:** aplicar sus variables y componentes únicamente a inicio de sesión, registro y recuperación/restablecimiento de contraseña; no extender el cambio a las demás pantallas ni modificar JavaScript.
+- **Alternativas:** esperar la aprobación definitiva de la guía, que retrasaría la tarea; o aplicar una identidad nueva distinta, que ampliaría el alcance y contradiría el diseño disponible.
+- **Consecuencias:** una aprobación posterior que cambie la guía exigirá ajustar estos estilos. Las funciones, las peticiones a la API, `textContent`, la CSP y el uso de Bootstrap sin su JavaScript se conservan.
+- **Decidió:** Matthew, a propuesta de Codex.
+
+### Comprobación
+- **TDD:** `diseno.acceso.test.js` se escribió antes. Falló porque no existían las variables, los controles de 44 px, el enlace de salto ni la presentación del inicio de sesión. Tras el cambio pasa (2 pruebas).
+- **Manual:** se abrió el servidor local y se revisaron inicio de sesión, registro, recuperación y restablecimiento en el navegador integrado, sin desbordamiento en su ancho móvil. Queda comprobar explícitamente 375, 768 y 1280 px.
+- **Batería:** `npm test` no termina en verde por un bloqueo de la infraestructura de pruebas no atribuible al CSS o HTML modificados: 13 suites de pantalla no resuelven `frontend/js/shared/api.js` desde `backend/tests/helpers/pantalla.js`, aunque el archivo existe. Resultado: 41 suites y 465 pruebas correctas; 13 suites y 127 pruebas fallidas.
+
+### Para quien continúe
+- Antes de ampliar el diseño, confirmar si el equipo aprueba la guía actual de `arte.md` y comprobar las cuatro páginas a 375, 768 y 1280 px.
+- Resolver primero el problema de resolución de módulos de Jest antes de usar una batería completa como evidencia de regresión del frontend.
+
 # 2026-10-26
 
 ## CS-67: base de datos en Aiven y conexión de PlanB

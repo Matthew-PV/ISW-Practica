@@ -4,6 +4,25 @@ Identificador habitual: MAT / Matthew-PV.
 
 Las interacciones siguientes proceden de la conversación conservada en Codex. Cuando no consta la fecha exacta de la interacción, `2026-10-02` indica la fecha en la que se incorporó al registro, no necesariamente la fecha en que se escribió el prompt original. Se omiten mensajes de cortesía y confirmaciones que no influyeron en el trabajo.
 
+## 2026-10-27 — Aplicar temporalmente el diseño al flujo de acceso (CS-66, objetivo 1)
+
+- **Historia u objetivo:** CS-66, objetivo 1: aplicar el diseño aprobado a inicio de sesión, registro y recuperación de contraseña, manteniendo el comportamiento y la seguridad actuales.
+- **Agente/herramienta:** Codex, GPT-5.
+- **Entorno:** Windows, PowerShell, Jest, servidor local de PlanB y navegador integrado.
+- **Contexto aportado:** libro de historias actualizado desde OneDrive, captura de la tarjeta CS-66 y la guía actual de `documentacion/arte.md`, que Matthew indicó usar de forma temporal.
+- **Prompt inicial:**
+
+  > Dime qué debo hacer para conectarme a Aiven. También, trabajemos en la CS-66. Aquí tienes el nuevo Excel. Únicamente quiero hacer la tarea 1, utilizando temporalmente la guía actual. Registra esto en mi registro de prompts.
+
+- **Correcciones relevantes:** ninguna.
+- **Resultado propuesto por la IA:** aplicar una identidad común al flujo de acceso: tarjeta de formulario, paleta verde azulado, botones y campos de 44 px, foco de teclado, enlace «Saltar al contenido» y botón secundario visible para crear cuenta; documentar el alcance y explicar la conexión separada a Aiven.
+- **TDD:** se añadió primero `diseno.acceso.test.js`; falló porque aún no había variables de la guía, controles accesibles ni la estructura común. Tras incorporar el CSS y el HTML de las cuatro pantallas, pasó. Una expectativa se ajustó para reconocer la clase de diseño entre las clases de Bootstrap, sin cambiar el comportamiento que protege.
+- **Comprensión humana de las pruebas:** la preparación lee los cuatro HTML y la hoja CSS; la acción busca los elementos comunes; el resultado verifica los colores y tamaños acordados, el acceso con teclado y que no se introducen scripts en línea ni JavaScript de Bootstrap.
+- **Intervención humana:** Matthew delimitó explícitamente el trabajo al objetivo 1 y autorizó utilizar la guía vigente solo de manera temporal.
+- **Decisiones:** [2026-10-27 — CS-66: diseño provisional de las pantallas de acceso](../modificaciones.md#cs-66-diseño-provisional-de-las-pantallas-de-acceso).
+- **Comprobación final:** la prueba nueva pasa; se revisaron visualmente las cuatro páginas en el navegador integrado. La batería completa queda bloqueada por un problema previo de Jest al resolver `frontend/js/shared/api.js`; el comprobador de diseño no falla por ese motivo.
+- **Resultado en Git:** pendiente de commit.
+
 ## 2026-10-16 — Diseñar el sitemap de PlanB
 
 - **Historia u objetivo:** CS-65, objetivo 2: diseñar el sitemap de la aplicación.

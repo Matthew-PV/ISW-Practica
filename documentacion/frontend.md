@@ -3,7 +3,7 @@
 > Qué pantallas hay, cómo se pasa de una a otra, qué archivos usa cada una y qué llamadas hace a la API.
 > Documentos relacionados: [arquitectura](arquitectura.md), [flujos](flujos.md), [referencia de la API](api.md), [glosario](glosario.md) e [inventario de pantallas](inventario-pantallas.md) (estados y lagunas frente al diseño).
 
-El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilos de Bootstrap 5. El mismo servidor Express sirve las páginas desde `frontend/` y la API desde `/api`, así que comparten origen y la cookie de sesión viaja sola en cada `fetch`.
+El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilos de Bootstrap 5 complementados por `css/styles.css`. El mismo servidor Express sirve las páginas desde `frontend/` y la API desde `/api`, así que comparten origen y la cookie de sesión viaja sola en cada `fetch`.
 
 ## Mapa de navegación
 
@@ -76,11 +76,17 @@ stateDiagram-v2
 
 ## Cada página
 
+### Diseño de las pantallas de acceso (CS-66, objetivo 1)
+
+`index.html`, `registro.html`, `recuperar.html` y `restablecer.html` comparten una tarjeta de formulario, la marca PlanB y los estilos de acceso de `css/styles.css`. La guía aplicada es temporal: corresponde a la propuesta actual de [arte.md](arte.md) y podrá cambiar si el equipo aprueba otra distinta.
+
+Sus controles principales miden al menos 44 px de alto, los campos usan un borde con contraste suficiente y el enlace «Saltar al contenido» solo aparece al recibir el foco del teclado. Cada barra se identifica como navegación de acceso mediante `aria-label`; no se añadió JavaScript de Bootstrap ni scripts en línea. La prueba `diseno.acceso.test.js` comprueba esa estructura y las reglas CSS comunes.
+
 ### `index.html`: iniciar sesión
 
-Formulario de email y contraseña. Si el login es correcto va a `bienvenida.html`; si no, muestra el mensaje del servidor en `#error-login`. Enlaza a registro y a «¿Has olvidado tu contraseña?».
+Formulario de email y contraseña. Si el login es correcto va a `bienvenida.html`; si no, muestra el mensaje del servidor en `#error-login`. Presenta la frase «Comparte y descubre planes por tu ciudad», enlaza a la recuperación y ofrece «Crear cuenta» como botón secundario visible.
 
-Pruebas: `login.test.js`.
+Pruebas: `login.test.js` y `diseno.acceso.test.js`.
 
 ### `registro.html`: crear una cuenta
 
@@ -88,13 +94,13 @@ Pruebas: `login.test.js`.
 * El CAPTCHA de Cloudflare Turnstile se dibuja en `#captcha` cuando su script llama a `window.iniciarCaptcha`, con la clave pública de `GET /api/auth/captcha`.
 * Con el registro correcto, la sesión ya está abierta y va a `bienvenida.html`.
 
-Pruebas: `registro.test.js`.
+Pruebas: `registro.test.js` y `diseno.acceso.test.js`.
 
 ### `recuperar.html`: pedir el enlace
 
 Pide el email y siempre muestra el mismo mensaje de éxito, exista la cuenta o no: la página no lo sabe, y así nadie puede usarla para averiguarlo.
 
-Pruebas: `recuperacion.test.js`.
+Pruebas: `recuperacion.test.js` y `diseno.acceso.test.js`.
 
 ### `restablecer.html`: elegir una contraseña nueva
 
@@ -102,7 +108,7 @@ Pruebas: `recuperacion.test.js`.
 * Pide la contraseña dos veces y comprueba en la pantalla que coinciden antes de enviarla. El requisito «sin el nombre de usuario» lo comprueba el servidor, porque la página no sabe de quién es el enlace.
 * Al terminar, muestra un enlace a `index.html`.
 
-Pruebas: `recuperacion.test.js`.
+Pruebas: `recuperacion.test.js` y `diseno.acceso.test.js`.
 
 ### `bienvenida.html`: mis experiencias
 
