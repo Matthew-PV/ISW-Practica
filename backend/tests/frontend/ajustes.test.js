@@ -33,11 +33,11 @@ test('al cargar rellena el formulario con los datos del perfil', async () => {
   expect($('#ciudad').value).toBe('Madrid');
 });
 
-test('los ajustes se reparten en pestañas: perfil, contraseña y sesión, y solo se ve la elegida', async () => {
+test('los ajustes se reparten en pestañas: perfil y contraseña, y solo se ve la elegida', async () => {
   await abrir();
 
   const pestanas = [...document.querySelectorAll('#pestanas-ajustes [role="tab"]')];
-  expect(pestanas.map((p) => p.textContent)).toEqual(['Perfil', 'Contraseña', 'Sesión']);
+  expect(pestanas.map((p) => p.textContent)).toEqual(['Perfil', 'Contraseña']);
   expect($('#panel-datos').hidden).toBe(false);
   expect($('#panel-password').hidden).toBe(true);
 
@@ -46,7 +46,9 @@ test('los ajustes se reparten en pestañas: perfil, contraseña y sesión, y sol
   expect($('#panel-password').hidden).toBe(false);
   expect($('#panel-datos').hidden).toBe(true);
   expect($('#panel-password').querySelector('#form-password')).not.toBeNull();
-  expect($('#panel-sesion').querySelector('button[data-cerrar-sesion]')).not.toBeNull();
+  // Cerrar sesión vive en el menú de la cuenta, no en una pestaña propia
+  expect($('#panel-sesion')).toBeNull();
+  expect(document.querySelector('.menu-cuenta [data-cerrar-sesion]')).not.toBeNull();
 });
 
 describe('botones de ajustes', () => {
@@ -56,15 +58,13 @@ describe('botones de ajustes', () => {
     expect(document.querySelector('.btn-primary')).toBeNull();
   });
 
-  test('tiene los datos, la contraseña y «Cerrar sesión» sin id, sin nada plegado', async () => {
+  test('tiene los datos y la contraseña, sin nada plegado y sin «Cerrar sesión» (está en el menú)', async () => {
     await abrir();
 
     expect($('main details')).toBeNull();
     expect($('main #form-perfil')).not.toBeNull();
     expect($('main #form-password')).not.toBeNull();
-    const cerrar = $('main button[data-cerrar-sesion]');
-    expect(cerrar.textContent).toBe('Cerrar sesión');
-    expect(cerrar.id).toBe('');
+    expect($('main [data-cerrar-sesion]')).toBeNull();
   });
 
   test('«Guardar cambios» pasa a «Guardando…», ocupado y desactivado mientras espera', async () => {

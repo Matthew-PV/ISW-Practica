@@ -275,11 +275,10 @@ Pruebas: `perfil.relaciones.test.js`, `perfil.cabecera.test.js`, `estados.test.j
 
 ### `/cuenta/ajustes.html`: ajustes
 
-Tres pestañas (`shared/pestanas.js`):
+Dos pestañas (`shared/pestanas.js`); «Cerrar sesión» está solo en el menú de la cuenta:
 
 * **Perfil:** la foto, que se sube nada más elegirla, y el nombre de usuario y la ciudad editables; el email es solo de lectura.
 * **Contraseña:** actual, nueva y repetida, con la lista de requisitos.
-* **Sesión:** «Cerrar sesión».
 
 Pruebas: `ajustes.test.js`, `ajustes.foto.test.js`, `ajustes.password.test.js` y `estados.test.js`.
 
