@@ -11,16 +11,27 @@ El [sitemap de PlanB](sitemap.mmd) es la referencia del mapa de navegación, en 
 
 ```mermaid
 %% Copia renderizable de sitemap.mmd. Al modificar el sitemap, actualiza ambos bloques.
+%% Sitemap de PlanB — CS-65, objetivo 2.
+%% Las cajas representan páginas; las flechas, enlaces o redirecciones.
+%% La flecha discontinua representa el enlace recibido por correo.
+%% Navegación común: las siete páginas con sesión permiten ir a Inicio
+%% (bienvenida.html), Solicitudes, Mi perfil, Ajustes y Cerrar sesión desde la cabecera, que
+%% además lleva el buscador de personas.
+%% Sesión no válida (401): se vuelve a Iniciar sesión (iniciar-sesion.html).
+%% La landing (index.html) es pública y estática.
+%% Los parámetros de las URL se explican en frontend.md.
 flowchart TB
+    landing["Landing<br/>index.html"]
+
     subgraph acceso["Acceso"]
-        login["Iniciar sesión<br/>index.html"]
-        registro["Registrarse<br/>registro.html"]
+        login["Iniciar sesión<br/>iniciar-sesion.html"]
+        registro["Crear cuenta<br/>registro.html"]
         recuperar["Recuperar contraseña<br/>recuperar.html"]
         restablecer["Restablecer contraseña<br/>restablecer.html"]
 
-        login -->|"Registrarse"| registro
+        login -->|"Crear cuenta"| registro
         registro -->|"Iniciar sesión"| login
-        login -->|"Olvidé mi contraseña"| recuperar
+        login -->|"¿Has olvidado tu contraseña?"| recuperar
         recuperar -->|"Volver"| login
         recuperar -.->|"Enlace recibido por correo"| restablecer
         restablecer -->|"Volver tras cambiarla"| login
@@ -28,13 +39,18 @@ flowchart TB
 
     subgraph app["Con sesión"]
         inicio["Bienvenida<br/>bienvenida.html"]
-        personas["Buscar personas<br/>personas.html"]
+        personas["Buscar<br/>personas.html"]
         perfil["Mi perfil<br/>perfil.html"]
+        ajustes["Ajustes<br/>ajustes.html"]
+        solicitudes["Solicitudes<br/>solicitudes.html"]
         usuario["Perfil de otro usuario<br/>usuario.html"]
         experiencia["Detalle de experiencia<br/>experiencia.html"]
 
         personas -->|"Resultado de búsqueda"| usuario
-        perfil -->|"Amigo, seguidor o solicitante"| usuario
+        perfil -->|"Amigo o seguidor"| usuario
+        solicitudes -->|"Solicitante"| usuario
+        inicio -->|"Cabecera"| solicitudes
+        inicio -->|"Menú de cuenta"| ajustes
 
         inicio -->|"Ver detalle"| experiencia
         perfil -->|"Una de mis experiencias"| experiencia
@@ -43,16 +59,38 @@ flowchart TB
         experiencia -->|"Autor o autor de una valoración"| usuario
         experiencia -->|"Si el autor soy yo"| perfil
         usuario -->|"Si es mi propio nombre"| perfil
+
+        inicio -->|"Búsqueda desde la cabecera"| personas
+        perfil -->|"Búsqueda desde la cabecera"| personas
+        usuario -->|"Búsqueda desde la cabecera"| personas
+        experiencia -->|"Búsqueda desde la cabecera"| personas
     end
+
+    landing -->|"Iniciar sesión"| login
+    landing -->|"Crear cuenta"| registro
+
+    login -->|"Marca PlanB"| landing
+    registro -->|"Marca PlanB"| landing
+    recuperar -->|"Marca PlanB"| landing
+    restablecer -->|"Marca PlanB"| landing
 
     login -->|"Acceso correcto"| inicio
     registro -->|"Cuenta creada"| inicio
+
+    inicio -->|"Cerrar sesión"| login
+    personas -->|"Cerrar sesión"| login
+    perfil -->|"Cerrar sesión"| login
+    usuario -->|"Cerrar sesión"| login
+    experiencia -->|"Cerrar sesión"| login
+
+    inicio -->|"Sesión no válida (401)"| login
+    personas -->|"Sesión no válida (401)"| login
+    perfil -->|"Sesión no válida (401)"| login
+    usuario -->|"Sesión no válida (401)"| login
+    experiencia -->|"Sesión no válida (401)"| login
 ```
 
-**Navegación común:** las cinco páginas con sesión comparten la barra superior: PlanB e Inicio llevan a `bienvenida.html`; además, permite ir a «Buscar personas» y «Mi perfil». Estas conexiones se explican aquí y en los comentarios del sitemap para evitar repetir flechas.
-=======
 **Entrada:** `/` sirve `index.html`, la landing pública, con enlaces a `iniciar-sesion.html` y `registro.html`. Un inicio de sesión o un registro correctos llevan a `bienvenida.html`.
->>>>>>> d1facba492215b6f5084160f64287488fa97e387
 
 **Cabecera común:** las siete páginas con sesión (`bienvenida`, `perfil`, `ajustes`, `solicitudes`, `personas`, `usuario` y `experiencia`) comparten `header.cabecera`: la marca PlanB, «Inicio» (a `bienvenida.html`) y «Solicitudes» (a `solicitudes.html`), un buscador y el menú de cuenta (ver «Cabecera común» más abajo).
 
