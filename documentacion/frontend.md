@@ -9,7 +9,50 @@ El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilo
 
 El [sitemap de PlanB](sitemap.mmd) es la referencia del mapa de navegación, en formato Mermaid. Contiene las doce páginas actuales, agrupadas en «Acceso» y «Con sesión».
 
+```mermaid
+%% Copia renderizable de sitemap.mmd. Al modificar el sitemap, actualiza ambos bloques.
+flowchart TB
+    subgraph acceso["Acceso"]
+        login["Iniciar sesión<br/>index.html"]
+        registro["Registrarse<br/>registro.html"]
+        recuperar["Recuperar contraseña<br/>recuperar.html"]
+        restablecer["Restablecer contraseña<br/>restablecer.html"]
+
+        login -->|"Registrarse"| registro
+        registro -->|"Iniciar sesión"| login
+        login -->|"Olvidé mi contraseña"| recuperar
+        recuperar -->|"Volver"| login
+        recuperar -.->|"Enlace recibido por correo"| restablecer
+        restablecer -->|"Volver tras cambiarla"| login
+    end
+
+    subgraph app["Con sesión"]
+        inicio["Bienvenida<br/>bienvenida.html"]
+        personas["Buscar personas<br/>personas.html"]
+        perfil["Mi perfil<br/>perfil.html"]
+        usuario["Perfil de otro usuario<br/>usuario.html"]
+        experiencia["Detalle de experiencia<br/>experiencia.html"]
+
+        personas -->|"Resultado de búsqueda"| usuario
+        perfil -->|"Amigo, seguidor o solicitante"| usuario
+
+        inicio -->|"Ver detalle"| experiencia
+        perfil -->|"Una de mis experiencias"| experiencia
+        usuario -->|"Una de sus experiencias"| experiencia
+
+        experiencia -->|"Autor o autor de una valoración"| usuario
+        experiencia -->|"Si el autor soy yo"| perfil
+        usuario -->|"Si es mi propio nombre"| perfil
+    end
+
+    login -->|"Acceso correcto"| inicio
+    registro -->|"Cuenta creada"| inicio
+```
+
+**Navegación común:** las cinco páginas con sesión comparten la barra superior: PlanB e Inicio llevan a `bienvenida.html`; además, permite ir a «Buscar personas» y «Mi perfil». Estas conexiones se explican aquí y en los comentarios del sitemap para evitar repetir flechas.
+=======
 **Entrada:** `/` sirve `index.html`, la landing pública, con enlaces a `iniciar-sesion.html` y `registro.html`. Un inicio de sesión o un registro correctos llevan a `bienvenida.html`.
+>>>>>>> d1facba492215b6f5084160f64287488fa97e387
 
 **Cabecera común:** las siete páginas con sesión (`bienvenida`, `perfil`, `ajustes`, `solicitudes`, `personas`, `usuario` y `experiencia`) comparten `header.cabecera`: la marca PlanB, «Inicio» (a `bienvenida.html`) y «Solicitudes» (a `solicitudes.html`), un buscador y el menú de cuenta (ver «Cabecera común» más abajo).
 
