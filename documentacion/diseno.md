@@ -1,6 +1,6 @@
 # Diseño de PlanB: estructura de las pantallas
 
-> Qué elementos tiene cada pantalla y cómo se colocan, en escritorio (1280 px). Es solo estructura: sin colores, sin imágenes y sin código. Cómo se ve cada cosa (colores, bordes, tipografía) está en [arte.md](arte.md). Móvil: aparcado, ver registro.
+> Qué elementos tiene cada pantalla y cómo se colocan, en escritorio (1280 px). Los esquemas SVG van en color (paleta Verbena) y con contenido de ejemplo, pero no son el diseño final: el código es la referencia visual. Cómo se ve cada cosa (colores, bordes, tipografía) está en [arte.md](arte.md). Móvil: aparcado, ver registro.
 > Documentos relacionados: [sitemap.mmd](sitemap.mmd), [frontend.md](frontend.md) (cómo está hecho hoy) y [flujos.md](flujos.md).
 > Inventario de las páginas con sus estados y flujos: [inventario-pantallas.md](inventario-pantallas.md).
 > Estado: el equipo dio por buenos los esquemas (Flavia, 26/10/2026) y el diseño se rehizo para escritorio el 26/10/2026. La guía de estilo, en [arte.md](arte.md), es una propuesta para aprobar.
@@ -32,7 +32,7 @@ Cada esquema se dibuja en **escritorio (1280 px)**, a escala 0,5. El contenido v
 
 ## Cabecera (pantallas con sesión)
 
-Esquema: [diseno/cabecera.svg](diseno/cabecera.svg) (aún con la cabecera anterior; la nueva está descrita aquí y en [arte.md](arte.md)).
+Esquema: [diseno/cabecera.svg](diseno/cabecera.svg) (con el menú de cuenta abierto; descrita aquí y en [arte.md](arte.md)).
 
 - **Fila superior (64 px):** logo a la izquierda (enlaza a Inicio); buscador en píldora al centro («Buscar personas y planes», con botón «Buscar»; formulario GET a `/social/personas.html?q=`); a la derecha, «Crear plan» (único botón principal de la cabecera), la campana de notificaciones y el menú de cuenta.
 - **Barra de pestañas de sección (debajo):** Inicio, Explorar, Mis planes y Amigos. La activa lleva línea naranja de 3 px, negrita y `aria-current="page"`.
@@ -141,7 +141,7 @@ Una sección por pantalla, con el mismo formato. Son diez.
 
 ### Páginas del rediseño
 
-Maquetas de escritorio (solo estructura y estado vacío). Las de «diseño futuro» no tienen backend; las «a reorganizar» ya existen con otra forma. Estado y flujos de cada una: [inventario-pantallas.md](inventario-pantallas.md).
+Maquetas de escritorio en color, con contenido de ejemplo y estado vacío. Las de «diseño futuro» no tienen backend; las «a reorganizar» ya existen con otra forma. Estado y flujos de cada una: [inventario-pantallas.md](inventario-pantallas.md).
 
 | Página | Grupo | Estado | Estructura | Esquema |
 |---|---|---|---|---|
