@@ -12,7 +12,7 @@ const HTML = leer('/social/solicitudes.html');
 const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/solicitudes.js'];
 const SOLICITUDES = [{
   id: 10,
-  solicitante: { id: 2, nombreUsuario: 'luis' },
+  solicitante: { id: 2, nombreUsuario: 'luis', foto: '/img/foto-por-defecto.svg' },
 }];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
@@ -32,6 +32,12 @@ test('carga las solicitudes recibidas y muestra botones para responderlas', () =
   expect($('#solicitudes-recibidas').textContent).toContain('luis');
   expect([...document.querySelectorAll('#solicitudes-recibidas button')].map((boton) => boton.textContent))
     .toEqual(['Aceptar', 'Rechazar']);
+});
+
+test('cada solicitud muestra la foto del solicitante y enlaza a su perfil', () => {
+  const enlace = $('#solicitudes-recibidas a');
+  expect(enlace.getAttribute('href')).toBe('/social/usuario.html?nombre=luis');
+  expect(enlace.querySelector('img').getAttribute('src')).toBe('/img/foto-por-defecto.svg');
 });
 
 test('aceptar una solicitud la elimina de la lista', async () => {

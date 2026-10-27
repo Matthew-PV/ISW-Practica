@@ -32,3 +32,19 @@
   font-weight: 400;
   color: var(--color-texto-suave);
 }
+
+/* Solicitud recibida: foto y nombre (enlazan al perfil) a la izquierda, botones a la derecha */
+.fila-solicitud {
+  flex-wrap: wrap;
+}
+
+.fila-solicitud-persona {
+  font-weight: 700;
+  color: var(--color-texto);
+  text-decoration: none;
+}
+
+.fila-solicitud-persona:hover {
+  color: var(--color-primario-hover);
+  text-decoration: underline;
+}
