@@ -16,3 +16,19 @@
 #pestanas-perfil [role="tab"] {
   flex: 0 0 auto;
 }
+
+/* Fila de una persona (amigos y seguidores): foto grande y flecha que indica que se puede abrir */
+.fila-persona {
+  padding-top: var(--espacio-12);
+  padding-bottom: var(--espacio-12);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.fila-persona::after {
+  content: "›";
+  margin-left: auto;
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--color-texto-suave);
+}

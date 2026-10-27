@@ -815,8 +815,9 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
   display: flex;
   align-items: center;
   gap: var(--espacio-24);
-  padding: var(--espacio-24);
-  background: var(--color-fondo);
+  padding: var(--espacio-48) var(--espacio-24) var(--espacio-24);
+  /* Banda crema arriba, como la portada de un perfil */
+  background: linear-gradient(var(--color-crema) 0 72px, var(--color-fondo) 72px);
   border: 1px solid var(--color-borde-suave);
   border-radius: var(--radio-tarjeta);
 }
@@ -825,7 +826,13 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
   width: 96px;
   height: 96px;
   object-fit: cover;
+  border: 4px solid var(--color-fondo);
   border-radius: 50%;
+}
+
+.cabecera-perfil-accion {
+  align-self: flex-end;
+  margin-left: auto;
 }
 
 /* Perfil de otra persona: la misma cabecera, centrada */
@@ -927,6 +934,21 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
 
 /* Columna estrecha para los formularios de acceso */
 .contenedor-formulario {
+  max-width: 400px;
+}
+
+/* Ajustes: más ancho, con la foto a un lado y los campos al otro */
+.contenedor-formulario.ajustes-panel {
+  max-width: 720px;
+}
+
+.ajustes-panel #panel-datos {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--espacio-32);
+}
+
+.ajustes-panel #form-password {
   max-width: 400px;
 }
 

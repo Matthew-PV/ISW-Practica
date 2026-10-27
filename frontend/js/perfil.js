@@ -7,6 +7,7 @@
 // Pone en la cabecera los datos del perfil que devuelve el backend
 function mostrarPerfil(perfil) {
   document.getElementById('nombre-perfil').textContent = perfil.nombreUsuario;
+  document.getElementById('ciudad-perfil').textContent = perfil.ciudad ?? '';
   mostrarExperienciasDe(perfil.nombreUsuario);
 
   if (perfil.foto) {
@@ -50,14 +51,14 @@ const PERSONAS_POR_PAGINA = 20;
 // texto para que nunca se interprete como HTML aportado por otra persona.
 function crearPersona(persona) {
   const fila = crearEnlacePerfil(document.createElement('a'), persona);
-  fila.className = 'list-group-item list-group-item-action d-flex align-items-center gap-2';
+  fila.className = 'list-group-item list-group-item-action d-flex align-items-center gap-3 fila-persona';
   fila.dataset.usuarioId = persona.id;
 
   const foto = document.createElement('img');
   foto.src = persona.foto;
   foto.alt = '';
-  foto.width = 32;
-  foto.height = 32;
+  foto.width = 48;
+  foto.height = 48;
   foto.className = 'rounded-circle';
 
   const nombre = document.createElement('span');

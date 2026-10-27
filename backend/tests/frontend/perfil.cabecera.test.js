@@ -48,7 +48,24 @@ describe('cabecera del perfil', () => {
     const texto = $('.cabecera-perfil').textContent.replace(/\s+/g, ' ');
     expect(texto).toContain('3 amigos');
     expect(texto).toContain('5 seguidores');
-    expect($('.cabecera-perfil a')).toBeNull();
+    expect($('.cabecera-perfil-contadores a')).toBeNull();
+  });
+
+  test('muestra mi ciudad como texto y no muestra nada si no la he puesto', async () => {
+    await abrir({ 'GET /api/perfil': [200, { ...PERFIL, ciudad: '<b>Madrid</b>' }] });
+    expect($('#ciudad-perfil').textContent).toBe('<b>Madrid</b>');
+    expect($('#ciudad-perfil b')).toBeNull();
+
+    await abrir();
+    expect($('#ciudad-perfil').textContent).toBe('');
+  });
+
+  test('«Editar perfil» lleva a los ajustes', async () => {
+    await abrir();
+
+    const enlace = $('.cabecera-perfil a.btn');
+    expect(enlace.textContent).toBe('Editar perfil');
+    expect(enlace.getAttribute('href')).toBe('/cuenta/ajustes.html');
   });
 
   test('el contador de experiencias cuenta las que se han cargado', async () => {

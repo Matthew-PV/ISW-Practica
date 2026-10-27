@@ -268,7 +268,7 @@ Pruebas: `bienvenida.test.js` y `estados.test.js`.
 
 ### `/cuenta/perfil.html`: mi perfil
 
-* **Cabecera:** foto, nombre y contadores de experiencias, amigos y seguidores. Hasta que llegan los datos se ve «Cargando…» (`#cargando`).
+* **Cabecera:** foto, nombre, ciudad (`#ciudad-perfil`), contadores de experiencias, amigos y seguidores, y el botón «Editar perfil», que lleva a los ajustes. Hasta que llegan los datos se ve «Cargando…» (`#cargando`).
 * **Pestañas** (`shared/pestanas.js`): *Experiencias* (con `mostrarExperienciasDe`, incluidas las privadas), *Amigos* y *Seguidores* (listas de 20 en 20 con «Cargar más»; cada nombre lleva a su perfil).
 
 Pruebas: `perfil.relaciones.test.js`, `perfil.cabecera.test.js`, `estados.test.js` y `shared/experiencias.test.js`.
