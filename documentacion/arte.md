@@ -1,7 +1,7 @@
 # Arte de PlanB: cómo se ve
 
 > Colores, tipografía, bordes, componentes e interacciones, para que todas las pantallas sean consistentes. La estructura de cada pantalla está en [diseno.md](diseno.md). Una vista de conjunto está en [diseno/guia-estilo.svg](diseno/guia-estilo.svg).
-> Estado: **propuesta para aprobar** (dirección «Verbena», ver [la decisión](decisiones/2026-10-27-identidad-verbena.md)). Aún no está aplicada al CSS: las pantallas actuales siguen con la identidad anterior hasta la fase de implementación. Solo escritorio (1024 px o más).
+> Estado: **aplicada** en el CSS y las pantallas existentes (dirección «Verbena», ver [la decisión](decisiones/2026-10-27-identidad-verbena.md) y [la de su implementación](decisiones/2026-10-27-implementacion-verbena.md)). Faltan las pantallas del sitemap que aún no existen. Solo escritorio (1024 px o más).
 
 ## Cómo se usa este documento
 
@@ -127,7 +127,7 @@ Escala de múltiplos de 4 px: **4, 8, 12, 16, 24, 32 y 48**. Entre bloques de un
 
 ## Iconos
 
-Biblioteca de línea **Tabler** (24 px, trazo de 2 px, `currentColor`), siempre acompañados de su texto o de `aria-label`. Dependencia nueva registrada en la [decisión](decisiones/2026-10-27-identidad-verbena.md). Iconos de categoría y de navegación: ver [diseno.md](diseno.md).
+Iconos de línea en **SVG en línea** (24 px, trazo de 2 px, `currentColor`, `aria-hidden`), siempre acompañados de su texto o de `aria-label`. Sin biblioteca externa: ver la [decisión](decisiones/2026-10-27-implementacion-verbena.md). Iconos de categoría y de navegación: ver [diseno.md](diseno.md).
 
 ## Componentes
 
@@ -289,17 +289,11 @@ Duraciones: **120 ms** (botones y enlaces) y **150 ms** (fundidos de resultados 
 - Acciones con espera en gerundio: «Buscando…», «Guardando…».
 
 
-## Qué cambia respecto a hoy
+## Estado de la aplicación
 
-El CSS actual sigue la identidad anterior (verde azulado, barra oscura). Aplicar esta guía supone:
+Aplicado: paleta y botones, cabecera blanca con logo y buscador en píldora, pestañas subrayadas, landing con ilustración y banda ciruela, tarjetas con bloque de color por categoría (`crearBloqueCategoria` en `js/shared/pantalla.js`) y estados vacíos con ilustración (`.estado-vacio`).
 
-- Sustituir el verde azulado por naranja y ciruela, y la barra oscura por una cabecera blanca con borde.
-- Pasar de «sin iconos» a Tabler, y de tarjetas sin imagen a tarjetas con bloque de color.
-- Añadir la barra de pestañas de sección, los chips de categoría, la banda ciruela, los estados vacíos y las filas de actividad.
-- Pasar el botón principal a texto ciruela sobre naranja y el de peligro y éxito a los mismos valores de hoy.
-- Una cabecera con logo, buscador, «Crear plan», notificaciones y menú de cuenta.
-
-Esto se hace en la historia de implementación, no aquí.
+Pendiente: chips de categoría y filas de actividad en las pantallas con sesión, «Crear plan» y notificaciones en la cabecera, y las pantallas nuevas del sitemap.
 
 ## Aplicación pantalla por pantalla
 

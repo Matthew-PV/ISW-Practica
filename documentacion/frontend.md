@@ -161,6 +161,7 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 
 * `css/styles.css` es el archivo común: define las variables `--color-*` (`--color-lienzo` es el fondo de la página y las tarjetas y paneles son blancos con borde; los colores solo se escriben en ese bloque; el resto de los CSS usa `var(--color-*)`) y los componentes compartidos: cabecera, botones, tarjetas, avisos y el enlace «Saltar al contenido».
 * `landing.css`: la landing (`index.html`).
+* Tarjetas de experiencia: bloque de color con icono (`.bloque-categoria`, color según `data-categoria`). Estados vacíos: `.estado-vacio` con ilustración de `img/vacio-*.svg`.
 * `acceso.css`: la tarjeta de formulario de `iniciar-sesion`, `registro`, `recuperar` y `restablecer`.
 * `experiencia.css`: el detalle de experiencia, con la experiencia y el formulario en una columna y las valoraciones en otra.
 * `perfil.css`: `/cuenta/perfil.html` y `/social/usuario.html`.
@@ -223,7 +224,7 @@ Antes de la cabecera, cada una de estas páginas (y la landing) lleva el enlace 
 
 ### `index.html`: landing
 
-Página pública y estática: no tiene JavaScript, no comprueba la sesión y no llama a la API. Su cabecera solo ofrece «Iniciar sesión» y «Crear cuenta». Presenta la frase «Comparte y descubre planes por tu ciudad» y explica qué es PlanB. Es la página que sirve `/`.
+Página pública y estática: no tiene JavaScript, no comprueba la sesión y no llama a la API. Su cabecera solo ofrece «Iniciar sesión» y «Crear cuenta». Presenta la frase «Comparte y descubre planes por tu ciudad» con una ilustración, las categorías, tres bloques de valor, los tres pasos de uso y una banda de cierre con los dos accesos. Es la página que sirve `/`.
 
 Pruebas: `landing.test.js`.
 
@@ -321,7 +322,7 @@ Pruebas: `experiencia.test.js`, `experiencia.formulario.test.js`.
 | Archivo | Ofrece | Lo usan |
 |---|---|---|
 | `api.js` | `api(ruta, opciones)`: llama a `/api` + `ruta` con `fetch` y la cookie de sesión. Envía `Content-Type: application/json` salvo con `FormData`, en cuyo caso la cabecera la pone el navegador. Devuelve el JSON (o `null` si no hay cuerpo); si falla, lanza un `Error` con el mensaje del servidor y `error.status`. | Todas las páginas |
-| `pantalla.js` | `mostrarMensaje(caja, texto)` y `ocultarMensaje(caja)`; `mostrarCargando()` y `ocultarCargando()`, que muestran y ocultan el texto `#cargando` de la página; `irAlLogin()`; `crearEnlacePerfil(enlace, usuario, miUsuarioId)`; `listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar })`, que devuelve `{ cargar, reiniciar }` y no repite un elemento que ya está en la lista. La lista está vacía cuando no tiene ningún hijo con `data-id-elemento`, de modo que la tarjeta «+» de la bienvenida no cuenta. | Las páginas con sesión y `experiencias.js` |
+| `pantalla.js` | `mostrarMensaje(caja, texto)` y `ocultarMensaje(caja)`; `mostrarCargando()` y `ocultarCargando()`, que muestran y ocultan el texto `#cargando` de la página; `irAlLogin()`; `crearEnlacePerfil(enlace, usuario, miUsuarioId)`; `crearBloqueCategoria(tipo)`, que devuelve el bloque de color con el icono de la categoría deducida de `tipo` (texto libre; «rincones» si no encaja ninguna); `listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar })`, que devuelve `{ cargar, reiniciar }` y no repite un elemento que ya está en la lista. La lista está vacía cuando no tiene ningún hijo con `data-id-elemento`, de modo que la tarjeta «+» de la bienvenida no cuenta. | Las páginas con sesión y `experiencias.js` |
 | `experiencias.js` | `mostrarExperienciasDe(nombreUsuario)` y `recargarExperiencias()`: la lista «Cargar más» de experiencias de un autor. La página debe tener `#lista-experiencias`, `#sin-experiencias`, `#mas-experiencias` y `#error-experiencias`. | `perfil.js`, `usuario.js` |
 | `cabecera.js` | Comportamiento de la cabecera común (ver «Cabecera común»). No exporta nada. | Las siete páginas con sesión |
 | `pestanas.js` | `window.activarPestanas(lista)`: pestañas accesibles (`role="tablist"`) que se manejan con ratón y teclado. | `personas.js`, `experiencia.js` |
