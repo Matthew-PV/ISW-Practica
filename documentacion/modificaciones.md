@@ -36,6 +36,55 @@ Plantilla de una sección (las secciones `###` vacías se omiten, salvo «Cambio
 
 Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar su contenido: el autor y los commits salen de Git (`git blame` y `git log`), el agente solo figura si consta en el registro de prompts de su autor y una decisión solo aparece si la entrada original ya contaba su motivo.
 
+# 2026-10-27
+
+## CS-65: auditoría y SVG de concepto
+
+**Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
+**Historia:** CS-65, objetivos 1 a 4
+
+### Cambios
+- `documentacion/diseno.md` reescrito solo para escritorio, con diez pantallas (se añaden la landing `index.html` e `iniciar-sesion.html`), la cabecera común y las interacciones; `arte.md` con los componentes nuevos (cabecera con sesión y sin ella, pantalla dividida, pestañas, fila de resultado, rejilla de tarjetas con etiqueta de visibilidad, cabecera de perfil, marco de captura, botón con estado de espera) y la sección «Interacciones».
+- `inventario-pantallas.md` y `sitemap.mmd` al día: landing, `iniciar-sesion`, «Cerrar sesión», búsqueda desde la cabecera y los 401 hacia el login.
+- `documentacion/diseno/`: 11 SVG de concepto en blanco y negro, solo escritorio (`index`, `iniciar-sesion`, `registro`, `recuperar`, `restablecer`, `cabecera`, `bienvenida`, `personas`, `experiencia`, `perfil`, `usuario`) y `guia-estilo.svg` regenerada (única hoja con color). Se borran `navegacion-movil.svg`, `usuario-a.svg` y `usuario-b.svg`.
+
+### Decisiones
+#### Landing en `/` y login en `iniciar-sesion.html`
+- **Contexto:** la decisión del 26/10/2026 era «sin landing page»; Joaquín pidió una página de presentación con acceso a iniciar sesión y registrarse.
+- **Decisión:** `index.html` pasa a ser la landing, estática y sin JavaScript, con marcos de captura; el login se mueve a `iniciar-sesion.html` y los 401 llevan allí. El libro y el sitemap pasan de 9 a 10 pantallas.
+- **Alternativas:** dejar el login en `/` y poner la landing aparte (`presentacion.html`); se descarta porque la raíz es lo primero que ve cualquiera.
+- **Consecuencias:** cambian las referencias a `/` del frontend y cuatro archivos de pruebas (fase de implementación). Los textos y capturas de la landing son un concepto que se sustituirá con capturas reales.
+- **Decidió:** Joaquín.
+
+#### Solo escritorio; móvil aparcado
+- **Contexto:** Joaquín pidió quitar de momento todo lo de móvil.
+- **Decisión:** los SVG, `diseno.md` y `arte.md` quedan sin barra inferior ni medidas de 375 px; se comprueba a 1024, 1280 y 1440 px.
+- **Alternativas:** mantener móvil como segunda hoja; se descarta por alcance.
+- **Consecuencias:** el móvil queda sin diseño hasta que se retome.
+- **Decidió:** Joaquín.
+
+#### Cabecera B, experiencia A, búsqueda unificada y perfil sin pestañas
+- **Contexto:** variantes probadas durante el diseño.
+- **Decisión:** cabecera con buscador en píldora (botón «Buscar» dentro) y menú «Cuenta»; experiencia en una columna con pestañas «De amigos y seguidores | Todas»; Buscar unificado con pestañas Personas y Experiencias (esta última vacía por diseño hasta CS-24); perfil con secciones apiladas, sin pestañas; usuario en la variante A.
+- **Alternativas:** cabecera A con pestañas, experiencia B con portada, perfil con pestañas; se descartan por no seguir el patrón de las webs de referencia o por trabajar de más.
+- **Consecuencias:** «Experiencias» de Buscar, «Útil» y «Reportar» quedan como huecos conocidos.
+- **Decidió:** Joaquín, a propuesta de Claude.
+
+#### Un solo botón principal por pantalla
+- **Contexto:** el diseño ponía «Crear cuenta» como principal tres veces en la landing y «Aceptar» y «Guardar» en el perfil, contra la regla de un único `.btn-primary` por pantalla y estado.
+- **Decisión:** en la landing solo es principal el «Crear cuenta» de la portada; el perfil no tiene botón principal (Aceptar, Rechazar y los de «Ajustes» son secundarios); las pantallas de acceso van sin barra de cabecera.
+- **Alternativas:** dejar varios principales; se descarta por R6.
+- **Consecuencias:** `perfil.js` aún usa `btn-success` y `btn-primary` en esos botones; se alinea en la fase de implementación.
+- **Decidió:** Joaquín, a propuesta de Claude.
+
+### Comprobación
+- Sin TDD (documentación y dibujos). Hay 12 SVG; sin «móvil» ni «375» fuera de la guía; solo `#000`, `#fff` y `#999`; XML válido; Chrome los renderiza y se revisaron los PNG. `enlaces-md.mjs` sin enlaces rotos. Contrastes de `arte.md` recalculados con la fórmula WCAG. Revisión de la oleada en dos ciclos sin hallazgos graves.
+- El sitemap no se validó con Mermaid (sin red); se revisó nodo a nodo.
+
+### Pendiente
+- Implementar el diseño en el frontend (CS-66).
+- Landing con capturas reales; el móvil, aparcado.
+
 # 2026-10-26
 
 ## CS-67: base de datos en Aiven y conexión de PlanB
