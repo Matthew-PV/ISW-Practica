@@ -1,7 +1,7 @@
 # Arte de PlanB: cómo se ve
 
-> Colores, tipografía, bordes, componentes e interacciones, para que todas las pantallas sean consistentes. La estructura de cada pantalla está en [diseno.md](diseno.md). Una vista de conjunto, con los colores y los componentes dibujados, está en [diseno/guia-estilo.svg](diseno/guia-estilo.svg).
-> Estado: **propuesta para aprobar** (objetivo 3 del libro de historias). Cuando el equipo la apruebe, se aplica a todas las pantallas a la vez en la historia de implementación. Solo escritorio (1024 px o más).
+> Colores, tipografía, bordes, componentes e interacciones, para que todas las pantallas sean consistentes. La estructura de cada pantalla está en [diseno.md](diseno.md). Una vista de conjunto está en [diseno/guia-estilo.svg](diseno/guia-estilo.svg).
+> Estado: **propuesta para aprobar** (dirección «Verbena», ver [la decisión](decisiones/2026-10-27-identidad-verbena.md)). Aún no está aplicada al CSS: las pantallas actuales siguen con la identidad anterior hasta la fase de implementación. Solo escritorio (1024 px o más).
 
 ## Cómo se usa este documento
 
@@ -12,13 +12,17 @@
 
 ## Identidad
 
-PlanB es una red social para compartir y descubrir planes por una ciudad. La identidad es **clara, cercana y tranquila**:
+PlanB es una red social para compartir y descubrir planes por una ciudad. La identidad «Verbena» es **blanca, viva y cercana**:
 
-- Fondo claro y mucho espacio en blanco, para que el protagonista sea el contenido de los usuarios.
-- **Un solo color principal, un verde azulado**, que recuerda a una ciudad, al agua y a los mapas, y se usa solo en lo importante.
-- Grises neutros para todo lo demás. Sin degradados ni sombras pesadas: la jerarquía se consigue con el tamaño, el peso y el espacio.
+- **Blanco como base** y mucho espacio; el protagonista es el contenido de los usuarios.
+- **Dos acentos con intención:** naranja para la acción y la señal, ciruela para el texto y el contraste. Melocotón y crema solo de apoyo.
+- Sin degradados. Borde fino en todo; sombra muy suave solo en elementos flotantes (menú, diálogo).
 - **Un solo estilo de borde redondeado** en toda la aplicación.
-- **Pensada para un público joven y universitario:** acciones en pocos pasos, lenguaje cercano (tú) y patrones que ya conoce de otras redes sociales, como la cabecera con buscador y la cabecera de perfil con contadores.
+- **Pensada para un público joven y universitario:** acciones en pocos pasos, lenguaje cercano (tú) y patrones conocidos de otras redes sociales.
+
+### Logo
+
+Un **pin de mapa** naranja con punto ciruela y el nombre «plan**B**» en ciruela, con la B en naranja. Ficheros: [logo.svg](../frontend/img/logo.svg) (completo, 132 × 32) y [logo-pin.svg](../frontend/img/logo-pin.svg) (solo el pin, para icono de pestaña y espacios pequeños). Sobre fondo blanco o crema; alto mínimo 24 px; margen alrededor igual a la mitad del alto.
 
 ## Reglas de consistencia
 
@@ -37,59 +41,63 @@ Los nombres son los de las variables CSS propuestas.
 | Rol | Variable | Valor | Para qué se usa |
 |---|---|---|---|
 | Fondo | `--color-fondo` | `#FFFFFF` | Página y tarjetas |
-| Superficie | `--color-superficie` | `#F3F4F6` | Fondos de bloques, filas alternas, campos desactivados |
-| Texto | `--color-texto` | `#1F2937` | Todo el texto normal |
-| Texto suave | `--color-texto-suave` | `#4B5563` | Datos secundarios (ciudad, fechas, ayudas) |
-| **Principal** | `--color-primario` | `#0F766E` | Botón principal, enlaces, sección activa |
-| Principal al pasar | `--color-primario-hover` | `#115E59` | Botón principal con el ratón encima y pulsado |
-| Principal suave | `--color-primario-suave` | `#CCFBF1` | Etiquetas y fondos de elementos seleccionados |
+| Superficie | `--color-superficie` | `#F6F3F9` | Bloques, filas alternas, campos desactivados |
+| Texto / ciruela | `--color-texto` | `#2A1E3F` | Todo el texto normal, banda ciruela |
+| Texto suave | `--color-texto-suave` | `#5E5470` | Datos secundarios (ciudad, fechas, ayudas) |
+| **Principal (naranja)** | `--color-primario` | `#FF5A36` | Botón principal, línea de sección activa, pin del logo |
+| Principal al pasar | `--color-primario-hover` | `#FF7A5C` | Botón principal con el ratón encima |
+| Acento para texto | `--color-acento` | `#C2410C` | Enlaces, texto e iconos naranjas sobre fondo claro |
+| Acento al pasar | `--color-acento-hover` | `#9A3412` | Enlaces con el ratón encima, texto de etiquetas |
+| Melocotón | `--color-melocoton` | `#FFC7B3` | Seleccionado, pulsado, bloque de categoría |
+| Crema | `--color-crema` | `#FFF4E6` | Bandas y fondos de apoyo |
 | Peligro | `--color-peligro` | `#B91C1C` | Eliminar, rechazar, errores |
 | Éxito | `--color-exito` | `#15803D` | Confirmaciones, «Aceptar» |
-| Foco | `--color-foco` | `#1D4ED8` | Anillo de foco del teclado sobre fondos claros |
-| Borde de campo | `--color-borde-campo` | `#6B7280` | Borde de los campos de formulario |
-| Borde suave | `--color-borde-suave` | `#D1D5DB` | Separadores y bordes de tarjetas (solo decorativo) |
-| Barra | `--color-barra` | `#0F172A` | Cabecera (con y sin sesión) |
-| Texto de la barra | `--color-barra-texto` | `#F8FAFC` | Texto, enlaces y anillo de foco sobre la cabecera |
+| Foco | `--color-foco` | `#1D4ED8` | Anillo de foco del teclado |
+| Borde de campo | `--color-borde-campo` | `#7A6F8C` | Borde de los campos de formulario |
+| Borde suave | `--color-borde-suave` | `#E8E3EE` | Separadores y bordes de tarjetas (solo decorativo) |
 
 **Fondos de avisos:** error `#FEE2E2` con texto `#7F1D1D`; éxito `#DCFCE7` con texto `#14532D`; aviso `#FEF3C7` con texto `#78350F`; información `#E0F2FE` con texto `#0C4A6E`.
 
+**El botón principal lleva texto ciruela**, no blanco: el blanco sobre `#FF5A36` da 3,10:1 y no cumple. Pulsado: fondo ciruela y texto blanco.
+
 ### Contraste calculado
+
+Reproducible con un script de luminancia WCAG (fórmula en la sección 1.4.3 de WCAG 2.1).
 
 | Combinación | Ratio | Mínimo | Resultado |
 |---|---|---|---|
-| Texto sobre fondo | 14,68 | 4,5 | Cumple |
-| Texto sobre superficie | 13,34 | 4,5 | Cumple |
-| Texto sobre principal suave | 13,03 | 4,5 | Cumple |
-| Texto suave sobre fondo | 7,56 | 4,5 | Cumple |
-| Texto suave sobre superficie | 6,87 | 4,5 | Cumple |
-| Texto suave sobre principal suave | 6,71 | 4,5 | Cumple |
-| Blanco sobre principal (botón) | 5,47 | 4,5 | Cumple |
-| Blanco sobre principal al pasar | 7,58 | 4,5 | Cumple |
-| Principal sobre fondo (enlace) | 5,47 | 4,5 | Cumple |
-| Principal sobre superficie | 4,97 | 4,5 | Cumple |
-| Principal sobre principal suave | 4,86 | 4,5 | Cumple |
-| Principal al pasar sobre principal suave (etiqueta «Amigos») | 6,73 | 4,5 | Cumple |
+| Texto sobre fondo | 15,49 | 4,5 | Cumple |
+| Texto sobre superficie | 14,09 | 4,5 | Cumple |
+| Texto sobre crema | 14,26 | 4,5 | Cumple |
+| Texto sobre melocotón | 10,38 | 4,5 | Cumple |
+| Texto suave sobre fondo | 7,05 | 4,5 | Cumple |
+| Texto suave sobre superficie | 6,42 | 4,5 | Cumple |
+| Texto suave sobre crema | 6,49 | 4,5 | Cumple |
+| **Texto ciruela sobre principal (botón)** | **4,99** | 4,5 | Cumple |
+| Texto ciruela sobre principal al pasar | 6,04 | 4,5 | Cumple |
+| Blanco sobre ciruela (botón pulsado, banda) | 15,49 | 4,5 | Cumple |
+| Principal sobre ciruela (acento en la banda) | 4,99 | 4,5 | Cumple |
+| Blanco sobre principal | 3,10 | 4,5 | **No cumple**: por eso el botón lleva texto ciruela |
+| Acento sobre fondo (enlace) | 5,18 | 4,5 | Cumple |
+| Acento sobre superficie | 4,71 | 4,5 | Cumple |
+| Acento al pasar sobre melocotón | 4,90 | 4,5 | Cumple |
+| Acento al pasar sobre crema | 6,73 | 4,5 | Cumple |
 | Blanco sobre peligro (botón) | 6,47 | 4,5 | Cumple |
 | Blanco sobre éxito (botón) | 5,02 | 4,5 | Cumple |
-| Texto sobre aviso de error | 8,20 | 4,5 | Cumple |
-| Texto sobre aviso de éxito | 8,30 | 4,5 | Cumple |
-| Texto sobre aviso | 8,15 | 4,5 | Cumple |
-| Texto sobre información | 8,24 | 4,5 | Cumple |
-| Texto de la barra sobre barra | 17,06 | 4,5 | Cumple |
-| **Borde de campo sobre fondo** | **4,83** | 3 | Cumple (el de Bootstrap por defecto, `#ced4da`, daba 1,49) |
-| Borde de campo sobre superficie | 4,39 | 3 | Cumple |
+| Avisos (error / éxito / aviso / información) | 8,20 / 8,30 / 8,15 / 8,24 | 4,5 | Cumple |
+| Borde de campo sobre fondo | 4,69 | 3 | Cumple |
+| Borde de campo sobre superficie | 4,26 | 3 | Cumple |
 | Anillo de foco sobre fondo | 6,70 | 3 | Cumple |
-| Anillo de foco sobre superficie | 6,09 | 3 | Cumple |
-| Anillo de foco (texto de la barra) sobre barra | 17,06 | 3 | Cumple |
-| Anillo de foco azul (`--color-foco`) sobre barra | 2,66 | 3 | **No cumple**: por eso, dentro de la cabecera el anillo usa `--color-barra-texto` |
+| Anillo de foco sobre superficie | 6,10 | 3 | Cumple |
+| Principal (línea de sección activa) sobre fondo | 3,10 | 3 | Cumple |
 
-Los textos y botones de la propuesta tienen **más margen** que los colores por defecto de Bootstrap, algunos de los cuales cumplían justo (4,50:1).
+El borde suave (`#E8E3EE`, 1,26:1) es solo decorativo: nada depende de verlo.
 
 ## Tipografía
 
-- **Fuente del sistema:** `system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`. No hay que descargar ninguna fuente (carga más rápida y sin depender de servicios externos).
+- **Fuente del sistema:** `system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`. No hay que descargar ninguna fuente.
 - Cuerpo de **16 px** con interlineado 1,5. Nunca menos de 14 px.
-- Pesos: normal (400) y negrita (700). Nada de varios pesos intermedios.
+- Pesos: normal (400) y negrita (700).
 
 | Elemento | Tamaño | Peso |
 |---|---|---|
@@ -103,19 +111,23 @@ Los textos y botones de la propuesta tienen **más margen** que los colores por 
 
 ## Espaciado
 
-Escala de múltiplos de 4 px: **4, 8, 12, 16, 24, 32 y 48**. No se usan otros valores. Entre bloques de una pantalla, 24 px; dentro de un bloque, 8 o 12 px. Contenido centrado de 960 px como máximo, con 24 px de margen lateral; la landing y las pantallas divididas ocupan todo el ancho.
+Escala de múltiplos de 4 px: **4, 8, 12, 16, 24, 32 y 48**. Entre bloques de una pantalla, 24 px; dentro de un bloque, 8 o 12 px. Contenido centrado de 960 px como máximo, con 24 px de margen lateral; la landing y las pantallas divididas ocupan todo el ancho.
 
 ## Bordes y sombras
 
 | Elemento | Radio | Borde |
 |---|---|---|
 | Botones y campos | 8 px | 1 px, `--color-borde-campo` |
-| Buscador de la cabecera | 999 px (píldora) | ninguno (va sobre `--color-barra`) |
+| Buscador de la cabecera | 999 px (píldora) | 1 px, `--color-borde-campo` |
 | Tarjetas y diálogos | 12 px | 1 px, `--color-borde-suave` |
-| Etiquetas | 999 px (píldora) | ninguno |
+| Etiquetas y chips | 999 px (píldora) | según tipo |
 | Foto de perfil | círculo | ninguno |
 
-**Sin sombras.** La profundidad se logra con borde y color de fondo.
+**Sin sombras**, salvo una muy suave (`0 4px 16px` ciruela al 12 %) en elementos flotantes: menú de cuenta y diálogos. *(Pendiente de confirmar.)*
+
+## Iconos
+
+Biblioteca de línea **Tabler** (24 px, trazo de 2 px, `currentColor`), siempre acompañados de su texto o de `aria-label`. Dependencia nueva registrada en la [decisión](decisiones/2026-10-27-identidad-verbena.md). Iconos de categoría y de navegación: ver [diseno.md](diseno.md).
 
 ## Componentes
 
@@ -125,133 +137,133 @@ Todo elemento pulsable mide **44 px de alto como mínimo**. Todos los estados us
 
 | Estado | Botón principal | Botón secundario | Botón de peligro |
 |---|---|---|---|
-| Reposo | Fondo `--color-primario`, texto `--color-fondo`, negrita | Fondo `--color-fondo`, borde y texto `--color-primario` | Fondo `--color-fondo`, borde y texto `--color-peligro` |
-| Ratón encima | Fondo `--color-primario-hover` | Fondo `--color-primario-suave` | Fondo `--color-fondo`, borde 2 px |
-| Pulsado | Fondo `--color-primario-hover` | Fondo `--color-primario-suave`, borde `--color-primario-hover` | Fondo `--color-peligro`, texto `--color-fondo` |
-| Foco | Anillo de foco (ver «Anillo de foco») | Ídem | Ídem |
-| Desactivado | Fondo `--color-superficie`, texto `--color-texto-suave`, borde `--color-borde-suave`; cursor normal | Ídem | Ídem |
+| Reposo | Fondo `--color-primario`, texto `--color-texto`, negrita | Fondo `--color-fondo`, borde `--color-texto`, texto `--color-texto` | Fondo `--color-fondo`, borde y texto `--color-peligro` |
+| Ratón encima | Fondo `--color-primario-hover` | Fondo `--color-crema` | Fondo `--color-fondo`, borde 2 px |
+| Pulsado | Fondo `--color-texto`, texto `--color-fondo` | Fondo `--color-melocoton` | Fondo `--color-peligro`, texto `--color-fondo` |
+| Foco | Anillo de foco | Ídem | Ídem |
+| Desactivado | Fondo `--color-superficie`, texto `--color-texto-suave`, borde `--color-borde-suave` | Ídem | Ídem |
 | Espera | `[aria-busy="true"]`: ver «Botón con estado de espera» | Ídem | Ídem |
 
-Un enlace de texto es `--color-primario` subrayado; con el ratón, `--color-primario-hover`; con foco, el anillo.
-
-### Componentes
+Un enlace de texto es `--color-acento` subrayado; con el ratón, `--color-acento-hover`; con foco, el anillo.
 
 | Componente | Decisión |
 |---|---|
-| **Botón principal** | Fondo principal, texto blanco en negrita, 44 px de alto como mínimo. **Uno por pantalla.** Estados: tabla anterior |
-| **Botón secundario** | Fondo blanco, borde y texto principal. Mismo tamaño que el principal |
+| **Botón principal** | Fondo naranja, texto ciruela en negrita, 44 px de alto como mínimo. **Uno por pantalla** |
+| **Botón secundario** | Fondo blanco, borde y texto ciruela. Mismo tamaño |
 | **Botón de peligro** | Borde y texto de peligro; relleno solo en la confirmación final de una acción destructiva |
 | **Botón desactivado** | Fondo superficie y texto suave; además, un texto que explique el estado («Solicitud enviada») |
-| **Botón con estado de espera** | Ver el apartado siguiente |
-| **Campos de formulario** | 44 px de alto, borde `--color-borde-campo`; la etiqueta siempre visible encima, nunca solo el texto de ayuda dentro. Ratón encima: borde `--color-texto`. Foco: anillo. Desactivado: fondo `--color-superficie` y texto suave. En error: borde de peligro y mensaje debajo, con texto |
-| **Avisos** | Fondo y texto de su color (error, éxito, aviso, información), radio 8 px, y siempre con texto. Los de error llevan `role="alert"` |
-| **Tarjeta** | Fondo blanco, borde suave, radio 12 px, relleno de 16 px. Título en negrita, datos secundarios en texto suave. Sin imagen |
+| **Campos de formulario** | 44 px de alto, borde `--color-borde-campo`; etiqueta siempre visible encima. Ratón encima: borde `--color-texto`. Foco: anillo. Desactivado: fondo `--color-superficie` y texto suave. En error: borde de peligro y mensaje debajo |
+| **Avisos** | Fondo y texto de su color, radio 8 px, siempre con texto. Los de error llevan `role="alert"` |
+| **Tarjeta** | Fondo blanco, borde suave, radio 12 px. Ver «Tarjeta con bloque de color» |
+| **Chip de categoría** | Píldora de 32 px de alto con icono y texto; en reposo borde `--color-borde-campo`; seleccionado, fondo `--color-melocoton` y negrita. Es un botón o un enlace |
 | **Lista con «Cargar más»** | Filas separadas por borde suave; el botón de «Cargar más» es secundario, centrado y se desactiva mientras carga |
 | **Foto de perfil** | Círculo; sin foto, una imagen por defecto neutra de la misma forma |
-| **Diálogo** | Elemento nativo `<dialog>`, radio 12 px, un solo botón principal («Guardar») y uno secundario («Cancelar») |
-| **Anillo de foco** | Contorno de 2 px en `--color-foco`, separado 2 px del elemento. Sobre `--color-barra` (dentro de la cabecera) es de `--color-barra-texto`. Nunca se quita |
-| **Iconos** | Sin biblioteca de iconos. Los pocos que hagan falta (la flecha del menú, los tres bloques de la landing) serán SVG en línea de 24 px y trazo de 2 px, siempre acompañados de su texto |
+| **Diálogo** | Elemento nativo `<dialog>`, radio 12 px, un solo botón principal y uno secundario («Cancelar») |
+| **Anillo de foco** | Contorno de 2 px en `--color-foco`, separado 2 px del elemento. Nunca se quita |
 
 ### Botón con estado de espera
 
 Para toda acción con espera (buscar, entrar, guardar, cerrar sesión).
 
 - Mientras espera: `[aria-busy="true"]` y `disabled`; el texto cambia a su gerundio («Buscando…», «Entrando…», «Guardando…», «Cerrando sesión…», «Creando cuenta…»).
-- Aspecto: el del botón desactivado de su tipo (fondo `--color-superficie`, texto `--color-texto-suave`, borde `--color-borde-suave`), sin cambiar de tamaño: el botón conserva su ancho para que la fila no salte.
+- Aspecto: el del botón desactivado de su tipo, sin cambiar de tamaño: conserva su ancho para que la fila no salte.
 - Cursor de espera (`progress`). Sin ruedas giratorias ni animaciones.
 - Al terminar recupera su texto y `disabled` se quita; si falla, aparece el aviso con `role="alert"`.
 
 ### Cabecera con sesión
 
-- Barra de **56 px** de alto y todo el ancho, fondo `--color-barra`, texto `--color-barra-texto`. Contenido alineado con el cuerpo (960 px como máximo) salvo que la pantalla sea más ancha.
-- Izquierda: marca **PlanB** (enlace a `bienvenida.html`), negrita de 18 px.
-- Centro: **buscador redondeado**, campo de 44 px de alto y 400 px de ancho máximo, fondo `--color-fondo`, texto `--color-texto`, texto de ayuda «Buscar personas» en `--color-texto-suave`, radio de píldora. Dentro de la píldora, a la derecha, lleva un botón «Buscar» (`type=submit`, texto visible, 36 px de alto, borde y texto `--color-primario`); también se envía con Intro (formulario GET a `personas.html?q=`).
-- Derecha: enlace «Inicio» y el **menú de cuenta**.
-- Enlace de sección activa: negrita y línea de 3 px debajo en `--color-barra-texto`; además `aria-current="page"`. Los demás, texto normal.
-- Enlace «Saltar al contenido» antes de la cabecera, visible solo con foco.
-- `nav` con `aria-label="Principal"`. En `personas.html` el buscador de la cabecera no se ve, porque la página lleva su propio campo.
+- Barra de **64 px** de alto y todo el ancho, fondo `--color-fondo` con borde inferior de 1 px `--color-borde-suave`. Contenido alineado con el cuerpo (960 px como máximo) salvo que la pantalla sea más ancha.
+- Izquierda: **logo** completo (enlace a la pantalla de inicio).
+- Centro: **buscador en píldora**, 44 px de alto y 400 px de ancho máximo, fondo `--color-superficie`, borde `--color-borde-campo`, texto de ayuda «Buscar personas y planes» en `--color-texto-suave`, con botón «Buscar» (`type=submit`, texto visible, 36 px de alto) a la derecha.
+- Derecha: botón principal «Crear plan» (el único de la cabecera), campana de notificaciones y **menú de cuenta**.
+- Debajo, la **barra de pestañas de sección** (ver abajo).
+- Enlace «Saltar al contenido» antes de la cabecera, visible solo con foco. `nav` con `aria-label="Principal"`.
 
-| Estado | Enlaces y marca | Buscador | Menú de cuenta (resumen) |
+| Estado | Enlaces y logo | Buscador | Menú de cuenta |
 |---|---|---|---|
-| Reposo | Texto `--color-barra-texto` | Fondo `--color-fondo` | Avatar de 32 px, texto «Cuenta» y flecha |
-| Ratón encima | Subrayado | Sin cambio | Subrayado del texto |
-| Pulsado | Subrayado y texto en negrita | Sin cambio | Panel abierto |
-| Foco | Anillo `--color-barra-texto` | Anillo `--color-barra-texto` | Ídem |
-| Desactivado | No aplica | No aplica | No aplica |
-| Espera | No aplica | No aplica | «Cerrando sesión…» dentro del panel |
+| Reposo | Texto `--color-texto` | Fondo `--color-superficie` | Avatar de 32 px, «Cuenta» y flecha |
+| Ratón encima | Subrayado | Borde `--color-texto` | Subrayado del texto |
+| Pulsado | Negrita | Sin cambio | Panel abierto |
+| Foco | Anillo | Anillo | Ídem |
+| Desactivado / Espera | No aplica | No aplica | «Cerrando sesión…» dentro del panel |
+
+### Barra de pestañas de sección
+
+- Fila bajo la cabecera con las secciones principales: Inicio, Explorar, Mis planes, Amigos (lista definitiva en [sitemap.mmd](sitemap.mmd)).
+- Cada pestaña: 44 px de alto, icono de 20 px y texto. La activa: texto `--color-texto` en negrita, línea de 3 px `--color-primario` debajo y `aria-current="page"`; las demás, texto `--color-texto-suave`.
+- Ratón encima: fondo `--color-superficie`. Pulsada: fondo `--color-melocoton`. Foco: anillo.
 
 ### Menú de cuenta
 
 - Es un `<details>`; el `<summary>` mide 44 px de alto y muestra avatar, «Cuenta» y una flecha.
-- Panel: fondo `--color-fondo`, borde `--color-borde-suave`, radio 12 px, 200 px de ancho, alineado a la derecha del botón, con dos opciones de 44 px de alto: «Mi perfil» (enlace) y «Cerrar sesión» (botón de texto).
-- Opción con ratón encima: fondo `--color-superficie`. Con foco: anillo `--color-foco`. «Cerrar sesión» en espera: texto «Cerrando sesión…», desactivado y `[aria-busy="true"]`.
-- Se abre y se cierra según «Interacciones».
+- Panel: fondo `--color-fondo`, borde `--color-borde-suave`, radio 12 px, sombra suave, 220 px de ancho, alineado a la derecha, con opciones de 44 px: «Mi perfil», «Guardados», «Ajustes», «Ayuda» y «Cerrar sesión» (botón de texto).
+- Opción con ratón encima: fondo `--color-superficie`. Con foco: anillo. «Cerrar sesión» en espera: «Cerrando sesión…», desactivado y `[aria-busy="true"]`.
 
 ### Cabecera sin sesión
 
-- Solo la landing. Misma barra de 56 px y mismos colores, con la **marca PlanB** a la izquierda (sin buscador, sin menú).
-- En la landing (`index.html`), a la derecha: «Iniciar sesión» (secundario) y «Crear cuenta» (también secundario: el único botón principal de la landing es el «Crear cuenta» de la portada). Dentro de la barra, ambos llevan borde `--color-barra-texto` para que se distingan del fondo oscuro.
-- Las pantallas divididas de acceso no llevan barra de cabecera: la marca va dentro de la columna izquierda.
-- Las pantallas de la aplicación no llevan pie; solo la landing.
+- Barra de 64 px, fondo blanco y borde inferior, con el **logo** a la izquierda y a la derecha «Iniciar sesión» (secundario) y «Crear cuenta» (principal).
+- Las pantallas divididas de acceso no llevan barra de cabecera: el logo va dentro de la columna izquierda.
+- Las pantallas de la aplicación no llevan pie; solo las páginas públicas (landing, ayuda, términos), con enlaces legales.
 
 ### Pantalla dividida de acceso
 
 Para `iniciar-sesion`, `registro`, `recuperar` y `restablecer`.
 
-- Dos columnas iguales que ocupan toda la ventana (sin barra de cabecera), con altura mínima de la ventana.
-- Izquierda: fondo `--color-superficie`, marca de 28 px (enlace a `index.html`) y **tres frases** de 18 px en `--color-texto` (en `--color-texto-suave` el detalle), con 48 px de relleno.
+- Dos columnas iguales que ocupan toda la ventana, con altura mínima de la ventana.
+- Izquierda: fondo `--color-crema`, logo y **tres frases** de 18 px en `--color-texto` (el detalle, en `--color-texto-suave`), con 48 px de relleno.
 - Derecha: fondo `--color-fondo`, formulario de 400 px de ancho máximo centrado; título `h1`, campos, botón principal a todo el ancho y debajo los enlaces secundarios.
 - El CAPTCHA (iframe de unos 300 px) cabe en los 400 px del formulario.
-- Estados: los de cada formulario (error con aviso, botón con estado de espera, éxito); no cambia la columna izquierda.
 
-### Pestañas
+### Pestañas de contenido
 
-- Fila de botones con `role="tab"` (`tablist`), sobre un borde inferior de 1 px `--color-borde-suave`. Cada pestaña mide **44 px de alto** y 24 px de relleno lateral.
-- La activa lleva `aria-selected="true"`, texto `--color-texto` en negrita y una línea de 3 px `--color-primario` bajo el texto; las demás, texto `--color-texto-suave` normal.
-
-| Estado | Aspecto |
-|---|---|
-| Reposo | Texto `--color-texto-suave`, sin línea |
-| Ratón encima | Fondo `--color-superficie` y texto `--color-texto` |
-| Pulsado | Fondo `--color-primario-suave` |
-| Foco | Anillo `--color-foco` |
-| Desactivado | No aplica |
-| Espera | No aplica (el panel muestra «Cargando…») |
+- Fila de botones con `role="tab"` (`tablist`), sobre un borde inferior de 1 px `--color-borde-suave`. Cada una mide **44 px de alto** y 24 px de relleno lateral.
+- La activa lleva `aria-selected="true"`, texto `--color-texto` en negrita y línea de 3 px `--color-primario`; las demás, texto `--color-texto-suave`.
+- Ratón encima: fondo `--color-superficie`. Pulsada: fondo `--color-melocoton`. Foco: anillo. Desactivada y espera: no aplican.
 
 ### Fila de resultado
 
-- Fila de **64 px** de alto como mínimo, ancho completo del contenido, separada de la siguiente por un borde `--color-borde-suave`.
-- Foto de 40 px (círculo), nombre en negrita (`--color-texto`) y ciudad en 14 px (`--color-texto-suave`). Toda la fila es un enlace al perfil.
-- Reposo: fondo `--color-fondo`. Ratón encima: fondo `--color-superficie`. Pulsada: fondo `--color-primario-suave`. Foco: anillo. Desactivada y espera: no aplican.
+- Fila de **64 px** de alto como mínimo, separada de la siguiente por un borde `--color-borde-suave`.
+- Foto de 40 px (círculo), nombre en negrita y ciudad en 14 px `--color-texto-suave`. Toda la fila es un enlace al perfil.
+- Reposo: fondo `--color-fondo`. Ratón encima: `--color-superficie`. Pulsada: `--color-melocoton`. Foco: anillo.
 
-### Rejilla de tarjetas con etiqueta de visibilidad
+### Tarjeta con bloque de color
 
-- Rejilla de **4 columnas** con 16 px de hueco, dentro de los 960 px del contenido. La primera casilla de «Tus experiencias» es la tarjeta «+».
-- Cada tarjeta: el componente «Tarjeta» con título en negrita, ciudad en `--color-texto-suave`, la etiqueta de visibilidad y el botón secundario «Ver detalle» (44 px de alto). Alto de tarjeta uniforme.
-- Tarjeta «+»: mismo tamaño, borde discontinuo `--color-borde-suave` y signo «+» y texto «Nueva experiencia» en `--color-primario`. Ratón encima: fondo `--color-primario-suave`. Foco: anillo.
-- Tarjeta en reposo: fondo `--color-fondo`. Ratón encima: borde `--color-borde-campo`. Pulsada: fondo `--color-superficie`. Foco: anillo. En espera, la rejilla muestra «Cargando…» y no hay tarjetas.
+- Rejilla de **4 columnas** con 16 px de hueco, dentro de los 960 px del contenido.
+- Cada tarjeta: arriba un **bloque de color de 96 px** (sin foto) con el icono de su categoría centrado, en `--color-melocoton` o `--color-crema` según la categoría; debajo título en negrita, ciudad en `--color-texto-suave` y la etiqueta de visibilidad. Alto de tarjeta uniforme; toda la tarjeta es un enlace.
+- Tarjeta «+» (Nueva experiencia): mismo tamaño, borde discontinuo `--color-borde-suave`, signo «+» y texto en `--color-acento`.
+- Reposo: fondo blanco. Ratón encima: borde `--color-borde-campo`. Pulsada: `--color-superficie`. Foco: anillo. En espera: «Cargando…».
 
-**Etiqueta de visibilidad:** píldora de 24 px de alto, texto de 14 px y relleno lateral de 12 px; no es pulsable. Siempre con texto.
+**Etiqueta de visibilidad:** píldora de 24 px de alto, texto de 14 px, relleno lateral de 12 px; no es pulsable. Siempre con texto.
 
 | Clase | Texto | Colores |
 |---|---|---|
 | `.etiqueta-publica` | Pública | Texto `--color-texto-suave`, borde 1 px `--color-borde-campo`, fondo `--color-fondo` |
-| `.etiqueta-amigos` | Amigos | Texto `--color-primario-hover`, fondo `--color-primario-suave` |
+| `.etiqueta-amigos` | Amigos | Texto `--color-acento-hover`, fondo `--color-crema` |
 | `.etiqueta-privada` | Privada | Texto `--color-texto-suave`, fondo `--color-superficie` |
+
+### Banda ciruela
+
+- Ancho completo, fondo `--color-texto`, texto `--color-fondo`, acentos en `--color-primario`, 48 px de relleno vertical. Para la portada de la landing y avisos de peso (p. ej. solicitudes pendientes). Un botón principal dentro mantiene su naranja.
+
+### Estado vacío
+
+- Centrado en el contenido: icono de 48 px en `--color-acento`, frase corta en negrita, una línea de ayuda en `--color-texto-suave` y, si hay una acción útil, **un botón** (principal solo si es el único de la pantalla). Ej.: «Aún no tienes planes» → «Crear plan».
+
+### Fila de actividad
+
+- Fila de 64 px (notificaciones y actividad): icono de tipo en un círculo `--color-crema` de 40 px, texto de una o dos líneas con el nombre en negrita, fecha en 14 px `--color-texto-suave` a la derecha. Sin leer: punto de 8 px `--color-primario` además de la negrita. Ratón encima: `--color-superficie`.
 
 ### Cabecera de perfil con contadores
 
-- **Perfil propio:** foto de 96 px a la izquierda; a su derecha el nombre (`h1`) y una fila de tres contadores (experiencias, amigos, seguidores). Cada contador: el número en negrita de 22 px y debajo el rótulo en 14 px `--color-texto-suave`. Los contadores son texto, no enlaces.
-- **Perfil de otra persona:** la misma cabecera centrada, con el botón de amistad y «Seguir» debajo de los contadores.
-- **Banda de solicitudes** (solo perfil propio): ancho completo, fondo `--color-primario-suave`, texto `--color-texto`, que avisa y lista las solicitudes recibidas, cada una con los botones secundarios «Aceptar» (`btn-outline-success`) y «Rechazar» (`btn-outline-danger`); solo aparece si hay solicitudes. En el perfil no hay botón principal; en «Ajustes», «Guardar cambios» y «Cambiar contraseña» son `btn-outline-primary`.
-- «Ajustes» es un `<details>` plegado: el `<summary>` mide 44 px de alto y lleva el borde y los estados de un botón secundario.
-- Estados: cargando («Cargando…» en lugar de los datos), error con aviso y, en otra persona, «Usuario no encontrado».
+- **Perfil propio:** foto de 96 px a la izquierda; a su derecha el nombre (`h1`) y tres contadores (experiencias, amigos, seguidores): número en negrita de 22 px y rótulo en 14 px `--color-texto-suave`. Los contadores son texto, no enlaces.
+- **Perfil de otra persona:** misma cabecera, con el botón de amistad y «Seguir» debajo de los contadores.
+- **Banda de solicitudes** (solo perfil propio): fondo `--color-crema`, con «Aceptar» y «Rechazar» como botones secundarios; solo aparece si hay solicitudes.
+- «Ajustes» es un `<details>` plegado con el aspecto de un botón secundario.
+- Estados: cargando, error con aviso y, en otra persona, «Usuario no encontrado».
 
 ### Marco de captura (landing)
 
-- Recuadro de relación 16:10 (unos 560 × 350 px en 1280 px), fondo `--color-superficie`, borde 1 px discontinuo `--color-borde-suave`, radio 12 px.
-- Rótulo centrado «Captura de PlanB» en `--color-texto-suave`. Lleva `role="img"` y `aria-label="Captura de PlanB (próximamente)"`. Se sustituirá por capturas reales; sin cifras ni capturas inventadas.
-- No es interactivo: no tiene estados de ratón, pulsado ni foco.
+- Recuadro 16:10, fondo `--color-superficie`, borde 1 px discontinuo `--color-borde-suave`, radio 12 px, rótulo «Captura de PlanB» en `--color-texto-suave`, `role="img"` y `aria-label="Captura de PlanB (próximamente)"`. No es interactivo. Sin capturas inventadas.
 
 ## Interacciones
 
@@ -276,24 +288,19 @@ Duraciones: **120 ms** (botones y enlaces) y **150 ms** (fundidos de resultados 
 - «Tú», no «usted»: «Tus experiencias», «¿Has olvidado tu contraseña?».
 - Acciones con espera en gerundio: «Buscando…», «Guardando…».
 
+
 ## Qué cambia respecto a hoy
 
-PlanB usa los colores por defecto de Bootstrap. Aplicar esta guía supone:
+El CSS actual sigue la identidad anterior (verde azulado, barra oscura). Aplicar esta guía supone:
 
-- Sustituir el azul primario por el verde azulado y la barra negra de Bootstrap por `--color-barra`.
-- Oscurecer el borde de los campos de formulario, que hoy da 1,49:1.
-- Subir los botones a 44 px de alto y unificar el radio en 8 px.
-- Una sola jerarquía de botones, en lugar de mezclar azul, verde y rojo sin regla.
-- Una cabecera común con buscador y menú de cuenta en las pantallas con sesión.
+- Sustituir el verde azulado por naranja y ciruela, y la barra oscura por una cabecera blanca con borde.
+- Pasar de «sin iconos» a Tabler, y de tarjetas sin imagen a tarjetas con bloque de color.
+- Añadir la barra de pestañas de sección, los chips de categoría, la banda ciruela, los estados vacíos y las filas de actividad.
+- Pasar el botón principal a texto ciruela sobre naranja y el de peligro y éxito a los mismos valores de hoy.
+- Una cabecera con logo, buscador, «Crear plan», notificaciones y menú de cuenta.
 
 Esto se hace en la historia de implementación, no aquí.
 
 ## Aplicación pantalla por pantalla
 
-| Pantalla | ¿Se ha aplicado esta guía? |
-|---|---|
-| index (landing) | Sí (CS-66) |
-| iniciar-sesion | Sí (CS-66) |
-| registro, recuperar, restablecer | Sí (CS-66) |
-| bienvenida | Sí (CS-66) |
-| perfil, personas, usuario, experiencia | Sí (CS-66) |
+Ninguna pantalla usa todavía esta versión de la guía; la anterior se aplicó en CS-66.
