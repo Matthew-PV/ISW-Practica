@@ -742,8 +742,27 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
   list-style: none;
 }
 
+/* Bloque de color con el icono de la categoría, arriba de la tarjeta de experiencia */
+.bloque-categoria {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96px;
+  color: var(--color-texto);
+  background: var(--color-melocoton);
+  border-radius: calc(var(--radio-tarjeta) - 1px) calc(var(--radio-tarjeta) - 1px) 0 0;
+}
+
+.bloque-categoria[data-categoria="gastronomia"] { background: var(--color-melocoton); }
+.bloque-categoria[data-categoria="cultura"] { background: #E3D9F2; }
+.bloque-categoria[data-categoria="naturaleza"] { background: #D4EFD9; }
+.bloque-categoria[data-categoria="noche"] { background: var(--color-texto); color: var(--color-melocoton); }
+.bloque-categoria[data-categoria="deporte"] { background: #D6E6FA; }
+.bloque-categoria[data-categoria="rincones"] { background: var(--color-crema); }
+
 /* Tarjeta de experiencia (va sobre .card): descripción cortada a tres líneas */
 .tarjeta-experiencia {
+  overflow: hidden;
   min-height: 10rem;
   transition: border-color var(--duracion-corta), background-color var(--duracion-corta);
 }
@@ -967,3 +986,17 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
     margin-left: 0;
   }
 }
+
+/* Estado vacío: ilustración y frase, centradas */
+.estado-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-12);
+  padding: var(--espacio-32) 0;
+  color: var(--color-texto-suave);
+  text-align: center;
+}
+
+.estado-vacio img { max-width: 160px; height: auto; }
+.estado-vacio p { margin: 0; }

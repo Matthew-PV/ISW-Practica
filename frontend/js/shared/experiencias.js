@@ -51,7 +51,7 @@ function crearTarjetaExperiencia(experiencia) {
   ver.textContent = 'Ver detalle';
 
   cuerpo.append(titulo, ciudad, parrafoEtiqueta, ver);
-  tarjeta.append(cuerpo);
+  tarjeta.append(crearBloqueCategoria(experiencia.tipo), cuerpo);
   return tarjeta;
 }
 

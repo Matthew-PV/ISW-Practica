@@ -60,7 +60,7 @@
     <!-- CS-44: mis experiencias, también las privadas; las pinta js/shared/experiencias.js -->
     <div role="tabpanel" id="panel-experiencias" aria-labelledby="pestana-experiencias" class="pt-4">
       <div id="error-experiencias" class="alert alert-danger d-none" role="alert"></div>
-      <p id="sin-experiencias" class="text-secondary d-none">Todavía no has publicado experiencias.</p>
+      <div id="sin-experiencias" class="estado-vacio d-none"><img src="/img/vacio-planes.svg" alt="" width="160" height="120"><p>Todavía no has publicado experiencias.</p></div>
       <div id="lista-experiencias" class="rejilla-experiencias"></div>
       <div class="text-center mt-3">
         <button type="button" id="mas-experiencias" class="btn btn-outline-primary d-none">Cargar más experiencias</button>
@@ -70,13 +70,13 @@
     <!-- Amigos y seguidores (CS-45). js/perfil.js los obtiene desde /api/perfil/resumen,
          /api/perfil/amigos y /api/perfil/seguidores. -->
     <div role="tabpanel" id="panel-amigos" aria-labelledby="pestana-amigos" class="pt-4" hidden>
-      <p id="sin-amigos" class="text-secondary d-none">Todavía no tienes amigos.</p>
+      <div id="sin-amigos" class="estado-vacio d-none"><img src="/img/vacio-personas.svg" alt="" width="160" height="120"><p>Todavía no tienes amigos.</p></div>
       <div id="lista-amigos" class="list-group"></div>
       <button type="button" id="mas-amigos" class="btn btn-outline-primary mt-2 d-none">Cargar más amigos</button>
     </div>
 
     <div role="tabpanel" id="panel-seguidores" aria-labelledby="pestana-seguidores" class="pt-4" hidden>
-      <p id="sin-seguidores" class="text-secondary d-none">Todavía no tienes seguidores.</p>
+      <div id="sin-seguidores" class="estado-vacio d-none"><img src="/img/vacio-personas.svg" alt="" width="160" height="120"><p>Todavía no tienes seguidores.</p></div>
       <div id="lista-seguidores" class="list-group"></div>
       <button type="button" id="mas-seguidores" class="btn btn-outline-primary mt-2 d-none">Cargar más seguidores</button>
     </div>

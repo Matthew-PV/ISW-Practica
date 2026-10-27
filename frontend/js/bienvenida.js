@@ -67,6 +67,7 @@ function crearTarjeta(experiencia) {
     </div>
   `;
 
+  columna.querySelector('.card').prepend(crearBloqueCategoria(experiencia.tipo));
   columna.querySelector('.card-title').textContent = experiencia.titulo;
   columna.querySelector('.card-subtitle').textContent =
     [experiencia.ciudad.nombre, experiencia.tipo].filter(Boolean).join(' · ');
