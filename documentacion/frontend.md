@@ -9,7 +9,6 @@ El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilo
 
 El [sitemap de PlanB](sitemap.mmd) es la referencia del mapa de navegación, en formato Mermaid. Contiene las diez páginas actuales, agrupadas en «Acceso» y «Con sesión».
 
-<<<<<<< HEAD
 ```mermaid
 %% Copia renderizable de sitemap.mmd. Al modificar el sitemap, actualiza ambos bloques.
 flowchart TB
