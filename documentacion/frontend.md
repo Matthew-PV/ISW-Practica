@@ -9,6 +9,46 @@ El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilo
 
 El [sitemap de PlanB](sitemap.mmd) es la referencia del mapa de navegación, en formato Mermaid. Contiene las nueve páginas actuales, agrupadas en «Acceso» y «Con sesión». Las cajas representan páginas; las flechas, enlaces o redirecciones. La flecha discontinua indica el acceso a restablecer la contraseña mediante el enlace recibido por correo.
 
+```mermaid
+%% Copia renderizable de sitemap.mmd. Al modificar el sitemap, actualiza ambos bloques.
+flowchart TB
+    subgraph acceso["Acceso"]
+        login["Iniciar sesión<br/>index.html"]
+        registro["Registrarse<br/>registro.html"]
+        recuperar["Recuperar contraseña<br/>recuperar.html"]
+        restablecer["Restablecer contraseña<br/>restablecer.html"]
+
+        login -->|"Registrarse"| registro
+        registro -->|"Iniciar sesión"| login
+        login -->|"Olvidé mi contraseña"| recuperar
+        recuperar -->|"Volver"| login
+        recuperar -.->|"Enlace recibido por correo"| restablecer
+        restablecer -->|"Volver tras cambiarla"| login
+    end
+
+    subgraph app["Con sesión"]
+        inicio["Bienvenida<br/>bienvenida.html"]
+        personas["Buscar personas<br/>personas.html"]
+        perfil["Mi perfil<br/>perfil.html"]
+        usuario["Perfil de otro usuario<br/>usuario.html"]
+        experiencia["Detalle de experiencia<br/>experiencia.html"]
+
+        personas -->|"Resultado de búsqueda"| usuario
+        perfil -->|"Amigo, seguidor o solicitante"| usuario
+
+        inicio -->|"Ver detalle"| experiencia
+        perfil -->|"Una de mis experiencias"| experiencia
+        usuario -->|"Una de sus experiencias"| experiencia
+
+        experiencia -->|"Autor o autor de una valoración"| usuario
+        experiencia -->|"Si el autor soy yo"| perfil
+        usuario -->|"Si es mi propio nombre"| perfil
+    end
+
+    login -->|"Acceso correcto"| inicio
+    registro -->|"Cuenta creada"| inicio
+```
+
 **Navegación común:** las cinco páginas con sesión comparten la barra superior: PlanB e Inicio llevan a `bienvenida.html`; además, permite ir a «Buscar personas» y «Mi perfil». Estas conexiones se explican aquí y en los comentarios del sitemap para evitar repetir flechas.
 
 **Sesión no válida:** si una página con sesión recibe 401, vuelve al inicio de sesión. Esta regla se expresa como nota, sin conexiones desde grupos completos.

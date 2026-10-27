@@ -122,6 +122,18 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 - Con una sesión local autorizada, revisar solicitudes, foto, cambio de contraseña, relaciones, experiencias, botones de amistad/seguimiento y resultados de búsqueda a los tres anchos.
 - Resolver el cargador de scripts de Jest antes de tomar las pruebas dinámicas existentes como regresión completa.
 
+## CS-65: vista renderizable del sitemap
+
+**Autor:** Matthew Puente Villegas Michavil, con Codex (GPT-5)
+**Historia:** CS-65, objetivo 2 · **Commits:** pendiente (esta entrada se incluirá en el mismo commit)
+
+### Cambios
+- `documentacion/frontend.md` incorpora una copia del diagrama Mermaid de `sitemap.mmd` dentro de un bloque `mermaid`, para que los visores compatibles lo rendericen al leer la documentación.
+- `documentacion/sitemap.mmd` se conserva como archivo independiente; el comentario del bloque recuerda actualizar las dos copias cuando cambie el mapa.
+
+### Comprobación
+- Se contrastó el contenido del bloque con `sitemap.mmd`: mantiene las nueve páginas, los enlaces y las dos agrupaciones originales. No se ejecutan pruebas de la aplicación porque solo cambia documentación.
+
 # 2026-10-26
 
 ## CS-67: base de datos en Aiven y conexión de PlanB
