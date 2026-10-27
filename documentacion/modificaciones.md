@@ -50,6 +50,8 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 - Pruebas: `perfil.foto`/`perfil.password`/`perfil.solicitudes` pasan a `ajustes.*`/`solicitudes`; nuevas `ajustes.test.js`; ajustadas `cabecera`, `estados`, `perfil.*` y `shared/experiencias`.
 - `documentacion/frontend.md` al día.
 
+- Segunda pasada visual: las pestañas (`[role="tab"]`) pasan a botones tipo píldora con la elegida en verde; «Ajustes» se reparte en pestañas Perfil, Contraseña y Sesión; la cabecera pasa a dos filas en pantallas estrechas (el buscador baja) y «Inicio» y «Solicitudes» dejan de separarse en la página de búsqueda.
+
 ### Decisiones
 #### Solicitudes y ajustes en páginas propias
 - **Contexto:** solicitudes y ajustes estaban apilados al final del perfil y solo se llegaba a ellos desde allí.
@@ -59,11 +61,11 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 - **Decidió:** Joaquín, a propuesta de Claude.
 
 ### Comprobación
-- Las pruebas de pantallas se adaptaron a las nuevas páginas y fallaron hasta que existieron; `npm test` desde `backend/`: 59 suites, 741 pruebas pasan.
-- Sin comprobar visualmente en navegador (escritorio y móvil).
+- Las pruebas de pantallas se adaptaron a las nuevas páginas y fallaron hasta que existieron; `npm test` desde `backend/`: 59 suites, 742 pruebas pasan. La prueba de las pestañas de ajustes falló primero porque no existían.
+- Comprobado en el navegador con el servidor local y respuestas simuladas, a 739 px de ancho: ajustes, perfil y búsqueda. No se ha revisado en un móvil real.
 
 ### Pendiente
-- Revisar en el navegador el contraste del fondo `#E6EEEC` y las pestañas en móvil.
+- Revisar el contraste del fondo `#E6EEEC` y el aspecto en un móvil real.
 
 
 ## CS-66: documentación del frontend y cierre de la auditoría visual

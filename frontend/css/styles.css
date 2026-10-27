@@ -412,18 +412,23 @@ fieldset:disabled .btn {
 
 [role="tablist"] {
   display: flex;
-  border-bottom: 1px solid var(--color-borde-suave);
+  gap: var(--espacio-8);
+  padding: var(--espacio-4);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-pildora);
+  width: fit-content;
+  max-width: 100%;
 }
 
 [role="tab"] {
   min-height: 44px;
   padding: 0 var(--espacio-24);
-  margin-bottom: -1px;
   font: inherit;
   color: var(--color-texto-suave);
   background: transparent;
   border: 0;
-  border-bottom: 3px solid transparent;
+  border-radius: var(--radio-pildora);
   transition: color var(--duracion-corta), background-color var(--duracion-corta);
 }
 
@@ -437,9 +442,9 @@ fieldset:disabled .btn {
 }
 
 [role="tab"][aria-selected="true"] {
-  color: var(--color-texto);
+  color: var(--color-fondo);
   font-weight: 700;
-  border-bottom-color: var(--color-primario);
+  background: var(--color-primario);
 }
 
 /* ---------- Cabecera común (contrato en .superpowers/plan/contrato-cabecera.md) ---------- */
@@ -467,8 +472,9 @@ fieldset:disabled .btn {
 .cabecera-interior {
   display: flex;
   align-items: center;
-  gap: var(--espacio-16);
-  height: 56px;
+  flex-wrap: wrap;
+  gap: 0 var(--espacio-16);
+  min-height: 56px;
   max-width: 960px;
   margin: 0 auto;
   padding: 0 var(--espacio-24);
@@ -585,7 +591,7 @@ body.pagina-buscar .cabecera-busqueda {
 }
 
 /* Sin buscador, «Inicio» y «Cuenta» siguen a la derecha */
-body.pagina-buscar .cabecera-enlace {
+body.pagina-buscar .cabecera-marca + .cabecera-enlace {
   margin-left: auto;
 }
 
@@ -947,5 +953,28 @@ body.pagina-buscar .cabecera-enlace {
   *, *::before, *::after {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/* Pantallas estrechas: el buscador baja a una segunda fila para que la barra se lea */
+@media (max-width: 767.98px) {
+  .cabecera-interior {
+    padding: 0 var(--espacio-16);
+  }
+
+  .cabecera-marca {
+    margin-right: auto;
+  }
+
+  .cabecera-busqueda {
+    order: 5;
+    flex: 1 0 100%;
+    max-width: none;
+    height: 44px;
+    margin: 0 0 var(--espacio-8);
+  }
+
+  body.pagina-buscar .cabecera-marca + .cabecera-enlace {
+    margin-left: 0;
   }
 }

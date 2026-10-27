@@ -35,7 +35,14 @@
     <p id="cargando" class="text-secondary" role="status">Cargando…</p>
     <h1 class="mb-4">Ajustes</h1>
 
-    <div class="contenedor-formulario tarjeta-panel">
+    <div role="tablist" aria-label="Ajustes" id="pestanas-ajustes">
+      <button type="button" role="tab" id="pestana-datos" aria-controls="panel-datos" aria-selected="true">Perfil</button>
+      <button type="button" role="tab" id="pestana-password" aria-controls="panel-password" aria-selected="false" tabindex="-1">Contraseña</button>
+      <button type="button" role="tab" id="pestana-sesion" aria-controls="panel-sesion" aria-selected="false" tabindex="-1">Sesión</button>
+    </div>
+
+    <div class="contenedor-formulario tarjeta-panel mt-3">
+      <div role="tabpanel" id="panel-datos" aria-labelledby="pestana-datos">
       <!-- La foto se sube en cuanto se elige (js/ajustes.js); no depende de «Guardar cambios» -->
       <div class="mb-4">
         <img id="foto-perfil" class="rounded-circle d-block mb-3" src="img/foto-por-defecto.svg" alt="Foto de perfil actual" width="96" height="96">
@@ -63,9 +70,11 @@
         <div id="exito-perfil" class="alert alert-success d-none"></div>
         <button type="submit" class="btn btn-outline-primary">Guardar cambios</button>
       </form>
+      </div>
 
+      <div role="tabpanel" id="panel-password" aria-labelledby="pestana-password" hidden>
       <!-- CS-64: cambiar la contraseña (js/ajustes.js; los requisitos los marca js/shared/password.js) -->
-      <section class="mt-5" aria-labelledby="titulo-password">
+      <section aria-labelledby="titulo-password">
         <h2 id="titulo-password" class="h4">Cambiar contraseña</h2>
         <form id="form-password">
           <div class="mb-3">
@@ -86,10 +95,13 @@
           <button type="submit" class="btn btn-outline-primary">Cambiar contraseña</button>
         </form>
       </section>
+      </div>
 
+      <div role="tabpanel" id="panel-sesion" aria-labelledby="pestana-sesion" hidden>
       <!-- Sin id: cabecera.js enlaza todo botón con data-cerrar-sesion -->
-      <div class="mt-5">
+      <div>
         <button type="button" class="btn btn-outline-danger" data-cerrar-sesion>Cerrar sesión</button>
+      </div>
       </div>
     </div>
   </main>
@@ -97,6 +109,7 @@
   <script src="js/shared/api.js"></script>
   <script src="js/shared/pantalla.js"></script>
   <script src="js/shared/cabecera.js"></script>
+  <script src="js/shared/pestanas.js"></script>
   <script src="js/shared/password.js"></script>
   <script src="js/ajustes.js"></script>
 </body>

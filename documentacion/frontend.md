@@ -30,7 +30,7 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 | `restablecer.html` | `restablecer.js` | `acceso.css` | `api`, `password` | `POST /auth/restablecer` | CS-64 |
 | `bienvenida.html` | `bienvenida.js` | ninguno | `api`, `pantalla`, `cabecera` | `GET /auth/yo`, `GET /ciudades`, `GET /experiencias?autor=`, `POST /experiencias`, `PATCH /experiencias/:id` | CS-44, CS-49, CS-57, CS-22 |
 | `perfil.html` | `perfil.js` | `perfil.css` | `api`, `pantalla`, `pestanas`, `cabecera`, `experiencias` | `GET /perfil`, `GET /perfil/resumen`, `/perfil/amigos` y `/perfil/seguidores`, `GET /experiencias?autor=` | CS-45, CS-44 |
-| `ajustes.html` | `ajustes.js` | ninguno | `api`, `pantalla`, `cabecera`, `password` | `GET` y `PUT /perfil`, `PUT /perfil/foto`, `PUT /perfil/password` | CS-47, CS-64 |
+| `ajustes.html` | `ajustes.js` | ninguno | `api`, `pantalla`, `pestanas`, `cabecera`, `password` | `GET` y `PUT /perfil`, `PUT /perfil/foto`, `PUT /perfil/password` | CS-47, CS-64 |
 | `solicitudes.html` | `solicitudes.js` | ninguno | `api`, `pantalla`, `cabecera` | `GET /amistades/solicitudes`, `PATCH /amistades/:id` | CS-61 |
 | `personas.html` | `personas.js` | `buscar.css` | `api`, `pantalla`, `pestanas`, `cabecera` | `GET /usuarios?texto=` | CS-61 |
 | `usuario.html` | `usuario.js` | `perfil.css` | `api`, `pantalla`, `cabecera`, `experiencias` | `GET /usuarios/:nombre`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id`, `POST` y `DELETE /seguimientos`, `GET /experiencias?autor=` | CS-62, CS-61, CS-44 |
@@ -153,10 +153,11 @@ Pruebas: `perfil.relaciones.test.js`, `perfil.cabecera.test.js`, `estados.test.j
 
 ### `ajustes.html`: ajustes
 
-* **Foto:** se sube nada más elegirla.
-* **Datos:** nombre de usuario y ciudad editables, email solo de lectura.
-* **Cambiar la contraseña:** actual, nueva y repetida, con la lista de requisitos.
-* **Cerrar sesión.**
+Tres pestañas (`shared/pestanas.js`):
+
+* **Perfil:** la foto, que se sube nada más elegirla, y el nombre de usuario y la ciudad editables; el email es solo de lectura.
+* **Contraseña:** actual, nueva y repetida, con la lista de requisitos.
+* **Sesión:** «Cerrar sesión».
 
 Pruebas: `ajustes.test.js`, `ajustes.foto.test.js`, `ajustes.password.test.js` y `estados.test.js`.
 

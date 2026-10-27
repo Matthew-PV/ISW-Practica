@@ -6,7 +6,7 @@
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
 const HTML = leer('ajustes.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/password.js', 'js/ajustes.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/password.js', 'js/ajustes.js'];
 const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', ciudad: null, foto: null };
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
@@ -31,6 +31,22 @@ test('al cargar rellena el formulario con los datos del perfil', async () => {
   expect($('#nombreUsuario').value).toBe('ana');
   expect($('#email').value).toBe('ana@ejemplo.com');
   expect($('#ciudad').value).toBe('Madrid');
+});
+
+test('los ajustes se reparten en pestañas: perfil, contraseña y sesión, y solo se ve la elegida', async () => {
+  await abrir();
+
+  const pestanas = [...document.querySelectorAll('#pestanas-ajustes [role="tab"]')];
+  expect(pestanas.map((p) => p.textContent)).toEqual(['Perfil', 'Contraseña', 'Sesión']);
+  expect($('#panel-datos').hidden).toBe(false);
+  expect($('#panel-password').hidden).toBe(true);
+
+  pestanas[1].click();
+
+  expect($('#panel-password').hidden).toBe(false);
+  expect($('#panel-datos').hidden).toBe(true);
+  expect($('#panel-password').querySelector('#form-password')).not.toBeNull();
+  expect($('#panel-sesion').querySelector('button[data-cerrar-sesion]')).not.toBeNull();
 });
 
 describe('botones de ajustes', () => {

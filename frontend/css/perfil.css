@@ -10,6 +10,7 @@
 /* Las pestañas del perfil se desplazan en horizontal si no caben en pantallas estrechas */
 #pestanas-perfil {
   overflow-x: auto;
+  overflow-y: hidden;
 }
 
 #pestanas-perfil [role="tab"] {

@@ -1,6 +1,8 @@
 // Página de ajustes (ajustes.html): edición de nombreUsuario, ciudad, foto y contraseña.
 // Se ejecuta nada más cargar la página. Usa `api` de shared/api.js, `ocultarCargando` de
-// shared/pantalla.js y `mostrarRequisitosPassword` de shared/password.js (CS-64).
+// shared/pantalla.js, `activarPestanas` de shared/pestanas.js y `mostrarRequisitosPassword` de shared/password.js (CS-64).
+
+activarPestanas(document.getElementById('pestanas-ajustes'));
 
 const formulario = document.getElementById('form-perfil');
 const cajaError = document.getElementById('error-perfil');
