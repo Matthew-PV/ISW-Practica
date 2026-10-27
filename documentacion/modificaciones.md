@@ -94,6 +94,34 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 - Iniciar sesión en el entorno local y abrir una experiencia visible con valoraciones para revisar los dos estados del formulario (autor y visitante), las listas y el diálogo de reporte en los tres anchos.
 - Resolver el cargador de scripts de Jest antes de volver a ejecutar las pruebas dinámicas existentes de `experiencia.html` como regresión completa.
 
+## CS-66: diseño provisional de las pantallas sociales
+
+**Autor:** Matthew Puente Villegas Michavil, con Codex (GPT-5)
+**Historia:** CS-66, objetivo 3 · **Commits:** pendiente (esta entrada se incluirá en el mismo commit)
+
+### Cambios
+- `perfil.html`, `usuario.html` y `personas.html` comparten la barra de sesión, el enlace «Saltar al contenido», controles de 44 px y componentes de aviso. La barra marca con `aria-current` la sección activa cuando corresponde.
+- El perfil propio presenta solicitudes, datos y relaciones en bloques; el cambio de contraseña se repliega con `<details>`. El perfil ajeno usa una columna lateral para los datos en escritorio y contenido apilado en móvil. El buscador agrupa formulario y resultados en una tarjeta.
+- `perfil.js`, `usuario.js`, `personas.js` y `shared/experiencias.js` aplican clases visuales a las filas y acciones que crean dinámicamente, sin cambiar sus peticiones ni sus reglas.
+- `backend/tests/frontend/diseno.social.test.js` protege la estructura común, la adaptación CSS, la navegación y la ausencia de código en línea. `documentacion/frontend.md` documenta el alcance y `arte.md` refleja qué pantallas aplican temporalmente la guía.
+
+### Decisiones
+#### Aplicar la estructura aprobada y mantener la guía visual como temporal
+- **Contexto:** la estructura de las tres pantallas sociales está aprobada en `diseno.md`, mientras que `arte.md` conserva el estado de propuesta. Matthew pidió ejecutar el objetivo 3 de CS-66 después de los objetivos de acceso y detalle.
+- **Decisión:** aplicar la distribución de los esquemas aprobados y reutilizar temporalmente la paleta y componentes ya incorporados. No se cambia la API, la autorización ni el significado de las acciones sociales.
+- **Alternativas:** esperar a la aprobación final de `arte.md`, que detendría el objetivo; o rediseñar las pantallas sin respetar los esquemas aprobados, que contradice la documentación del equipo.
+- **Consecuencias:** si el equipo modifica la guía visual habrá que ajustar las clases CSS, pero los identificadores y comportamientos de JavaScript permanecen estables. La comprobación visual autenticada sigue siendo necesaria.
+- **Decidió:** Matthew, a propuesta de Codex.
+
+### Comprobación
+- **TDD:** `diseno.social.test.js` se escribió antes y falló en sus dos casos porque las páginas no tenían la estructura ni los componentes sociales. Tras el cambio pasa (2 pruebas). Las expectativas se hicieron tolerantes a `aria-current` y a clases combinadas, sin disminuir lo que comprueban.
+- **Pruebas específicas:** `diseno.social.test.js` y `navegacion.test.js` pasan (10 pruebas). Las pruebas dinámicas existentes de perfil, perfil público y búsqueda no llegan a ejecutar sus casos porque el cargador compartido de Jest no resuelve `frontend/js/shared/api.js`, aunque el archivo existe.
+- **Manual:** no se inició sesión ni se creó una cuenta de prueba sin autorización. Queda comprobar las tres pantallas y las acciones dinámicas con una sesión local a 375, 768 y 1280 px.
+
+### Para quien continúe
+- Con una sesión local autorizada, revisar solicitudes, foto, cambio de contraseña, relaciones, experiencias, botones de amistad/seguimiento y resultados de búsqueda a los tres anchos.
+- Resolver el cargador de scripts de Jest antes de tomar las pruebas dinámicas existentes como regresión completa.
+
 # 2026-10-26
 
 ## CS-67: base de datos en Aiven y conexión de PlanB

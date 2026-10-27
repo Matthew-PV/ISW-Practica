@@ -14,7 +14,7 @@ const cajaError = document.getElementById('error-usuario');
 function crearBoton(zona, texto, clase, alPulsar) {
   const boton = document.createElement('button');
   boton.type = 'button';
-  boton.className = `btn ${clase}`;
+  boton.className = `btn accion-perfil ${clase}`;
   boton.textContent = texto;
   boton.addEventListener('click', alPulsar);
   zona.append(boton);
@@ -45,15 +45,15 @@ function mostrarBotonesAmistad(perfil) {
   const responder = (aceptar) => actuar(ruta, { method: 'PATCH', body: JSON.stringify({ aceptar }) });
 
   if (amistad === 'ninguna') {
-    crearBoton(botonesAmistad, 'Añadir amigo', 'btn-primary', () =>
+    crearBoton(botonesAmistad, 'Añadir amigo', 'boton-principal', () =>
       actuar('/amistades', { method: 'POST', body: JSON.stringify({ destinatarioId: perfil.id }) }));
   } else if (amistad === 'enviada') {
-    crearBoton(botonesAmistad, 'Solicitud enviada', 'btn-secondary', () => {}).disabled = true;
+    crearBoton(botonesAmistad, 'Solicitud enviada', 'boton-deshabilitado', () => {}).disabled = true;
   } else if (amistad === 'recibida') {
-    crearBoton(botonesAmistad, 'Aceptar', 'btn-success', () => responder(true));
-    crearBoton(botonesAmistad, 'Rechazar', 'btn-outline-danger', () => responder(false));
+    crearBoton(botonesAmistad, 'Aceptar', 'boton-aceptar', () => responder(true));
+    crearBoton(botonesAmistad, 'Rechazar', 'boton-rechazar', () => responder(false));
   } else if (amistad === 'amigos') {
-    crearBoton(botonesAmistad, 'Eliminar amigo', 'btn-outline-danger', () => {
+    crearBoton(botonesAmistad, 'Eliminar amigo', 'boton-rechazar', () => {
       if (window.confirm(`¿Seguro que quieres eliminar a ${perfil.nombreUsuario} de tus amigos?`)) {
         actuar(ruta, { method: 'DELETE' });
       }
@@ -65,10 +65,10 @@ function mostrarBotonesAmistad(perfil) {
 function mostrarBotonSeguir(perfil) {
   botonSeguir.replaceChildren();
   if (perfil.relacion.siguiendo) {
-    crearBoton(botonSeguir, 'Dejar de seguir', 'btn-outline-secondary', () =>
+    crearBoton(botonSeguir, 'Dejar de seguir', 'boton-secundario', () =>
       actuar(`/seguimientos/${perfil.id}`, { method: 'DELETE' }));
   } else {
-    crearBoton(botonSeguir, 'Seguir', 'btn-outline-primary', () =>
+    crearBoton(botonSeguir, 'Seguir', 'boton-secundario', () =>
       actuar('/seguimientos', { method: 'POST', body: JSON.stringify({ seguidoId: perfil.id }) }));
   }
 }

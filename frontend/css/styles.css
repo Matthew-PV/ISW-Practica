@@ -6,6 +6,7 @@
   --color-texto-suave: #4B5563;
   --color-primario: #0F766E;
   --color-primario-hover: #115E59;
+  --color-primario-suave: #CCFBF1;
   --color-peligro: #B91C1C;
   --color-exito: #15803D;
   --color-foco: #1D4ED8;
@@ -242,6 +243,11 @@ body {
   color: #FFFFFF;
 }
 
+.navegacion-sesion a[aria-current="page"] {
+  border-bottom-color: var(--color-primario-suave);
+  color: #FFFFFF;
+}
+
 .pagina-experiencia {
   padding-top: 32px;
   padding-bottom: 48px;
@@ -461,6 +467,223 @@ body {
   font-weight: 700;
 }
 
+/* Pantallas sociales: perfil propio, perfil de otra persona y buscador. */
+.pagina-perfil-propio,
+.pagina-perfil-publico,
+.pagina-personas {
+  padding-top: 32px;
+  padding-bottom: 48px;
+}
+
+.rejilla-perfil-propio,
+.rejilla-perfil-publico {
+  display: grid;
+  gap: 24px;
+  align-items: start;
+}
+
+.rejilla-perfil-propio {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.rejilla-perfil-publico {
+  grid-template-columns: minmax(16rem, 2fr) minmax(0, 3fr);
+}
+
+.bloque-solicitudes,
+.tarjeta-perfil-propio,
+.bloque-relaciones,
+.bloque-password,
+.bloque-experiencias-propias,
+.tarjeta-perfil-publico,
+.bloque-experiencias-publicas,
+.buscador-personas,
+.fila-persona,
+.solicitud-persona,
+.resultado-persona,
+.tarjeta-experiencia-social {
+  border: 1px solid var(--color-borde-suave);
+  border-radius: 12px;
+  background: var(--color-fondo);
+}
+
+.bloque-solicitudes,
+.bloque-password,
+.bloque-experiencias-propias {
+  grid-column: 1 / -1;
+}
+
+.bloque-solicitudes,
+.tarjeta-perfil-propio,
+.bloque-relaciones,
+.bloque-experiencias-propias,
+.tarjeta-perfil-publico,
+.bloque-experiencias-publicas,
+.buscador-personas {
+  padding: 24px;
+}
+
+.pagina-sesion h1,
+.pagina-sesion h2 {
+  font-weight: 700;
+}
+
+.pagina-sesion h1 {
+  margin: 0 0 24px;
+  font-size: 28px;
+}
+
+.pagina-sesion h2 {
+  margin: 0 0 16px;
+  font-size: 22px;
+}
+
+.pagina-sesion h3 {
+  margin: 24px 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cabecera-perfil-propio {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.foto-perfil,
+.foto-perfil-publico {
+  width: 120px;
+  height: 120px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--color-superficie);
+}
+
+.tarjeta-perfil-publico {
+  position: sticky;
+  top: 24px;
+  text-align: center;
+}
+
+.tarjeta-perfil-publico h1 {
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.resumen-relaciones {
+  margin: 12px 0;
+  color: var(--color-texto-suave);
+}
+
+.acciones-perfil,
+.acciones-respuesta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.lista-personas,
+.lista-experiencias-social,
+.lista-resultados-personas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fila-persona,
+.solicitud-persona,
+.resultado-persona {
+  display: flex;
+  min-height: 56px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  color: var(--color-texto);
+  text-decoration: none;
+}
+
+.fila-persona:hover,
+.resultado-persona:hover,
+.tarjeta-experiencia-social:hover {
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+}
+
+.solicitud-persona {
+  justify-content: space-between;
+}
+
+.accion-perfil,
+.boton-aceptar,
+.boton-rechazar,
+.boton-deshabilitado {
+  min-height: 44px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.boton-aceptar {
+  border: 1px solid var(--color-exito);
+  background: var(--color-exito);
+  color: #FFFFFF;
+}
+
+.boton-rechazar {
+  border: 1px solid var(--color-peligro);
+  background: var(--color-fondo);
+  color: var(--color-peligro);
+}
+
+.boton-deshabilitado,
+.boton-deshabilitado:disabled {
+  border: 1px solid var(--color-borde-suave);
+  background: var(--color-superficie);
+  color: var(--color-texto-suave);
+}
+
+.tarjeta-experiencia-social {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.bloque-password {
+  padding: 0 24px 24px;
+}
+
+.bloque-password summary {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--color-primario);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.bloque-password[open] summary {
+  margin-bottom: 16px;
+}
+
+.buscador-personas {
+  max-width: 44rem;
+  margin: 0 auto;
+}
+
+.buscador-personas form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 24px;
+}
+
+.buscador-personas form label {
+  grid-column: 1 / -1;
+}
+
 @media (max-width: 767px) {
   .pagina-sesion {
     padding-bottom: 72px;
@@ -506,6 +729,11 @@ body {
     color: var(--color-primario);
   }
 
+  .navegacion-sesion a[aria-current="page"] {
+    border-top-color: var(--color-primario);
+    color: var(--color-primario);
+  }
+
   .pagina-experiencia {
     padding-top: 16px;
     padding-bottom: 24px;
@@ -527,6 +755,56 @@ body {
   .seccion-valoraciones,
   .dialogo-experiencia.dialogo-reporte {
     padding: 16px;
+  }
+
+  .pagina-perfil-propio,
+  .pagina-perfil-publico,
+  .pagina-personas {
+    padding-top: 16px;
+    padding-bottom: 24px;
+  }
+
+  .rejilla-perfil-propio,
+  .rejilla-perfil-publico {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .bloque-solicitudes,
+  .bloque-password,
+  .bloque-experiencias-propias {
+    grid-column: auto;
+  }
+
+  .bloque-solicitudes,
+  .tarjeta-perfil-propio,
+  .bloque-relaciones,
+  .bloque-experiencias-propias,
+  .tarjeta-perfil-publico,
+  .bloque-experiencias-publicas,
+  .buscador-personas {
+    padding: 16px;
+  }
+
+  .bloque-password {
+    padding: 0 16px 16px;
+  }
+
+  .tarjeta-perfil-publico {
+    position: static;
+  }
+
+  .cabecera-perfil-propio {
+    align-items: flex-start;
+  }
+
+  .foto-perfil {
+    width: 72px;
+    height: 72px;
+  }
+
+  .buscador-personas form {
+    grid-template-columns: 1fr;
   }
 }
 

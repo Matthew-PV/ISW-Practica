@@ -4,6 +4,25 @@ Identificador habitual: MAT / Matthew-PV.
 
 Las interacciones siguientes proceden de la conversación conservada en Codex. Cuando no consta la fecha exacta de la interacción, `2026-10-02` indica la fecha en la que se incorporó al registro, no necesariamente la fecha en que se escribió el prompt original. Se omiten mensajes de cortesía y confirmaciones que no influyeron en el trabajo.
 
+## 2026-10-27 — Aplicar el diseño a las pantallas sociales (CS-66, objetivo 3)
+
+- **Historia u objetivo:** CS-66, objetivo 3: aplicar el diseño a perfil propio, perfil de otra persona y búsqueda de personas.
+- **Agente/herramienta:** Codex, GPT-5.
+- **Entorno:** Windows, PowerShell y Jest.
+- **Contexto aportado:** captura anterior del libro de historias de OneDrive, donde el objetivo 3 delimita las tres pantallas sociales; `diseno.md` con su estructura aprobada y `arte.md` como guía visual todavía temporal.
+- **Prompt inicial:**
+
+  > Hagamos el objetivo 3
+
+- **Correcciones relevantes:** ninguna.
+- **Resultado propuesto por la IA:** reutilizar la navegación accesible de sesión, ordenar el perfil propio en bloques y usar `<details>` para la contraseña, colocar la tarjeta del perfil ajeno en una columna lateral en escritorio y convertir el buscador y las listas sociales en componentes visuales consistentes, sin cambiar su API ni permisos.
+- **TDD:** se añadió primero `diseno.social.test.js`; falló porque no existían la estructura común, las rejillas ni los componentes. Tras cambiar HTML, CSS y las clases de elementos creados por JavaScript, pasa. Dos expectativas se ajustaron para reconocer atributos o clases adicionales sin alterar el requisito comprobado.
+- **Comprensión humana de las pruebas:** la preparación carga las tres páginas, CSS y scripts; la acción localiza sus regiones y componentes; el resultado comprueba navegación accesible, adaptación declarada, ausencia de scripts en línea y que las listas dinámicas usan las clases previstas.
+- **Intervención humana:** Matthew seleccionó el objetivo 3. No autorizó crear usuarios ni iniciar sesión para pruebas manuales.
+- **Decisiones:** [2026-10-27 — CS-66: diseño provisional de las pantallas sociales](../modificaciones.md#cs-66-diseño-provisional-de-las-pantallas-sociales).
+- **Comprobación final:** `diseno.social.test.js` y `navegacion.test.js` pasan. Las pruebas dinámicas se bloquean antes de ejecutar por la resolución de `frontend/js/shared/api.js` del cargador compartido. Falta la comprobación visual autenticada a 375, 768 y 1280 px.
+- **Resultado en Git:** pendiente de commit.
+
 ## 2026-10-27 — Aplicar el diseño al detalle de experiencia (CS-66, objetivo 2)
 
 - **Historia u objetivo:** CS-66, objetivo 2: aplicar temporalmente el diseño vigente al detalle de una experiencia, sus valoraciones y la ventana de reporte, sin extenderlo a las pantallas sociales.

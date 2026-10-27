@@ -13,7 +13,7 @@ const ayudaBusqueda = document.getElementById('ayuda-busqueda');
 // con textContent y nunca se inserta como HTML.
 function crearResultado(usuario) {
   const enlace = crearEnlacePerfil(document.createElement('a'), usuario);
-  enlace.className = 'list-group-item list-group-item-action';
+  enlace.className = 'resultado-persona';
   return enlace;
 }
 

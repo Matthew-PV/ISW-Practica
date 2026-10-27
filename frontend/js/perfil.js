@@ -80,20 +80,20 @@ function actualizarEstadoSolicitudes() {
 // interprete como HTML aportado por otra persona.
 function crearSolicitud(solicitud) {
   const fila = document.createElement('div');
-  fila.className = 'list-group-item d-flex justify-content-between align-items-center gap-2';
+  fila.className = 'solicitud-persona';
 
   const nombre = document.createElement('span');
   nombre.textContent = solicitud.solicitante.nombreUsuario;
 
   const acciones = document.createElement('div');
-  acciones.className = 'd-flex gap-2';
+  acciones.className = 'acciones-respuesta';
   for (const [texto, clase, aceptar] of [
-    ['Aceptar', 'btn-success', true],
-    ['Rechazar', 'btn-outline-danger', false],
+    ['Aceptar', 'boton-aceptar', true],
+    ['Rechazar', 'boton-rechazar', false],
   ]) {
     const botonRespuesta = document.createElement('button');
     botonRespuesta.type = 'button';
-    botonRespuesta.className = `btn btn-sm ${clase}`;
+    botonRespuesta.className = `btn ${clase}`;
     botonRespuesta.textContent = texto;
     botonRespuesta.addEventListener('click', () => responderSolicitud(solicitud.id, aceptar, fila));
     acciones.append(botonRespuesta);
@@ -190,7 +190,7 @@ const PERSONAS_POR_PAGINA = 20;
 // texto para que nunca se interprete como HTML aportado por otra persona.
 function crearPersona(persona) {
   const fila = crearEnlacePerfil(document.createElement('a'), persona);
-  fila.className = 'list-group-item list-group-item-action d-flex align-items-center gap-2';
+  fila.className = 'fila-persona';
   fila.dataset.usuarioId = persona.id;
 
   const foto = document.createElement('img');

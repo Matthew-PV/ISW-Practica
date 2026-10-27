@@ -151,6 +151,7 @@ Esto se hace en la historia de implementación, no aquí.
 
 | Pantalla | ¿Se ha aplicado esta guía? |
 |---|---|
-| index, registro, recuperar, restablecer | No |
+| index, registro, recuperar, restablecer | Sí, temporalmente (CS-66, objetivo 1) |
 | bienvenida | No (será la página piloto) |
-| perfil, personas, usuario, experiencia | No |
+| perfil, personas, usuario | Sí, temporalmente (CS-66, objetivo 3) |
+| experiencia | Sí, temporalmente (CS-66, objetivo 2) |

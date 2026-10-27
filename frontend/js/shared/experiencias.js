@@ -16,7 +16,7 @@ let autorExperiencias = null;
 // que nunca se interpreten como HTML.
 function crearEnlaceExperiencia(experiencia) {
   const enlace = document.createElement('a');
-  enlace.className = 'list-group-item list-group-item-action';
+  enlace.className = 'list-group-item list-group-item-action tarjeta-experiencia-social';
   enlace.href = `experiencia.html?id=${experiencia.id}`;
   enlace.dataset.experienciaId = experiencia.id;
 
