@@ -1,6 +1,6 @@
 # Inventario de pantallas de PlanB
 
-> Las diez pantallas con sus estados (cargando, vacío, error y «Contenido no disponible») y sus flujos. Es el objetivo 5 de la historia CS-65 (diseño visual).
+> Las pantallas con sus estados (cargando, vacío, error y «Contenido no disponible») y sus flujos. Es el objetivo 5 de la historia CS-65 (diseño visual).
 > Fuentes: [frontend.md](frontend.md) (cómo está hecho hoy), [sitemap.mmd](sitemap.mmd) (flujos), [arte.md](arte.md) (identidad visual) y el código de `frontend/`, que se revisó pantalla a pantalla para comprobar los estados. Los esquemas (solo escritorio) están en [diseno.md](diseno.md) y en [diseno/](diseno/).
 > Revisado el 26/10/2026. Actualizado ese mismo día al cubrir las lagunas de la sección 5 y al pasar a diez pantallas (landing en `index.html` e inicio de sesión en `iniciar-sesion.html`).
 
@@ -12,24 +12,42 @@
 | ✗ | La pantalla lo necesita y hoy **no lo tiene** (ver «Lagunas») |
 | — | No aplica: la pantalla no tiene ese estado |
 
-## 1. Las diez pantallas
+## 1. Las páginas del sitemap
 
-| # | Pantalla | Grupo | Para qué sirve | Esquema |
-|---|---|---|---|---|
-| 1 | `index.html` | Acceso | Landing pública y estática: qué es PlanB y enlaces a «Crear cuenta» y «Iniciar sesión» | [index.svg](diseno/index.svg) |
-| 2 | `iniciar-sesion.html` | Acceso | Iniciar sesión | [iniciar-sesion.svg](diseno/iniciar-sesion.svg) |
-| 3 | `registro.html` | Acceso | Crear una cuenta | [registro.svg](diseno/registro.svg) |
-| 4 | `recuperar.html` | Acceso | Pedir el enlace para recuperar la contraseña | [recuperar.svg](diseno/recuperar.svg) |
-| 5 | `restablecer.html` | Acceso | Elegir una contraseña nueva desde el enlace del correo | [restablecer.svg](diseno/restablecer.svg) |
-| 6 | `bienvenida.html` | Con sesión | Mis experiencias; crear y editar | [bienvenida.svg](diseno/bienvenida.svg) |
-| 7 | `perfil.html` | Con sesión | Mi perfil, mis solicitudes, mis amigos y seguidores | [perfil.svg](diseno/perfil.svg) |
-| 8 | `personas.html` | Con sesión | Buscar personas (y, vacía por ahora, experiencias) | [personas.svg](diseno/personas.svg) |
-| 9 | `usuario.html?nombre=` | Con sesión | Perfil de otra persona: amistad, seguir y sus experiencias | [usuario.svg](diseno/usuario.svg) |
-| 10 | `experiencia.html?id=` | Con sesión | Una experiencia y sus valoraciones | [experiencia.svg](diseno/experiencia.svg) |
+| # | Página | Grupo | Estado | Para qué sirve | Esquema |
+|---|---|---|---|---|---|
+| 1 | `index.html` | Público | implementada | Landing | [index.svg](diseno/index.svg) |
+| 2 | `iniciar-sesion.html` | Público | implementada | Iniciar sesión | [iniciar-sesion.svg](diseno/iniciar-sesion.svg) |
+| 3 | `registro.html` | Público | implementada | Crear cuenta | [registro.svg](diseno/registro.svg) |
+| 4 | `recuperar.html` | Público | implementada | Recuperar contraseña | [recuperar.svg](diseno/recuperar.svg) |
+| 5 | `restablecer.html` | Público | implementada | Restablecer contraseña | [restablecer.svg](diseno/restablecer.svg) |
+| 6 | `ayuda.html` | Público | diseño futuro | Ayuda | [ayuda.svg](diseno/ayuda.svg) |
+| 7 | `terminos.html` | Público | diseño futuro | Términos y privacidad | [terminos.svg](diseno/terminos.svg) |
+| 8 | `no-encontrada.html` | Público | diseño futuro | Página no encontrada (404) | [no-encontrada.svg](diseno/no-encontrada.svg) |
+| 9 | `bienvenida.html` | Inicio y descubrir | a reorganizar | Inicio | [bienvenida.svg](diseno/bienvenida.svg) |
+| 10 | `explorar.html` | Inicio y descubrir | diseño futuro | Explorar | [explorar.svg](diseno/explorar.svg) |
+| 11 | `ciudad.html?id=` | Inicio y descubrir | diseño futuro | Ciudad | [ciudad.svg](diseno/ciudad.svg) |
+| 12 | `personas.html` | Inicio y descubrir | a reorganizar | Resultados de búsqueda | [personas.svg](diseno/personas.svg) |
+| 13 | `experiencia.html?id=` | Planes | implementada | Detalle del plan | [experiencia.svg](diseno/experiencia.svg) |
+| 14 | `crear-plan.html` | Planes | a reorganizar | Crear plan | [crear-plan.svg](diseno/crear-plan.svg) |
+| 15 | `editar-plan.html?id=` | Planes | a reorganizar | Editar plan | [editar-plan.svg](diseno/editar-plan.svg) |
+| 16 | `guardados.html` | Planes | diseño futuro | Guardados | [guardados.svg](diseno/guardados.svg) |
+| 17 | `mis-planes.html` | Planes | a reorganizar | Mis planes | [mis-planes.svg](diseno/mis-planes.svg) |
+| 18 | `perfil.html` | Personas y social | a reorganizar | Mi perfil | [perfil.svg](diseno/perfil.svg) |
+| 19 | `usuario.html?nombre=` | Personas y social | implementada | Perfil de otra persona | [usuario.svg](diseno/usuario.svg) |
+| 20 | `amigos.html` | Personas y social | diseño futuro | Amigos | [amigos.svg](diseno/amigos.svg) |
+| 21 | `seguidores.html` | Personas y social | diseño futuro | Seguidores y seguidos | [seguidores.svg](diseno/seguidores.svg) |
+| 22 | `solicitudes.html` | Personas y social | implementada | Solicitudes | [solicitudes.svg](diseno/solicitudes.svg) |
+| 23 | `ajustes.html` | Cuenta | a reorganizar | Ajustes | [ajustes.svg](diseno/ajustes.svg) |
+| 24 | `notificaciones.html` | Sistema | diseño futuro | Notificaciones | [notificaciones.svg](diseno/notificaciones.svg) |
+| 25 | `error.html` | Sistema | diseño futuro | Error del servidor | [error.svg](diseno/error.svg) |
+| 26 | `sin-permiso.html` | Sistema | diseño futuro | Sin permiso | [sin-permiso.svg](diseno/sin-permiso.svg) |
 
-Las cinco pantallas con sesión comparten la cabecera con buscador y menú de cuenta ([cabecera.svg](diseno/cabecera.svg)); las de acceso son pantalla dividida sin barra de cabecera, con la marca PlanB en la columna izquierda; solo la landing lleva cabecera sin sesión («Iniciar sesión» y «Crear cuenta») y pie.
+Son 26 páginas. «Implementada» existe tal como se dibuja; «a reorganizar» existe hoy con otra forma (por ejemplo, crear y editar son diálogos de Inicio); «diseño futuro» no tiene backend ni frontend y es solo maqueta con estado vacío. Las cabeceras y pies están en [cabecera.svg](diseno/cabecera.svg).
 
 ## 2. Estados de cada pantalla
+
+Las páginas «diseño futuro» solo tienen el estado vacío de la maqueta (columna «Esquema» y sección 1); no se listan aquí hasta que existan.
 
 Los cuatro estados que pide la tarjeta, más los propios de cada pantalla.
 
@@ -77,6 +95,16 @@ Salen del [sitemap](sitemap.mmd). Cada fila es una flecha del mapa.
 | Cualquiera con sesión | `personas` | Buscador de la cabecera (`personas.html?q=texto`) |
 | Cualquiera con sesión | `iniciar-sesion` | «Cerrar sesión» del menú de cuenta |
 | Cualquiera con sesión | `iniciar-sesion` | Sesión no válida (401) |
+| Cualquiera con sesión | `explorar`, `mis-planes`, `amigos` | Barra de pestañas (rediseño) |
+| Cualquiera con sesión | `notificaciones`, `crear-plan` | Campana y «Crear plan» de la cabecera (rediseño) |
+| Menú de cuenta | `guardados`, `ajustes`, `ayuda` | Opciones del menú (rediseño) |
+| `explorar`, `personas` | `ciudad` | Una ciudad (rediseño) |
+| `mis-planes` | `crear-plan` | Tarjeta «+» (rediseño) |
+| `experiencia` | `editar-plan` | Editar, si soy el autor (rediseño) |
+| `perfil` | `amigos`, `seguidores`, `solicitudes` | Contadores y banda de solicitudes (rediseño) |
+| `notificaciones` | `solicitudes`, `usuario`, `experiencia` | Fila de actividad (rediseño) |
+| Pie | `ayuda`, `terminos` | Enlaces del pie (rediseño) |
+| `experiencia`, `usuario` | `sin-permiso`, `no-encontrada` | Contenido no visible o inexistente (rediseño) |
 
 ## 4. Identidad visual aplicada
 

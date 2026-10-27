@@ -7,87 +7,127 @@ El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilo
 
 ## Mapa de navegación
 
-El [sitemap de PlanB](sitemap.mmd) es la referencia del mapa de navegación, en formato Mermaid. Contiene las doce páginas actuales, agrupadas en «Acceso» y «Con sesión».
+El [sitemap de PlanB](sitemap.mmd) es la referencia del mapa de navegación, en formato Mermaid. Es la maqueta completa del rediseño: las doce páginas actuales y las que aún no existen, agrupadas en seis bloques y marcadas como «implementada», «a reorganizar» o «diseño futuro». Lo marcado «diseño futuro» o «a reorganizar» no existe todavía tal como se dibuja.
 
 ```mermaid
 %% Copia renderizable de sitemap.mmd. Al modificar el sitemap, actualiza ambos bloques.
-%% Sitemap de PlanB — CS-65, objetivo 2.
-%% Las cajas representan páginas; las flechas, enlaces o redirecciones.
-%% La flecha discontinua representa el enlace recibido por correo.
-%% Navegación común: las siete páginas con sesión permiten ir a Inicio
-%% (bienvenida.html), Solicitudes, Mi perfil, Ajustes y Cerrar sesión desde la cabecera, que
-%% además lleva el buscador de personas.
-%% Sesión no válida (401): se vuelve a Iniciar sesión (iniciar-sesion.html).
-%% La landing (index.html) es pública y estática.
+%% Sitemap de PlanB — rediseño (maqueta completa).
+%% Cada caja es una página; las flechas, enlaces o redirecciones. Estado entre paréntesis: implementada, a reorganizar o diseño futuro.
+%% Navegación principal (barra de pestañas): Inicio, Explorar, Mis planes y Amigos. Secundaria: menú de cuenta (Mi perfil, Guardados, Ajustes, Ayuda, Cerrar sesión), campana, «Crear plan», buscador y pie.
+%% Línea discontinua: enlace recibido por correo. Sesión no válida (401): se vuelve a Iniciar sesión.
 %% Los parámetros de las URL se explican en frontend.md.
 flowchart TB
-    landing["Landing<br/>index.html"]
-
-    subgraph acceso["Acceso"]
-        login["Iniciar sesión<br/>iniciar-sesion.html"]
-        registro["Crear cuenta<br/>registro.html"]
-        recuperar["Recuperar contraseña<br/>recuperar.html"]
-        restablecer["Restablecer contraseña<br/>restablecer.html"]
-
-        login -->|"Crear cuenta"| registro
-        registro -->|"Iniciar sesión"| login
-        login -->|"¿Has olvidado tu contraseña?"| recuperar
-        recuperar -->|"Volver"| login
-        recuperar -.->|"Enlace recibido por correo"| restablecer
-        restablecer -->|"Volver tras cambiarla"| login
+    subgraph g_0["Público"]
+        index["Landing<br/>index.html<br/>(implementada)"]
+        iniciar_sesion["Iniciar sesión<br/>iniciar-sesion.html<br/>(implementada)"]
+        registro["Crear cuenta<br/>registro.html<br/>(implementada)"]
+        recuperar["Recuperar contraseña<br/>recuperar.html<br/>(implementada)"]
+        restablecer["Restablecer contraseña<br/>restablecer.html<br/>(implementada)"]
+        ayuda["Ayuda<br/>ayuda.html<br/>(diseño futuro)"]
+        terminos["Términos y privacidad<br/>terminos.html<br/>(diseño futuro)"]
+        no_encontrada["Página no encontrada (404)<br/>no-encontrada.html<br/>(diseño futuro)"]
+    end
+    subgraph g_1["Inicio y descubrir"]
+        bienvenida["Inicio<br/>bienvenida.html<br/>(a reorganizar)"]
+        explorar["Explorar<br/>explorar.html<br/>(diseño futuro)"]
+        ciudad["Ciudad<br/>ciudad.html?id=<br/>(diseño futuro)"]
+        personas["Resultados de búsqueda<br/>personas.html<br/>(a reorganizar)"]
+    end
+    subgraph g_2["Planes"]
+        experiencia["Detalle del plan<br/>experiencia.html?id=<br/>(implementada)"]
+        crear_plan["Crear plan<br/>crear-plan.html<br/>(a reorganizar)"]
+        editar_plan["Editar plan<br/>editar-plan.html?id=<br/>(a reorganizar)"]
+        guardados["Guardados<br/>guardados.html<br/>(diseño futuro)"]
+        mis_planes["Mis planes<br/>mis-planes.html<br/>(a reorganizar)"]
+    end
+    subgraph g_3["Personas y social"]
+        perfil["Mi perfil<br/>perfil.html<br/>(a reorganizar)"]
+        usuario["Perfil de otra persona<br/>usuario.html?nombre=<br/>(implementada)"]
+        amigos["Amigos<br/>amigos.html<br/>(diseño futuro)"]
+        seguidores["Seguidores y seguidos<br/>seguidores.html<br/>(diseño futuro)"]
+        solicitudes["Solicitudes<br/>solicitudes.html<br/>(implementada)"]
+    end
+    subgraph g_4["Cuenta"]
+        ajustes["Ajustes<br/>ajustes.html<br/>(a reorganizar)"]
+    end
+    subgraph g_5["Sistema"]
+        notificaciones["Notificaciones<br/>notificaciones.html<br/>(diseño futuro)"]
+        error["Error del servidor<br/>error.html<br/>(diseño futuro)"]
+        sin_permiso["Sin permiso<br/>sin-permiso.html<br/>(diseño futuro)"]
     end
 
-    subgraph app["Con sesión"]
-        inicio["Bienvenida<br/>bienvenida.html"]
-        personas["Buscar<br/>personas.html"]
-        perfil["Mi perfil<br/>perfil.html"]
-        ajustes["Ajustes<br/>ajustes.html"]
-        solicitudes["Solicitudes<br/>solicitudes.html"]
-        usuario["Perfil de otro usuario<br/>usuario.html"]
-        experiencia["Detalle de experiencia<br/>experiencia.html"]
+    nav["Barra de pestañas<br/>(con sesión)"]
+    cuenta["Menú de cuenta<br/>(con sesión)"]
+    pie["Pie<br/>(páginas públicas)"]
 
-        personas -->|"Resultado de búsqueda"| usuario
-        perfil -->|"Amigo o seguidor"| usuario
-        solicitudes -->|"Solicitante"| usuario
-        inicio -->|"Cabecera"| solicitudes
-        inicio -->|"Menú de cuenta"| ajustes
-
-        inicio -->|"Ver detalle"| experiencia
-        perfil -->|"Una de mis experiencias"| experiencia
-        usuario -->|"Una de sus experiencias"| experiencia
-
-        experiencia -->|"Autor o autor de una valoración"| usuario
-        experiencia -->|"Si el autor soy yo"| perfil
-        usuario -->|"Si es mi propio nombre"| perfil
-
-        inicio -->|"Búsqueda desde la cabecera"| personas
-        perfil -->|"Búsqueda desde la cabecera"| personas
-        usuario -->|"Búsqueda desde la cabecera"| personas
-        experiencia -->|"Búsqueda desde la cabecera"| personas
-    end
-
-    landing -->|"Iniciar sesión"| login
-    landing -->|"Crear cuenta"| registro
-
-    login -->|"Marca PlanB"| landing
-    registro -->|"Marca PlanB"| landing
-    recuperar -->|"Marca PlanB"| landing
-    restablecer -->|"Marca PlanB"| landing
-
-    login -->|"Acceso correcto"| inicio
-    registro -->|"Cuenta creada"| inicio
-
-    inicio -->|"Cerrar sesión"| login
-    personas -->|"Cerrar sesión"| login
-    perfil -->|"Cerrar sesión"| login
-    usuario -->|"Cerrar sesión"| login
-    experiencia -->|"Cerrar sesión"| login
-
-    inicio -->|"Sesión no válida (401)"| login
-    personas -->|"Sesión no válida (401)"| login
-    perfil -->|"Sesión no válida (401)"| login
-    usuario -->|"Sesión no válida (401)"| login
-    experiencia -->|"Sesión no válida (401)"| login
+    index -->|"Iniciar sesión"| iniciar_sesion
+    index -->|"Crear cuenta"| registro
+    iniciar_sesion -->|"Crear cuenta"| registro
+    registro -->|"Iniciar sesión"| iniciar_sesion
+    iniciar_sesion -->|"¿Has olvidado tu contraseña?"| recuperar
+    recuperar -->|"Volver"| iniciar_sesion
+    recuperar -.->|"Enlace recibido por correo"| restablecer
+    restablecer -->|"Volver tras cambiarla"| iniciar_sesion
+    iniciar_sesion -->|"Acceso correcto"| bienvenida
+    registro -->|"Cuenta creada"| bienvenida
+    iniciar_sesion -->|"Logo"| index
+    registro -->|"Logo"| index
+    recuperar -->|"Logo"| index
+    restablecer -->|"Logo"| index
+    index -->|"Pie"| pie
+    ayuda -->|"Pie"| pie
+    terminos -->|"Pie"| pie
+    pie -->|"Ayuda"| ayuda
+    pie -->|"Términos y privacidad"| terminos
+    nav -->|"Inicio"| bienvenida
+    nav -->|"Explorar"| explorar
+    nav -->|"Mis planes"| mis_planes
+    nav -->|"Amigos"| amigos
+    cuenta -->|"Mi perfil"| perfil
+    cuenta -->|"Guardados"| guardados
+    cuenta -->|"Ajustes"| ajustes
+    cuenta -->|"Ayuda"| ayuda
+    cuenta -->|"Cerrar sesión"| iniciar_sesion
+    nav -->|"Campana"| notificaciones
+    nav -->|"Crear plan"| crear_plan
+    nav -->|"Buscador"| personas
+    bienvenida -->|"Ver detalle"| experiencia
+    explorar -->|"Una ciudad"| ciudad
+    explorar -->|"Un plan"| experiencia
+    ciudad -->|"Un plan"| experiencia
+    personas -->|"Una persona"| usuario
+    personas -->|"Un plan"| experiencia
+    personas -->|"Una ciudad"| ciudad
+    mis_planes -->|"Un plan"| experiencia
+    mis_planes -->|"Nuevo plan"| crear_plan
+    guardados -->|"Un plan"| experiencia
+    experiencia -->|"Editar (si soy el autor)"| editar_plan
+    editar_plan -->|"Guardado o eliminado"| mis_planes
+    crear_plan -->|"Publicado"| experiencia
+    experiencia -->|"Autor o valoración"| usuario
+    experiencia -->|"Si el autor soy yo"| perfil
+    experiencia -->|"Ciudad"| ciudad
+    perfil -->|"Mis planes"| mis_planes
+    perfil -->|"Contador de amigos"| amigos
+    perfil -->|"Contador de seguidores"| seguidores
+    perfil -->|"Banda de solicitudes"| solicitudes
+    perfil -->|"Editar perfil"| ajustes
+    usuario -->|"Un plan suyo"| experiencia
+    usuario -->|"Si es mi nombre"| perfil
+    amigos -->|"Una persona"| usuario
+    seguidores -->|"Una persona"| usuario
+    solicitudes -->|"Solicitante"| usuario
+    notificaciones -->|"Solicitud de amistad"| solicitudes
+    notificaciones -->|"Valoración o plan"| experiencia
+    notificaciones -->|"Nuevo seguidor"| usuario
+    experiencia -->|"Contenido no visible"| sin_permiso
+    usuario -->|"Usuario no existe"| no_encontrada
+    bienvenida -->|"Fallo del servidor"| error
+    ayuda -->|"Volver a la aplicación"| bienvenida
+    error -->|"Ir al inicio"| bienvenida
+    sin_permiso -->|"Ir al inicio"| bienvenida
+    no_encontrada -->|"Ir al inicio"| bienvenida
+    bienvenida -->|"Sesión no válida (401)"| iniciar_sesion
 ```
 
 **Entrada:** `/` sirve `index.html`, la landing pública, con enlaces a `iniciar-sesion.html` y `registro.html`. Un inicio de sesión o un registro correctos llevan a `bienvenida.html`.
