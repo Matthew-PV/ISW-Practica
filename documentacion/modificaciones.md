@@ -38,6 +38,33 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 
 # 2026-10-27
 
+## CS-66: documentación del frontend y cierre de la auditoría visual
+
+**Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
+**Historia:** CS-65 y CS-66
+
+### Cambios
+- `documentacion/frontend.md` reescrito con las diez pantallas, la cabecera común, `shared/cabecera.js` y `shared/pestanas.js`, `personas.html?q=`, los CSS nuevos y la regla de las variables `--color-*`.
+- `README.md`: diez pantallas, raíz como landing e `iniciar-sesion.html`. `arte.md` («Aplicación pantalla por pantalla») y `diseno.md` («Estado del código hoy») al día.
+
+### Comprobación
+- `enlaces-md.mjs` sin enlaces rotos; hay diez páginas en `frontend/`.
+
+## CS-66: auditoría visual y correcciones
+
+**Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
+**Historia:** CS-66
+
+### Cambios
+- `personas.html`: «Cargando…» y el aviso de error salen del panel de Personas y valen para cualquier pestaña; la etiqueta del campo pasa de «Nombre de usuario» a «Texto a buscar».
+- `personas.test.js`: cinco pruebas nuevas (dos en rojo por el cambio de HTML; tres fijan comportamiento ya existente: se vacían los resultados al buscar de nuevo, el error de una búsqueda atrasada no se muestra y `entrando` se retira tras el fundido).
+
+### Comprobación
+- `npm test`: 58 suites, 725 pruebas, 0 fallos. Auditoría de las diez páginas a 1024, 1280 y 1440 px con clics: R2 a R6 en cero.
+
+### Pendiente
+- No se forzaron los estados (vacío, error, 404) con navegador: solo los cubren las pruebas jsdom. Ver el informe final.
+
 ## CS-66: integración del trabajo de Matthew en el diseño aplicado
 
 **Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)

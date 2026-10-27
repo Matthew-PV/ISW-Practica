@@ -1,6 +1,6 @@
 # PlanB — Práctica ISW
 
-PlanB es una red social web, adaptada también al móvil, para compartir y descubrir **experiencias**: planes completos por una ciudad (lugares, actividades, presupuesto y duración) creados por otros usuarios, en lugar de reseñas de sitios sueltos.
+PlanB es una red social web, pensada para escritorio, para compartir y descubrir **experiencias**: planes completos por una ciudad (lugares, actividades, presupuesto y duración) creados por otros usuarios, en lugar de reseñas de sitios sueltos.
 
 ## Estado del proyecto
 
@@ -23,11 +23,11 @@ Historias de usuario implementadas:
 | CS-63 · Pantalla de valoraciones | La página de una experiencia con sus valoraciones |
 | CS-48 · Valoraciones de amigos y seguidores | Sección propia en la página de la experiencia |
 
-Pendiente: «Útil» y «Reportar» en las valoraciones funcionan solo en la pantalla, sin guardar nada, hasta que se implementen CS-02 y CS-04. El estado de cada tarea se lleva en el libro de historias (ver [Historias de usuario](#historias-de-usuario)).
+Pendiente: la pestaña «Experiencias» de la búsqueda aún no devuelve resultados (CS-24). «Útil» y «Reportar» en las valoraciones funcionan solo en la pantalla, sin guardar nada, hasta que se implementen CS-02 y CS-04. El estado de cada tarea se lleva en el libro de historias (ver [Historias de usuario](#historias-de-usuario)).
 
 ## Arquitectura
 
-PlanB es una **aplicación web responsive** organizada en capas: un único backend con rutas, lógica de negocio y persistencia separadas, que expone una API REST en JSON y sirve también las páginas del frontend.
+PlanB es una **aplicación web** organizada en capas: un único backend con rutas, lógica de negocio y persistencia separadas, que expone una API REST en JSON y sirve también las páginas del frontend.
 
 | Capa | Tecnología |
 |---|---|
@@ -76,10 +76,10 @@ Toda la documentación detallada vive en [`documentacion/`](documentacion/):
 * [Arquitectura](documentacion/arquitectura.md) — alcance, capas y archivos, modelo de datos, visibilidad, herramientas, autenticación, estructura del repositorio, instalación, entorno de desarrollo y pruebas.
 * [Referencia de la API](documentacion/api.md) — cada ruta con su servicio, lo que recibe, lo que devuelve y sus errores.
 * [Flujos y estados](documentacion/flujos.md) — diagramas de secuencia de los flujos principales (registro, login, valorar, amistad, recuperar la contraseña...) y de los estados de amistades, valoraciones y enlaces de recuperación.
-* [Pantallas](documentacion/frontend.md) — mapa de navegación, qué archivos y llamadas usa cada página, sus estados y las reglas del frontend.
+* [Pantallas](documentacion/frontend.md) — mapa de navegación (la raíz `/` es la landing `index.html`; el inicio de sesión está en `iniciar-sesion.html`), qué archivos y llamadas usa cada página, sus estados y las reglas del frontend.
 * [Glosario](documentacion/glosario.md) — los términos técnicos del proyecto, explicados y con dónde aparecen en PlanB.
 * [Diseño](documentacion/diseno.md) — estructura de las pantallas y esquemas en blanco y negro (borrador).
-* [Inventario de pantallas](documentacion/inventario-pantallas.md) — las nueve pantallas con sus estados, flujos, componentes de la guía de estilo y las lagunas por cubrir.
+* [Inventario de pantallas](documentacion/inventario-pantallas.md) — las diez pantallas con sus estados, flujos, componentes de la guía de estilo y las lagunas por cubrir.
 * [Arte](documentacion/arte.md) — cómo debe verse PlanB: paleta con contraste calculado, tipografía y componentes (propuesta para aprobar).
 * [Modificaciones](documentacion/modificaciones.md) — registro de los cambios realizados: qué se ha hecho, cómo probarlo y notas para quien siga trabajando.
 * [Propuesta inicial](documentacion/propuesta-inicial.md) — planteamiento conceptual del producto: problema, público objetivo, objetivos, módulos funcionales, modelo de datos, comparación con soluciones existentes, límites de alcance y riesgos. Describe la idea, no lo que ya existe.

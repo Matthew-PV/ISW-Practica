@@ -34,7 +34,7 @@
     <h1 class="mb-4">Buscar</h1>
 
     <form id="form-busqueda" class="formulario-busqueda mb-4">
-      <label for="texto-busqueda" class="form-label">Nombre de usuario</label>
+      <label for="texto-busqueda" class="form-label">Texto a buscar</label>
       <div class="input-group">
         <input id="texto-busqueda" type="search" class="form-control campo-grande" required>
         <button type="submit" class="btn btn-primary">Buscar</button>
@@ -46,11 +46,15 @@
       <button type="button" role="tab" id="pestana-experiencias" aria-controls="panel-experiencias" aria-selected="false" tabindex="-1">Experiencias</button>
     </div>
 
-    <!-- Antes de buscar se explica qué escribir; mientras se busca, «Cargando…» (js/personas.js) -->
-    <div role="tabpanel" id="panel-personas" aria-labelledby="pestana-personas" class="pt-3">
-      <p id="ayuda-busqueda" class="text-secondary">Escribe parte de un nombre.</p>
+    <!-- «Cargando…» y el aviso de error valen para cualquier pestaña (js/personas.js) -->
+    <div class="pt-3">
       <p id="cargando" class="text-secondary d-none" role="status">Cargando…</p>
       <div id="error-busqueda" class="alert alert-danger d-none" role="alert"></div>
+    </div>
+
+    <!-- Antes de buscar se explica qué escribir -->
+    <div role="tabpanel" id="panel-personas" aria-labelledby="pestana-personas" class="pt-3">
+      <p id="ayuda-busqueda" class="text-secondary">Escribe parte de un nombre.</p>
       <p id="sin-resultados" class="text-secondary d-none">No se han encontrado personas.</p>
       <div id="resultados" class="lista-resultados" aria-live="polite"></div>
     </div>

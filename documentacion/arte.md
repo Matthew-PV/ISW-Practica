@@ -292,8 +292,8 @@ Esto se hace en la historia de implementación, no aquí.
 
 | Pantalla | ¿Se ha aplicado esta guía? |
 |---|---|
-| index (landing) | No |
-| iniciar-sesion | No |
-| registro, recuperar, restablecer | No |
-| bienvenida | No (será la página piloto) |
-| perfil, personas, usuario, experiencia | No |
+| index (landing) | Sí (CS-66) |
+| iniciar-sesion | Sí (CS-66) |
+| registro, recuperar, restablecer | Sí (CS-66) |
+| bienvenida | Sí (CS-66) |
+| perfil, personas, usuario, experiencia | Sí (CS-66) |

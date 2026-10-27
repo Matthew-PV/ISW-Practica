@@ -3,35 +3,45 @@
 > Qué pantallas hay, cómo se pasa de una a otra, qué archivos usa cada una y qué llamadas hace a la API.
 > Documentos relacionados: [arquitectura](arquitectura.md), [flujos](flujos.md), [referencia de la API](api.md), [glosario](glosario.md) e [inventario de pantallas](inventario-pantallas.md) (estados y lagunas frente al diseño).
 
-El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilos de Bootstrap 5 complementados por `css/styles.css`. El mismo servidor Express sirve las páginas desde `frontend/` y la API desde `/api`, así que comparten origen y la cookie de sesión viaja sola en cada `fetch`.
+El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilos de Bootstrap 5 (solo su CSS) complementados por `css/styles.css` y por el CSS propio de cada grupo de páginas. Está pensado para escritorio; la adaptación a pantallas pequeñas está aparcada. El mismo servidor Express sirve las páginas desde `frontend/` y la API desde `/api`, así que comparten origen y la cookie de sesión viaja sola en cada `fetch`.
 
 ## Mapa de navegación
 
-El [sitemap de PlanB](sitemap.mmd) es la referencia del mapa de navegación, en formato Mermaid. Contiene las nueve páginas actuales, agrupadas en «Acceso» y «Con sesión». Las cajas representan páginas; las flechas, enlaces o redirecciones. La flecha discontinua indica el acceso a restablecer la contraseña mediante el enlace recibido por correo.
+El [sitemap de PlanB](sitemap.mmd) es la referencia del mapa de navegación, en formato Mermaid. Contiene las diez páginas actuales, agrupadas en «Acceso» y «Con sesión».
 
-**Navegación común:** las cinco páginas con sesión comparten la barra superior: PlanB e Inicio llevan a `bienvenida.html`; además, permite ir a «Buscar personas» y «Mi perfil». Estas conexiones se explican aquí y en los comentarios del sitemap para evitar repetir flechas.
+**Entrada:** `/` sirve `index.html`, la landing pública, con enlaces a `iniciar-sesion.html` y `registro.html`. Un inicio de sesión o un registro correctos llevan a `bienvenida.html`.
 
-**Sesión no válida:** si una página con sesión recibe 401, vuelve al inicio de sesión. Esta regla se expresa como nota, sin conexiones desde grupos completos.
+**Cabecera común:** las cinco páginas con sesión (`bienvenida`, `perfil`, `personas`, `usuario` y `experiencia`) comparten `header.cabecera`: la marca PlanB y «Inicio» (a `bienvenida.html`), un buscador y el menú de cuenta (ver «Cabecera común» más abajo).
 
-El sitemap muestra solo los nombres de archivo. Las URL de detalle incluyen parámetros: `usuario.html?nombre=...` identifica a la persona, `experiencia.html?id=...` identifica la experiencia y `restablecer.html?token=...` recibe el código del enlace de recuperación.
+**Sesión no válida:** si una página con sesión recibe 401, `irAlLogin` (en `js/shared/pantalla.js`) lleva a `iniciar-sesion.html`.
 
-Un enlace a un usuario lleva a `perfil.html` si es el propio usuario y a `usuario.html?nombre=...` si es otro: lo decide `crearEnlacePerfil` (en `js/shared/pantalla.js`). Si una página con sesión recibe 401, vuelve a `index.html` con `irAlLogin`.
+Las URL de detalle incluyen parámetros: `usuario.html?nombre=...` identifica a la persona, `experiencia.html?id=...` la experiencia, `personas.html?q=...` el texto a buscar y `restablecer.html?token=...` recibe el código del enlace de recuperación. Un enlace a un usuario lleva a `perfil.html` si es el propio usuario y a `usuario.html?nombre=...` si es otro: lo decide `crearEnlacePerfil`.
 
 ## Páginas, archivos y llamadas
 
-Cada página carga primero `js/shared/api.js`, después los módulos compartidos que necesita y por último su script.
+Cada página carga primero `js/shared/api.js`, después los módulos compartidos que necesita y por último su script. Todas cargan `css/styles.css`; la columna «CSS propio» es el segundo archivo de estilos.
 
-| Página | Script | Módulos compartidos | Llamadas a la API | Historias |
-|---|---|---|---|---|
-| `index.html` | `index.js` | `api` | `POST /auth/login` | CS-59 |
-| `registro.html` | `registro.js` | `api`, `password` y Turnstile | `GET /auth/captcha`, `POST /auth/registro` | CS-59, CS-64 |
-| `recuperar.html` | `recuperar.js` | `api` | `POST /auth/recuperar` | CS-64 |
-| `restablecer.html` | `restablecer.js` | `api`, `password` | `POST /auth/restablecer` | CS-64 |
-| `bienvenida.html` | `bienvenida.js` | `api`, `pantalla` | `GET /auth/yo`, `GET /ciudades`, `GET /experiencias?autor=`, `POST /experiencias`, `PATCH /experiencias/:id` | CS-44, CS-49, CS-57, CS-22 |
-| `perfil.html` | `perfil.js` | `api`, `pantalla`, `experiencias`, `password` | `GET` y `PUT /perfil`, `PUT /perfil/foto`, `PUT /perfil/password`, `GET /perfil/resumen`, `/perfil/amigos` y `/perfil/seguidores`, `GET /amistades/solicitudes`, `PATCH /amistades/:id`, `GET /experiencias?autor=` | CS-47, CS-45, CS-61, CS-44, CS-64 |
-| `personas.html` | `personas.js` | `api`, `pantalla` | `GET /auth/yo`, `GET /usuarios?texto=` | CS-61 |
-| `usuario.html` | `usuario.js` | `api`, `pantalla`, `experiencias` | `GET /usuarios/:nombre`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id`, `POST` y `DELETE /seguimientos`, `GET /experiencias?autor=` | CS-62, CS-61, CS-44 |
-| `experiencia.html` | `experiencia.js` | `api`, `pantalla` | `GET /experiencias/:id`, `GET /auth/yo`, `GET` y `PUT /experiencias/:id/valoracion`, `GET /experiencias/:id/valoraciones` y `/valoraciones/amigos` | CS-30, CS-63, CS-48, CS-01 |
+| Página | Script | CSS propio | Módulos compartidos | Llamadas a la API | Historias |
+|---|---|---|---|---|---|
+| `index.html` | ninguno | `landing.css` | ninguno | ninguna | CS-66 |
+| `iniciar-sesion.html` | `iniciar-sesion.js` | `acceso.css` | `api` | `POST /auth/login` | CS-59 |
+| `registro.html` | `registro.js` | `acceso.css` | `api`, `password` y Turnstile | `GET /auth/captcha`, `POST /auth/registro` | CS-59, CS-64 |
+| `recuperar.html` | `recuperar.js` | `acceso.css` | `api` | `POST /auth/recuperar` | CS-64 |
+| `restablecer.html` | `restablecer.js` | `acceso.css` | `api`, `password` | `POST /auth/restablecer` | CS-64 |
+| `bienvenida.html` | `bienvenida.js` | ninguno | `api`, `pantalla`, `cabecera` | `GET /auth/yo`, `GET /ciudades`, `GET /experiencias?autor=`, `POST /experiencias`, `PATCH /experiencias/:id` | CS-44, CS-49, CS-57, CS-22 |
+| `perfil.html` | `perfil.js` | `perfil.css` | `api`, `pantalla`, `cabecera`, `experiencias`, `password` | `GET` y `PUT /perfil`, `PUT /perfil/foto`, `PUT /perfil/password`, `GET /perfil/resumen`, `/perfil/amigos` y `/perfil/seguidores`, `GET /amistades/solicitudes`, `PATCH /amistades/:id`, `GET /experiencias?autor=` | CS-47, CS-45, CS-61, CS-44, CS-64 |
+| `personas.html` | `personas.js` | `buscar.css` | `api`, `pantalla`, `pestanas`, `cabecera` | `GET /usuarios?texto=` | CS-61 |
+| `usuario.html` | `usuario.js` | `perfil.css` | `api`, `pantalla`, `cabecera`, `experiencias` | `GET /usuarios/:nombre`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id`, `POST` y `DELETE /seguimientos`, `GET /experiencias?autor=` | CS-62, CS-61, CS-44 |
+| `experiencia.html` | `experiencia.js` | `experiencia.css` | `api`, `pestanas`, `pantalla`, `cabecera` | `GET /experiencias/:id`, `GET /auth/yo`, `GET` y `PUT /experiencias/:id/valoracion`, `GET /experiencias/:id/valoraciones` y `/valoraciones/amigos` | CS-30, CS-63, CS-48, CS-01 |
+
+## Estilos
+
+* `css/styles.css` es el archivo común: define las variables `--color-*` (los colores solo se escriben en ese bloque; el resto de los CSS usa `var(--color-*)`) y los componentes compartidos: cabecera, botones, tarjetas, avisos y el enlace «Saltar al contenido».
+* `landing.css`: la landing (`index.html`).
+* `acceso.css`: la tarjeta de formulario de `iniciar-sesion`, `registro`, `recuperar` y `restablecer`.
+* `experiencia.css`: el detalle de experiencia, con la experiencia y el formulario en una columna y las valoraciones en otra.
+* `perfil.css`: `perfil.html` y `usuario.html`.
+* `buscar.css`: `personas.html`.
 
 ## Estados de una pantalla
 
@@ -49,7 +59,7 @@ stateDiagram-v2
   Mostrando --> NoDisponible : una petición posterior responde 404
   Mostrando --> AlLogin : una petición posterior responde 401
   SinId : «No se ha especificado ninguna experiencia.»
-  AlLogin : vuelve a index.html
+  AlLogin : vuelve a iniciar-sesion.html
   NoDisponible : solo «Contenido no disponible», se borra lo que se mostraba
   Error : aviso rojo con el mensaje
   Mostrando : datos, listas y formulario
@@ -74,31 +84,31 @@ stateDiagram-v2
   Fallo : alFallar(error) muestra el aviso
 ```
 
+## Cabecera común
+
+Las cinco páginas con sesión llevan `header.cabecera`, con el mismo HTML en todas:
+
+* La marca PlanB y el enlace «Inicio», dentro de un `nav` con `aria-label="Principal"`; en la página actual el enlace lleva `aria-current="page"`.
+* Un buscador (`form[role="search"]`) que envía a `personas.html?q=`. No se envía si el texto está vacío.
+* El menú de cuenta, un `<details class="menu-cuenta">` con «Mi perfil» y el botón «Cerrar sesión» (`data-cerrar-sesion`). Se cierra al hacer clic fuera, al pulsar Escape (el foco vuelve al resumen) y al elegir una opción.
+
+`js/shared/cabecera.js` engancha esos comportamientos. «Cerrar sesión» llama a `POST /api/auth/logout` y va a `iniciar-sesion.html`; mientras espera, el botón se desactiva y muestra «Cerrando sesión…», y si falla se restaura y aparece un aviso `role="alert"` bajo la cabecera.
+
+Antes de la cabecera, cada una de estas páginas (y la landing) lleva el enlace «Saltar al contenido», que solo se ve al recibir el foco del teclado.
+
 ## Cada página
 
-### Diseño de las pantallas de acceso (CS-66, objetivo 1)
+### `index.html`: landing
 
-`index.html`, `registro.html`, `recuperar.html` y `restablecer.html` comparten una tarjeta de formulario, la marca PlanB y los estilos de acceso de `css/styles.css`. La guía aplicada es temporal: corresponde a la propuesta actual de [arte.md](arte.md) y podrá cambiar si el equipo aprueba otra distinta.
+Página pública y estática: no tiene JavaScript, no comprueba la sesión y no llama a la API. Su cabecera solo ofrece «Iniciar sesión» y «Crear cuenta». Presenta la frase «Comparte y descubre planes por tu ciudad» y explica qué es PlanB. Es la página que sirve `/`.
 
-Sus controles principales miden al menos 44 px de alto, los campos usan un borde con contraste suficiente y el enlace «Saltar al contenido» solo aparece al recibir el foco del teclado. Cada barra se identifica como navegación de acceso mediante `aria-label`; no se añadió JavaScript de Bootstrap ni scripts en línea. La prueba `diseno.acceso.test.js` comprueba esa estructura y las reglas CSS comunes.
+Pruebas: `landing.test.js`.
 
-### Diseño del detalle de experiencia (CS-66, objetivo 2)
+### `iniciar-sesion.html`: iniciar sesión
 
-`experiencia.html` adopta temporalmente los componentes de la guía actual de [arte.md](arte.md). En escritorio, la experiencia y el formulario de valoración quedan en una columna, y las listas de valoraciones en otra. En móvil, ambas se apilan y la navegación de sesión queda fijada en la parte inferior para mantener accesibles los enlaces principales.
+Formulario de email y contraseña. Si el login es correcto va a `bienvenida.html`; si no, muestra el mensaje del servidor en `#error-login`. Enlaza a la recuperación de la contraseña y ofrece «Crear cuenta».
 
-La tarjeta de experiencia, el formulario, cada valoración y la ventana nativa de reporte usan los mismos bordes, espaciados y botones. Se conserva el comportamiento existente: el formulario solo aparece a quien puede valorar, «Útil» y «Reportar» siguen siendo acciones solo visuales hasta sus historias correspondientes, y los textos de usuarios se siguen insertando con `textContent`. No se incorpora JavaScript de Bootstrap ni manejadores en línea. `diseno.experiencia.test.js` comprueba la estructura, la adaptación declarada en CSS y esos límites; queda una revisión manual autenticada a 375, 768 y 1280 px.
-
-### Diseño de las pantallas sociales (CS-66, objetivo 3)
-
-`perfil.html`, `usuario.html` y `personas.html` comparten la navegación de sesión, el enlace para saltar al contenido, los controles de 44 px y los avisos accesibles. La estructura aprobada de [diseno.md](diseno.md) se aplica así: el perfil propio muestra primero las solicitudes, coloca datos y relaciones en dos bloques de escritorio y repliega el cambio de contraseña con el elemento nativo `<details>`; el perfil de otra persona deja su tarjeta en una columna lateral en escritorio y la apila sobre las experiencias en móvil; el buscador presenta un formulario y resultados en una tarjeta estrecha.
-
-La guía de colores y componentes de [arte.md](arte.md) continúa siendo temporal. Los identificadores que usan los scripts, sus llamadas a la API, los permisos y los textos insertados con `textContent` se conservan. Las filas creadas dinámicamente para personas, solicitudes, botones y experiencias reciben clases de los componentes comunes. `diseno.social.test.js` comprueba la estructura, navegación, adaptación declarada, ausencia de código en línea y esos componentes; la validación visual autenticada a 375, 768 y 1280 px queda pendiente.
-
-### `index.html`: iniciar sesión
-
-Formulario de email y contraseña. Si el login es correcto va a `bienvenida.html`; si no, muestra el mensaje del servidor en `#error-login`. Presenta la frase «Comparte y descubre planes por tu ciudad», enlaza a la recuperación y ofrece «Crear cuenta» como botón secundario visible.
-
-Pruebas: `login.test.js` y `diseno.acceso.test.js`.
+Pruebas: `iniciar-sesion.test.js`.
 
 ### `registro.html`: crear una cuenta
 
@@ -106,21 +116,21 @@ Pruebas: `login.test.js` y `diseno.acceso.test.js`.
 * El CAPTCHA de Cloudflare Turnstile se dibuja en `#captcha` cuando su script llama a `window.iniciarCaptcha`, con la clave pública de `GET /api/auth/captcha`.
 * Con el registro correcto, la sesión ya está abierta y va a `bienvenida.html`.
 
-Pruebas: `registro.test.js` y `diseno.acceso.test.js`.
+Pruebas: `registro.test.js`.
 
 ### `recuperar.html`: pedir el enlace
 
 Pide el email y siempre muestra el mismo mensaje de éxito, exista la cuenta o no: la página no lo sabe, y así nadie puede usarla para averiguarlo.
 
-Pruebas: `recuperacion.test.js` y `diseno.acceso.test.js`.
+Pruebas: `recuperacion.test.js`.
 
 ### `restablecer.html`: elegir una contraseña nueva
 
 * Lee el `token` de la URL. Sin token muestra el aviso y oculta el formulario.
 * Pide la contraseña dos veces y comprueba en la pantalla que coinciden antes de enviarla. El requisito «sin el nombre de usuario» lo comprueba el servidor, porque la página no sabe de quién es el enlace.
-* Al terminar, muestra un enlace a `index.html`.
+* Al terminar, muestra un enlace a `iniciar-sesion.html`.
 
-Pruebas: `recuperacion.test.js` y `diseno.acceso.test.js`.
+Pruebas: `recuperacion.test.js`.
 
 ### `bienvenida.html`: mis experiencias
 
@@ -140,13 +150,16 @@ Pruebas: `bienvenida.test.js` y `estados.test.js`.
 * **Solicitudes recibidas:** cada una con «Aceptar» y «Rechazar». Al aceptar se recargan los contadores, la lista de amigos y mis experiencias.
 * **Amigos y seguidores:** contadores y dos listas de 20 en 20 con «Cargar más». Cada nombre lleva a su perfil.
 
-Pruebas: `perfil.foto.test.js`, `perfil.password.test.js`, `perfil.relaciones.test.js`, `perfil.solicitudes.test.js`, `estados.test.js`, `shared/experiencias.test.js` y `diseno.social.test.js`.
+Pruebas: `perfil.foto.test.js`, `perfil.password.test.js`, `perfil.relaciones.test.js`, `perfil.solicitudes.test.js`, `estados.test.js`, `perfil.cabecera.test.js` y `shared/experiencias.test.js`.
 
-### `personas.html`: buscar personas
+### `personas.html`: buscar
 
-Un buscador por parte del nombre (como mucho 20 resultados). Cada resultado es un enlace a su perfil. Antes de buscar, `#ayuda-busqueda` explica qué escribir («Escribe parte de un nombre.»); mientras se busca se ve «Cargando…» (`#cargando`).
+Un buscador con dos pestañas, «Personas» y «Experiencias» (`shared/pestanas.js`). Si la URL trae `?q=`, rellena el campo y busca al cargarse.
 
-Pruebas: `personas.test.js`, `estados.test.js` y `diseno.social.test.js`.
+* **Personas:** busca por parte del nombre (como mucho 20 resultados) con `GET /api/usuarios?texto=`. Cada resultado es un enlace a su perfil. Antes de buscar, `#ayuda-busqueda` explica qué escribir; mientras se busca se ve «Cargando…» (`#cargando`) y el botón pasa a «Buscando…».
+* **Experiencias:** `buscarExperiencias` devuelve siempre una lista vacía, así que se ve «sin experiencias»; la búsqueda real llegará con CS-24.
+
+Pruebas: `personas.test.js`, `pestanas.test.js` y `estados.test.js`.
 
 ### `usuario.html?nombre=`: perfil de otro usuario
 
@@ -155,7 +168,7 @@ Pruebas: `personas.test.js`, `estados.test.js` y `diseno.social.test.js`.
 * `#boton-seguir` alterna entre «Seguir» y «Dejar de seguir».
 * Tras cada acción se vuelve a pedir el perfil, para que los contadores y botones sean los reales, y también «Sus experiencias», porque al cambiar la amistad cambian las que se pueden ver.
 
-Pruebas: `usuario.test.js`, `estados.test.js`, `shared/experiencias.test.js` y `diseno.social.test.js`.
+Pruebas: `usuario.test.js`, `estados.test.js`, `usuario.cabecera.test.js` y `shared/experiencias.test.js`.
 
 ### `experiencia.html?id=`: una experiencia
 
@@ -165,7 +178,7 @@ Pruebas: `usuario.test.js`, `estados.test.js`, `shared/experiencias.test.js` y `
 * **«Útil» y «Reportar»:** solo funcionan en la pantalla y no guardan nada, hasta que se implementen CS-02 y CS-04. «Reportar» abre el `<dialog>` `#dialogo-reporte`.
 * Si cualquier petición responde 404, se borra lo que se mostraba y queda solo «Contenido no disponible».
 
-Pruebas: `experiencia.test.js`, `experiencia.formulario.test.js` y `diseno.experiencia.test.js`.
+Pruebas: `experiencia.test.js`, `experiencia.formulario.test.js`.
 
 ## Módulos compartidos (`js/shared/`)
 
@@ -174,6 +187,8 @@ Pruebas: `experiencia.test.js`, `experiencia.formulario.test.js` y `diseno.exper
 | `api.js` | `api(ruta, opciones)`: llama a `/api` + `ruta` con `fetch` y la cookie de sesión. Envía `Content-Type: application/json` salvo con `FormData`, en cuyo caso la cabecera la pone el navegador. Devuelve el JSON (o `null` si no hay cuerpo); si falla, lanza un `Error` con el mensaje del servidor y `error.status`. | Todas las páginas |
 | `pantalla.js` | `mostrarMensaje(caja, texto)` y `ocultarMensaje(caja)`; `mostrarCargando()` y `ocultarCargando()`, que muestran y ocultan el texto `#cargando` de la página; `irAlLogin()`; `crearEnlacePerfil(enlace, usuario, miUsuarioId)`; `listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar })`, que devuelve `{ cargar, reiniciar }` y no repite un elemento que ya está en la lista. La lista está vacía cuando no tiene ningún hijo con `data-id-elemento`, de modo que la tarjeta «+» de la bienvenida no cuenta. | Las páginas con sesión y `experiencias.js` |
 | `experiencias.js` | `mostrarExperienciasDe(nombreUsuario)` y `recargarExperiencias()`: la lista «Cargar más» de experiencias de un autor. La página debe tener `#lista-experiencias`, `#sin-experiencias`, `#mas-experiencias` y `#error-experiencias`. | `perfil.js`, `usuario.js` |
+| `cabecera.js` | Comportamiento de la cabecera común (ver «Cabecera común»). No exporta nada. | Las cinco páginas con sesión |
+| `pestanas.js` | `window.activarPestanas(lista)`: pestañas accesibles (`role="tablist"`) que se manejan con ratón y teclado. | `personas.js`, `experiencia.js` |
 | `password.js` | `mostrarRequisitosPassword(campo, lista, obtenerNombre)`: marca los requisitos cumplidos mientras se escribe. Son los mismos que comprueba el backend, que es quien decide. | `registro.js`, `perfil.js`, `restablecer.js` |
 
 Los módulos se cargan con `<script>` normales (no son módulos ES) y exponen sus funciones con `window.nombre = nombre`, para que se vea qué ofrece cada archivo y las pruebas puedan cargarlos.
@@ -181,13 +196,14 @@ Los módulos se cargan con `<script>` normales (no son módulos ES) y exponen su
 ## Reglas del frontend
 
 * **Sin scripts en línea.** La política CSP de Helmet los bloquea: nada de `onclick=` ni `<script>` con código dentro del HTML. Los eventos se asignan con `addEventListener` en el JS de la página.
-* **Avisos de error con `role="alert"`.** Todo elemento cuyo `id` empieza por `error-` lleva `role="alert"` para que se anuncie a los lectores de pantalla; `estados.test.js` lo comprueba en las nueve páginas.
+* **Avisos de error con `role="alert"`.** Todo elemento cuyo `id` empieza por `error-` lleva `role="alert"` para que se anuncie a los lectores de pantalla; `estados.test.js` lo comprueba en las páginas con avisos de error.
 * **Texto de usuarios con `textContent`.** Nunca con `innerHTML`, para que un nombre o comentario con HTML se vea como texto y no se ejecute. `innerHTML` solo se usa para estructuras fijas sin datos, como el esqueleto de una tarjeta.
 * **Ventanas con `<dialog>`.** La CSP no deja cargar el JavaScript de Bootstrap desde el CDN, así que los diálogos usan el elemento nativo `<dialog>` con `showModal()` y `close()`.
 * **La seguridad está en el backend.** Ocultar un botón (por ejemplo, el formulario de valorar en una experiencia propia) solo mejora la interfaz: el servidor comprueba siempre los permisos.
 * **Llamadas con `api`.** Ninguna página usa `fetch` directamente.
-* **Escritorio y móvil.** Las rejillas y formularios usan las clases de Bootstrap (`row-cols-*`, `col-md-*`) para adaptarse; un cambio de interfaz se comprueba en los dos tamaños.
+* **Colores en variables.** Los colores solo se definen como `--color-*` en `css/styles.css`; los demás CSS las usan.
+* **Escritorio.** El diseño se comprueba en escritorio; el móvil está aparcado.
 
 ## Pruebas del frontend
 
-Las pruebas están en `backend/tests/frontend/`, agrupadas por página y tema (`perfil.foto.test.js`, `perfil.password.test.js`...), y en `backend/tests/frontend/shared/`. `navegacion.test.js` comprueba que todas las páginas con sesión tienen la misma barra. Usan Jest con jsdom: cargan el HTML real de la página, simulan `fetch` y comprueban lo que ve el usuario. El ayudante `tests/helpers/pantalla.js` carga los scripts en orden, igual que el navegador. Se ejecutan con el resto: `npm test` desde `backend/`.
+Las pruebas están en `backend/tests/frontend/`, agrupadas por página y tema (`perfil.foto.test.js`, `perfil.password.test.js`...), y en `backend/tests/frontend/shared/`. `cabecera.test.js` y `enlaces.test.js` comprueban la cabecera común y los enlaces entre páginas. Usan Jest con jsdom: cargan el HTML real de la página, simulan `fetch` y comprueban lo que ve el usuario. El ayudante `tests/helpers/pantalla.js` carga los scripts en orden, igual que el navegador. Se ejecutan con el resto: `npm test` desde `backend/`.

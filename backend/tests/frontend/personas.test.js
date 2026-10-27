@@ -192,3 +192,60 @@ describe('Buscar (diseño aplicado)', () => {
     expect(fila.querySelector('b')).toBeNull();
   });
 });
+
+// Menores de la revisión de T4.5: lo que ya hacía el código sin prueba y dos retoques del HTML
+describe('Buscar (menores de la revisión)', () => {
+  const ok = (lista) => ({ ok: true, status: 200, json: async () => lista });
+
+  test('«Cargando…» y el aviso de error no dependen del panel de Personas: valen para cualquier pestaña', () => {
+    expect($('#cargando').closest('[role="tabpanel"]')).toBeNull();
+    expect($('#error-busqueda').closest('[role="tabpanel"]')).toBeNull();
+  });
+
+  test('la etiqueta del campo no habla solo de nombres de usuario', () => {
+    expect($('label[for="texto-busqueda"]').textContent).not.toMatch(/nombre de usuario/i);
+  });
+
+  test('al buscar de nuevo se vacían los resultados anteriores mientras llega la respuesta', async () => {
+    window.fetch.mockReturnValueOnce(respuesta(200, [{ id: 1, nombreUsuario: 'ana' }]));
+    buscar('ana');
+    await terminar();
+    expect(document.querySelectorAll('#resultados .fila-resultado')).toHaveLength(1);
+
+    window.fetch.mockReturnValueOnce(diferida().promesa);
+    buscar('luis');
+
+    expect(document.querySelectorAll('#resultados .fila-resultado')).toHaveLength(0);
+  });
+
+  test('el error de una búsqueda atrasada no se muestra ni toca el botón de la última', async () => {
+    const primera = diferida();
+    const segunda = diferida();
+    window.fetch.mockReturnValueOnce(primera.promesa).mockReturnValueOnce(segunda.promesa);
+
+    buscar('ana');
+    buscar('luis');
+    primera.resolver({ ok: false, status: 500, json: async () => ({ error: 'fallo viejo' }) });
+    await terminar();
+
+    expect($('#error-busqueda').classList.contains('d-none')).toBe(true);
+    const boton = $('#form-busqueda button[type="submit"]');
+    expect(boton.textContent).toBe('Buscando…');
+    expect(boton.disabled).toBe(true);
+    segunda.resolver(ok([]));
+    await terminar();
+    expect(boton.textContent).toBe('Buscar');
+  });
+
+  test('la clase entrando se retira de los resultados al terminar el fundido', async () => {
+    window.fetch.mockReturnValueOnce(respuesta(200, [{ id: 1, nombreUsuario: 'ana' }]));
+    buscar('ana');
+    await terminar();
+    const fila = $('#resultados .fila-resultado');
+    expect(fila.classList.contains('entrando')).toBe(true);
+
+    await new Promise((resolve) => setTimeout(resolve, 350));
+
+    expect(fila.classList.contains('entrando')).toBe(false);
+  });
+});

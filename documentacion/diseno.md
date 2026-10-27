@@ -141,25 +141,25 @@ Una sección por pantalla, con el mismo formato. Son diez.
 
 ## Requisitos mínimos de un buen diseño de frontend
 
-Lista con la que se revisa cada esquema y, después, cada pantalla. Parte de las pautas de accesibilidad WCAG 2.2 de nivel AA y de buenas prácticas habituales. La última columna es el **estado del código el 27/10/2026**, antes de aplicar el rediseño.
+Lista con la que se revisa cada esquema y, después, cada pantalla. Parte de las pautas de accesibilidad WCAG 2.2 de nivel AA y de buenas prácticas habituales. La última columna describe **el estado del código hoy**, con el diseño aplicado.
 
 | # | Requisito | Cómo se comprueba | Cómo lo cumple el diseño | Estado del código hoy |
 |---|---|---|---|---|
-| 1 | **Adaptable** | Sin desplazamiento horizontal a 1024, 1280 y 1440 px | Contenido centrado de hasta unos 960 px | Las 9 páginas llevan `viewport`. El CSS propio no tiene `@media`: depende de la cuadrícula de Bootstrap |
-| 2 | **Navegación clara** | Se llega a los destinos principales en un clic y se sabe dónde se está | Cabecera común; la sección activa se marca con línea gruesa y negrita | Barra superior con tres enlaces. **Sin `aria-current`** ni `aria-label` en ningún `nav` |
-| 3 | **Zonas pulsables suficientes** | Al menos 24 × 24 px (mínimo AA) y, mejor, 44 × 44 px | Alto mínimo de 44 px en botones y campos | Valores por defecto de Bootstrap: `btn` unos 38 px de alto y `btn-sm` unos 31 px. Cumplen el mínimo AA, **no los 44 px recomendados** |
-| 4 | **Contraste suficiente** | Texto 4,5:1; texto grande y componentes de interfaz 3:1 | Paleta de `arte.md` con estos mínimos | Calculado: todos los textos y botones cumplen, algunos **justo** (4,50 y 4,53). **El borde de los campos de formulario (`#ced4da`) da 1,49:1 y no llega a 3:1** |
-| 5 | **Uso con teclado y foco visible** | Todo se alcanza con Tab y el foco se ve | Elementos nativos (`button`, `a`, `details`, `dialog`) | **Sin enlace «Saltar al contenido»**; el foco depende del estilo por defecto de Bootstrap |
-| 6 | **Estructura semántica** | `lang`, un solo `h1`, `main`, `nav` con nombre y etiquetas en los campos | Cada pantalla tiene un título principal y campos con etiqueta | Las 9 páginas cumplen `lang="es"`, un `h1`, `main` e imágenes con `alt`. Falta el nombre de los `nav` |
-| 7 | **No depender solo del color** | La información sigue clara en blanco y negro | Activo = línea + negrita; errores = texto, no solo color | «Solicitud enviada» ya se distingue por el texto |
+| 1 | **Adaptable** | Sin desplazamiento horizontal a 1024, 1280 y 1440 px | Contenido centrado de hasta unos 960 px | Las 10 páginas llevan `viewport`. El diseño se comprueba en escritorio; el móvil está aparcado |
+| 2 | **Navegación clara** | Se llega a los destinos principales en un clic y se sabe dónde se está | Cabecera común; la sección activa se marca con línea gruesa y negrita | Cabecera común en las 5 páginas con sesión: `nav` con `aria-label="Principal"` y `aria-current="page"` en la página actual |
+| 3 | **Zonas pulsables suficientes** | Al menos 24 × 24 px (mínimo AA) y, mejor, 44 × 44 px | Alto mínimo de 44 px en botones y campos | Botones y campos de al menos 44 px de alto |
+| 4 | **Contraste suficiente** | Texto 4,5:1; texto grande y componentes de interfaz 3:1 | Paleta de `arte.md` con estos mínimos | Los colores salen de las variables `--color-*` de `styles.css`, con el contraste calculado en `arte.md`; el borde de los campos cumple 3:1 |
+| 5 | **Uso con teclado y foco visible** | Todo se alcanza con Tab y el foco se ve | Elementos nativos (`button`, `a`, `details`, `dialog`) | Enlace «Saltar al contenido» en la landing y en las páginas con sesión; elementos nativos (`button`, `a`, `details`, `dialog`) y foco visible propio |
+| 6 | **Estructura semántica** | `lang`, un solo `h1`, `main`, `nav` con nombre y etiquetas en los campos | Cada pantalla tiene un título principal y campos con etiqueta | Las 10 páginas cumplen `lang="es"`, un `h1`, `main` e imágenes con `alt`; los `nav` tienen nombre |
+| 7 | **No depender solo del color** | La información sigue clara en blanco y negro | Activo = línea + negrita; errores = texto, no solo color | «Solicitud enviada» y los errores se distinguen por el texto, no solo por el color |
 | 8 | **Estados y avisos** | Cada pantalla resuelve cargando, vacío, error y «Contenido no disponible», y los errores se anuncian a lectores de pantalla | Cada esquema dibuja sus avisos; los estados están en [frontend.md](frontend.md) | Todos los avisos de error llevan `role="alert"` (lo comprueba una prueba) y las pantallas con datos tienen estado «Cargando…» |
-| 9 | **Jerarquía clara** | Un solo botón principal por pantalla | Un botón principal relleno; el resto, con contorno o de texto | Hoy se mezclan colores de Bootstrap (primario, éxito, peligro) sin una regla común |
-| 10 | **Legible y estable** | Cuerpo de texto de 16 px, columnas de texto estrechas y sin saltos al cargar las imágenes | Formularios en una columna estrecha | Las imágenes de perfil llevan `width` y `height`; el cuerpo usa los 16 px de Bootstrap |
-| 11 | **Sin JavaScript de Bootstrap** | Nada del diseño depende de sus componentes | Diálogos con `<dialog>` y plegables con `<details>` | Cumple |
+| 9 | **Jerarquía clara** | Un solo botón principal por pantalla | Un botón principal relleno; el resto, con contorno o de texto | Un botón principal relleno por pantalla; el resto, con contorno o de texto |
+| 10 | **Legible y estable** | Cuerpo de texto de 16 px, columnas de texto estrechas y sin saltos al cargar las imágenes | Formularios en una columna estrecha | Las imágenes de perfil llevan `width` y `height`; el cuerpo usa 16 px y los formularios van en una columna estrecha |
+| 11 | **Sin JavaScript de Bootstrap** | Nada del diseño depende de sus componentes | Diálogos con `<dialog>` y plegables con `<details>` | Cumple: diálogos con `<dialog>` y plegables con `<details>`, sin JavaScript de Bootstrap |
 
 **Cómo se midió el contraste:** fórmula de luminancia relativa de WCAG con los colores por defecto de Bootstrap 5.3. No se ha medido sobre capturas de pantalla.
 
-**Qué hay que corregir al aplicar el diseño:** cabecera nueva con nombre y `aria-current`, enlace «Saltar al contenido», borde de campos con contraste 3:1 y botones de 44 px. La landing y `iniciar-sesion.html` no existen todavía en el código (el inicio de sesión sigue en `index.html`).
+**Cómo se aplicó:** cabecera nueva con nombre y `aria-current`, enlace «Saltar al contenido», borde de campos con contraste 3:1 y botones de 44 px. La landing es `index.html` y el inicio de sesión está en `iniciar-sesion.html`.
 
 ## Decisiones
 
