@@ -2,14 +2,14 @@
  * @jest-environment jsdom
  */
 // CS-45, objetivo 7: contadores y listados de amigos y seguidores en la pantalla de mi perfil
-// (frontend/perfil.html y js/perfil.js) en un navegador simulado (jsdom).
+// (frontend/cuenta/perfil.html y js/perfil.js) en un navegador simulado (jsdom).
 const fs = require('node:fs');
 const path = require('node:path');
 const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const HTML = leer('perfil.html');
+const HTML = leer('/cuenta/perfil.html');
 const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/experiencias.js', 'js/perfil.js'];
 const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', foto: null, ciudad: null };
 
@@ -152,6 +152,6 @@ test('cada amigo y cada seguidor enlaza a su perfil', async () => {
     [SEGUIDORES]: [200, listado([{ id: 4, nombreUsuario: 'ana maría', foto: '/img/foto-por-defecto.svg' }])],
   });
 
-  expect($('#lista-amigos a').getAttribute('href')).toBe('usuario.html?nombre=usuario_2');
-  expect($('#lista-seguidores a').getAttribute('href')).toBe('usuario.html?nombre=ana%20mar%C3%ADa');
+  expect($('#lista-amigos a').getAttribute('href')).toBe('/social/usuario.html?nombre=usuario_2');
+  expect($('#lista-seguidores a').getAttribute('href')).toBe('/social/usuario.html?nombre=ana%20mar%C3%ADa');
 });

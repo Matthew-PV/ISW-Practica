@@ -67,7 +67,7 @@ router.post('/logout', (req, res) => {
 
 // GET /api/auth/yo → authService.obtenerUsuario
 // Devuelve el usuario con la sesión iniciada, o 401 si no hay sesión.
-// La usa el frontend para saber quién está conectado (por ejemplo, en bienvenida.html).
+// La usa el frontend para saber quién está conectado (por ejemplo, en /cuenta/bienvenida.html).
 router.get('/yo', requiereSesion, async (req, res) => {
   const usuario = await authService.obtenerUsuario(req.session.usuarioId);
   res.json(usuario);

@@ -34,10 +34,10 @@ Cada esquema se dibuja en **escritorio (1280 px)**, a escala 0,5. El contenido v
 
 Esquema: [diseno/cabecera.svg](diseno/cabecera.svg) (aún con la cabecera anterior; la nueva está descrita aquí y en [arte.md](arte.md)).
 
-- **Fila superior (64 px):** logo a la izquierda (enlaza a Inicio); buscador en píldora al centro («Buscar personas y planes», con botón «Buscar»; formulario GET a `personas.html?q=`); a la derecha, «Crear plan» (único botón principal de la cabecera), la campana de notificaciones y el menú de cuenta.
+- **Fila superior (64 px):** logo a la izquierda (enlaza a Inicio); buscador en píldora al centro («Buscar personas y planes», con botón «Buscar»; formulario GET a `/social/personas.html?q=`); a la derecha, «Crear plan» (único botón principal de la cabecera), la campana de notificaciones y el menú de cuenta.
 - **Barra de pestañas de sección (debajo):** Inicio, Explorar, Mis planes y Amigos. La activa lleva línea naranja de 3 px, negrita y `aria-current="page"`.
-- **Menú de cuenta** (`<details>`): Mi perfil, Guardados, Ajustes, Ayuda y Cerrar sesión (`POST /api/auth/logout` y va a `iniciar-sesion.html`; si falla, aviso con `role="alert"`).
-- **En `personas.html`** el campo de la cabecera se oculta porque la página lleva el suyo.
+- **Menú de cuenta** (`<details>`): Mi perfil, Guardados, Ajustes, Ayuda y Cerrar sesión (`POST /api/auth/logout` y va a `/acceso/iniciar-sesion.html`; si falla, aviso con `role="alert"`).
+- **En `/social/personas.html`** el campo de la cabecera se oculta porque la página lleva el suyo.
 - **Sin sesión:** páginas públicas con logo, «Iniciar sesión» (secundario) y «Crear cuenta» (principal), y **pie** con Ayuda y Términos y privacidad. Las pantallas de acceso van divididas, sin cabecera.
 - Enlace «Saltar al contenido» y `nav` con `aria-label="Principal"`.
 - **Estado:** Explorar, Amigos, la campana y Guardados aún no existen; sus entradas se muestran como en la maqueta.
@@ -74,67 +74,67 @@ Una sección por pantalla, con el mismo formato. Son diez.
 - **Estados:** uno solo (estática).
 - **Enlaces (sitemap):** iniciar sesión, registro.
 
-### iniciar-sesion.html: iniciar sesión
+### /acceso/iniciar-sesion.html: iniciar sesión
 - **Responsable del esquema:** Flavia (propuesta)
 - **Esquema:** [diseno/iniciar-sesion.svg](diseno/iniciar-sesion.svg)
 - **Idea:** pantalla dividida, sin barra de cabecera: a la izquierda, la marca (enlace a `index.html`) y tres frases; a la derecha, el formulario. «Crear cuenta» es un botón secundario visible y «¿Has olvidado tu contraseña?» un enlace.
 - **Estados:** normal, «Entrando…» mientras se envía y error con el mensaje del servidor.
 - **Enlaces (sitemap):** registro, recuperar contraseña, bienvenida (acceso correcto).
 
-### registro.html: crear una cuenta
+### /acceso/registro.html: crear una cuenta
 - **Responsable del esquema:** Flavia (propuesta)
 - **Esquema:** [diseno/registro.svg](diseno/registro.svg)
 - **Idea:** misma pantalla dividida. Tres campos, la lista de requisitos de la contraseña que se marca al escribir y el CAPTCHA, que cabe en la columna, antes del botón.
 - **Estados:** error de validación o de duplicado, CAPTCHA no disponible y «Creando cuenta…» mientras se envía.
 - **Enlaces (sitemap):** iniciar sesión, bienvenida (cuenta creada).
 
-### recuperar.html: pedir el enlace
+### /acceso/recuperar.html: pedir el enlace
 - **Responsable del esquema:** Flavia (propuesta)
 - **Esquema:** [diseno/recuperar.svg](diseno/recuperar.svg)
 - **Idea:** misma pantalla dividida, con el formulario a la derecha.
 - **Estados:** formulario y mensaje de éxito, que es siempre el mismo exista o no la cuenta.
 - **Enlaces (sitemap):** iniciar sesión.
 
-### restablecer.html: elegir una contraseña nueva
+### /acceso/restablecer.html: elegir una contraseña nueva
 - **Responsable del esquema:** Flavia (propuesta)
 - **Esquema:** [diseno/restablecer.svg](diseno/restablecer.svg)
 - **Idea:** misma pantalla dividida, con el formulario a la derecha.
 - **Estados:** formulario, contraseñas que no coinciden, enlace no válido (solo un aviso) y éxito con enlace a iniciar sesión.
 - **Enlaces (sitemap):** iniciar sesión.
 
-### bienvenida.html: mis experiencias
+### /cuenta/bienvenida.html: mis experiencias
 - **Responsable del esquema:** Matthew, según el reparto del equipo. Hay una **propuesta de Flavia** que él puede sustituir.
 - **Esquema (pantalla y diálogo):** [diseno/bienvenida.svg](diseno/bienvenida.svg)
 - **Idea:** «Tus experiencias» en rejilla de cuatro columnas, con la tarjeta «+» primera para crear una experiencia. Cada tarjeta lleva título, ciudad, etiqueta de visibilidad y «Ver detalle». El diálogo sirve para crear y para editar.
 - **Estados:** cargando, vacío, lista con «Cargar más», error de lista y diálogo con aviso.
 - **Enlaces (sitemap):** detalle de una experiencia.
 
-### perfil.html: mi perfil
+### /cuenta/perfil.html: mi perfil
 - **Responsable del esquema:** Flavia
 - **Esquema:** [diseno/perfil.svg](diseno/perfil.svg)
 - **Idea:** cabecera con foto grande, nombre y contadores (experiencias, amigos y seguidores; son texto, no enlaces), y el aviso de solicitudes recibidas en una banda destacada, con las solicitudes y sus botones secundarios «Aceptar» y «Rechazar». Ningún botón principal; en «Ajustes», «Guardar cambios» y «Cambiar contraseña» son secundarios. Sin pestañas: debajo, las secciones apiladas Mis experiencias, Amigos y Seguidores. «Ajustes» queda plegado con `<details>` y contiene los datos, la contraseña y «Cerrar sesión».
 - **Estados:** datos, foto subiéndose, listas vacías o con «Cargar más».
 - **Enlaces (sitemap):** perfil de otra persona (amigos, seguidores y solicitudes) y detalle de una experiencia.
 
-### personas.html: buscar
+### /social/personas.html: buscar
 - **Responsable del esquema:** Flavia
 - **Esquema:** [diseno/personas.svg](diseno/personas.svg)
 - **Idea:** título «Buscar», campo grande con el texto de la cabecera, pestañas «Personas» y «Experiencias», y filas con foto, nombre y ciudad. «Experiencias» está vacía por diseño y muestra «Todavía no hay experiencias que mostrar».
 - **Estados:** antes de buscar, «Buscando…» y «Cargando…», con resultados (como mucho 20) y sin resultados («No se han encontrado personas.»).
 - **Enlaces (sitemap):** perfil de otra persona.
 
-### usuario.html: perfil de otra persona
+### /social/usuario.html: perfil de otra persona
 - **Responsable del esquema:** Flavia
 - **Esquema:** [diseno/usuario.svg](diseno/usuario.svg)
 - **Idea:** cabecera centrada con foto, nombre, contadores, botón de amistad y «Seguir»; debajo, sus experiencias en rejilla.
 - **Estados:** perfil, «Usuario no encontrado», cuatro versiones del botón de amistad (ninguna, enviada, recibida, amigos), «Seguir» o «Dejar de seguir», y «No hay experiencias que puedas ver».
-- **Enlaces (sitemap):** detalle de una experiencia; si es el propio usuario, `perfil.html`.
+- **Enlaces (sitemap):** detalle de una experiencia; si es el propio usuario, `/cuenta/perfil.html`.
 
-### experiencia.html: una experiencia
+### /experiencias/experiencia.html: una experiencia
 - **Responsable del esquema:** Flavia (propuesta)
 - **Esquema:** [diseno/experiencia.svg](diseno/experiencia.svg)
 - **Idea:** una sola columna: «← Volver», título, línea de metadatos (autor, ciudad, visibilidad y puntuación media, solo si el dato ya existe: hoy el backend no la ofrece), descripción, formulario de valoración compacto (el autor no lo ve) y pestañas «De amigos y seguidores» y «Todas» con filas de valoración y «Cargar más».
-- **Estados:** cargando, sin id, 401 (a `iniciar-sesion.html`), «Contenido no disponible» (404), error y mostrando.
+- **Estados:** cargando, sin id, 401 (a `/acceso/iniciar-sesion.html`), «Contenido no disponible» (404), error y mostrando.
 - **Nota:** «Útil» y «Reportar» solo funcionan en la pantalla hasta que se implementen CS-02 y CS-04.
 - **Enlaces (sitemap):** perfil o usuario del autor (y de cada valoración).
 
@@ -156,8 +156,8 @@ Maquetas de escritorio (solo estructura y estado vacío). Las de «diseño futur
 | `mis-planes.html` | Planes | a reorganizar | Pestañas: Publicados | Borradores; Rejilla con tarjeta «+». Aún no has publicado planes | [mis-planes.svg](diseno/mis-planes.svg) |
 | `amigos.html` | Personas y social | diseño futuro | Buscador de amigos; Filas de persona. Aún no tienes amigos | [amigos.svg](diseno/amigos.svg) |
 | `seguidores.html` | Personas y social | diseño futuro | Pestañas: Seguidores | Seguidos; Filas de persona. Aún no tienes seguidores | [seguidores.svg](diseno/seguidores.svg) |
-| `solicitudes.html` | Personas y social | implementada | Solicitudes | [solicitudes.svg](diseno/solicitudes.svg) |
-| `ajustes.html` | Cuenta | a reorganizar | Pestañas: Datos | Foto | Contraseña | Privacidad | Notificaciones; Formulario de la pestaña activa; Botón secundario «Guardar cambios» | [ajustes.svg](diseno/ajustes.svg) |
+| `/social/solicitudes.html` | Personas y social | implementada | Solicitudes | [solicitudes.svg](diseno/solicitudes.svg) |
+| `/cuenta/ajustes.html` | Cuenta | a reorganizar | Pestañas: Datos | Foto | Contraseña | Privacidad | Notificaciones; Formulario de la pestaña activa; Botón secundario «Guardar cambios» | [ajustes.svg](diseno/ajustes.svg) |
 | `notificaciones.html` | Sistema | diseño futuro | Filas de actividad (nuevo seguidor, solicitud, valoración); «Marcar todo como leído». No tienes notificaciones | [notificaciones.svg](diseno/notificaciones.svg) |
 | `error.html` | Sistema | diseño futuro | Icono y «Algo ha fallado»; Botón «Reintentar». Estado de error | [error.svg](diseno/error.svg) |
 | `sin-permiso.html` | Sistema | diseño futuro | Icono y «Contenido no disponible»; Botón «Ir al inicio». Mismo texto que el 404 de plan | [sin-permiso.svg](diseno/sin-permiso.svg) |
@@ -182,18 +182,18 @@ Lista con la que se revisa cada esquema y, después, cada pantalla. Parte de las
 
 **Cómo se midió el contraste:** fórmula de luminancia relativa de WCAG con los colores por defecto de Bootstrap 5.3. No se ha medido sobre capturas de pantalla.
 
-**Cómo se aplicó:** cabecera nueva con nombre y `aria-current`, enlace «Saltar al contenido», borde de campos con contraste 3:1 y botones de 44 px. La landing es `index.html` y el inicio de sesión está en `iniciar-sesion.html`.
+**Cómo se aplicó:** cabecera nueva con nombre y `aria-current`, enlace «Saltar al contenido», borde de campos con contraste 3:1 y botones de 44 px. La landing es `index.html` y el inicio de sesión está en `/acceso/iniciar-sesion.html`.
 
 ## Decisiones
 
 | Pregunta | Quién decide | Estado |
 |---|---|---|
 | ¿Hay una landing page antes del inicio de sesión? | Equipo | **Cerrada (cambio de decisión, 26/10/2026):** sí, `index.html` pasa a ser una landing estática. Sustituye a la decisión del 26/10/2026 de no crear una página nueva |
-| ¿Dónde está el inicio de sesión? | Equipo | **Cerrada (26/10/2026):** en `iniciar-sesion.html`, en pantalla dividida |
+| ¿Dónde está el inicio de sesión? | Equipo | **Cerrada (26/10/2026):** en `/acceso/iniciar-sesion.html`, en pantalla dividida |
 | ¿Y las pantallas pequeñas? | Equipo | **Cerrada (26/10/2026):** aparcadas; los esquemas son solo de escritorio. Ver registro |
 | Cabecera | Equipo | **Cerrada (26/10/2026):** variante B, con buscador central y menú de cuenta |
 | Experiencia | Equipo | **Cerrada (26/10/2026):** variante A, una columna con valoraciones en pestañas |
 | Búsqueda | Equipo | **Cerrada (26/10/2026):** unificada, con pestañas «Personas» y «Experiencias» |
 | Perfil propio | Equipo | **Cerrada (26/10/2026):** sin pestañas; secciones apiladas y «Ajustes» plegado |
-| `usuario.html` | Equipo | **Cerrada (26/10/2026):** cabecera centrada y experiencias en rejilla |
+| `/social/usuario.html` | Equipo | **Cerrada (26/10/2026):** cabecera centrada y experiencias en rejilla |
 | ¿`diseno.md` y `arte.md` separados o un solo archivo? | Equipo | **Cerrada (26/10/2026):** dos archivos: `diseno.md` (estructura) y `arte.md` (guía de estilo) |

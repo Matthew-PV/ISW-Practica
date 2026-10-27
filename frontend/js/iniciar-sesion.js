@@ -1,4 +1,4 @@
-// Página de inicio de sesión (iniciar-sesion.html). Usa `api` de shared/api.js.
+// Página de inicio de sesión (/acceso/iniciar-sesion.html). Usa `api` de shared/api.js.
 
 const formulario = document.getElementById('form-login');
 const cajaError = document.getElementById('error-login');
@@ -24,7 +24,7 @@ formulario.addEventListener('submit', async (e) => {
   try {
     // Si los datos son correctos, el backend inicia la sesión (cookie) y se pasa a la bienvenida
     await api('/auth/login', { method: 'POST', body: JSON.stringify(datos) });
-    window.location.href = 'bienvenida.html';
+    window.location.href = '/cuenta/bienvenida.html';
   } catch (err) {
     // Se muestra el mensaje del backend y se vuelve a habilitar el botón para reintentar
     cajaError.textContent = err.message;

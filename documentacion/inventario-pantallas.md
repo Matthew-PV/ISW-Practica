@@ -2,7 +2,7 @@
 
 > Las pantallas con sus estados (cargando, vacío, error y «Contenido no disponible») y sus flujos. Es el objetivo 5 de la historia CS-65 (diseño visual).
 > Fuentes: [frontend.md](frontend.md) (cómo está hecho hoy), [sitemap.mmd](sitemap.mmd) (flujos), [arte.md](arte.md) (identidad visual) y el código de `frontend/`, que se revisó pantalla a pantalla para comprobar los estados. Los esquemas (solo escritorio) están en [diseno.md](diseno.md) y en [diseno/](diseno/).
-> Revisado el 26/10/2026. Actualizado ese mismo día al cubrir las lagunas de la sección 5 y al pasar a diez pantallas (landing en `index.html` e inicio de sesión en `iniciar-sesion.html`).
+> Revisado el 26/10/2026. Actualizado ese mismo día al cubrir las lagunas de la sección 5 y al pasar a diez pantallas (landing en `index.html` e inicio de sesión en `/acceso/iniciar-sesion.html`).
 
 ## Cómo leer las tablas
 
@@ -17,28 +17,28 @@
 | # | Página | Grupo | Estado | Para qué sirve | Esquema |
 |---|---|---|---|---|---|
 | 1 | `index.html` | Público | implementada | Landing | [index.svg](diseno/index.svg) |
-| 2 | `iniciar-sesion.html` | Público | implementada | Iniciar sesión | [iniciar-sesion.svg](diseno/iniciar-sesion.svg) |
-| 3 | `registro.html` | Público | implementada | Crear cuenta | [registro.svg](diseno/registro.svg) |
-| 4 | `recuperar.html` | Público | implementada | Recuperar contraseña | [recuperar.svg](diseno/recuperar.svg) |
-| 5 | `restablecer.html` | Público | implementada | Restablecer contraseña | [restablecer.svg](diseno/restablecer.svg) |
+| 2 | `/acceso/iniciar-sesion.html` | Público | implementada | Iniciar sesión | [iniciar-sesion.svg](diseno/iniciar-sesion.svg) |
+| 3 | `/acceso/registro.html` | Público | implementada | Crear cuenta | [registro.svg](diseno/registro.svg) |
+| 4 | `/acceso/recuperar.html` | Público | implementada | Recuperar contraseña | [recuperar.svg](diseno/recuperar.svg) |
+| 5 | `/acceso/restablecer.html` | Público | implementada | Restablecer contraseña | [restablecer.svg](diseno/restablecer.svg) |
 | 6 | `ayuda.html` | Público | diseño futuro | Ayuda | [ayuda.svg](diseno/ayuda.svg) |
 | 7 | `terminos.html` | Público | diseño futuro | Términos y privacidad | [terminos.svg](diseno/terminos.svg) |
 | 8 | `no-encontrada.html` | Público | diseño futuro | Página no encontrada (404) | [no-encontrada.svg](diseno/no-encontrada.svg) |
-| 9 | `bienvenida.html` | Inicio y descubrir | a reorganizar | Inicio | [bienvenida.svg](diseno/bienvenida.svg) |
+| 9 | `/cuenta/bienvenida.html` | Inicio y descubrir | a reorganizar | Inicio | [bienvenida.svg](diseno/bienvenida.svg) |
 | 10 | `explorar.html` | Inicio y descubrir | diseño futuro | Explorar | [explorar.svg](diseno/explorar.svg) |
 | 11 | `ciudad.html?id=` | Inicio y descubrir | diseño futuro | Ciudad | [ciudad.svg](diseno/ciudad.svg) |
-| 12 | `personas.html` | Inicio y descubrir | a reorganizar | Resultados de búsqueda | [personas.svg](diseno/personas.svg) |
-| 13 | `experiencia.html?id=` | Planes | implementada | Detalle del plan | [experiencia.svg](diseno/experiencia.svg) |
+| 12 | `/social/personas.html` | Inicio y descubrir | a reorganizar | Resultados de búsqueda | [personas.svg](diseno/personas.svg) |
+| 13 | `/experiencias/experiencia.html?id=` | Planes | implementada | Detalle del plan | [experiencia.svg](diseno/experiencia.svg) |
 | 14 | `crear-plan.html` | Planes | a reorganizar | Crear plan | [crear-plan.svg](diseno/crear-plan.svg) |
 | 15 | `editar-plan.html?id=` | Planes | a reorganizar | Editar plan | [editar-plan.svg](diseno/editar-plan.svg) |
 | 16 | `guardados.html` | Planes | diseño futuro | Guardados | [guardados.svg](diseno/guardados.svg) |
 | 17 | `mis-planes.html` | Planes | a reorganizar | Mis planes | [mis-planes.svg](diseno/mis-planes.svg) |
-| 18 | `perfil.html` | Personas y social | a reorganizar | Mi perfil | [perfil.svg](diseno/perfil.svg) |
-| 19 | `usuario.html?nombre=` | Personas y social | implementada | Perfil de otra persona | [usuario.svg](diseno/usuario.svg) |
+| 18 | `/cuenta/perfil.html` | Personas y social | a reorganizar | Mi perfil | [perfil.svg](diseno/perfil.svg) |
+| 19 | `/social/usuario.html?nombre=` | Personas y social | implementada | Perfil de otra persona | [usuario.svg](diseno/usuario.svg) |
 | 20 | `amigos.html` | Personas y social | diseño futuro | Amigos | [amigos.svg](diseno/amigos.svg) |
 | 21 | `seguidores.html` | Personas y social | diseño futuro | Seguidores y seguidos | [seguidores.svg](diseno/seguidores.svg) |
-| 22 | `solicitudes.html` | Personas y social | implementada | Solicitudes | [solicitudes.svg](diseno/solicitudes.svg) |
-| 23 | `ajustes.html` | Cuenta | a reorganizar | Ajustes | [ajustes.svg](diseno/ajustes.svg) |
+| 22 | `/social/solicitudes.html` | Personas y social | implementada | Solicitudes | [solicitudes.svg](diseno/solicitudes.svg) |
+| 23 | `/cuenta/ajustes.html` | Cuenta | a reorganizar | Ajustes | [ajustes.svg](diseno/ajustes.svg) |
 | 24 | `notificaciones.html` | Sistema | diseño futuro | Notificaciones | [notificaciones.svg](diseno/notificaciones.svg) |
 | 25 | `error.html` | Sistema | diseño futuro | Error del servidor | [error.svg](diseno/error.svg) |
 | 26 | `sin-permiso.html` | Sistema | diseño futuro | Sin permiso | [sin-permiso.svg](diseno/sin-permiso.svg) |
@@ -61,10 +61,10 @@ Los cuatro estados que pide la tarjeta, más los propios de cada pantalla.
 | `bienvenida` | ✔ «Cargando…» | ✔ «Todavía no has publicado experiencias.», junto a la tarjeta «+» | ✔ error de la lista y error del diálogo | — | Diálogo de crear o editar abierto; «Cargar más» |
 | `perfil` | ✔ «Cargando…» | ✔ cuatro: sin experiencias, sin solicitudes, sin amigos y sin seguidores | ✔ seis avisos (foto, datos, contraseña, experiencias, solicitudes y relaciones) | — | ✔ «Subiendo foto…»; avisos de éxito en foto, datos y contraseña; «Cargar más» |
 | `personas` | ✔ «Cargando…» mientras busca | ✔ «No se han encontrado personas.»; en la pestaña Experiencias, vacío por diseño (CS-24): «Todavía no hay experiencias que mostrar» | ✔ aviso de error | — | ✔ antes de buscar: «Escribe parte de un nombre.» (Personas) o «Escribe para buscar experiencias.» (Experiencias); «Buscando…» mientras se envía |
-| `usuario` | ✔ «Cargando…», sin datos de relleno hasta que llega el perfil | ✔ «No hay experiencias que puedas ver.» | ✔ error de la acción y error de la lista | ✔ **«Usuario no encontrado»** | Si es el propio usuario, va a `perfil.html`; cuatro versiones del botón de amistad; «Seguir» o «Dejar de seguir» |
+| `usuario` | ✔ «Cargando…», sin datos de relleno hasta que llega el perfil | ✔ «No hay experiencias que puedas ver.» | ✔ error de la acción y error de la lista | ✔ **«Usuario no encontrado»** | Si es el propio usuario, va a `/cuenta/perfil.html`; cuatro versiones del botón de amistad; «Seguir» o «Dejar de seguir» |
 | `experiencia` | ✔ «Cargando experiencia…» | ✔ sin valoraciones de amigos y sin comentarios | ✔ aviso en la valoración y errores de carga | ✔ **«Contenido no disponible»** (404) | Sin identificador en la dirección; sin sesión (401); el autor no ve el formulario; reporte; «Útil» y «Reportar» no guardan nada todavía |
 
-**En todas las pantallas con sesión,** un 401 devuelve a `iniciar-sesion.html`. **Todos los avisos de error llevan `role="alert"`**, y una prueba lo comprueba en las páginas con avisos.
+**En todas las pantallas con sesión,** un 401 devuelve a `/acceso/iniciar-sesion.html`. **Todos los avisos de error llevan `role="alert"`**, y una prueba lo comprueba en las páginas con avisos.
 
 ## 3. Flujos
 
@@ -92,7 +92,7 @@ Salen del [sitemap](sitemap.mmd). Cada fila es una flecha del mapa.
 | `experiencia` | `perfil` | Si el autor soy yo |
 | Cualquiera con sesión | `bienvenida` | Marca PlanB y «Inicio» de la cabecera |
 | Cualquiera con sesión | `perfil` | «Mi perfil» del menú de cuenta |
-| Cualquiera con sesión | `personas` | Buscador de la cabecera (`personas.html?q=texto`) |
+| Cualquiera con sesión | `personas` | Buscador de la cabecera (`/social/personas.html?q=texto`) |
 | Cualquiera con sesión | `iniciar-sesion` | «Cerrar sesión» del menú de cuenta |
 | Cualquiera con sesión | `iniciar-sesion` | Sesión no válida (401) |
 | Cualquiera con sesión | `explorar`, `mis-planes`, `amigos` | Barra de pestañas (rediseño) |

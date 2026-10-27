@@ -1,8 +1,8 @@
 /**
  * @jest-environment jsdom
  */
-// CS-64, objetivos 13 y 15: pantallas para recuperar la contraseña (recuperar.html y
-// restablecer.html) y el enlace desde el inicio de sesión, con jsdom y el servidor simulado.
+// CS-64, objetivos 13 y 15: pantallas para recuperar la contraseña (/acceso/recuperar.html y
+// /acceso/restablecer.html) y el enlace desde el inicio de sesión, con jsdom y el servidor simulado.
 const fs = require('node:fs');
 const path = require('node:path');
 const { cargarScripts } = require('../helpers/pantalla');
@@ -37,18 +37,18 @@ const escribir = (campo, valor) => {
 const cuerpoEnviado = () => JSON.parse(window.fetch.mock.calls.at(-1)[1].body);
 
 test('el inicio de sesión enlaza a «¿Has olvidado tu contraseña?»', () => {
-  document.documentElement.innerHTML = leer('iniciar-sesion.html');
+  document.documentElement.innerHTML = leer('/acceso/iniciar-sesion.html');
 
   const enlace = [...document.querySelectorAll('a')].find((a) => a.textContent.includes('¿Has olvidado tu contraseña?'));
-  expect(enlace.getAttribute('href')).toBe('recuperar.html');
+  expect(enlace.getAttribute('href')).toBe('/acceso/recuperar.html');
 });
 
-describe('recuperar.html', () => {
+describe('/acceso/recuperar.html', () => {
   const SCRIPTS = ['js/shared/api.js', 'js/recuperar.js'];
   const MENSAJE = 'Si el email está registrado, te hemos enviado un enlace para restablecer la contraseña.';
 
   test('envía el email y muestra la respuesta del servidor, la misma exista o no', async () => {
-    await abrir('recuperar.html', SCRIPTS, { 'POST /api/auth/recuperar': [200, { mensaje: MENSAJE }] }, '/recuperar.html');
+    await abrir('/acceso/recuperar.html', SCRIPTS, { 'POST /api/auth/recuperar': [200, { mensaje: MENSAJE }] }, '/acceso/recuperar.html');
     $('#email').value = 'ana@ejemplo.com';
 
     await enviar('#form-recuperar');
@@ -59,9 +59,9 @@ describe('recuperar.html', () => {
   });
 
   test('si falla, muestra el error y no se pierde el email', async () => {
-    await abrir('recuperar.html', SCRIPTS, {
+    await abrir('/acceso/recuperar.html', SCRIPTS, {
       'POST /api/auth/recuperar': [429, { error: 'Demasiados intentos. Vuelve a intentarlo dentro de unos minutos.' }],
-    }, '/recuperar.html');
+    }, '/acceso/recuperar.html');
     $('#email').value = 'ana@ejemplo.com';
 
     await enviar('#form-recuperar');
@@ -71,9 +71,9 @@ describe('recuperar.html', () => {
   });
 });
 
-describe('restablecer.html', () => {
+describe('/acceso/restablecer.html', () => {
   const SCRIPTS = ['js/shared/api.js', 'js/shared/password.js', 'js/restablecer.js'];
-  const abrirConToken = (rutas = {}) => abrir('restablecer.html', SCRIPTS, rutas, '/restablecer.html?token=abc123');
+  const abrirConToken = (rutas = {}) => abrir('/acceso/restablecer.html', SCRIPTS, rutas, '/acceso/restablecer.html?token=abc123');
 
   test('marca los requisitos mientras se escribe la nueva contraseña', async () => {
     await abrirConToken();
@@ -104,7 +104,7 @@ describe('restablecer.html', () => {
 
     expect(cuerpoEnviado()).toEqual({ token: 'abc123', nueva: 'Nueva12345' });
     expect($('#exito-restablecer').textContent).toContain('Contraseña cambiada.');
-    expect($('#exito-restablecer a').getAttribute('href')).toBe('iniciar-sesion.html');
+    expect($('#exito-restablecer a').getAttribute('href')).toBe('/acceso/iniciar-sesion.html');
     expect(visible('#form-restablecer')).toBe(false);
   });
 
@@ -120,7 +120,7 @@ describe('restablecer.html', () => {
   });
 
   test('sin token en la dirección avisa y no muestra el formulario', async () => {
-    await abrir('restablecer.html', SCRIPTS, {}, '/restablecer.html');
+    await abrir('/acceso/restablecer.html', SCRIPTS, {}, '/acceso/restablecer.html');
 
     expect(visible('#form-restablecer')).toBe(false);
     expect($('#error-restablecer').textContent).toBe('El enlace no es válido. Pide uno nuevo desde «¿Has olvidado tu contraseña?».');
@@ -129,8 +129,8 @@ describe('restablecer.html', () => {
 
 // Rediseño (CS-65): pantalla dividida y estado de espera
 describe.each([
-  ['recuperar.html', 'Recuperar contraseña', 'iniciar-sesion.html'],
-  ['restablecer.html', 'Elige una contraseña nueva', null],
+  ['/acceso/recuperar.html', 'Recuperar contraseña', '/acceso/iniciar-sesion.html'],
+  ['/acceso/restablecer.html', 'Elige una contraseña nueva', null],
 ])('%s: pantalla dividida', (pagina, titulo) => {
   test('tiene la marca a la izquierda, un único h1 en el formulario y un único botón principal', () => {
     document.documentElement.innerHTML = leer(pagina);
@@ -145,9 +145,9 @@ describe.each([
 
 describe('estado de espera (R11)', () => {
   test('recuperar: «Enviar enlace» pasa a «Enviando…» con aria-busy y se restaura', async () => {
-    await abrir('recuperar.html', ['js/shared/api.js', 'js/recuperar.js'], {
+    await abrir('/acceso/recuperar.html', ['js/shared/api.js', 'js/recuperar.js'], {
       'POST /api/auth/recuperar': [200, { mensaje: 'Enviado' }],
-    }, '/recuperar.html');
+    }, '/acceso/recuperar.html');
     const boton = $('#form-recuperar button[type="submit"]');
     expect(boton.textContent).toBe('Enviar enlace');
     $('#email').value = 'ana@ejemplo.com';
@@ -164,9 +164,9 @@ describe('estado de espera (R11)', () => {
   });
 
   test('restablecer: «Guardar contraseña» pasa a «Guardando…» con aria-busy y se restaura si falla', async () => {
-    await abrir('restablecer.html', ['js/shared/api.js', 'js/shared/password.js', 'js/restablecer.js'], {
+    await abrir('/acceso/restablecer.html', ['js/shared/api.js', 'js/shared/password.js', 'js/restablecer.js'], {
       'POST /api/auth/restablecer': [400, { error: 'El enlace no es válido o ha caducado' }],
-    }, '/restablecer.html?token=abc123');
+    }, '/acceso/restablecer.html?token=abc123');
     const boton = $('#form-restablecer button[type="submit"]');
     expect(boton.textContent).toBe('Guardar contraseña');
     escribir('#password-nueva', 'Nueva12345');

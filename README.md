@@ -76,7 +76,7 @@ Toda la documentación detallada vive en [`documentacion/`](documentacion/):
 * [Arquitectura](documentacion/arquitectura.md) — alcance, capas y archivos, modelo de datos, visibilidad, herramientas, autenticación, estructura del repositorio, instalación, entorno de desarrollo y pruebas.
 * [Referencia de la API](documentacion/api.md) — cada ruta con su servicio, lo que recibe, lo que devuelve y sus errores.
 * [Flujos y estados](documentacion/flujos.md) — diagramas de secuencia de los flujos principales (registro, login, valorar, amistad, recuperar la contraseña...) y de los estados de amistades, valoraciones y enlaces de recuperación.
-* [Pantallas](documentacion/frontend.md) — mapa de navegación (la raíz `/` es la landing `index.html`; el inicio de sesión está en `iniciar-sesion.html`), qué archivos y llamadas usa cada página, sus estados y las reglas del frontend.
+* [Pantallas](documentacion/frontend.md) — mapa de navegación (la raíz `/` es la landing `index.html`; el inicio de sesión está en `/acceso/iniciar-sesion.html`), qué archivos y llamadas usa cada página, sus estados y las reglas del frontend.
 * [Diseño](documentacion/diseno.md) — estructura de las pantallas y esquemas en blanco y negro (borrador).
 * [Inventario de pantallas](documentacion/inventario-pantallas.md) — las diez pantallas con sus estados, flujos, componentes de la guía de estilo y las lagunas por cubrir.
 * [Arte](documentacion/arte.md) — cómo debe verse PlanB: paleta con contraste calculado, tipografía y componentes (propuesta para aprobar).

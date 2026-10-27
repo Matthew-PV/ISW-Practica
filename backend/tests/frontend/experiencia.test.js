@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-// Página de una experiencia (frontend/experiencia.html y js/experiencia.js): criterio de CS-63
+// Página de una experiencia (frontend/experiencias/experiencia.html y js/experiencia.js): criterio de CS-63
 // (valoraciones y comentarios), sección de CS-48 (amigos y seguidores) y objetivo 9 de CS-30
 // («Contenido no disponible» sin datos). Navegador simulado con jsdom y servidor simulado con un
 // fetch que responde según el método y la ruta.
@@ -11,7 +11,7 @@ const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const HTML = leer('experiencia.html');
+const HTML = leer('/experiencias/experiencia.html');
 const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/experiencia.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
@@ -44,11 +44,11 @@ const SERVIDOR = {
   [`GET ${BASE}/valoraciones/amigos`]: [200, pagina([])],
 };
 
-// Abre experiencia.html?id=7 con el servidor simulado; `rutas` cambia o añade respuestas.
+// Abre /experiencias/experiencia.html?id=7 con el servidor simulado; `rutas` cambia o añade respuestas.
 // Una respuesta puede ser [status, cuerpo] o una función que la devuelve (para simular la red).
 async function abrir(rutas = {}) {
   const servidor = { ...SERVIDOR, ...rutas };
-  window.history.pushState({}, '', '/experiencia.html?id=7');
+  window.history.pushState({}, '', '/experiencias/experiencia.html?id=7');
   document.documentElement.innerHTML = HTML;
   // jsdom no implementa del todo <dialog>
   const dialogo = document.getElementById('dialogo-reporte');
@@ -79,7 +79,7 @@ describe('CS-63: la experiencia y sus valoraciones', () => {
 
     expect($('#detalle-titulo').textContent).toBe('Ruta de tapas');
     expect($('#detalle-autor').textContent).toBe('bea');
-    expect($('#detalle-autor').getAttribute('href')).toBe('usuario.html?nombre=bea');
+    expect($('#detalle-autor').getAttribute('href')).toBe('/social/usuario.html?nombre=bea');
     expect($('#detalle-ciudad').textContent).toBe('Sevilla');
     expect($('#detalle-descripcion').textContent).toBe('Por el centro');
   });
@@ -89,7 +89,7 @@ describe('CS-63: la experiencia y sus valoraciones', () => {
 
     const tarjeta = $('#lista-comentarios [data-valoracion-id="30"]');
     expect(tarjeta.querySelector('a').textContent).toBe('carlos');
-    expect(tarjeta.querySelector('a').getAttribute('href')).toBe('usuario.html?nombre=carlos');
+    expect(tarjeta.querySelector('a').getAttribute('href')).toBe('/social/usuario.html?nombre=carlos');
     expect(tarjeta.textContent).toContain('4/5');
     expect(tarjeta.textContent).toContain('Comentario 30');
     expect(tarjeta.textContent).toContain('8/10/2026');

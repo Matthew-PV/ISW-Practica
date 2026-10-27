@@ -1,4 +1,4 @@
-// Página de una experiencia (experiencia.html?id=7): título, autor y ciudad, las valoraciones y
+// Página de una experiencia (/experiencias/experiencia.html?id=7): título, autor y ciudad, las valoraciones y
 // comentarios (CS-63), las de amigos y seguidores (CS-48) y el formulario para valorarla. Si la
 // experiencia no existe o no se puede ver, solo se muestra «Contenido no disponible» (CS-30).
 // «Útil» y «Reportar» funcionan solo en la pantalla: no guardan nada hasta CS-02 y CS-04.

@@ -25,7 +25,7 @@ function ocultarCargando() {
 
 // Sin sesión no se puede usar la página: se vuelve al inicio de sesión.
 function irAlLogin() {
-  window.location.href = 'iniciar-sesion.html';
+  window.location.href = '/acceso/iniciar-sesion.html';
 }
 
 // Convierte `enlace` (un <a>) en el enlace al perfil de `usuario`: el mío lleva a «Mi perfil» y
@@ -34,8 +34,8 @@ function irAlLogin() {
 function crearEnlacePerfil(enlace, usuario, miUsuarioId) {
   enlace.textContent = usuario.nombreUsuario;
   enlace.href = usuario.id === miUsuarioId
-    ? 'perfil.html'
-    : `usuario.html?nombre=${encodeURIComponent(usuario.nombreUsuario)}`;
+    ? '/cuenta/perfil.html'
+    : `/social/usuario.html?nombre=${encodeURIComponent(usuario.nombreUsuario)}`;
   return enlace;
 }
 

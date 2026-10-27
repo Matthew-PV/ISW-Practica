@@ -18,7 +18,7 @@ const leer = (archivo) =>
     'utf8'
   );
 
-const HTML = leer('bienvenida.html');
+const HTML = leer('/cuenta/bienvenida.html');
 
 const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/bienvenida.js'];
 
@@ -198,7 +198,7 @@ test('Ver detalle es un enlace a la página de la experiencia (CS-63)', () => {
   const enlace = $('.tarjeta-experiencia .boton-ver');
 
   expect(enlace.tagName).toBe('A');
-  expect(enlace.getAttribute('href')).toBe('experiencia.html?id=10');
+  expect(enlace.getAttribute('href')).toBe('/experiencias/experiencia.html?id=10');
 });
 
 test('el botón Editar sigue abriendo el formulario de edición', () => {
@@ -260,7 +260,7 @@ test.each([
   expect(etiqueta.textContent).toBe(texto);
 });
 
-test('Ver detalle de una experiencia con id 7 enlaza a experiencia.html?id=7 con aspecto de botón secundario', async () => {
+test('Ver detalle de una experiencia con id 7 enlaza a /experiencias/experiencia.html?id=7 con aspecto de botón secundario', async () => {
   // Una experiencia nueva con id 7 entra por el alta
   $('#boton-nueva').click();
   window.fetch.mockImplementationOnce(() => respuesta(201, { ...EXPERIENCIA, id: 7 }));
@@ -268,7 +268,7 @@ test('Ver detalle de una experiencia con id 7 enlaza a experiencia.html?id=7 con
   await terminar();
 
   const enlace = $('[data-id="7"] .boton-ver');
-  expect(enlace.getAttribute('href')).toBe('experiencia.html?id=7');
+  expect(enlace.getAttribute('href')).toBe('/experiencias/experiencia.html?id=7');
   expect(enlace.classList.contains('btn-outline-primary')).toBe(true);
 });
 

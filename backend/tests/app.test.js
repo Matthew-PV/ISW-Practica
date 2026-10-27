@@ -30,8 +30,8 @@ describe('páginas de entrada', () => {
     expect(res.text).toContain('<h1');
   });
 
-  test('GET /iniciar-sesion.html responde el formulario de inicio de sesión', async () => {
-    const res = await request(app).get('/iniciar-sesion.html');
+  test('GET /acceso/iniciar-sesion.html responde el formulario de inicio de sesión', async () => {
+    const res = await request(app).get('/acceso/iniciar-sesion.html');
 
     expect(res.status).toBe(200);
     expect(res.text).toContain('id="form-login"');

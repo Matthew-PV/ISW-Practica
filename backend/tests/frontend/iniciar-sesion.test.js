@@ -1,11 +1,11 @@
 /**
  * @jest-environment jsdom
  */
-// CS-59: la pantalla de inicio de sesión (frontend/iniciar-sesion.html y js/iniciar-sesion.js) en un navegador
+// CS-59: la pantalla de inicio de sesión (frontend/acceso/iniciar-sesion.html y js/iniciar-sesion.js) en un navegador
 // simulado (jsdom). Se simula el servidor (fetch), así que no hace falta arrancar nada.
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
-const HTML = leer('iniciar-sesion.html');
+const HTML = leer('/acceso/iniciar-sesion.html');
 const SCRIPTS = ['js/shared/api.js', 'js/iniciar-sesion.js'];
 
 // Respuesta de fetch con el código y el JSON indicados
@@ -27,7 +27,7 @@ beforeEach(() => {
 
 test('login correcto: envía el email y la contraseña y no muestra errores', async () => {
   window.fetch.mockReturnValue(respuesta(200, { id: 1, nombreUsuario: 'ana' }));
-  // jsdom no sabe navegar a bienvenida.html y lo avisa por consola; aquí se silencia
+  // jsdom no sabe navegar a /cuenta/bienvenida.html y lo avisa por consola; aquí se silencia
   jest.spyOn(console, 'error').mockImplementation(() => {});
 
   boton().click();
@@ -85,14 +85,14 @@ test('es una pantalla dividida con un único h1 y la marca enlaza a index.html',
   expect(document.querySelector('header, nav')).toBeNull();
 });
 
-test('«Entrar» es el único botón principal y «Crear cuenta» es secundario y lleva a registro.html', () => {
+test('«Entrar» es el único botón principal y «Crear cuenta» es secundario y lleva a /acceso/registro.html', () => {
   expect(document.querySelectorAll('.btn-primary')).toHaveLength(1);
   expect(boton().classList.contains('btn-primary')).toBe(true);
-  const crear = $('a[href="registro.html"]');
+  const crear = $('a[href="/acceso/registro.html"]');
   expect(crear.textContent).toBe('Crear cuenta');
   expect(crear.classList.contains('btn')).toBe(true);
   expect(crear.classList.contains('btn-outline-primary')).toBe(true);
-  expect($('a[href="recuperar.html"]').textContent).toBe('¿Has olvidado tu contraseña?');
+  expect($('a[href="/acceso/recuperar.html"]').textContent).toBe('¿Has olvidado tu contraseña?');
 });
 
 test('mientras se envía, «Entrar» pasa a «Entrando…» con aria-busy y se restaura si falla', async () => {

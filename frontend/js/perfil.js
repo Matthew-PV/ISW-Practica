@@ -1,4 +1,4 @@
-// Página de mi perfil (perfil.html): cabecera con contadores y, en pestañas, mis experiencias,
+// Página de mi perfil (/cuenta/perfil.html): cabecera con contadores y, en pestañas, mis experiencias,
 // amigos y seguidores. Las solicitudes y los ajustes tienen su propia página.
 // Se ejecuta nada más cargar la página. Usa `api` de shared/api.js, `listaConCargarMas`,
 // `crearEnlacePerfil`, `mostrarMensaje`, `ocultarMensaje` y `ocultarCargando` de shared/pantalla.js,
@@ -19,7 +19,7 @@ async function cargarPerfil() {
     mostrarPerfil(await api('/perfil'));
   } catch {
     // Sin sesión (o el servidor no responde): se vuelve al login
-    window.location.href = 'iniciar-sesion.html';
+    window.location.href = '/acceso/iniciar-sesion.html';
   } finally {
     ocultarCargando();
   }
@@ -46,7 +46,7 @@ vigilante.observe(botonMasExperiencias, { attributes: true, attributeFilter: ['c
 const cajaErrorRelaciones = document.getElementById('error-relaciones');
 const PERSONAS_POR_PAGINA = 20;
 
-// Crea la fila de una persona, que enlaza a su perfil (usuario.html). El nombre se incorpora como
+// Crea la fila de una persona, que enlaza a su perfil (/social/usuario.html). El nombre se incorpora como
 // texto para que nunca se interprete como HTML aportado por otra persona.
 function crearPersona(persona) {
   const fila = crearEnlacePerfil(document.createElement('a'), persona);

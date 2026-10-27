@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-// CS-59, objetivo 7: la pantalla de registro (frontend/registro.html y js/registro.js) en un
+// CS-59, objetivo 7: la pantalla de registro (frontend/acceso/registro.html y js/registro.js) en un
 // navegador simulado (jsdom). Se simulan el servidor (fetch) y el CAPTCHA (window.turnstile),
 // así que no hace falta arrancar nada.
 const fs = require('node:fs');
@@ -10,7 +10,7 @@ const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const HTML = leer('registro.html');
+const HTML = leer('/acceso/registro.html');
 const SCRIPTS = ['js/shared/api.js', 'js/shared/password.js', 'js/registro.js'];
 const ERROR_RED = 'No se ha podido conectar con el servidor. Inténtalo de nuevo.';
 const ERROR_CARGA_CAPTCHA = 'No se ha podido cargar el CAPTCHA. Revisa tu conexión y recarga la página.';
@@ -25,7 +25,7 @@ const errorVisible = () => (cajaError().classList.contains('d-none') ? null : ca
 const terminar = () => new Promise((r) => setTimeout(r, 0));
 
 beforeEach(() => {
-  // Página nueva en cada prueba: el HTML de registro.html (sus <script> no se ejecutan así)
+  // Página nueva en cada prueba: el HTML de /acceso/registro.html (sus <script> no se ejecutan así)
   // y después api.js y registro.js en el ámbito global, como los carga el navegador
   document.documentElement.innerHTML = HTML;
   window.fetch = jest.fn();
@@ -39,7 +39,7 @@ beforeEach(() => {
 describe('envío del formulario', () => {
   test('registro correcto: envía los datos con la respuesta del CAPTCHA y no muestra errores', async () => {
     window.fetch.mockReturnValue(respuesta(201, { id: 1, nombreUsuario: 'ana' }));
-    // jsdom no sabe navegar a bienvenida.html y lo avisa por consola; aquí se silencia
+    // jsdom no sabe navegar a /cuenta/bienvenida.html y lo avisa por consola; aquí se silencia
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
     boton().click();
@@ -196,8 +196,8 @@ describe('pantalla dividida (rediseño CS-65)', () => {
     expect($('#form-registro').closest('.pantalla-dividida-formulario')).not.toBeNull();
   });
 
-  test('el enlace «Inicia sesión» sigue llevando a iniciar-sesion.html', () => {
-    expect($('a[href="iniciar-sesion.html"]').textContent).toBe('Inicia sesión');
+  test('el enlace «Inicia sesión» sigue llevando a /acceso/iniciar-sesion.html', () => {
+    expect($('a[href="/acceso/iniciar-sesion.html"]').textContent).toBe('Inicia sesión');
   });
 });
 

@@ -8,7 +8,7 @@ const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const HTML = leer('personas.html');
+const HTML = leer('/social/personas.html');
 const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/personas.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
@@ -28,7 +28,7 @@ function diferida() {
 }
 
 beforeEach(() => {
-  window.history.pushState({}, '', '/personas.html');
+  window.history.pushState({}, '', '/social/personas.html');
   document.documentElement.innerHTML = HTML;
   window.fetch = jest.fn();
   cargarScripts(SCRIPTS);
@@ -46,7 +46,7 @@ test('busca personas y cada resultado enlaza a su perfil público sin insertar H
   expect(window.fetch).toHaveBeenCalledWith('/api/usuarios?texto=ana', expect.any(Object));
   const enlaces = [...document.querySelectorAll('#resultados a')];
   expect(enlaces).toHaveLength(2);
-  expect(enlaces[0].getAttribute('href')).toBe('usuario.html?nombre=ana%20mar%C3%ADa');
+  expect(enlaces[0].getAttribute('href')).toBe('/social/usuario.html?nombre=ana%20mar%C3%ADa');
   expect(enlaces[0].textContent).toBe('ana maría');
   expect(enlaces[1].textContent).toBe('<b>luis</b>');
   expect(enlaces[1].querySelector('b')).toBeNull();
@@ -112,8 +112,8 @@ describe('Buscar (diseño aplicado)', () => {
     expect($('#sin-resultados').textContent).toBe('No se han encontrado personas.');
   });
 
-  test('personas.html?q=ana%20b%26c rellena el campo y busca con el texto escapado', async () => {
-    window.history.pushState({}, '', '/personas.html?q=ana%20b%26c');
+  test('/social/personas.html?q=ana%20b%26c rellena el campo y busca con el texto escapado', async () => {
+    window.history.pushState({}, '', '/social/personas.html?q=ana%20b%26c');
     document.documentElement.innerHTML = HTML;
     window.fetch.mockReturnValueOnce(respuesta(200, []));
     cargarScripts(SCRIPTS);
@@ -124,8 +124,8 @@ describe('Buscar (diseño aplicado)', () => {
     expect(window.fetch).toHaveBeenCalledWith('/api/usuarios?texto=ana%20b%26c', expect.any(Object));
   });
 
-  test('personas.html?q= vacío no busca y deja el texto de ayuda', async () => {
-    window.history.pushState({}, '', '/personas.html?q=');
+  test('/social/personas.html?q= vacío no busca y deja el texto de ayuda', async () => {
+    window.history.pushState({}, '', '/social/personas.html?q=');
     document.documentElement.innerHTML = HTML;
     cargarScripts(SCRIPTS);
     await terminar();

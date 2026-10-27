@@ -8,7 +8,7 @@
 
 | Tema | Regla |
 |---|---|
-| Prefijo | Todas las rutas empiezan por `/api`. El servidor también sirve las páginas de `frontend/` desde la raíz (`/perfil.html`...). |
+| Prefijo | Todas las rutas empiezan por `/api`. El servidor también sirve las páginas de `frontend/` desde la raíz (`/cuenta/perfil.html`...). |
 | Formato | Las peticiones y respuestas van en JSON, salvo la subida de la foto (`multipart/form-data`). |
 | Sesión | Se guarda en MySQL; el navegador solo tiene una cookie `HttpOnly` con su identificador. Las rutas marcadas con **Sesión: sí** pasan antes por `requiereSesion`, que responde 401 «No hay sesión iniciada» si no hay sesión o si su usuario ya no existe. |
 | Quién soy | El usuario que hace algo sale siempre de la sesión, nunca del cuerpo ni de la URL. Por eso no hay rutas del tipo «editar el perfil del usuario 7». |
@@ -80,7 +80,7 @@ Cada ficha indica la ruta, el servicio que la atiende, qué recibe, qué devuelv
 
 Sin servicio: lee `TURNSTILE_SITE_KEY` · Sesión: no.
 
-* **Responde:** 200 `{ siteKey }`, la clave pública que necesita el widget de Turnstile en `registro.html`.
+* **Responde:** 200 `{ siteKey }`, la clave pública que necesita el widget de Turnstile en `/acceso/registro.html`.
 
 ### `POST /api/auth/login`
 
@@ -108,7 +108,7 @@ Sin servicio · Sesión: no.
 
 * **Cuerpo:** `{ email }`.
 * **Responde:** siempre 200 `{ mensaje: "Si el email está registrado, te hemos enviado un enlace para restablecer la contraseña." }`, exista o no la cuenta.
-* **Efecto:** si el email es de una cuenta, guarda el hash de un token nuevo que caduca en 30 minutos y envía el enlace `URL_APP/restablecer.html?token=...`. Sin `SMTP_URL`, el email se escribe en la consola del servidor.
+* **Efecto:** si el email es de una cuenta, guarda el hash de un token nuevo que caduca en 30 minutos y envía el enlace `URL_APP/acceso/restablecer.html?token=...`. Sin `SMTP_URL`, el email se escribe en la consola del servidor.
 * **Errores:** 400 «Faltan datos obligatorios». Ver [F11](flujos.md#f11-recuperar-y-restablecer-la-contraseña).
 
 ### `POST /api/auth/restablecer`
@@ -271,7 +271,7 @@ Están montadas bajo `/api/experiencias/:id`. Todas comprueban antes que el usua
 `usuarioService.obtenerPerfilPublico`.
 
 * **Responde:** 200 `{ id, nombreUsuario, foto, ciudad, amigos, seguidores, esPropio, relacion: { amistad, amistadId, siguiendo } }`. Nunca incluye el email.
-  * `esPropio`: `true` si es el perfil del propio usuario (la pantalla lo lleva a `perfil.html`).
+  * `esPropio`: `true` si es el perfil del propio usuario (la pantalla lo lleva a `/cuenta/perfil.html`).
   * `relacion.amistad`: `ninguna`, `enviada` (la envié yo), `recibida` o `amigos`. Ver [E2](flujos.md#e2-la-relación-vista-desde-el-perfil-de-otro-usuario).
   * `relacion.amistadId`: el id de esa solicitud o amistad, para responderla o eliminarla; `null` si no hay.
   * `relacion.siguiendo`: si el usuario de la sesión lo sigue.

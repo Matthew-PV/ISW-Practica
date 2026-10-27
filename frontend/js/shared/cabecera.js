@@ -1,7 +1,7 @@
 // Comportamiento de la cabecera común de las pantallas con sesión (header.cabecera). Cada página
 // la carga después de shared/api.js y shared/pantalla.js. No exporta nada: al cargarse, engancha
 // sus eventos.
-// Lo usan: bienvenida.html, perfil.html, personas.html, usuario.html y experiencia.html.
+// Lo usan: /cuenta/bienvenida.html, /cuenta/perfil.html, /social/personas.html, /social/usuario.html y /experiencias/experiencia.html.
 
 const menuCuenta = document.querySelector('details.menu-cuenta');
 
@@ -15,7 +15,7 @@ async function cerrarSesion(evento) {
   boton.textContent = 'Cerrando sesión…';
   try {
     await api('/auth/logout', { method: 'POST' });
-    window.location.href = 'iniciar-sesion.html';
+    window.location.href = '/acceso/iniciar-sesion.html';
   } catch {
     boton.disabled = false;
     boton.removeAttribute('aria-busy');

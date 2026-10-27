@@ -28,10 +28,10 @@ describe('landing', () => {
 
   test('enlaza a iniciar sesión y a crear cuenta', () => {
     expect(
-      document.querySelectorAll('a[href="iniciar-sesion.html"]').length
+      document.querySelectorAll('a[href="/acceso/iniciar-sesion.html"]').length
     ).toBeGreaterThanOrEqual(1);
     expect(
-      document.querySelectorAll('a[href="registro.html"]').length
+      document.querySelectorAll('a[href="/acceso/registro.html"]').length
     ).toBeGreaterThanOrEqual(1);
   });
 

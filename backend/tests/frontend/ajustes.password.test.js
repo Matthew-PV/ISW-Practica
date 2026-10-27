@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-// CS-64, objetivo 7: formulario «Cambiar contraseña» de ajustes.html (js/ajustes.js), con jsdom y
+// CS-64, objetivo 7: formulario «Cambiar contraseña» de /cuenta/ajustes.html (js/ajustes.js), con jsdom y
 // un servidor simulado que responde según el método y la ruta.
 const fs = require('node:fs');
 const path = require('node:path');
@@ -9,7 +9,7 @@ const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const HTML = leer('ajustes.html');
+const HTML = leer('/cuenta/ajustes.html');
 const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/password.js', 'js/ajustes.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });

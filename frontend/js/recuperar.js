@@ -1,4 +1,4 @@
-// Página para pedir el enlace de recuperación de la contraseña (recuperar.html, CS-64).
+// Página para pedir el enlace de recuperación de la contraseña (/acceso/recuperar.html, CS-64).
 // Usa `api` de shared/api.js.
 //
 // El servidor responde lo mismo exista o no el email, así que la página muestra siempre su

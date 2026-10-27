@@ -54,7 +54,7 @@ sequenceDiagram
         S-->>R: id, nombreUsuario, email
         R->>R: abrirSesion: sesión nueva con el usuario
         R-->>P: 201 y cookie de sesión
-        P->>U: bienvenida.html
+        P->>U: /cuenta/bienvenida.html
       end
     end
   end
@@ -204,7 +204,7 @@ sequenceDiagram
   participant V as visibilidad
   participant A as amistadService
   participant DB as Repositorios
-  U->>P: abre experiencia.html?id=7
+  U->>P: abre /experiencias/experiencia.html?id=7
   par
     P->>R: GET /api/experiencias/7
   and
@@ -409,7 +409,7 @@ sequenceDiagram
   participant ES as experienciaService
   participant V as visibilidad
   participant DB as Repositorios
-  U->>P: abre usuario.html?nombre=bea
+  U->>P: abre /social/usuario.html?nombre=bea
   P->>US: GET /api/usuarios/bea
   US->>DB: obtenerPerfilPublico(bea) sin email
   alt no existe
@@ -422,7 +422,7 @@ sequenceDiagram
     end
     US-->>P: perfil, contadores, esPropio y relación
     alt es el propio usuario
-      P->>U: perfil.html
+      P->>U: /cuenta/perfil.html
     else otra persona
       P->>U: foto, nombre, contadores y botones según la relación
       P->>ES: GET /api/experiencias?autor=bea
@@ -453,7 +453,7 @@ sequenceDiagram
   alt el email es de una cuenta
     Note over S: token = 32 bytes aleatorios
     S->>T: crear(usuarioId, SHA-256 del token, caduca en 30 min)
-    S-)E: enviar(enlace restablecer.html?token=...) sin esperar
+    S-)E: enviar(enlace /acceso/restablecer.html?token=...) sin esperar
     Note over E: con SMTP_URL lo envía y sin ella, lo escribe en la consola
   end
   S-->>P: 200, la misma respuesta exista o no el email
@@ -541,7 +541,7 @@ Solo una solicitud ACEPTADA da acceso a las experiencias de amigos y cuenta en e
 
 ### E2. La relación vista desde el perfil de otro usuario
 
-CS-62. Lo que devuelve `GET /api/usuarios/:nombreUsuario` en `relacion.amistad`, y los botones que muestra `usuario.html`. «Seguir» es independiente.
+CS-62. Lo que devuelve `GET /api/usuarios/:nombreUsuario` en `relacion.amistad`, y los botones que muestra `/social/usuario.html`. «Seguir» es independiente.
 
 ```mermaid
 stateDiagram-v2

@@ -1,7 +1,7 @@
-// Página del perfil de otro usuario (usuario.html): muestra su foto, nombre, ciudad, el número de
+// Página del perfil de otro usuario (/social/usuario.html): muestra su foto, nombre, ciudad, el número de
 // amigos y seguidores, el botón de amistad que corresponde a la relación con él y el de seguir.
-// Se abre con usuario.html?nombre=ana. Si el usuario no existe lo indica, y si es el propio usuario
-// va a perfil.html. Debajo, sus experiencias que puedo ver (CS-44). Usa `api` de shared/api.js y
+// Se abre con /social/usuario.html?nombre=ana. Si el usuario no existe lo indica, y si es el propio usuario
+// va a /cuenta/perfil.html. Debajo, sus experiencias que puedo ver (CS-44). Usa `api` de shared/api.js y
 // `mostrarExperienciasDe` y `recargarExperiencias` de shared/experiencias.js, y `mostrarMensaje`,
 // `ocultarMensaje`, `ocultarCargando` e `irAlLogin` de shared/pantalla.js.
 
@@ -77,7 +77,7 @@ function mostrarBotonSeguir(perfil) {
 function mostrarPerfil(perfil) {
   // Si el perfil es el mío, la pantalla de otro usuario no tiene sentido: se va a «Mi perfil»
   if (perfil.esPropio) {
-    window.location.href = 'perfil.html';
+    window.location.href = '/cuenta/perfil.html';
     return;
   }
   document.getElementById('nombre-usuario').textContent = perfil.nombreUsuario;

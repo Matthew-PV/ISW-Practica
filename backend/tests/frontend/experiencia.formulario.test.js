@@ -3,7 +3,7 @@ const path = require('path');
 const { JSDOM } = require('jsdom');
 
 // Cargamos el HTML de la página
-const html = fs.readFileSync(path.resolve(__dirname, '../../../frontend/experiencia.html'), 'utf8');
+const html = fs.readFileSync(path.resolve(__dirname, '../../../frontend/experiencias/experiencia.html'), 'utf8');
 
 describe('CS-63: Pantalla de Detalles de Experiencia', () => {
   let dom;
@@ -13,7 +13,7 @@ describe('CS-63: Pantalla de Detalles de Experiencia', () => {
   beforeEach(() => {
     // Inicializamos JSDOM con la URL simulada para que URLSearchParams funcione
     dom = new JSDOM(html, {
-      url: 'http://localhost/experiencia.html?id=1',
+      url: 'http://localhost/experiencias/experiencia.html?id=1',
       runScripts: 'dangerously'
     });
     window = dom.window;

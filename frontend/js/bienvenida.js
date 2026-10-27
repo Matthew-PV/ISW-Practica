@@ -1,6 +1,6 @@
-// Página de bienvenida (bienvenida.html): saluda al usuario con sesión, muestra sus experiencias
+// Página de bienvenida (/cuenta/bienvenida.html): saluda al usuario con sesión, muestra sus experiencias
 // por páginas (CS-44) y permite crearlas (CS-49) y editarlas (CS-57), con su visibilidad (CS-22).
-// «Ver detalle» enlaza a la página de cada experiencia (experiencia.html, CS-63).
+// «Ver detalle» enlaza a la página de cada experiencia (/experiencias/experiencia.html, CS-63).
 // Usa `api` de shared/api.js y `listaConCargarMas`, `mostrarMensaje`, `ocultarMensaje`, `ocultarCargando` e
 // `irAlLogin` de shared/pantalla.js.
 
@@ -74,7 +74,7 @@ function crearTarjeta(experiencia) {
   etiqueta.className = ETIQUETAS_VISIBILIDAD[experiencia.visibilidad].clase;
   etiqueta.textContent = ETIQUETAS_VISIBILIDAD[experiencia.visibilidad].texto;
   columna.querySelector('.card-text').textContent = experiencia.descripcion;
-  columna.querySelector('.boton-ver').setAttribute('href', `experiencia.html?id=${experiencia.id}`);
+  columna.querySelector('.boton-ver').setAttribute('href', `/experiencias/experiencia.html?id=${experiencia.id}`);
   columna.querySelector('.boton-editar').addEventListener('click', () => abrirFormulario(experiencia));
   return columna;
 }

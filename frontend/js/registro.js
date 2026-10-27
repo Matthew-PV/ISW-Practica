@@ -1,4 +1,4 @@
-// Página de registro (registro.html). Usa `api` de shared/api.js y `mostrarRequisitosPassword`
+// Página de registro (/acceso/registro.html). Usa `api` de shared/api.js y `mostrarRequisitosPassword`
 // de shared/password.js (CS-64).
 
 const formulario = document.getElementById('form-registro');
@@ -25,7 +25,7 @@ window.addEventListener('error', (e) => {
 }, true);
 
 // CAPTCHA del registro (Cloudflare Turnstile). Lo llama el script de Turnstile al cargarse
-// (parámetro onload en registro.html); la clave pública la da el servidor.
+// (parámetro onload en /acceso/registro.html); la clave pública la da el servidor.
 // Pinta el CAPTCHA dentro del elemento con id "captcha" del formulario.
 async function iniciarCaptcha() {
   try {
@@ -69,7 +69,7 @@ formulario.addEventListener('submit', async (e) => {
   try {
     // Si todo es correcto, el backend crea la cuenta, inicia la sesión y se pasa a la bienvenida
     await api('/auth/registro', { method: 'POST', body: JSON.stringify(datos) });
-    window.location.href = 'bienvenida.html';
+    window.location.href = '/cuenta/bienvenida.html';
   } catch (err) {
     // Se muestra el mensaje del backend y se vuelve a habilitar el botón para reintentar
     mostrarError(err.message);
@@ -91,6 +91,6 @@ const marcarRequisitos = mostrarRequisitosPassword(
 );
 campoNombre.addEventListener('input', marcarRequisitos);
 
-// La llama el script de Turnstile al cargarse (onload=iniciarCaptcha en registro.html), así que
+// La llama el script de Turnstile al cargarse (onload=iniciarCaptcha en /acceso/registro.html), así que
 // tiene que estar en window también cuando las pruebas cargan este archivo como módulo.
 window.iniciarCaptcha = iniciarCaptcha;

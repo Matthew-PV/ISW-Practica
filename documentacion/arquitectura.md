@@ -307,7 +307,7 @@ Cada archivo lleva el nombre de su capa como sufijo, de modo que el nombre indic
 
 Las claves y contraseñas (conexión a MySQL, credenciales de Cloudinary, secreto de sesión, servidor de correo) se guardan en `backend/.env`, que **no se sube a git**. El archivo `backend/.env.example` indica qué variables hay que rellenar.
 
-El frontend no necesita instalación: Bootstrap se carga desde CDN y `js/shared/api.js` agrupa las llamadas a la API. Cada página carga primero `js/shared/api.js`, después los módulos compartidos que necesita y por último su propio archivo (`perfil.html` → `js/perfil.js`). El detalle de cada pantalla está en [frontend.md](frontend.md).
+El frontend no necesita instalación: Bootstrap se carga desde CDN y `js/shared/api.js` agrupa las llamadas a la API. Cada página carga primero `js/shared/api.js`, después los módulos compartidos que necesita y por último su propio archivo (`/cuenta/perfil.html` → `js/perfil.js`). El detalle de cada pantalla está en [frontend.md](frontend.md).
 
 
 

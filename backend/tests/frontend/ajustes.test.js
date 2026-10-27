@@ -1,11 +1,11 @@
 /**
  * @jest-environment jsdom
  */
-// CS-66: diseño de la página de ajustes (ajustes.html y js/ajustes.js) en jsdom: datos, contraseña y
+// CS-66: diseño de la página de ajustes (/cuenta/ajustes.html y js/ajustes.js) en jsdom: datos, contraseña y
 // «Cerrar sesión» en su propia página, y botones secundarios con estado de espera.
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
-const HTML = leer('ajustes.html');
+const HTML = leer('/cuenta/ajustes.html');
 const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/password.js', 'js/ajustes.js'];
 const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', ciudad: null, foto: null };
 

@@ -28,14 +28,14 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
     ]);
 
     expect(enlaces).toEqual([
-      ['PlanB', 'bienvenida.html'],
-      ['Inicio', 'bienvenida.html'],
-      ['Solicitudes', 'solicitudes.html'],
+      ['PlanB', '/cuenta/bienvenida.html'],
+      ['Inicio', '/cuenta/bienvenida.html'],
+      ['Solicitudes', '/social/solicitudes.html'],
     ]);
   });
 
   test('tiene el buscador de personas', () => {
-    const formulario = $('header.cabecera form[role="search"][action="personas.html"][method="get"]');
+    const formulario = $('header.cabecera form[role="search"][action="/social/personas.html"][method="get"]');
     expect(formulario).not.toBeNull();
 
     const campo = formulario.querySelector('input[type="search"][name="q"]');
@@ -52,10 +52,10 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
     expect(menu).not.toBeNull();
     expect(menu.querySelector('summary').textContent).toContain('Cuenta');
 
-    const perfil = menu.querySelector('a[href="perfil.html"]');
+    const perfil = menu.querySelector('a[href="/cuenta/perfil.html"]');
     expect(perfil.textContent.trim()).toBe('Mi perfil');
 
-    const ajustes = menu.querySelector('a[href="ajustes.html"]');
+    const ajustes = menu.querySelector('a[href="/cuenta/ajustes.html"]');
     expect(ajustes.textContent.trim()).toBe('Ajustes');
 
     const cerrar = menu.querySelector('button#cerrar-sesion[data-cerrar-sesion]');
@@ -76,7 +76,7 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
     expect(marcados.map((e) => e.textContent.trim())).toEqual(ACTUAL[pagina] ? [ACTUAL[pagina]] : []);
   });
 
-  test('solo personas.html lleva la clase pagina-buscar en el body', () => {
+  test('solo /social/personas.html lleva la clase pagina-buscar en el body', () => {
     expect(document.body.classList.contains('pagina-buscar')).toBe(pagina === 'personas');
   });
 });
@@ -105,7 +105,7 @@ describe('comportamiento de js/shared/cabecera.js', () => {
     window.fetch = jest.fn();
     // Un `location` simple, para ver a qué dirección intenta ir sin que jsdom navegue
     Object.defineProperty(window, 'location', {
-      value: { search: '', href: 'http://localhost/bienvenida.html' },
+      value: { search: '', href: 'http://localhost/cuenta/bienvenida.html' },
       configurable: true,
       writable: true,
     });
@@ -153,13 +153,13 @@ describe('comportamiento de js/shared/cabecera.js', () => {
     expect(cerrar().disabled).toBe(true);
   });
 
-  test('con éxito, se va a iniciar-sesion.html', async () => {
+  test('con éxito, se va a /acceso/iniciar-sesion.html', async () => {
     window.fetch.mockReturnValue(respuesta204());
 
     cerrar().click();
     await terminar();
 
-    expect(window.location.href).toBe('iniciar-sesion.html');
+    expect(window.location.href).toBe('/acceso/iniciar-sesion.html');
   });
 
   test('si falla, el botón se recupera y aparece un aviso', async () => {
@@ -173,7 +173,7 @@ describe('comportamiento de js/shared/cabecera.js', () => {
     const aviso = $('[role="alert"]');
     expect(aviso).not.toBeNull();
     expect(aviso.textContent).toContain('No se ha podido cerrar la sesión. Inténtalo de nuevo.');
-    expect(window.location.href).toBe('http://localhost/bienvenida.html');
+    expect(window.location.href).toBe('http://localhost/cuenta/bienvenida.html');
   });
 
   test('pulsar fuera del menú de cuenta lo cierra', () => {

@@ -1,4 +1,4 @@
-// Página de solicitudes (solicitudes.html): las solicitudes de amistad pendientes que ha recibido la
+// Página de solicitudes (/social/solicitudes.html): las solicitudes de amistad pendientes que ha recibido la
 // persona de la sesión, con «Aceptar» y «Rechazar». Se ejecuta nada más cargar la página.
 // Usa `api` de shared/api.js.
 

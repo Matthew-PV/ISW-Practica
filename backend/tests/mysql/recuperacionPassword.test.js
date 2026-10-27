@@ -18,7 +18,7 @@ const sha256 = (texto) => crypto.createHash('sha256').update(texto).digest('hex'
 const pedirEnlace = (email) => request(app).post('/api/auth/recuperar').send({ email });
 const restablecer = (token, nueva) => request(app).post('/api/auth/restablecer').send({ token, nueva });
 const login = (password) => request(app).post('/api/auth/login').send({ email: usuario.email, password });
-// El token del último enlace enviado: restablecer.html?token=<64 caracteres hexadecimales>
+// El token del último enlace enviado: /acceso/restablecer.html?token=<64 caracteres hexadecimales>
 const tokenEnviado = () => emailRepository.enviar.mock.calls.at(-1)[0].texto.match(/token=([0-9a-f]{64})/)[1];
 
 beforeEach(async () => {

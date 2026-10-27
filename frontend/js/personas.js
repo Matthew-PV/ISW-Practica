@@ -1,5 +1,5 @@
-// Página de búsqueda (personas.html). Cada resultado lleva al perfil público de esa persona en
-// usuario.html. Usa `api` de shared/api.js, `activarPestanas` de shared/pestanas.js y
+// Página de búsqueda (/social/personas.html). Cada resultado lleva al perfil público de esa persona en
+// /social/usuario.html. Usa `api` de shared/api.js, `activarPestanas` de shared/pestanas.js y
 // `crearEnlacePerfil`, `mostrarMensaje`, `ocultarMensaje`, `mostrarCargando` y `ocultarCargando`
 // de shared/pantalla.js.
 
@@ -121,7 +121,7 @@ formularioBusqueda.addEventListener('submit', (evento) => {
   buscar();
 });
 
-// personas.html?q=texto (el buscador de la cabecera): rellena el campo y busca; q vacío no busca
+// /social/personas.html?q=texto (el buscador de la cabecera): rellena el campo y busca; q vacío no busca
 const textoInicial = new URLSearchParams(window.location.search).get('q')?.trim();
 if (textoInicial) {
   campoBusqueda.value = textoInicial;

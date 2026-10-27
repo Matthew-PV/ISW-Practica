@@ -1,4 +1,4 @@
-// Página de ajustes (ajustes.html): edición de nombreUsuario, ciudad, foto y contraseña.
+// Página de ajustes (/cuenta/ajustes.html): edición de nombreUsuario, ciudad, foto y contraseña.
 // Se ejecuta nada más cargar la página. Usa `api` de shared/api.js, `ocultarCargando` de
 // shared/pantalla.js, `activarPestanas` de shared/pestanas.js y `mostrarRequisitosPassword` de shared/password.js (CS-64).
 
@@ -27,7 +27,7 @@ async function cargarPerfil() {
     mostrarPerfil(await api('/perfil'));
   } catch {
     // Sin sesión (o el servidor no responde): se vuelve al login
-    window.location.href = 'iniciar-sesion.html';
+    window.location.href = '/acceso/iniciar-sesion.html';
   } finally {
     ocultarCargando();
   }

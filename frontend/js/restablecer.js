@@ -1,4 +1,4 @@
-// Página para elegir una contraseña nueva desde el enlace del email (restablecer.html?token=...,
+// Página para elegir una contraseña nueva desde el enlace del email (/acceso/restablecer.html?token=...,
 // CS-64). Usa `api` de shared/api.js y `mostrarRequisitosPassword` de shared/password.js.
 //
 // La página no sabe de quién es el enlace, así que el requisito «sin el nombre de usuario» solo
@@ -46,7 +46,7 @@ formulario.addEventListener('submit', async (e) => {
     // El enlace ya no sirve: se oculta el formulario y se ofrece ir al inicio de sesión
     formulario.classList.add('d-none');
     const enlace = document.createElement('a');
-    enlace.href = 'iniciar-sesion.html';
+    enlace.href = '/acceso/iniciar-sesion.html';
     enlace.textContent = 'Iniciar sesión';
     cajaExito.replaceChildren(`${mensaje} `, enlace);
     cajaExito.classList.remove('d-none');
