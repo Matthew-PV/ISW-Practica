@@ -80,8 +80,8 @@ test('es una pantalla dividida con un único h1 y la marca enlaza a index.html',
   expect($('.pantalla-dividida-marca')).not.toBeNull();
   expect($('.pantalla-dividida-formulario h1').textContent).toBe('Iniciar sesión');
   expect(document.querySelectorAll('h1')).toHaveLength(1);
-  expect($('.pantalla-dividida-marca a').getAttribute('href')).toBe('index.html');
-  expect($('.pantalla-dividida-marca a').textContent).toBe('PlanB');
+  expect($('.pantalla-dividida-marca a').getAttribute('href')).toBe('/index.html');
+  expect($('.pantalla-dividida-marca a img').getAttribute('alt')).toBe('PlanB');
   expect(document.querySelector('header, nav')).toBeNull();
 });
 

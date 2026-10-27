@@ -188,7 +188,7 @@ describe('carga del CAPTCHA', () => {
 
 describe('pantalla dividida (rediseño CS-65)', () => {
   test('tiene la marca a la izquierda, un único h1 en el formulario y un único botón principal', () => {
-    expect($('.pantalla-dividida-marca a').getAttribute('href')).toBe('index.html');
+    expect($('.pantalla-dividida-marca a').getAttribute('href')).toBe('/index.html');
     expect($('.pantalla-dividida-formulario h1').textContent).toBe('Crear cuenta');
     expect(document.querySelectorAll('h1')).toHaveLength(1);
     expect(document.querySelectorAll('.btn-primary')).toHaveLength(1);

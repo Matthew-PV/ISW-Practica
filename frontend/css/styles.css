@@ -2,22 +2,23 @@
    Los colores solo se escriben en este bloque; el resto del archivo usa var(--color-*). */
 
 :root {
-  /* Paleta */
+  /* Paleta «Verbena» (documentacion/arte.md) */
   --color-fondo: #FFFFFF;
-  --color-lienzo: #E6EEEC;
-  --color-superficie: #F3F4F6;
-  --color-texto: #1F2937;
-  --color-texto-suave: #4B5563;
-  --color-primario: #0F766E;
-  --color-primario-hover: #115E59;
-  --color-primario-suave: #CCFBF1;
+  --color-lienzo: #FFFFFF;
+  --color-superficie: #F6F3F9;
+  --color-texto: #2A1E3F;
+  --color-texto-suave: #5E5470;
+  --color-primario: #FF5A36;
+  --color-primario-hover: #FF7A5C;
+  --color-acento: #C2410C;
+  --color-acento-hover: #9A3412;
+  --color-melocoton: #FFC7B3;
+  --color-crema: #FFF4E6;
   --color-peligro: #B91C1C;
   --color-exito: #15803D;
   --color-foco: #1D4ED8;
-  --color-borde-campo: #6B7280;
-  --color-borde-suave: #D1D5DB;
-  --color-barra: #0F172A;
-  --color-barra-texto: #F8FAFC;
+  --color-borde-campo: #7A6F8C;
+  --color-borde-suave: #E8E3EE;
 
   /* Avisos (fondo y texto) */
   --color-error-fondo: #FEE2E2;
@@ -33,10 +34,10 @@
   --color-velo: rgb(0 0 0 / 0.5);
 
   /* Tripletas RGB que Bootstrap necesita para sus utilidades (text-secondary, enlaces...) */
-  --color-primario-rgb: 15, 118, 110;
-  --color-primario-hover-rgb: 17, 94, 89;
-  --color-texto-rgb: 31, 41, 55;
-  --color-texto-suave-rgb: 75, 85, 99;
+  --color-acento-rgb: 194, 65, 12;
+  --color-acento-hover-rgb: 154, 52, 18;
+  --color-texto-rgb: 42, 30, 63;
+  --color-texto-suave-rgb: 94, 84, 112;
 
   /* Espaciado: escala de múltiplos de 4 px */
   --espacio-4: 4px;
@@ -58,7 +59,7 @@
 
   /* Reasignación de las variables de Bootstrap */
   --bs-primary: var(--color-primario);
-  --bs-primary-rgb: var(--color-primario-rgb);
+  --bs-primary-rgb: 255, 90, 54;
   --bs-secondary-rgb: var(--color-texto-suave-rgb);
   --bs-secondary-color: var(--color-texto-suave);
   --bs-body-color: var(--color-texto);
@@ -67,10 +68,10 @@
   --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --bs-body-font-size: 1rem;
   --bs-body-line-height: 1.5;
-  --bs-link-color: var(--color-primario);
-  --bs-link-color-rgb: var(--color-primario-rgb);
-  --bs-link-hover-color: var(--color-primario-hover);
-  --bs-link-hover-color-rgb: var(--color-primario-hover-rgb);
+  --bs-link-color: var(--color-acento);
+  --bs-link-color-rgb: var(--color-acento-rgb);
+  --bs-link-hover-color: var(--color-acento-hover);
+  --bs-link-hover-color-rgb: var(--color-acento-hover-rgb);
   --bs-border-color: var(--color-borde-suave);
   --bs-border-radius: var(--radio-boton);
   --bs-border-radius-sm: var(--radio-boton);
@@ -145,30 +146,30 @@ a {
 
 /* Principal: como máximo uno por pantalla y estado */
 .btn-primary {
-  --bs-btn-color: var(--color-fondo);
+  --bs-btn-color: var(--color-texto);
   --bs-btn-bg: var(--color-primario);
   --bs-btn-border-color: var(--color-primario);
-  --bs-btn-hover-color: var(--color-fondo);
+  --bs-btn-hover-color: var(--color-texto);
   --bs-btn-hover-bg: var(--color-primario-hover);
   --bs-btn-hover-border-color: var(--color-primario-hover);
   --bs-btn-active-color: var(--color-fondo);
-  --bs-btn-active-bg: var(--color-primario-hover);
-  --bs-btn-active-border-color: var(--color-primario-hover);
+  --bs-btn-active-bg: var(--color-texto);
+  --bs-btn-active-border-color: var(--color-texto);
   font-weight: 700;
 }
 
 /* Secundario (btn-outline-secondary se trata igual: solo hay una jerarquía) */
 .btn-outline-primary,
 .btn-outline-secondary {
-  --bs-btn-color: var(--color-primario);
+  --bs-btn-color: var(--color-texto);
   --bs-btn-bg: var(--color-fondo);
-  --bs-btn-border-color: var(--color-primario);
-  --bs-btn-hover-color: var(--color-primario);
-  --bs-btn-hover-bg: var(--color-primario-suave);
-  --bs-btn-hover-border-color: var(--color-primario);
-  --bs-btn-active-color: var(--color-primario);
-  --bs-btn-active-bg: var(--color-primario-suave);
-  --bs-btn-active-border-color: var(--color-primario-hover);
+  --bs-btn-border-color: var(--color-texto);
+  --bs-btn-hover-color: var(--color-texto);
+  --bs-btn-hover-bg: var(--color-crema);
+  --bs-btn-hover-border-color: var(--color-texto);
+  --bs-btn-active-color: var(--color-texto);
+  --bs-btn-active-bg: var(--color-melocoton);
+  --bs-btn-active-border-color: var(--color-texto);
 }
 
 /* Peligro y «Aceptar»: con el ratón el borde pasa a 2 px (con un anillo interior, para que no salte el tamaño);
@@ -204,9 +205,9 @@ a {
 
 /* Botón de texto: se ve como enlace, pero mide 44 px de alto */
 .btn-link {
-  --bs-btn-color: var(--color-primario);
-  --bs-btn-hover-color: var(--color-primario-hover);
-  --bs-btn-active-color: var(--color-primario-hover);
+  --bs-btn-color: var(--color-acento);
+  --bs-btn-hover-color: var(--color-acento-hover);
+  --bs-btn-active-color: var(--color-acento-hover);
   text-decoration: underline;
 }
 
@@ -307,8 +308,8 @@ fieldset:disabled .btn {
 }
 
 .form-check-input:checked {
-  background-color: var(--color-primario);
-  border-color: var(--color-primario);
+  background-color: var(--color-texto);
+  border-color: var(--color-texto);
 }
 
 /* ---------- Tarjetas ---------- */
@@ -376,7 +377,7 @@ fieldset:disabled .btn {
   --bs-list-group-action-hover-color: var(--color-texto);
   --bs-list-group-action-hover-bg: var(--color-superficie);
   --bs-list-group-action-active-color: var(--color-texto);
-  --bs-list-group-action-active-bg: var(--color-primario-suave);
+  --bs-list-group-action-active-bg: var(--color-melocoton);
 }
 
 /* ---------- Etiquetas de visibilidad: píldora de 24 px, no pulsable, siempre con texto ---------- */
@@ -399,8 +400,8 @@ fieldset:disabled .btn {
 }
 
 .etiqueta-amigos {
-  color: var(--color-primario-hover);
-  background: var(--color-primario-suave);
+  color: var(--color-acento-hover);
+  background: var(--color-crema);
 }
 
 .etiqueta-privada {
@@ -412,13 +413,8 @@ fieldset:disabled .btn {
 
 [role="tablist"] {
   display: flex;
-  gap: var(--espacio-8);
-  padding: var(--espacio-4);
-  background: var(--color-fondo);
-  border: 1px solid var(--color-borde-suave);
-  border-radius: var(--radio-pildora);
-  width: fit-content;
-  max-width: 100%;
+  gap: var(--espacio-4);
+  border-bottom: 1px solid var(--color-borde-suave);
 }
 
 [role="tab"] {
@@ -428,23 +424,23 @@ fieldset:disabled .btn {
   color: var(--color-texto-suave);
   background: transparent;
   border: 0;
-  border-radius: var(--radio-pildora);
+  border-bottom: 3px solid transparent;
+  border-radius: var(--radio-boton) var(--radio-boton) 0 0;
   transition: color var(--duracion-corta), background-color var(--duracion-corta);
 }
 
 [role="tab"]:hover {
-  color: var(--color-texto);
   background: var(--color-superficie);
 }
 
 [role="tab"]:active {
-  background: var(--color-primario-suave);
+  background: var(--color-melocoton);
 }
 
 [role="tab"][aria-selected="true"] {
-  color: var(--color-fondo);
+  color: var(--color-texto);
   font-weight: 700;
-  background: var(--color-primario);
+  border-bottom-color: var(--color-primario);
 }
 
 /* ---------- Cabecera común (contrato en .superpowers/plan/contrato-cabecera.md) ---------- */
@@ -455,7 +451,7 @@ fieldset:disabled .btn {
   left: var(--espacio-8);
   z-index: 2000;
   padding: var(--espacio-12) var(--espacio-16);
-  color: var(--color-primario);
+  color: var(--color-acento);
   background: var(--color-fondo);
   border-radius: var(--radio-boton);
 }
@@ -465,8 +461,9 @@ fieldset:disabled .btn {
 }
 
 .cabecera {
-  background: var(--color-barra);
-  color: var(--color-barra-texto);
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  border-bottom: 1px solid var(--color-borde-suave);
 }
 
 .cabecera-interior {
@@ -474,7 +471,7 @@ fieldset:disabled .btn {
   align-items: center;
   flex-wrap: wrap;
   gap: 0 var(--espacio-16);
-  min-height: 56px;
+  min-height: 64px;
   max-width: 960px;
   margin: 0 auto;
   padding: 0 var(--espacio-24);
@@ -499,8 +496,10 @@ fieldset:disabled .btn {
   display: flex;
   align-items: center;
   height: 48px;
-  background: var(--color-fondo);
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde-campo);
   border-radius: var(--radio-pildora);
+  transition: border-color var(--duracion-corta);
 }
 
 .cabecera-busqueda input {
@@ -525,8 +524,12 @@ fieldset:disabled .btn {
 }
 
 .cabecera-busqueda:has(input:focus-visible) {
-  outline: 2px solid var(--color-barra-texto);
+  outline: 2px solid var(--color-foco);
   outline-offset: 2px;
+}
+
+.cabecera-busqueda:hover {
+  border-color: var(--color-texto);
 }
 
 .cabecera-busqueda .btn {
@@ -539,14 +542,14 @@ fieldset:disabled .btn {
 
 .cabecera-marca,
 .cabecera-enlace {
-  color: var(--color-barra-texto);
+  color: var(--color-texto);
   text-decoration: none;
 }
 
 .cabecera-marca:hover,
 .cabecera-enlace:hover,
 .menu-cuenta summary:hover {
-  color: var(--color-barra-texto);
+  color: var(--color-texto);
   text-decoration: underline;
 }
 
@@ -572,17 +575,7 @@ fieldset:disabled .btn {
 /* Sección activa: negrita y línea gruesa debajo, además de aria-current */
 .cabecera-enlace[aria-current="page"] {
   font-weight: 700;
-  border-bottom-color: var(--color-barra-texto);
-}
-
-/* Dentro de la barra el anillo es claro; sobre fondo blanco (buscador y panel) vuelve a ser azul */
-.cabecera :focus-visible {
-  outline-color: var(--color-barra-texto);
-}
-
-.cabecera-busqueda .btn:focus-visible,
-.menu-cuenta-lista :focus-visible {
-  outline-color: var(--color-foco);
+  border-bottom-color: var(--color-primario);
 }
 
 /* La página de búsqueda lleva su propio campo */
@@ -595,16 +588,12 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
   margin-left: auto;
 }
 
-/* Botones en la barra sin sesión (landing): borde claro para distinguirse del fondo oscuro */
+/* Botones de la barra sin sesión (landing) */
 .cabecera-acciones {
   order: 3;
   display: flex;
   gap: var(--espacio-8);
   margin-left: auto;
-}
-
-.cabecera-acciones .btn {
-  border-color: var(--color-barra-texto);
 }
 
 /* Aviso de error al cerrar sesión, justo debajo de la cabecera */
@@ -717,7 +706,7 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
   padding: var(--espacio-48);
   font-size: 18px;
   color: var(--color-texto);
-  background: var(--color-superficie);
+  background: var(--color-crema);
 }
 
 .pantalla-dividida-marca a:first-child {
@@ -785,9 +774,9 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
   min-height: 10rem;
   font: inherit;
   font-weight: 700;
-  color: var(--color-primario);
+  color: var(--color-acento);
   background: transparent;
-  border: 2px dashed var(--color-borde-suave);
+  border: 2px dashed var(--color-borde-campo);
   border-radius: var(--radio-tarjeta);
   transition: background-color var(--duracion-corta), border-color var(--duracion-corta);
 }
@@ -798,7 +787,7 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
 }
 
 .tarjeta-nueva:hover {
-  background: var(--color-primario-suave);
+  background: var(--color-crema);
 }
 
 /* ---------- Cabecera de perfil con contadores ---------- */
@@ -867,7 +856,7 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
 }
 
 .fila-resultado:active {
-  background: var(--color-primario-suave);
+  background: var(--color-crema);
 }
 
 .fila-resultado img {

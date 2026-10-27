@@ -135,7 +135,7 @@ describe.each([
   test('tiene la marca a la izquierda, un único h1 en el formulario y un único botón principal', () => {
     document.documentElement.innerHTML = leer(pagina);
 
-    expect(document.querySelector('.pantalla-dividida-marca a').getAttribute('href')).toBe('index.html');
+    expect(document.querySelector('.pantalla-dividida-marca a').getAttribute('href')).toBe('/index.html');
     expect(document.querySelector('.pantalla-dividida-formulario h1').textContent).toBe(titulo);
     expect(document.querySelectorAll('h1')).toHaveLength(1);
     expect(document.querySelectorAll('.btn-primary')).toHaveLength(1);

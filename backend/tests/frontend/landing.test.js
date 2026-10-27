@@ -35,10 +35,12 @@ describe('landing', () => {
     ).toBeGreaterThanOrEqual(1);
   });
 
-  test('muestra el marco de captura con su rótulo', () => {
-    const marco = document.querySelector('.marco-captura');
-    expect(marco).not.toBeNull();
-    expect(marco.textContent).toContain('Captura de PlanB');
+  test('muestra la ilustración de portada con su descripción', () => {
+    const imagen = document.querySelector('.landing-ilustracion img');
+    expect(imagen).not.toBeNull();
+    expect(imagen.getAttribute('src')).toBe('/img/ilustracion-portada.svg');
+    expect(imagen.getAttribute('alt')).not.toBe('');
+    expect(document.querySelector('.marco-captura')).toBeNull();
   });
 
   test('tiene tres bloques con h2 y párrafo', () => {

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 420" role="img" aria-labelledby="t"><title id="t">Un mapa con un recorrido de tres paradas y una tarjeta de plan compartido</title>
+<defs><clipPath id="m"><rect width="520" height="420" rx="24"/></clipPath></defs>
+<g clip-path="url(#m)">
+<rect width="520" height="420" fill="#FFF4E6"/>
+<path d="M-10 300 C80 270 120 330 210 310 S360 250 540 300 V430 H-10Z" fill="#FFE3D3"/>
+<path d="M330 -10h200v150c-60 20-130 0-200-30z" fill="#DCFCE7"/>
+<rect x="40" y="48" width="96" height="70" rx="10" fill="#FFFFFF" opacity=".8"/>
+<rect x="160" y="40" width="70" height="96" rx="10" fill="#FFFFFF" opacity=".8"/>
+<rect x="36" y="160" width="130" height="64" rx="10" fill="#FFFFFF" opacity=".8"/>
+<rect x="250" y="150" width="90" height="80" rx="10" fill="#FFFFFF" opacity=".8"/>
+<g stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" fill="none"><path d="M-10 140H540"/><path d="M146 -10V430"/><path d="M-10 250C120 230 260 270 540 220"/><path d="M240 -10C250 100 230 200 260 430"/></g>
+<path d="M92 300 C150 230 190 250 238 196 S330 120 408 84" fill="none" stroke="#FF5A36" stroke-width="5" stroke-linecap="round" stroke-dasharray="2 12"/>
+<g><path d="M92 276c-10 0-18 7.500-18 17 0 12 16 25 17 26a1.500 1.500 0 0 0 2 0c1-1 17-14 17-26 0-9.500-8-17-18-17Z" fill="#2A1E3F"/><circle cx="92" cy="292" r="6" fill="#FFC7B3"/></g>
+<g><path d="M238 172c-10 0-18 7.500-18 17 0 12 16 25 17 26a1.500 1.500 0 0 0 2 0c1-1 17-14 17-26 0-9.500-8-17-18-17Z" fill="#2A1E3F"/><circle cx="238" cy="188" r="6" fill="#FFC7B3"/></g>
+<g><path d="M408 56c-12 0-22 9-22 21 0 15 20 31 21 32a2 2 0 0 0 2 0c1-1 21-17 21-32 0-12-10-21-22-21Z" fill="#FF5A36"/><circle cx="408" cy="77" r="8" fill="#2A1E3F"/><circle cx="411" cy="74" r="2.500" fill="#FFF4E6"/></g>
+<g transform="translate(246 270)"><rect width="232" height="104" rx="16" fill="#FFFFFF" stroke="#E8E3EE"/><rect x="12" y="12" width="64" height="80" rx="10" fill="#FFC7B3"/><g fill="none" stroke="#2A1E3F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M32 40v16M38 40v16M32 48h6M35 56v14M54 40c-4 4-4 12 0 14v16"/></g><rect x="88" y="16" width="120" height="10" rx="5" fill="#2A1E3F"/><rect x="88" y="34" width="76" height="8" rx="4" fill="#C9C0D6"/><rect x="88" y="54" width="58" height="22" rx="11" fill="#FFF4E6"/><rect x="98" y="62" width="38" height="6" rx="3" fill="#C2410C"/><g><circle cx="176" cy="65" r="11" fill="#FFC7B3" stroke="#FFFFFF" stroke-width="3"/><circle cx="192" cy="65" r="11" fill="#FF5A36" stroke="#FFFFFF" stroke-width="3"/><circle cx="208" cy="65" r="11" fill="#2A1E3F" stroke="#FFFFFF" stroke-width="3"/></g><path d="M92 92h40" stroke="#FF5A36" stroke-width="3" stroke-linecap="round"/></g>
+<g transform="translate(34 330)"><rect width="150" height="46" rx="23" fill="#2A1E3F"/><circle cx="26" cy="23" r="13" fill="#FF5A36"/><path d="M20 23l4.500 4.500L33 18" fill="none" stroke="#2A1E3F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><rect x="48" y="14" width="84" height="8" rx="4" fill="#FFFFFF"/><rect x="48" y="28" width="56" height="6" rx="3" fill="#C9C0D6"/></g>
+</g></svg>

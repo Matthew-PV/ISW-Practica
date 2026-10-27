@@ -23,7 +23,7 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
 
   test('tiene la navegación principal con la marca, «Inicio» y «Solicitudes»', () => {
     const enlaces = [...document.querySelectorAll('header.cabecera nav[aria-label="Principal"] a')].map((a) => [
-      a.textContent.trim(),
+      a.textContent.trim() || a.querySelector('img')?.getAttribute('alt'),
       a.getAttribute('href'),
     ]);
 
