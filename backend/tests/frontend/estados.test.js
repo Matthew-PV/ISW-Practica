@@ -7,7 +7,7 @@
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
 const PAGINAS = [
-  'index', 'iniciar-sesion', 'registro', 'recuperar', 'restablecer', 'bienvenida', 'perfil', 'personas', 'usuario', 'experiencia',
+  'index', 'iniciar-sesion', 'registro', 'recuperar', 'restablecer', 'bienvenida', 'perfil', 'ajustes', 'solicitudes', 'personas', 'usuario', 'experiencia',
 ];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
@@ -201,7 +201,7 @@ describe('perfil.html', () => {
     await terminar();
 
     expect(oculto('#cargando')).toBe(true);
-    expect($('#nombreUsuario').value).toBe('ana');
+    expect($('#nombre-perfil').textContent).toBe('ana');
   });
 });
 

@@ -38,6 +38,34 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 
 # 2026-10-27
 
+## Mejora visual: solicitudes y ajustes en su propia página, fondo con contraste
+
+**Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
+**Historia:** sin historia (mejora de CS-66)
+
+### Cambios
+- Frontend: nuevas `solicitudes.html` y `ajustes.html` (con `js/solicitudes.js` y `js/ajustes.js`), sacadas de `perfil.html`. El perfil queda con cabecera y pestañas Experiencias, Amigos y Seguidores.
+- Cabecera común (siete páginas): enlace «Solicitudes» en la navegación y «Ajustes» en el menú de cuenta.
+- `styles.css`: fondo de página `--color-lienzo`, campos y tarjetas blancas, cabecera del perfil como tarjeta, `.tarjeta-panel`. Se eliminan `.banda-solicitudes` y `.resumen-boton`.
+- Pruebas: `perfil.foto`/`perfil.password`/`perfil.solicitudes` pasan a `ajustes.*`/`solicitudes`; nuevas `ajustes.test.js`; ajustadas `cabecera`, `estados`, `perfil.*` y `shared/experiencias`.
+- `documentacion/frontend.md` al día.
+
+### Decisiones
+#### Solicitudes y ajustes en páginas propias
+- **Contexto:** solicitudes y ajustes estaban apilados al final del perfil y solo se llegaba a ellos desde allí.
+- **Decisión:** una página para cada uno, enlazadas desde la cabecera, y pestañas en el perfil para el resto.
+- **Alternativas:** pestañas dentro del perfil (seguían dependiendo del perfil).
+- **Consecuencias:** al aceptar una solicitud ya no se actualizan los contadores del perfil en la misma pantalla; se ven al volver al perfil. No hay insignia con el número de solicitudes en la cabecera (haría una petición en todas las páginas).
+- **Decidió:** Joaquín, a propuesta de Claude.
+
+### Comprobación
+- Las pruebas de pantallas se adaptaron a las nuevas páginas y fallaron hasta que existieron; `npm test` desde `backend/`: 59 suites, 741 pruebas pasan.
+- Sin comprobar visualmente en navegador (escritorio y móvil).
+
+### Pendiente
+- Revisar en el navegador el contraste del fondo `#E6EEEC` y las pestañas en móvil.
+
+
 ## CS-66: documentación del frontend y cierre de la auditoría visual
 
 **Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
@@ -209,7 +237,7 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 ## CS-66: diseño provisional de las pantallas de acceso
 
 **Autor:** Matthew Puente Villegas Michavil, con Codex (GPT-5)
-**Historia:** CS-66, objetivo 1 · **Commits:** pendiente (esta entrada se incluirá en el mismo commit)
+**Historia:** CS-66, objetivo 1 (esta entrada se incluirá en el mismo commit)
 
 ### Cambios
 - `frontend/css/styles.css` incorpora las variables de color, tipografía, bordes, botones, campos, avisos y foco de teclado de la guía actual para las pantallas de acceso.
@@ -237,7 +265,7 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 ## CS-66: diseño provisional del detalle de experiencia y sus valoraciones
 
 **Autor:** Matthew Puente Villegas Michavil, con Codex (GPT-5)
-**Historia:** CS-66, objetivo 2 · **Commits:** pendiente (esta entrada se incluirá en el mismo commit)
+**Historia:** CS-66, objetivo 2 (esta entrada se incluirá en el mismo commit)
 
 ### Cambios
 - `frontend/experiencia.html` adopta una barra de navegación accesible, enlace para saltar al contenido y una rejilla de dos columnas que reúne el detalle, el formulario de valoración, las listas y la ventana de reporte.
@@ -265,7 +293,7 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 ## CS-66: diseño provisional de las pantallas sociales
 
 **Autor:** Matthew Puente Villegas Michavil, con Codex (GPT-5)
-**Historia:** CS-66, objetivo 3 · **Commits:** pendiente (esta entrada se incluirá en el mismo commit)
+**Historia:** CS-66, objetivo 3 (esta entrada se incluirá en el mismo commit)
 
 ### Cambios
 - `perfil.html`, `usuario.html` y `personas.html` comparten la barra de sesión, el enlace «Saltar al contenido», controles de 44 px y componentes de aviso. La barra marca con `aria-current` la sección activa cuando corresponde.

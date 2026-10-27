@@ -7,12 +7,11 @@
   height: 120px;
 }
 
-/* La banda de solicitudes lleva las esquinas redondeadas como las tarjetas */
-.banda-solicitudes {
-  border-radius: var(--radio-tarjeta);
+/* Las pestañas del perfil se desplazan en horizontal si no caben en pantallas estrechas */
+#pestanas-perfil {
+  overflow-x: auto;
 }
 
-/* «Ajustes» plegado */
-.ajustes-perfil[open] > .resumen-boton {
-  margin-bottom: var(--espacio-24);
+#pestanas-perfil [role="tab"] {
+  flex: 0 0 auto;
 }

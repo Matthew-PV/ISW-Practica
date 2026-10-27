@@ -10,7 +10,7 @@ const { cargarScripts } = require('../helpers/pantalla');
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('perfil.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/experiencias.js', 'js/shared/password.js', 'js/perfil.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/experiencias.js', 'js/perfil.js'];
 const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', foto: null, ciudad: null };
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
@@ -128,7 +128,7 @@ test('si el servidor falla se muestra su mensaje y el resto del perfil sigue fun
 
   expect(oculto('#error-relaciones')).toBe(false);
   expect($('#error-relaciones').textContent).toBe('No se han podido cargar tus relaciones');
-  expect($('#nombreUsuario').value).toBe('ana');
+  expect($('#nombre-perfil').textContent).toBe('ana');
 });
 
 test('si falla «Cargar más» se avisa y el botón sigue disponible para reintentar', async () => {
@@ -146,32 +146,6 @@ test('si falla «Cargar más» se avisa y el botón sigue disponible para reinte
   expect(oculto('#mas-seguidores')).toBe(false);
   expect($('#mas-seguidores').disabled).toBe(false);
 });
-test('al aceptar una solicitud en la misma página sube el contador y el amigo aparece en la lista', async () => {
-  const SOLICITUD = { id: 10, estado: 'PENDIENTE', solicitante: persona(2) };
-  await abrirPerfil({ '/api/amistades/solicitudes': [200, [SOLICITUD]] });
-  expect($('#total-amigos').textContent).toBe('0');
-
-  // A partir de aquí el servidor ya tiene la amistad aceptada
-  const despues = {
-    ...SIN_RELACIONES,
-    '/api/amistades/10': [200, { ...SOLICITUD, estado: 'ACEPTADA' }],
-    [RESUMEN]: [200, { amigos: 1, seguidores: 0 }],
-    [AMIGOS]: [200, listado([persona(2)])],
-  };
-  window.fetch.mockImplementation((ruta) => {
-    const [status, cuerpo] = despues[ruta] ?? [404, { error: `Ruta no simulada: ${ruta}` }];
-    return respuesta(status, cuerpo);
-  });
-  [...document.querySelectorAll('#solicitudes-recibidas button')]
-    .find((boton) => boton.textContent === 'Aceptar')
-    .click();
-  await terminar();
-
-  expect($('#total-amigos').textContent).toBe('1');
-  expect([...$('#lista-amigos').children].map((fila) => fila.textContent.trim())).toEqual(['usuario_2']);
-  expect(oculto('#sin-amigos')).toBe(true);
-});
-
 test('cada amigo y cada seguidor enlaza a su perfil', async () => {
   await abrirPerfil({
     [AMIGOS]: [200, listado([persona(2)])],

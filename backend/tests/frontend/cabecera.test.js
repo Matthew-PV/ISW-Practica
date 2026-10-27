@@ -1,14 +1,16 @@
 /**
  * @jest-environment jsdom
  */
-// CS-66: la cabecera común de las pantallas con sesión (HTML idéntico en las cinco) y su
+// CS-66: la cabecera común de las pantallas con sesión (HTML idéntico en todas) y su
 // comportamiento (js/shared/cabecera.js): cerrar sesión, menú de cuenta y buscador.
 // Sustituye a navegacion.test.js, que comprobaba la barra anterior.
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
-const PAGINAS = ['bienvenida', 'perfil', 'personas', 'usuario', 'experiencia'];
+const PAGINAS = ['bienvenida', 'perfil', 'ajustes', 'solicitudes', 'personas', 'usuario', 'experiencia'];
 // Enlace de la cabecera que lleva aria-current="page" en cada página (ninguno en el resto)
-const ACTUAL = { bienvenida: 'Inicio', perfil: 'Mi perfil', personas: null, usuario: null, experiencia: null };
+const ACTUAL = {
+  bienvenida: 'Inicio', perfil: 'Mi perfil', ajustes: 'Ajustes', solicitudes: 'Solicitudes', personas: null, usuario: null, experiencia: null,
+};
 
 const $ = (selector) => document.querySelector(selector);
 const terminar = () => new Promise((r) => setTimeout(r, 0));
@@ -19,7 +21,7 @@ const cargar = (pagina) => {
 describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
   beforeEach(() => cargar(pagina));
 
-  test('tiene la navegación principal con la marca y «Inicio»', () => {
+  test('tiene la navegación principal con la marca, «Inicio» y «Solicitudes»', () => {
     const enlaces = [...document.querySelectorAll('header.cabecera nav[aria-label="Principal"] a')].map((a) => [
       a.textContent.trim(),
       a.getAttribute('href'),
@@ -28,6 +30,7 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
     expect(enlaces).toEqual([
       ['PlanB', 'bienvenida.html'],
       ['Inicio', 'bienvenida.html'],
+      ['Solicitudes', 'solicitudes.html'],
     ]);
   });
 
@@ -44,13 +47,16 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
     expect(boton.textContent.trim()).toBe('Buscar');
   });
 
-  test('tiene el menú de cuenta con «Mi perfil» y «Cerrar sesión»', () => {
+  test('tiene el menú de cuenta con «Mi perfil», «Ajustes» y «Cerrar sesión»', () => {
     const menu = $('header.cabecera details.menu-cuenta');
     expect(menu).not.toBeNull();
     expect(menu.querySelector('summary').textContent).toContain('Cuenta');
 
     const perfil = menu.querySelector('a[href="perfil.html"]');
     expect(perfil.textContent.trim()).toBe('Mi perfil');
+
+    const ajustes = menu.querySelector('a[href="ajustes.html"]');
+    expect(ajustes.textContent.trim()).toBe('Ajustes');
 
     const cerrar = menu.querySelector('button#cerrar-sesion[data-cerrar-sesion]');
     expect(cerrar).not.toBeNull();
@@ -75,7 +81,7 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
   });
 });
 
-test('la cabecera es idéntica en las cinco pantallas (salvo aria-current)', () => {
+test('la cabecera es idéntica en todas las pantallas con sesión (salvo aria-current)', () => {
   const cabeceras = PAGINAS.map((pagina) => {
     cargar(pagina);
     const cabecera = $('header.cabecera');

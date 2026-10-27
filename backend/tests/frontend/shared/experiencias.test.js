@@ -10,7 +10,7 @@ const { cargarScripts } = require('../../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const COMUNES = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/experiencias.js', 'js/shared/password.js'];
+const COMUNES = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/experiencias.js', 'js/shared/password.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -110,7 +110,6 @@ describe('Mis experiencias (perfil.html)', () => {
   const PERFIL_PROPIO = { id: 1, nombreUsuario: 'luis', email: 'luis@ejemplo.com', ciudad: null, foto: null };
   const RUTAS_PERFIL = {
     '/api/perfil': [200, PERFIL_PROPIO],
-    '/api/amistades/solicitudes': [200, []],
     '/api/perfil/resumen': [200, { amigos: 0, seguidores: 0 }],
     '/api/perfil/amigos?limite=20': [200, { personas: [], siguiente: null }],
     '/api/perfil/seguidores?limite=20': [200, { personas: [], siguiente: null }],
@@ -122,23 +121,6 @@ describe('Mis experiencias (perfil.html)', () => {
 
     expect($('#lista-experiencias .tarjeta-experiencia').textContent).toContain('Mi plan secreto');
     expect($('#lista-experiencias .tarjeta-experiencia').textContent).toContain('Privada');
-  });
-
-  test('tras cambiar mi nombre, «Cargar más» pide las siguientes con el nombre nuevo', async () => {
-    await abrir('perfil.html', 'js/perfil.js', {
-      ...RUTAS_PERFIL,
-      '/api/experiencias?autor=luisa&despuesDe=4': [200, { experiencias: [experiencia(2, 'Otra')], siguiente: null }],
-    }, '/perfil.html');
-    window.fetch.mockImplementationOnce(() => respuesta(200, { ...PERFIL_PROPIO, nombreUsuario: 'luisa' }));
-    $('#nombreUsuario').value = 'luisa';
-    $('#form-perfil').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    await terminar();
-
-    $('#mas-experiencias').click();
-    await terminar();
-
-    expect(window.fetch.mock.calls.at(-1)[0]).toBe('/api/experiencias?autor=luisa&despuesDe=4');
-    expect($$('#lista-experiencias a').map((enlace) => enlace.dataset.experienciaId)).toEqual(['4', '2']);
   });
 });
 

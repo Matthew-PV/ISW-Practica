@@ -15,6 +15,7 @@
       <nav class="cabecera-nav" aria-label="Principal">
         <a class="cabecera-marca" href="bienvenida.html">PlanB</a>
         <a class="cabecera-enlace" href="bienvenida.html">Inicio</a>
+        <a class="cabecera-enlace" href="solicitudes.html">Solicitudes</a>
       </nav>
       <form class="cabecera-busqueda" role="search" action="personas.html" method="get">
         <input type="search" name="q" aria-label="Buscar personas" placeholder="Buscar personas" autocomplete="off">
@@ -24,6 +25,7 @@
         <summary><span class="menu-avatar" aria-hidden="true"></span>Cuenta</summary>
         <div class="menu-cuenta-lista">
           <a href="perfil.html" aria-current="page">Mi perfil</a>
+          <a href="ajustes.html">Ajustes</a>
           <button type="button" id="cerrar-sesion" data-cerrar-sesion>Cerrar sesión</button>
         </div>
       </details>
@@ -46,109 +48,44 @@
       </div>
     </section>
 
-    <!-- Solicitudes de amistad pendientes. js/perfil.js las obtiene desde /api/amistades/solicitudes
-         y la banda solo se ve si hay alguna. -->
-    <div id="error-solicitudes" class="alert alert-danger d-none" role="alert"></div>
-    <section class="banda-solicitudes mb-4 d-none" aria-labelledby="titulo-solicitudes">
-      <h2 id="titulo-solicitudes" class="h5 mb-3">Solicitudes recibidas</h2>
-      <p id="sin-solicitudes" class="text-secondary d-none">No tienes solicitudes pendientes.</p>
-      <div id="solicitudes-recibidas" class="list-group"></div>
-    </section>
+    <div role="tablist" aria-label="Contenido del perfil" id="pestanas-perfil">
+      <button type="button" role="tab" id="pestana-experiencias" aria-controls="panel-experiencias" aria-selected="true">Experiencias</button>
+      <button type="button" role="tab" id="pestana-amigos" aria-controls="panel-amigos" aria-selected="false" tabindex="-1">Amigos</button>
+      <button type="button" role="tab" id="pestana-seguidores" aria-controls="panel-seguidores" aria-selected="false" tabindex="-1">Seguidores</button>
+    </div>
+
+    <div id="error-relaciones" class="alert alert-danger d-none mt-3" role="alert"></div>
 
     <!-- CS-44: mis experiencias, también las privadas; las pinta js/shared/experiencias.js -->
-    <section class="mb-5" aria-labelledby="titulo-experiencias">
-      <h2 id="titulo-experiencias" class="h4 mb-3">Mis experiencias</h2>
+    <div role="tabpanel" id="panel-experiencias" aria-labelledby="pestana-experiencias" class="pt-4">
       <div id="error-experiencias" class="alert alert-danger d-none" role="alert"></div>
       <p id="sin-experiencias" class="text-secondary d-none">Todavía no has publicado experiencias.</p>
       <div id="lista-experiencias" class="rejilla-experiencias"></div>
       <div class="text-center mt-3">
         <button type="button" id="mas-experiencias" class="btn btn-outline-primary d-none">Cargar más experiencias</button>
       </div>
-    </section>
+    </div>
 
     <!-- Amigos y seguidores (CS-45). js/perfil.js los obtiene desde /api/perfil/resumen,
          /api/perfil/amigos y /api/perfil/seguidores. -->
-    <section class="mb-5" aria-labelledby="titulo-amigos">
-      <div id="error-relaciones" class="alert alert-danger d-none" role="alert"></div>
-
-      <h2 id="titulo-amigos" class="h4 mb-3">Amigos</h2>
+    <div role="tabpanel" id="panel-amigos" aria-labelledby="pestana-amigos" class="pt-4" hidden>
       <p id="sin-amigos" class="text-secondary d-none">Todavía no tienes amigos.</p>
       <div id="lista-amigos" class="list-group"></div>
       <button type="button" id="mas-amigos" class="btn btn-outline-primary mt-2 d-none">Cargar más amigos</button>
+    </div>
 
-      <h2 id="titulo-seguidores" class="h4 mt-5 mb-3">Seguidores</h2>
+    <div role="tabpanel" id="panel-seguidores" aria-labelledby="pestana-seguidores" class="pt-4" hidden>
       <p id="sin-seguidores" class="text-secondary d-none">Todavía no tienes seguidores.</p>
       <div id="lista-seguidores" class="list-group"></div>
       <button type="button" id="mas-seguidores" class="btn btn-outline-primary mt-2 d-none">Cargar más seguidores</button>
-    </section>
-
-    <!-- Ajustes plegado: foto, datos, contraseña y cerrar sesión -->
-    <details class="ajustes-perfil">
-      <summary class="resumen-boton">Ajustes</summary>
-      <div class="contenedor-formulario ajustes-contenido">
-        <!-- La foto se sube en cuanto se elige (js/perfil.js); no depende de «Guardar cambios» -->
-        <div class="mb-4">
-          <label for="foto" class="form-label">Foto de perfil (JPG, PNG o WebP, máximo 5 MB)</label>
-          <input type="file" class="form-control" id="foto" accept="image/jpeg,image/png,image/webp">
-          <div id="ayuda-foto" class="form-text">Se guarda en cuanto la eliges.</div>
-          <div id="error-foto" role="alert" class="alert alert-danger d-none mt-2"></div>
-          <div id="exito-foto" class="alert alert-success d-none mt-2"></div>
-        </div>
-
-        <form id="form-perfil">
-          <div class="mb-3">
-            <label for="nombreUsuario" class="form-label">Nombre de usuario</label>
-            <input type="text" class="form-control" id="nombreUsuario" required minlength="3" maxlength="30">
-          </div>
-          <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" disabled>
-          </div>
-          <div class="mb-3">
-            <label for="ciudad" class="form-label">Ciudad</label>
-            <input type="text" class="form-control" id="ciudad" maxlength="191">
-          </div>
-          <div id="error-perfil" role="alert" class="alert alert-danger d-none"></div>
-          <div id="exito-perfil" class="alert alert-success d-none"></div>
-          <button type="submit" class="btn btn-outline-primary">Guardar cambios</button>
-        </form>
-
-        <!-- CS-64: cambiar la contraseña (js/perfil.js; los requisitos los marca js/shared/password.js) -->
-        <section class="mt-5" aria-labelledby="titulo-password">
-          <h2 id="titulo-password" class="h4">Cambiar contraseña</h2>
-          <form id="form-password">
-            <div class="mb-3">
-              <label for="password-actual" class="form-label">Contraseña actual</label>
-              <input type="password" class="form-control" id="password-actual" required autocomplete="current-password">
-            </div>
-            <div class="mb-3">
-              <label for="password-nueva" class="form-label">Contraseña nueva</label>
-              <input type="password" class="form-control" id="password-nueva" required autocomplete="new-password" aria-describedby="requisitos-password">
-              <ul id="requisitos-password" class="list-unstyled small mt-2 mb-0"></ul>
-            </div>
-            <div class="mb-3">
-              <label for="password-repetida" class="form-label">Repite la contraseña nueva</label>
-              <input type="password" class="form-control" id="password-repetida" required autocomplete="new-password">
-            </div>
-            <div id="error-password" class="alert alert-danger d-none" role="alert"></div>
-            <div id="exito-password" class="alert alert-success d-none"></div>
-            <button type="submit" class="btn btn-outline-primary">Cambiar contraseña</button>
-          </form>
-        </section>
-
-        <!-- Sin id: cabecera.js enlaza todo botón con data-cerrar-sesion -->
-        <div class="mt-5">
-          <button type="button" class="btn btn-outline-danger" data-cerrar-sesion>Cerrar sesión</button>
-        </div>
-      </div>
-    </details>
+    </div>
   </main>
 
   <script src="js/shared/api.js"></script>
   <script src="js/shared/pantalla.js"></script>
   <script src="js/shared/cabecera.js"></script>
+  <script src="js/shared/pestanas.js"></script>
   <script src="js/shared/experiencias.js"></script>
-  <script src="js/shared/password.js"></script>
   <script src="js/perfil.js"></script>
 </body>
 </html>

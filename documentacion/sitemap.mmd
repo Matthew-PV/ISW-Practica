@@ -1,8 +1,8 @@
 %% Sitemap de PlanB — CS-65, objetivo 2.
 %% Las cajas representan páginas; las flechas, enlaces o redirecciones.
 %% La flecha discontinua representa el enlace recibido por correo.
-%% Navegación común: las cinco páginas con sesión permiten ir a Inicio
-%% (bienvenida.html), Mi perfil y Cerrar sesión desde la cabecera, que
+%% Navegación común: las siete páginas con sesión permiten ir a Inicio
+%% (bienvenida.html), Solicitudes, Mi perfil, Ajustes y Cerrar sesión desde la cabecera, que
 %% además lleva el buscador de personas.
 %% Sesión no válida (401): se vuelve a Iniciar sesión (iniciar-sesion.html).
 %% La landing (index.html) es pública y estática.
@@ -28,11 +28,16 @@ flowchart TB
         inicio["Bienvenida<br/>bienvenida.html"]
         personas["Buscar<br/>personas.html"]
         perfil["Mi perfil<br/>perfil.html"]
+        ajustes["Ajustes<br/>ajustes.html"]
+        solicitudes["Solicitudes<br/>solicitudes.html"]
         usuario["Perfil de otro usuario<br/>usuario.html"]
         experiencia["Detalle de experiencia<br/>experiencia.html"]
 
         personas -->|"Resultado de búsqueda"| usuario
-        perfil -->|"Amigo, seguidor o solicitante"| usuario
+        perfil -->|"Amigo o seguidor"| usuario
+        solicitudes -->|"Solicitante"| usuario
+        inicio -->|"Cabecera"| solicitudes
+        inicio -->|"Menú de cuenta"| ajustes
 
         inicio -->|"Ver detalle"| experiencia
         perfil -->|"Una de mis experiencias"| experiencia

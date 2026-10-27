@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-// CS-47: la foto en la pantalla de mi perfil (frontend/perfil.html y js/perfil.js) en un
+// CS-47: la foto en la pantalla de mi perfil (frontend/ajustes.html y js/ajustes.js) en un
 // navegador simulado (jsdom). La foto se sube en cuanto se elige, sin pulsar ningún botón.
 // Se simula el servidor (fetch), así que no hace falta arrancar nada.
 const fs = require('node:fs');
@@ -10,8 +10,8 @@ const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const HTML = leer('perfil.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/experiencias.js', 'js/shared/password.js', 'js/perfil.js'];
+const HTML = leer('ajustes.html');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/password.js', 'js/ajustes.js'];
 const FOTO_ANTERIOR = 'https://res.cloudinary.com/demo/image/upload/v1/planb/perfiles/usuario-1.png';
 const FOTO_NUEVA = 'https://res.cloudinary.com/demo/image/upload/v2/planb/perfiles/usuario-1.jpg';
 const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', foto: FOTO_ANTERIOR, ciudad: null };
@@ -31,12 +31,11 @@ function elegirFoto(archivo) {
 }
 
 beforeEach(async () => {
-  // Página nueva en cada prueba: el HTML de perfil.html (sus <script> no se ejecutan así)
-  // y después api.js y perfil.js en el ámbito global, como los carga el navegador
+  // Página nueva en cada prueba: el HTML de ajustes.html (sus <script> no se ejecutan así)
+  // y después api.js y ajustes.js en el ámbito global, como los carga el navegador
   document.documentElement.innerHTML = HTML;
   window.fetch = jest.fn()
-    .mockReturnValueOnce(respuesta(200, PERFIL)) // GET /api/perfil al cargar
-    .mockReturnValueOnce(respuesta(200, [])); // GET /api/amistades/solicitudes al cargar
+    .mockReturnValueOnce(respuesta(200, PERFIL)); // GET /api/perfil al cargar
   cargarScripts(SCRIPTS);
   await terminar();
 });

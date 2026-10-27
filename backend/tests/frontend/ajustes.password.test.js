@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-// CS-64, objetivo 7: formulario «Cambiar contraseña» de perfil.html (js/perfil.js), con jsdom y
+// CS-64, objetivo 7: formulario «Cambiar contraseña» de ajustes.html (js/ajustes.js), con jsdom y
 // un servidor simulado que responde según el método y la ruta.
 const fs = require('node:fs');
 const path = require('node:path');
@@ -9,8 +9,8 @@ const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const HTML = leer('perfil.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/experiencias.js', 'js/shared/password.js', 'js/perfil.js'];
+const HTML = leer('ajustes.html');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/password.js', 'js/ajustes.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -19,11 +19,6 @@ const terminar = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 const SERVIDOR = {
   'GET /api/perfil': [200, { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', ciudad: null, foto: null }],
-  'GET /api/amistades/solicitudes': [200, []],
-  'GET /api/perfil/resumen': [200, { amigos: 0, seguidores: 0 }],
-  'GET /api/perfil/amigos?limite=20': [200, { personas: [], siguiente: null }],
-  'GET /api/perfil/seguidores?limite=20': [200, { personas: [], siguiente: null }],
-  'GET /api/experiencias?autor=ana': [200, { experiencias: [], siguiente: null }],
 };
 
 async function abrir(rutas = {}) {
