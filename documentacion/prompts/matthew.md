@@ -4,6 +4,63 @@ Identificador habitual: MAT / Matthew-PV.
 
 Las interacciones siguientes proceden de la conversación conservada en Codex. Cuando no consta la fecha exacta de la interacción, `2026-10-02` indica la fecha en la que se incorporó al registro, no necesariamente la fecha en que se escribió el prompt original. Se omiten mensajes de cortesía y confirmaciones que no influyeron en el trabajo.
 
+## 2026-10-27 — Aplicar el diseño a las pantallas sociales (CS-66, objetivo 3)
+
+- **Historia u objetivo:** CS-66, objetivo 3: aplicar el diseño a perfil propio, perfil de otra persona y búsqueda de personas.
+- **Agente/herramienta:** Codex, GPT-5.
+- **Entorno:** Windows, PowerShell y Jest.
+- **Contexto aportado:** captura anterior del libro de historias de OneDrive, donde el objetivo 3 delimita las tres pantallas sociales; `diseno.md` con su estructura aprobada y `arte.md` como guía visual todavía temporal.
+- **Prompt inicial:**
+
+  > Hagamos el objetivo 3
+
+- **Correcciones relevantes:** ninguna.
+- **Resultado propuesto por la IA:** reutilizar la navegación accesible de sesión, ordenar el perfil propio en bloques y usar `<details>` para la contraseña, colocar la tarjeta del perfil ajeno en una columna lateral en escritorio y convertir el buscador y las listas sociales en componentes visuales consistentes, sin cambiar su API ni permisos.
+- **TDD:** se añadió primero `diseno.social.test.js`; falló porque no existían la estructura común, las rejillas ni los componentes. Tras cambiar HTML, CSS y las clases de elementos creados por JavaScript, pasa. Dos expectativas se ajustaron para reconocer atributos o clases adicionales sin alterar el requisito comprobado.
+- **Comprensión humana de las pruebas:** la preparación carga las tres páginas, CSS y scripts; la acción localiza sus regiones y componentes; el resultado comprueba navegación accesible, adaptación declarada, ausencia de scripts en línea y que las listas dinámicas usan las clases previstas.
+- **Intervención humana:** Matthew seleccionó el objetivo 3. No autorizó crear usuarios ni iniciar sesión para pruebas manuales.
+- **Decisiones:** [2026-10-27 — CS-66: diseño provisional de las pantallas sociales](../modificaciones.md#cs-66-diseño-provisional-de-las-pantallas-sociales).
+- **Comprobación final:** `diseno.social.test.js` y `navegacion.test.js` pasan. Las pruebas dinámicas se bloquean antes de ejecutar por la resolución de `frontend/js/shared/api.js` del cargador compartido. Falta la comprobación visual autenticada a 375, 768 y 1280 px.
+- **Resultado en Git:** pendiente de commit.
+
+## 2026-10-27 — Aplicar el diseño al detalle de experiencia (CS-66, objetivo 2)
+
+- **Historia u objetivo:** CS-66, objetivo 2: aplicar temporalmente el diseño vigente al detalle de una experiencia, sus valoraciones y la ventana de reporte, sin extenderlo a las pantallas sociales.
+- **Agente/herramienta:** Codex, GPT-5.
+- **Entorno:** Windows, PowerShell, Jest, servidor local de PlanB y navegador integrado.
+- **Contexto aportado:** captura actualizada del libro de historias de OneDrive, con el objetivo 1 terminado y el objetivo 2 asignado a Matthew; guía vigente de `documentacion/arte.md` utilizada de forma provisional.
+- **Prompt inicial:**
+
+  > Perfecto, ahora vamos a trabajar en el objetivo 2
+
+- **Correcciones relevantes:** ninguna.
+- **Resultado propuesto por la IA:** reorganizar el detalle en dos columnas para escritorio y una para móvil, añadir navegación accesible de sesión, homogeneizar tarjetas, acciones y diálogo de reporte, sin cambiar las llamadas a la API ni el alcance de las funciones pendientes.
+- **TDD:** se añadió primero `diseno.experiencia.test.js`; falló porque la estructura y los componentes de diseño no existían. Tras incorporar el cambio pasó. Una expectativa se adaptó para comprobar una clase CSS entre otras clases ya presentes, sin alterar el comportamiento protegido.
+- **Comprensión humana de las pruebas:** la preparación lee el HTML, la hoja CSS y el JavaScript de la pantalla; la acción busca sus componentes; el resultado comprueba que la pantalla se puede adaptar a móvil, mantiene controles de 44 px y no añade scripts en línea ni JavaScript de Bootstrap.
+- **Intervención humana:** Matthew seleccionó explícitamente el objetivo 2 después de completar el primero y mantuvo el uso temporal de la guía actual.
+- **Decisiones:** [2026-10-27 — CS-66: diseño provisional del detalle de experiencia y sus valoraciones](../modificaciones.md#cs-66-diseño-provisional-del-detalle-de-experiencia-y-sus-valoraciones).
+- **Comprobación final:** la prueba nueva pasa. La batería completa queda bloqueada por la resolución de `frontend/js/shared/api.js` en el cargador de pruebas de pantalla. La comprobación visual real queda pendiente de una sesión local autorizada, a 375, 768 y 1280 px.
+- **Resultado en Git:** pendiente de commit.
+
+## 2026-10-27 — Aplicar temporalmente el diseño al flujo de acceso (CS-66, objetivo 1)
+
+- **Historia u objetivo:** CS-66, objetivo 1: aplicar el diseño aprobado a inicio de sesión, registro y recuperación de contraseña, manteniendo el comportamiento y la seguridad actuales.
+- **Agente/herramienta:** Codex, GPT-5.
+- **Entorno:** Windows, PowerShell, Jest, servidor local de PlanB y navegador integrado.
+- **Contexto aportado:** libro de historias actualizado desde OneDrive, captura de la tarjeta CS-66 y la guía actual de `documentacion/arte.md`, que Matthew indicó usar de forma temporal.
+- **Prompt inicial:**
+
+  > Dime qué debo hacer para conectarme a Aiven. También, trabajemos en la CS-66. Aquí tienes el nuevo Excel. Únicamente quiero hacer la tarea 1, utilizando temporalmente la guía actual. Registra esto en mi registro de prompts.
+
+- **Correcciones relevantes:** ninguna.
+- **Resultado propuesto por la IA:** aplicar una identidad común al flujo de acceso: tarjeta de formulario, paleta verde azulado, botones y campos de 44 px, foco de teclado, enlace «Saltar al contenido» y botón secundario visible para crear cuenta; documentar el alcance y explicar la conexión separada a Aiven.
+- **TDD:** se añadió primero `diseno.acceso.test.js`; falló porque aún no había variables de la guía, controles accesibles ni la estructura común. Tras incorporar el CSS y el HTML de las cuatro pantallas, pasó. Una expectativa se ajustó para reconocer la clase de diseño entre las clases de Bootstrap, sin cambiar el comportamiento que protege.
+- **Comprensión humana de las pruebas:** la preparación lee los cuatro HTML y la hoja CSS; la acción busca los elementos comunes; el resultado verifica los colores y tamaños acordados, el acceso con teclado y que no se introducen scripts en línea ni JavaScript de Bootstrap.
+- **Intervención humana:** Matthew delimitó explícitamente el trabajo al objetivo 1 y autorizó utilizar la guía vigente solo de manera temporal.
+- **Decisiones:** [2026-10-27 — CS-66: diseño provisional de las pantallas de acceso](../modificaciones.md#cs-66-diseño-provisional-de-las-pantallas-de-acceso).
+- **Comprobación final:** la prueba nueva pasa; se revisaron visualmente las cuatro páginas en el navegador integrado. La batería completa queda bloqueada por un problema previo de Jest al resolver `frontend/js/shared/api.js`; el comprobador de diseño no falla por ese motivo.
+- **Resultado en Git:** pendiente de commit.
+
 ## 2026-10-16 — Diseñar el sitemap de PlanB
 
 - **Historia u objetivo:** CS-65, objetivo 2: diseñar el sitemap de la aplicación.

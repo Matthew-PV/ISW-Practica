@@ -3,7 +3,7 @@
 > Qué pantallas hay, cómo se pasa de una a otra, qué archivos usa cada una y qué llamadas hace a la API.
 > Documentos relacionados: [arquitectura](arquitectura.md), [flujos](flujos.md), [referencia de la API](api.md), [glosario](glosario.md) e [inventario de pantallas](inventario-pantallas.md) (estados y lagunas frente al diseño).
 
-El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilos de Bootstrap 5. El mismo servidor Express sirve las páginas desde `frontend/` y la API desde `/api`, así que comparten origen y la cookie de sesión viaja sola en cada `fetch`.
+El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilos de Bootstrap 5 complementados por `css/styles.css`. El mismo servidor Express sirve las páginas desde `frontend/` y la API desde `/api`, así que comparten origen y la cookie de sesión viaja sola en cada `fetch`.
 
 ## Mapa de navegación
 
@@ -76,11 +76,29 @@ stateDiagram-v2
 
 ## Cada página
 
+### Diseño de las pantallas de acceso (CS-66, objetivo 1)
+
+`index.html`, `registro.html`, `recuperar.html` y `restablecer.html` comparten una tarjeta de formulario, la marca PlanB y los estilos de acceso de `css/styles.css`. La guía aplicada es temporal: corresponde a la propuesta actual de [arte.md](arte.md) y podrá cambiar si el equipo aprueba otra distinta.
+
+Sus controles principales miden al menos 44 px de alto, los campos usan un borde con contraste suficiente y el enlace «Saltar al contenido» solo aparece al recibir el foco del teclado. Cada barra se identifica como navegación de acceso mediante `aria-label`; no se añadió JavaScript de Bootstrap ni scripts en línea. La prueba `diseno.acceso.test.js` comprueba esa estructura y las reglas CSS comunes.
+
+### Diseño del detalle de experiencia (CS-66, objetivo 2)
+
+`experiencia.html` adopta temporalmente los componentes de la guía actual de [arte.md](arte.md). En escritorio, la experiencia y el formulario de valoración quedan en una columna, y las listas de valoraciones en otra. En móvil, ambas se apilan y la navegación de sesión queda fijada en la parte inferior para mantener accesibles los enlaces principales.
+
+La tarjeta de experiencia, el formulario, cada valoración y la ventana nativa de reporte usan los mismos bordes, espaciados y botones. Se conserva el comportamiento existente: el formulario solo aparece a quien puede valorar, «Útil» y «Reportar» siguen siendo acciones solo visuales hasta sus historias correspondientes, y los textos de usuarios se siguen insertando con `textContent`. No se incorpora JavaScript de Bootstrap ni manejadores en línea. `diseno.experiencia.test.js` comprueba la estructura, la adaptación declarada en CSS y esos límites; queda una revisión manual autenticada a 375, 768 y 1280 px.
+
+### Diseño de las pantallas sociales (CS-66, objetivo 3)
+
+`perfil.html`, `usuario.html` y `personas.html` comparten la navegación de sesión, el enlace para saltar al contenido, los controles de 44 px y los avisos accesibles. La estructura aprobada de [diseno.md](diseno.md) se aplica así: el perfil propio muestra primero las solicitudes, coloca datos y relaciones en dos bloques de escritorio y repliega el cambio de contraseña con el elemento nativo `<details>`; el perfil de otra persona deja su tarjeta en una columna lateral en escritorio y la apila sobre las experiencias en móvil; el buscador presenta un formulario y resultados en una tarjeta estrecha.
+
+La guía de colores y componentes de [arte.md](arte.md) continúa siendo temporal. Los identificadores que usan los scripts, sus llamadas a la API, los permisos y los textos insertados con `textContent` se conservan. Las filas creadas dinámicamente para personas, solicitudes, botones y experiencias reciben clases de los componentes comunes. `diseno.social.test.js` comprueba la estructura, navegación, adaptación declarada, ausencia de código en línea y esos componentes; la validación visual autenticada a 375, 768 y 1280 px queda pendiente.
+
 ### `index.html`: iniciar sesión
 
-Formulario de email y contraseña. Si el login es correcto va a `bienvenida.html`; si no, muestra el mensaje del servidor en `#error-login`. Enlaza a registro y a «¿Has olvidado tu contraseña?».
+Formulario de email y contraseña. Si el login es correcto va a `bienvenida.html`; si no, muestra el mensaje del servidor en `#error-login`. Presenta la frase «Comparte y descubre planes por tu ciudad», enlaza a la recuperación y ofrece «Crear cuenta» como botón secundario visible.
 
-Pruebas: `login.test.js`.
+Pruebas: `login.test.js` y `diseno.acceso.test.js`.
 
 ### `registro.html`: crear una cuenta
 
@@ -88,13 +106,13 @@ Pruebas: `login.test.js`.
 * El CAPTCHA de Cloudflare Turnstile se dibuja en `#captcha` cuando su script llama a `window.iniciarCaptcha`, con la clave pública de `GET /api/auth/captcha`.
 * Con el registro correcto, la sesión ya está abierta y va a `bienvenida.html`.
 
-Pruebas: `registro.test.js`.
+Pruebas: `registro.test.js` y `diseno.acceso.test.js`.
 
 ### `recuperar.html`: pedir el enlace
 
 Pide el email y siempre muestra el mismo mensaje de éxito, exista la cuenta o no: la página no lo sabe, y así nadie puede usarla para averiguarlo.
 
-Pruebas: `recuperacion.test.js`.
+Pruebas: `recuperacion.test.js` y `diseno.acceso.test.js`.
 
 ### `restablecer.html`: elegir una contraseña nueva
 
@@ -102,7 +120,7 @@ Pruebas: `recuperacion.test.js`.
 * Pide la contraseña dos veces y comprueba en la pantalla que coinciden antes de enviarla. El requisito «sin el nombre de usuario» lo comprueba el servidor, porque la página no sabe de quién es el enlace.
 * Al terminar, muestra un enlace a `index.html`.
 
-Pruebas: `recuperacion.test.js`.
+Pruebas: `recuperacion.test.js` y `diseno.acceso.test.js`.
 
 ### `bienvenida.html`: mis experiencias
 
@@ -122,13 +140,13 @@ Pruebas: `bienvenida.test.js` y `estados.test.js`.
 * **Solicitudes recibidas:** cada una con «Aceptar» y «Rechazar». Al aceptar se recargan los contadores, la lista de amigos y mis experiencias.
 * **Amigos y seguidores:** contadores y dos listas de 20 en 20 con «Cargar más». Cada nombre lleva a su perfil.
 
-Pruebas: `perfil.foto.test.js`, `perfil.password.test.js`, `perfil.relaciones.test.js`, `perfil.solicitudes.test.js`, `estados.test.js` y `shared/experiencias.test.js`.
+Pruebas: `perfil.foto.test.js`, `perfil.password.test.js`, `perfil.relaciones.test.js`, `perfil.solicitudes.test.js`, `estados.test.js`, `shared/experiencias.test.js` y `diseno.social.test.js`.
 
 ### `personas.html`: buscar personas
 
 Un buscador por parte del nombre (como mucho 20 resultados). Cada resultado es un enlace a su perfil. Antes de buscar, `#ayuda-busqueda` explica qué escribir («Escribe parte de un nombre.»); mientras se busca se ve «Cargando…» (`#cargando`).
 
-Pruebas: `personas.test.js` y `estados.test.js`.
+Pruebas: `personas.test.js`, `estados.test.js` y `diseno.social.test.js`.
 
 ### `usuario.html?nombre=`: perfil de otro usuario
 
@@ -137,7 +155,7 @@ Pruebas: `personas.test.js` y `estados.test.js`.
 * `#boton-seguir` alterna entre «Seguir» y «Dejar de seguir».
 * Tras cada acción se vuelve a pedir el perfil, para que los contadores y botones sean los reales, y también «Sus experiencias», porque al cambiar la amistad cambian las que se pueden ver.
 
-Pruebas: `usuario.test.js`, `estados.test.js` y `shared/experiencias.test.js`.
+Pruebas: `usuario.test.js`, `estados.test.js`, `shared/experiencias.test.js` y `diseno.social.test.js`.
 
 ### `experiencia.html?id=`: una experiencia
 
@@ -147,7 +165,7 @@ Pruebas: `usuario.test.js`, `estados.test.js` y `shared/experiencias.test.js`.
 * **«Útil» y «Reportar»:** solo funcionan en la pantalla y no guardan nada, hasta que se implementen CS-02 y CS-04. «Reportar» abre el `<dialog>` `#dialogo-reporte`.
 * Si cualquier petición responde 404, se borra lo que se mostraba y queda solo «Contenido no disponible».
 
-Pruebas: `experiencia.test.js` y `experiencia.formulario.test.js`.
+Pruebas: `experiencia.test.js`, `experiencia.formulario.test.js` y `diseno.experiencia.test.js`.
 
 ## Módulos compartidos (`js/shared/`)
 

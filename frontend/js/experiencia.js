@@ -80,6 +80,7 @@ async function cargarPaginaExperiencia() {
 
 function mostrarError(mensaje) {
   mensajeEstado.className = 'alert alert-danger';
+  mensajeEstado.setAttribute('role', 'alert');
   mensajeEstado.textContent = mensaje;
   contenidoExperiencia.classList.add('d-none');
 }
@@ -177,7 +178,7 @@ function pintarUtil(boton, cantidad) {
   const contador = document.createElement('span');
   contador.className = 'badge text-bg-light ms-1';
   contador.textContent = cantidad;
-  boton.replaceChildren('👍 Útil ', contador);
+  boton.replaceChildren('Útil ', contador);
 }
 
 // Crea la tarjeta de una valoración de la lista general, con «Útil» y «Reportar»
@@ -189,6 +190,7 @@ function crearElementoComentario(valoracion) {
   const esMio = valoracion.usuario?.id === miUsuarioId;
 
   const btnUtil = document.createElement('button');
+  btnUtil.type = 'button';
   btnUtil.className = 'btn btn-sm btn-outline-success';
   let cantidadUtiles = valoracion.utiles || 0;
   let leDiUtil = valoracion.leDiUtil || false;
@@ -209,8 +211,9 @@ function crearElementoComentario(valoracion) {
 
   // --- OBJETIVO 8: «Reportar» (solo en la pantalla hasta CS-04) ---
   const btnReportar = document.createElement('button');
+  btnReportar.type = 'button';
   btnReportar.className = 'btn btn-sm btn-outline-danger ms-2';
-  btnReportar.textContent = '🚨 Reportar';
+  btnReportar.textContent = 'Reportar';
   btnReportar.disabled = esMio;
   btnReportar.addEventListener('click', () => abrirReporte(valoracion));
 

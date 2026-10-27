@@ -38,6 +38,23 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 
 # 2026-10-27
 
+## CS-66: integración del trabajo de Matthew en el diseño aplicado
+
+**Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
+**Historia:** CS-65 y CS-66
+
+### Cambios
+- Se mezcla `origin/main` (tres commits de Matthew: pantallas de acceso, experiencia y pantallas sociales con la guía provisional) con el diseño de escritorio aplicado en esta rama. Sus entradas del registro y su archivo de prompts se conservan tal cual.
+- De su trabajo se toman en `frontend/js/experiencia.js`: sin emojis en «Útil» y «Reportar» (tono de `arte.md`), `type="button"` en los botones de las valoraciones y `role="alert"` en el aviso de error.
+
+### Decisiones
+#### Prevalece el diseño de escritorio aprobado; se descartan el móvil y la estructura propia de Matthew
+- **Contexto:** Matthew aplicó de forma provisional la guía a las mismas pantallas, con barra inferior en móvil, experiencia en dos columnas, una barra de sesión y una cabecera distintas, y sus pruebas `diseno.*` comprueban ese marcado. Sus propias notas dicen que su batería quedaba en rojo (13 suites) y que la guía no estaba aprobada. El diseño aprobado el 26/10/2026 es solo escritorio, con cabecera común, experiencia en una columna y un solo botón principal por pantalla.
+- **Decisión:** en HTML, CSS, JavaScript de pantallas y `arte.md` se conserva la versión de esta rama; se eliminan sus tres pruebas `diseno.*` (comprobaban un marcado que ya no existe y quedan cubiertas por `cabecera`, `landing`, `iniciar-sesion` y las pruebas de cada pantalla); se adoptan sus mejoras pequeñas de `experiencia.js`.
+- **Alternativas:** partir de su CSS y su marcado y adaptarlos al diseño de escritorio (más conflictos y retrabajo, y arrastra el móvil descartado); o rechazar la mezcla.
+- **Consecuencias:** su trabajo de estilos y estructura no queda en el código; las funciones y las pruebas de comportamiento no cambian. Conviene comentarlo con Matthew.
+- **Decidió:** Joaquín.
+
 ## CS-66: páginas con el diseño aplicado
 
 **Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
@@ -161,6 +178,90 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 ### Pendiente
 - Implementar el diseño en el frontend (CS-66).
 - Landing con capturas reales; el móvil, aparcado.
+
+## CS-66: diseño provisional de las pantallas de acceso
+
+**Autor:** Matthew Puente Villegas Michavil, con Codex (GPT-5)
+**Historia:** CS-66, objetivo 1 · **Commits:** pendiente (esta entrada se incluirá en el mismo commit)
+
+### Cambios
+- `frontend/css/styles.css` incorpora las variables de color, tipografía, bordes, botones, campos, avisos y foco de teclado de la guía actual para las pantallas de acceso.
+- `index.html`, `registro.html`, `recuperar.html` y `restablecer.html` pasan a usar una tarjeta de formulario común, una barra de acceso, controles de 44 px y el enlace «Saltar al contenido». El inicio de sesión añade la frase de presentación y el botón secundario «Crear cuenta».
+- `backend/tests/frontend/diseno.acceso.test.js` comprueba la estructura y reglas visuales compartidas, la ausencia de manejadores en línea y de JavaScript de Bootstrap.
+- `documentacion/frontend.md` explica el alcance y que la guía aplicada es provisional.
+
+### Decisiones
+#### Aplicar temporalmente la guía actual solo al flujo de acceso
+- **Contexto:** `arte.md` sigue marcada como propuesta pendiente de aprobación, pero Matthew pidió avanzar con el objetivo 1 de CS-66 usando esa guía de forma temporal.
+- **Decisión:** aplicar sus variables y componentes únicamente a inicio de sesión, registro y recuperación/restablecimiento de contraseña; no extender el cambio a las demás pantallas ni modificar JavaScript.
+- **Alternativas:** esperar la aprobación definitiva de la guía, que retrasaría la tarea; o aplicar una identidad nueva distinta, que ampliaría el alcance y contradiría el diseño disponible.
+- **Consecuencias:** una aprobación posterior que cambie la guía exigirá ajustar estos estilos. Las funciones, las peticiones a la API, `textContent`, la CSP y el uso de Bootstrap sin su JavaScript se conservan.
+- **Decidió:** Matthew, a propuesta de Codex.
+
+### Comprobación
+- **TDD:** `diseno.acceso.test.js` se escribió antes. Falló porque no existían las variables, los controles de 44 px, el enlace de salto ni la presentación del inicio de sesión. Tras el cambio pasa (2 pruebas).
+- **Manual:** se abrió el servidor local y se revisaron inicio de sesión, registro, recuperación y restablecimiento en el navegador integrado, sin desbordamiento en su ancho móvil. Queda comprobar explícitamente 375, 768 y 1280 px.
+- **Batería:** `npm test` no termina en verde por un bloqueo de la infraestructura de pruebas no atribuible al CSS o HTML modificados: 13 suites de pantalla no resuelven `frontend/js/shared/api.js` desde `backend/tests/helpers/pantalla.js`, aunque el archivo existe. Resultado: 41 suites y 465 pruebas correctas; 13 suites y 127 pruebas fallidas.
+
+### Para quien continúe
+- Antes de ampliar el diseño, confirmar si el equipo aprueba la guía actual de `arte.md` y comprobar las cuatro páginas a 375, 768 y 1280 px.
+- Resolver primero el problema de resolución de módulos de Jest antes de usar una batería completa como evidencia de regresión del frontend.
+
+## CS-66: diseño provisional del detalle de experiencia y sus valoraciones
+
+**Autor:** Matthew Puente Villegas Michavil, con Codex (GPT-5)
+**Historia:** CS-66, objetivo 2 · **Commits:** pendiente (esta entrada se incluirá en el mismo commit)
+
+### Cambios
+- `frontend/experiencia.html` adopta una barra de navegación accesible, enlace para saltar al contenido y una rejilla de dos columnas que reúne el detalle, el formulario de valoración, las listas y la ventana de reporte.
+- `frontend/css/styles.css` añade los componentes de sesión, tarjetas, acciones de valoración, diálogo de reporte y la adaptación móvil para esta pantalla.
+- `frontend/js/experiencia.js` conserva las llamadas y reglas existentes, pero asigna las clases visuales de las valoraciones creadas dinámicamente y anuncia los errores con `role="alert"`.
+- `backend/tests/frontend/diseno.experiencia.test.js` comprueba la estructura adaptable, los controles y la ausencia de scripts o manejadores en línea. `documentacion/frontend.md` describe el nuevo alcance.
+
+### Decisiones
+#### Extender de forma acotada la guía temporal al detalle de experiencia
+- **Contexto:** Matthew seleccionó el objetivo 2 de CS-66 después de aplicar temporalmente la guía vigente al flujo de acceso. `arte.md` sigue siendo una propuesta, no una norma definitiva para todo el producto.
+- **Decisión:** aplicar sus componentes únicamente a `experiencia.html`: dos columnas en escritorio, contenido apilado y navegación inferior en móvil, y la misma jerarquía de botones para valorar o reportar.
+- **Alternativas:** esperar al diseño definitivo, que dejaría este objetivo incompleto; o rediseñar también las páginas sociales, que corresponde al objetivo 3 y ampliaría el alcance.
+- **Consecuencias:** una aprobación distinta de la guía exigirá revisar estos estilos. Las rutas, la API, las reglas de autorización y las acciones provisionales «Útil» y «Reportar» no cambian.
+- **Decidió:** Matthew, a propuesta de Codex.
+
+### Comprobación
+- **TDD:** `diseno.experiencia.test.js` se escribió antes. Falló porque aún no existían la estructura de sesión, la rejilla ni los componentes de valoración y reporte. Tras el cambio pasa (2 pruebas). Al hacerlo pasar se ajustó una expectativa para reconocer una clase entre varias clases CSS, sin reducir el comportamiento comprobado.
+- **Batería:** `npm test -- --runInBand` no termina en verde: las suites de pantalla que cargan scripts siguen sin resolver `frontend/js/shared/api.js` desde `backend/tests/helpers/pantalla.js`, aunque el archivo existe. La prueba nueva no usa ese cargador y pasa; el bloqueo impide usar la batería completa como evidencia de regresión.
+- **Manual:** no se creó ni se usó una cuenta de prueba sin autorización. Para ver el detalle real hace falta una sesión iniciada; queda comprobarlo a 375, 768 y 1280 px y recorrer con teclado los controles y el diálogo.
+
+### Para quien continúe
+- Iniciar sesión en el entorno local y abrir una experiencia visible con valoraciones para revisar los dos estados del formulario (autor y visitante), las listas y el diálogo de reporte en los tres anchos.
+- Resolver el cargador de scripts de Jest antes de volver a ejecutar las pruebas dinámicas existentes de `experiencia.html` como regresión completa.
+
+## CS-66: diseño provisional de las pantallas sociales
+
+**Autor:** Matthew Puente Villegas Michavil, con Codex (GPT-5)
+**Historia:** CS-66, objetivo 3 · **Commits:** pendiente (esta entrada se incluirá en el mismo commit)
+
+### Cambios
+- `perfil.html`, `usuario.html` y `personas.html` comparten la barra de sesión, el enlace «Saltar al contenido», controles de 44 px y componentes de aviso. La barra marca con `aria-current` la sección activa cuando corresponde.
+- El perfil propio presenta solicitudes, datos y relaciones en bloques; el cambio de contraseña se repliega con `<details>`. El perfil ajeno usa una columna lateral para los datos en escritorio y contenido apilado en móvil. El buscador agrupa formulario y resultados en una tarjeta.
+- `perfil.js`, `usuario.js`, `personas.js` y `shared/experiencias.js` aplican clases visuales a las filas y acciones que crean dinámicamente, sin cambiar sus peticiones ni sus reglas.
+- `backend/tests/frontend/diseno.social.test.js` protege la estructura común, la adaptación CSS, la navegación y la ausencia de código en línea. `documentacion/frontend.md` documenta el alcance y `arte.md` refleja qué pantallas aplican temporalmente la guía.
+
+### Decisiones
+#### Aplicar la estructura aprobada y mantener la guía visual como temporal
+- **Contexto:** la estructura de las tres pantallas sociales está aprobada en `diseno.md`, mientras que `arte.md` conserva el estado de propuesta. Matthew pidió ejecutar el objetivo 3 de CS-66 después de los objetivos de acceso y detalle.
+- **Decisión:** aplicar la distribución de los esquemas aprobados y reutilizar temporalmente la paleta y componentes ya incorporados. No se cambia la API, la autorización ni el significado de las acciones sociales.
+- **Alternativas:** esperar a la aprobación final de `arte.md`, que detendría el objetivo; o rediseñar las pantallas sin respetar los esquemas aprobados, que contradice la documentación del equipo.
+- **Consecuencias:** si el equipo modifica la guía visual habrá que ajustar las clases CSS, pero los identificadores y comportamientos de JavaScript permanecen estables. La comprobación visual autenticada sigue siendo necesaria.
+- **Decidió:** Matthew, a propuesta de Codex.
+
+### Comprobación
+- **TDD:** `diseno.social.test.js` se escribió antes y falló en sus dos casos porque las páginas no tenían la estructura ni los componentes sociales. Tras el cambio pasa (2 pruebas). Las expectativas se hicieron tolerantes a `aria-current` y a clases combinadas, sin disminuir lo que comprueban.
+- **Pruebas específicas:** `diseno.social.test.js` y `navegacion.test.js` pasan (10 pruebas). Las pruebas dinámicas existentes de perfil, perfil público y búsqueda no llegan a ejecutar sus casos porque el cargador compartido de Jest no resuelve `frontend/js/shared/api.js`, aunque el archivo existe.
+- **Manual:** no se inició sesión ni se creó una cuenta de prueba sin autorización. Queda comprobar las tres pantallas y las acciones dinámicas con una sesión local a 375, 768 y 1280 px.
+
+### Para quien continúe
+- Con una sesión local autorizada, revisar solicitudes, foto, cambio de contraseña, relaciones, experiencias, botones de amistad/seguimiento y resultados de búsqueda a los tres anchos.
+- Resolver el cargador de scripts de Jest antes de tomar las pruebas dinámicas existentes como regresión completa.
 
 # 2026-10-26
 
