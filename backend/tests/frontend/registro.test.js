@@ -64,7 +64,8 @@ describe('envío del formulario', () => {
     await terminar();
 
     expect(boton().disabled).toBe(true);
-    expect(boton().textContent).toBe('Creando cuenta...');
+    expect(boton().textContent).toBe('Creando cuenta…');
+    expect(boton().getAttribute('aria-busy')).toBe('true');
     expect(window.fetch).toHaveBeenCalledTimes(1);
   });
 
@@ -82,6 +83,7 @@ describe('envío del formulario', () => {
     expect(errorVisible()).toBe(mensaje);
     expect(boton().disabled).toBe(false);
     expect(boton().textContent).toBe('Crear cuenta');
+    expect(boton().hasAttribute('aria-busy')).toBe(false);
     expect(window.turnstile.reset).toHaveBeenCalled();
   });
 
@@ -183,6 +185,21 @@ describe('carga del CAPTCHA', () => {
   });
 });
 
+
+describe('pantalla dividida (rediseño CS-65)', () => {
+  test('tiene la marca a la izquierda, un único h1 en el formulario y un único botón principal', () => {
+    expect($('.pantalla-dividida-marca a').getAttribute('href')).toBe('index.html');
+    expect($('.pantalla-dividida-formulario h1').textContent).toBe('Crear cuenta');
+    expect(document.querySelectorAll('h1')).toHaveLength(1);
+    expect(document.querySelectorAll('.btn-primary')).toHaveLength(1);
+    expect(document.querySelector('header, nav')).toBeNull();
+    expect($('#form-registro').closest('.pantalla-dividida-formulario')).not.toBeNull();
+  });
+
+  test('el enlace «Inicia sesión» sigue llevando a iniciar-sesion.html', () => {
+    expect($('a[href="iniciar-sesion.html"]').textContent).toBe('Inicia sesión');
+  });
+});
 
 describe('requisitos de la contraseña (CS-64)', () => {
   // Requisitos que se ven cumplidos, en el orden de la lista

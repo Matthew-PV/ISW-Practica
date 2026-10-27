@@ -1,4 +1,5 @@
-// Página de mi perfil (perfil.html): muestra y permite editar nombreUsuario, ciudad y foto.
+// Página de mi perfil (perfil.html): cabecera con contadores, solicitudes, mis experiencias, amigos y
+// seguidores, y en «Ajustes» (plegado) la edición de nombreUsuario, ciudad y foto.
 // Se ejecuta nada más cargar la página. Usa `api` de shared/api.js, `listaConCargarMas`,
 // `crearEnlacePerfil`, `mostrarMensaje` y `ocultarMensaje` de shared/pantalla.js, `mostrarExperienciasDe` de
 // shared/experiencias.js (CS-44: mis experiencias) y `mostrarRequisitosPassword` de
@@ -8,9 +9,11 @@ const formulario = document.getElementById('form-perfil');
 const cajaError = document.getElementById('error-perfil');
 const cajaExito = document.getElementById('exito-perfil');
 const boton = formulario.querySelector('button[type="submit"]');
+const textoBoton = boton.textContent;
 
 // Pone en el formulario los datos del perfil que devuelve el backend
 function mostrarPerfil(perfil) {
+  document.getElementById('nombre-perfil').textContent = perfil.nombreUsuario;
   document.getElementById('nombreUsuario').value = perfil.nombreUsuario;
   document.getElementById('email').value = perfil.email;
   document.getElementById('ciudad').value = perfil.ciudad ?? '';
@@ -19,7 +22,6 @@ function mostrarPerfil(perfil) {
   if (perfil.foto) {
     const img = document.getElementById('foto-perfil');
     img.src = perfil.foto;
-    img.classList.remove('d-none');
   }
 }
 
@@ -29,7 +31,7 @@ async function cargarPerfil() {
     mostrarPerfil(await api('/perfil'));
   } catch {
     // Sin sesión (o el servidor no responde): se vuelve al login
-    window.location.href = '/';
+    window.location.href = 'iniciar-sesion.html';
   } finally {
     ocultarCargando();
   }
@@ -42,7 +44,9 @@ formulario.addEventListener('submit', async (e) => {
   // Se ocultan los mensajes del intento anterior y se desactiva el botón para no enviar dos veces
   cajaError.classList.add('d-none');
   cajaExito.classList.add('d-none');
+  boton.textContent = 'Guardando…';
   boton.disabled = true;
+  boton.setAttribute('aria-busy', 'true');
 
   const datos = {
     nombreUsuario: document.getElementById('nombreUsuario').value,
@@ -61,39 +65,58 @@ formulario.addEventListener('submit', async (e) => {
     cajaError.classList.remove('d-none');
   }
   // Se vuelve a habilitar el botón, haya ido bien o mal
+  boton.textContent = textoBoton;
   boton.disabled = false;
+  boton.removeAttribute('aria-busy');
 });
 
 cargarPerfil();
+
+// Contador de experiencias de la cabecera: son las que hay cargadas en la rejilla (la API no da
+// el total), con «+» si todavía queda otra página por cargar.
+const listaExperiencias = document.getElementById('lista-experiencias');
+const botonMasExperiencias = document.getElementById('mas-experiencias');
+function contarExperiencias() {
+  const cargadas = listaExperiencias.querySelectorAll('[data-id-elemento]').length;
+  const hayMas = !botonMasExperiencias.classList.contains('d-none');
+  document.getElementById('total-experiencias').textContent = hayMas ? `${cargadas}+` : cargadas;
+}
+const vigilante = new MutationObserver(contarExperiencias);
+vigilante.observe(listaExperiencias, { childList: true });
+vigilante.observe(botonMasExperiencias, { attributes: true, attributeFilter: ['class'] });
 
 // Solicitudes pendientes que ha recibido la persona de la sesión. Se cargan por separado del
 // formulario para que un error al responder no afecte a la edición del perfil.
 const solicitudesRecibidas = document.getElementById('solicitudes-recibidas');
 const sinSolicitudes = document.getElementById('sin-solicitudes');
+const bandaSolicitudes = document.querySelector('.banda-solicitudes');
 const cajaErrorSolicitudes = document.getElementById('error-solicitudes');
 
 function actualizarEstadoSolicitudes() {
-  sinSolicitudes.classList.toggle('d-none', solicitudesRecibidas.children.length !== 0);
+  const hay = solicitudesRecibidas.children.length !== 0;
+  sinSolicitudes.classList.toggle('d-none', hay);
+  // La banda destacada solo aparece cuando hay solicitudes que responder
+  bandaSolicitudes.classList.toggle('d-none', !hay);
 }
 
 // Crea una solicitud con sus dos acciones. El nombre se incorpora como texto para que nunca se
 // interprete como HTML aportado por otra persona.
 function crearSolicitud(solicitud) {
   const fila = document.createElement('div');
-  fila.className = 'solicitud-persona';
+  fila.className = 'list-group-item d-flex justify-content-between align-items-center gap-2';
 
   const nombre = document.createElement('span');
   nombre.textContent = solicitud.solicitante.nombreUsuario;
 
   const acciones = document.createElement('div');
-  acciones.className = 'acciones-respuesta';
+  acciones.className = 'd-flex gap-2';
   for (const [texto, clase, aceptar] of [
-    ['Aceptar', 'boton-aceptar', true],
-    ['Rechazar', 'boton-rechazar', false],
+    ['Aceptar', 'btn-outline-success', true],
+    ['Rechazar', 'btn-outline-danger', false],
   ]) {
     const botonRespuesta = document.createElement('button');
     botonRespuesta.type = 'button';
-    botonRespuesta.className = `btn ${clase}`;
+    botonRespuesta.className = `btn btn-sm ${clase}`;
     botonRespuesta.textContent = texto;
     botonRespuesta.addEventListener('click', () => responderSolicitud(solicitud.id, aceptar, fila));
     acciones.append(botonRespuesta);
@@ -190,7 +213,7 @@ const PERSONAS_POR_PAGINA = 20;
 // texto para que nunca se interprete como HTML aportado por otra persona.
 function crearPersona(persona) {
   const fila = crearEnlacePerfil(document.createElement('a'), persona);
-  fila.className = 'fila-persona';
+  fila.className = 'list-group-item list-group-item-action d-flex align-items-center gap-2';
   fila.dataset.usuarioId = persona.id;
 
   const foto = document.createElement('img');
@@ -270,6 +293,7 @@ const campoPasswordRepetida = document.getElementById('password-repetida');
 const cajaErrorPassword = document.getElementById('error-password');
 const cajaExitoPassword = document.getElementById('exito-password');
 const botonPassword = formPassword.querySelector('button[type="submit"]');
+const textoBotonPassword = botonPassword.textContent;
 
 const marcarRequisitosPassword = mostrarRequisitosPassword(
   campoPasswordNueva,
@@ -292,7 +316,9 @@ formPassword.addEventListener('submit', async (e) => {
     return;
   }
 
+  botonPassword.textContent = 'Cambiando…';
   botonPassword.disabled = true;
+  botonPassword.setAttribute('aria-busy', 'true');
   try {
     await api('/perfil/password', {
       method: 'PUT',
@@ -306,6 +332,8 @@ formPassword.addEventListener('submit', async (e) => {
     // Lo escrito se mantiene para poder corregirlo
     mostrarErrorPassword(err.message);
   }
+  botonPassword.textContent = textoBotonPassword;
   botonPassword.disabled = false;
+  botonPassword.removeAttribute('aria-busy');
 });
 

@@ -1,0 +1,23 @@
+/* Pantalla Buscar (personas.html). Solo variables --color-* y --espacio-*. */
+
+/* Campo grande: más alto que un campo normal */
+.campo-grande {
+  min-height: 52px;
+  font-size: 18px;
+}
+
+/* Filas separadas entre sí */
+.lista-resultados {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-8);
+}
+
+/* Foto vacía: círculo del mismo tamaño que la foto de 40 px */
+.fila-resultado-sin-foto {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  background: var(--color-superficie);
+  border-radius: 50%;
+}

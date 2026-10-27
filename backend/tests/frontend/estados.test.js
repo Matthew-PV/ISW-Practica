@@ -7,7 +7,7 @@
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
 const PAGINAS = [
-  'index', 'registro', 'recuperar', 'restablecer', 'bienvenida', 'perfil', 'personas', 'usuario', 'experiencia',
+  'index', 'iniciar-sesion', 'registro', 'recuperar', 'restablecer', 'bienvenida', 'perfil', 'personas', 'usuario', 'experiencia',
 ];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });

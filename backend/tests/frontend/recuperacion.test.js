@@ -37,7 +37,7 @@ const escribir = (campo, valor) => {
 const cuerpoEnviado = () => JSON.parse(window.fetch.mock.calls.at(-1)[1].body);
 
 test('el inicio de sesión enlaza a «¿Has olvidado tu contraseña?»', () => {
-  document.documentElement.innerHTML = leer('index.html');
+  document.documentElement.innerHTML = leer('iniciar-sesion.html');
 
   const enlace = [...document.querySelectorAll('a')].find((a) => a.textContent.includes('¿Has olvidado tu contraseña?'));
   expect(enlace.getAttribute('href')).toBe('recuperar.html');
@@ -104,7 +104,7 @@ describe('restablecer.html', () => {
 
     expect(cuerpoEnviado()).toEqual({ token: 'abc123', nueva: 'Nueva12345' });
     expect($('#exito-restablecer').textContent).toContain('Contraseña cambiada.');
-    expect($('#exito-restablecer a').getAttribute('href')).toBe('index.html');
+    expect($('#exito-restablecer a').getAttribute('href')).toBe('iniciar-sesion.html');
     expect(visible('#form-restablecer')).toBe(false);
   });
 
@@ -124,5 +124,62 @@ describe('restablecer.html', () => {
 
     expect(visible('#form-restablecer')).toBe(false);
     expect($('#error-restablecer').textContent).toBe('El enlace no es válido. Pide uno nuevo desde «¿Has olvidado tu contraseña?».');
+  });
+});
+
+// Rediseño (CS-65): pantalla dividida y estado de espera
+describe.each([
+  ['recuperar.html', 'Recuperar contraseña', 'iniciar-sesion.html'],
+  ['restablecer.html', 'Elige una contraseña nueva', null],
+])('%s: pantalla dividida', (pagina, titulo) => {
+  test('tiene la marca a la izquierda, un único h1 en el formulario y un único botón principal', () => {
+    document.documentElement.innerHTML = leer(pagina);
+
+    expect(document.querySelector('.pantalla-dividida-marca a').getAttribute('href')).toBe('index.html');
+    expect(document.querySelector('.pantalla-dividida-formulario h1').textContent).toBe(titulo);
+    expect(document.querySelectorAll('h1')).toHaveLength(1);
+    expect(document.querySelectorAll('.btn-primary')).toHaveLength(1);
+    expect(document.querySelector('header, nav')).toBeNull();
+  });
+});
+
+describe('estado de espera (R11)', () => {
+  test('recuperar: «Enviar enlace» pasa a «Enviando…» con aria-busy y se restaura', async () => {
+    await abrir('recuperar.html', ['js/shared/api.js', 'js/recuperar.js'], {
+      'POST /api/auth/recuperar': [200, { mensaje: 'Enviado' }],
+    }, '/recuperar.html');
+    const boton = $('#form-recuperar button[type="submit"]');
+    expect(boton.textContent).toBe('Enviar enlace');
+    $('#email').value = 'ana@ejemplo.com';
+
+    $('#form-recuperar').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    expect(boton.textContent).toBe('Enviando…');
+    expect(boton.disabled).toBe(true);
+    expect(boton.getAttribute('aria-busy')).toBe('true');
+    await terminar();
+
+    expect(boton.textContent).toBe('Enviar enlace');
+    expect(boton.disabled).toBe(false);
+    expect(boton.hasAttribute('aria-busy')).toBe(false);
+  });
+
+  test('restablecer: «Guardar contraseña» pasa a «Guardando…» con aria-busy y se restaura si falla', async () => {
+    await abrir('restablecer.html', ['js/shared/api.js', 'js/shared/password.js', 'js/restablecer.js'], {
+      'POST /api/auth/restablecer': [400, { error: 'El enlace no es válido o ha caducado' }],
+    }, '/restablecer.html?token=abc123');
+    const boton = $('#form-restablecer button[type="submit"]');
+    expect(boton.textContent).toBe('Guardar contraseña');
+    escribir('#password-nueva', 'Nueva12345');
+    escribir('#password-repetida', 'Nueva12345');
+
+    $('#form-restablecer').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    expect(boton.textContent).toBe('Guardando…');
+    expect(boton.disabled).toBe(true);
+    expect(boton.getAttribute('aria-busy')).toBe('true');
+    await terminar();
+
+    expect(boton.textContent).toBe('Guardar contraseña');
+    expect(boton.disabled).toBe(false);
+    expect(boton.hasAttribute('aria-busy')).toBe(false);
   });
 });

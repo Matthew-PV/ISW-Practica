@@ -34,6 +34,13 @@ function describirVisibilidad() {
 
 selectorVisibilidad.addEventListener('change', describirVisibilidad);
 
+// Etiqueta de cada visibilidad en la tarjeta (clases definidas en styles.css)
+const ETIQUETAS_VISIBILIDAD = {
+  PUBLICA: { clase: 'etiqueta-publica', texto: 'Pública' },
+  AMIGOS: { clase: 'etiqueta-amigos', texto: 'Amigos' },
+  PRIVADA: { clase: 'etiqueta-privada', texto: 'Privada' },
+};
+
 // Experiencia que se está editando. Es null cuando el formulario sirve para crear una nueva.
 let editando = null;
 
@@ -50,10 +57,11 @@ function crearTarjeta(experiencia) {
       <div class="card-body d-flex flex-column">
         <h3 class="card-title h6"></h3>
         <p class="card-subtitle small text-body-secondary mb-2"></p>
+        <p class="mb-2"><span class="etiqueta-visibilidad"></span></p>
         <p class="card-text small descripcion-corta"></p>
-        <div class="d-flex gap-2 mt-auto">
-          <a class="btn btn-link btn-sm p-0 boton-ver">Ver detalle</a>
-          <button type="button" class="btn btn-link btn-sm p-0 boton-editar">Editar</button>
+        <div class="d-grid gap-2 mt-auto">
+          <a class="btn btn-outline-primary btn-sm boton-ver">Ver detalle</a>
+          <button type="button" class="btn btn-outline-primary btn-sm boton-editar">Editar</button>
         </div>
       </div>
     </div>
@@ -62,6 +70,9 @@ function crearTarjeta(experiencia) {
   columna.querySelector('.card-title').textContent = experiencia.titulo;
   columna.querySelector('.card-subtitle').textContent =
     [experiencia.ciudad.nombre, experiencia.tipo].filter(Boolean).join(' · ');
+  const etiqueta = columna.querySelector('.etiqueta-visibilidad');
+  etiqueta.className = ETIQUETAS_VISIBILIDAD[experiencia.visibilidad].clase;
+  etiqueta.textContent = ETIQUETAS_VISIBILIDAD[experiencia.visibilidad].texto;
   columna.querySelector('.card-text').textContent = experiencia.descripcion;
   columna.querySelector('.boton-ver').setAttribute('href', `experiencia.html?id=${experiencia.id}`);
   columna.querySelector('.boton-editar').addEventListener('click', () => abrirFormulario(experiencia));
@@ -93,7 +104,10 @@ document.getElementById('boton-cancelar').addEventListener('click', () => dialog
 formulario.addEventListener('submit', async (e) => {
   e.preventDefault();
   ocultarMensaje(cajaError);
+  // Acción con espera: «Guardando…» y desactivado hasta que acabe
+  boton.textContent = 'Guardando…';
   boton.disabled = true;
+  boton.setAttribute('aria-busy', 'true');
 
   const datos = Object.fromEntries(campos.map((campo) => [campo.id, campo.value]));
   // El backend espera el id de la ciudad como número.
@@ -114,7 +128,9 @@ formulario.addEventListener('submit', async (e) => {
     mostrarMensaje(cajaError, err.message);
   }
 
+  boton.textContent = 'Guardar';
   boton.disabled = false;
+  boton.removeAttribute('aria-busy');
 });
 
 // Mis experiencias se cargan por páginas (CS-44), con «Cargar más» (ver shared/pantalla.js)

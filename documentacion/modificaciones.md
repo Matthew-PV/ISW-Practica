@@ -38,6 +38,174 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 
 # 2026-10-27
 
+## CS-66: documentación del frontend y cierre de la auditoría visual
+
+**Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
+**Historia:** CS-65 y CS-66
+
+### Cambios
+- `documentacion/frontend.md` reescrito con las diez pantallas, la cabecera común, `shared/cabecera.js` y `shared/pestanas.js`, `personas.html?q=`, los CSS nuevos y la regla de las variables `--color-*`.
+- `README.md`: diez pantallas, raíz como landing e `iniciar-sesion.html`. `arte.md` («Aplicación pantalla por pantalla») y `diseno.md` («Estado del código hoy») al día.
+
+### Comprobación
+- `enlaces-md.mjs` sin enlaces rotos; hay diez páginas en `frontend/`.
+
+## CS-66: auditoría visual y correcciones
+
+**Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
+**Historia:** CS-66
+
+### Cambios
+- `personas.html`: «Cargando…» y el aviso de error salen del panel de Personas y valen para cualquier pestaña; la etiqueta del campo pasa de «Nombre de usuario» a «Texto a buscar».
+- `personas.test.js`: cinco pruebas nuevas (dos en rojo por el cambio de HTML; tres fijan comportamiento ya existente: se vacían los resultados al buscar de nuevo, el error de una búsqueda atrasada no se muestra y `entrando` se retira tras el fundido).
+
+### Comprobación
+- `npm test`: 58 suites, 725 pruebas, 0 fallos. Auditoría de las diez páginas a 1024, 1280 y 1440 px con clics: R2 a R6 en cero.
+
+### Pendiente
+- No se forzaron los estados (vacío, error, 404) con navegador: solo los cubren las pruebas jsdom. Ver el informe final.
+
+## CS-66: integración del trabajo de Matthew en el diseño aplicado
+
+**Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
+**Historia:** CS-65 y CS-66
+
+### Cambios
+- Se mezcla `origin/main` (tres commits de Matthew: pantallas de acceso, experiencia y pantallas sociales con la guía provisional) con el diseño de escritorio aplicado en esta rama. Sus entradas del registro y su archivo de prompts se conservan tal cual.
+- De su trabajo se toman en `frontend/js/experiencia.js`: sin emojis en «Útil» y «Reportar» (tono de `arte.md`), `type="button"` en los botones de las valoraciones y `role="alert"` en el aviso de error.
+
+### Decisiones
+#### Prevalece el diseño de escritorio aprobado; se descartan el móvil y la estructura propia de Matthew
+- **Contexto:** Matthew aplicó de forma provisional la guía a las mismas pantallas, con barra inferior en móvil, experiencia en dos columnas, una barra de sesión y una cabecera distintas, y sus pruebas `diseno.*` comprueban ese marcado. Sus propias notas dicen que su batería quedaba en rojo (13 suites) y que la guía no estaba aprobada. El diseño aprobado el 26/10/2026 es solo escritorio, con cabecera común, experiencia en una columna y un solo botón principal por pantalla.
+- **Decisión:** en HTML, CSS, JavaScript de pantallas y `arte.md` se conserva la versión de esta rama; se eliminan sus tres pruebas `diseno.*` (comprobaban un marcado que ya no existe y quedan cubiertas por `cabecera`, `landing`, `iniciar-sesion` y las pruebas de cada pantalla); se adoptan sus mejoras pequeñas de `experiencia.js`.
+- **Alternativas:** partir de su CSS y su marcado y adaptarlos al diseño de escritorio (más conflictos y retrabajo, y arrastra el móvil descartado); o rechazar la mezcla.
+- **Consecuencias:** su trabajo de estilos y estructura no queda en el código; las funciones y las pruebas de comportamiento no cambian. Conviene comentarlo con Matthew.
+- **Decidió:** Joaquín.
+
+## CS-66: páginas con el diseño aplicado
+
+**Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
+**Historia:** CS-66
+
+### Cambios
+- `index.html`: landing estática con cabecera sin sesión, portada con marco de captura, tres bloques, «Cómo funciona», cierre y pie (`css/landing.css`).
+- Acceso (`iniciar-sesion`, `registro`, `recuperar`, `restablecer`): pantalla dividida sin barra de cabecera, con la marca en la columna izquierda (`css/acceso.css`). Botones de envío con «Entrando…», «Creando cuenta…», «Enviando…», «Guardando…» y `aria-busy`.
+- `bienvenida.html`: «Tus experiencias» como `h1`, rejilla de 4 columnas con la tarjeta «+», tarjetas con etiqueta de visibilidad y «Ver detalle» como botón; «Guardar» pasa a «Guardando…».
+- `experiencia.html`: una columna de 720 px, formulario compacto y pestañas «De amigos y seguidores | Todas» (`css/experiencia.css`).
+- `perfil.html` y `usuario.html`: cabecera de perfil con contadores, banda de solicitudes, secciones apiladas, «Ajustes» plegado con «Cerrar sesión»; las tarjetas de experiencia de `shared/experiencias.js` son las mismas que las de Inicio (`css/perfil.css`).
+- `personas.html`: «Buscar» con campo grande, pestañas Personas y Experiencias, «Buscando…» con ayuda que desaparece, fundido de 150 ms, `?q=` desde la cabecera y descarte de respuestas atrasadas; `buscarExperiencias` devuelve vacío (`css/buscar.css`).
+- Pruebas nuevas en `landing`, `bienvenida`, `iniciar-sesion`, `registro`, `recuperacion`, `experiencia`, `personas`, `perfil.cabecera`, `usuario.cabecera` y `shared/experiencias`.
+
+### Decisiones
+#### Perfil sin pestañas y sin botón principal
+- **Contexto:** el perfil tiene «Aceptar», «Rechazar», «Guardar cambios» y «Cambiar contraseña», y la regla de diseño es un solo botón principal por pantalla.
+- **Decisión:** secciones apiladas, sin pestañas; todos esos botones son secundarios (`btn-outline-*`); en `usuario.html` solo es principal «Añadir amigo» o «Aceptar», según la relación.
+- **Alternativas:** pestañas de Instagram; se descartan por trabajar de más.
+- **Consecuencias:** el perfil no tiene una acción principal destacada.
+- **Decidió:** Joaquín, a propuesta de Claude.
+
+#### «Experiencias» de Buscar vacía por una función única
+- **Contexto:** la búsqueda de experiencias depende de CS-23, CS-24 y CS-26.
+- **Decisión:** la pestaña se ve y `buscarExperiencias` devuelve `Promise.resolve([])`, con «Todavía no hay experiencias que mostrar.»; CS-24 la sustituirá por la llamada real.
+- **Alternativas:** ocultar la pestaña o simular datos; se descartan para no inventar contenido.
+- **Consecuencias:** hueco conocido hasta CS-24.
+- **Decidió:** Joaquín.
+
+#### Landing como concepto con marcos de captura
+- **Contexto:** acabará con capturas reales.
+- **Decisión:** marco con el rótulo «Captura de PlanB», sin cifras ni testimonios; el único botón principal es el «Crear cuenta» de la portada.
+- **Alternativas:** capturas o cifras inventadas; se descartan.
+- **Consecuencias:** hay que sustituir el marco cuando haya capturas.
+- **Decidió:** Joaquín.
+
+### Comprobación
+- TDD: pruebas nuevas en rojo antes de implementar en cada página (p. ej. `personas.test.js` 5 de 11 en rojo, `perfil.cabecera` y `usuario.cabecera` 16 de 21, `landing.test.js` 5 de 9), después en verde. `npm test`: 58 suites, 720 pruebas, 0 fallos.
+- Auditoría visual de las diez páginas a 1024, 1280 y 1440 px con clics: R2 a R6 en cero.
+- Revisión de la oleada: dos graves (marca de la landing a la derecha y tarjetas de perfil y usuario) corregidos; tres menores de Buscar sin corregir.
+
+### Pendiente
+- Menores de Buscar: «Cargando…» y el aviso dentro del panel Personas, pruebas de cuatro comportamientos y la etiqueta «Nombre de usuario» en la pestaña Experiencias.
+
+## CS-66: base visual compartida y cabecera
+
+**Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
+**Historia:** CS-66
+
+### Cambios
+- `frontend/css/styles.css`: tema con las variables `--color-*` de `arte.md`, reasignadas sobre Bootstrap, y los componentes comunes (cabecera, botones, campos, avisos, tarjetas, etiquetas de visibilidad, pestañas, pantalla dividida, rejilla, foco, transiciones de 120 y 150 ms con `prefers-reduced-motion`).
+- Cabecera común en `bienvenida`, `perfil`, `personas`, `usuario` y `experiencia`: marca, «Inicio», buscador con botón «Buscar», menú «Cuenta» con «Mi perfil» y «Cerrar sesión», y «Saltar al contenido». `js/shared/cabecera.js` cierra sesión (`POST /api/auth/logout`) y gestiona el menú; `js/shared/pestanas.js` activa pestañas con teclado.
+- El login pasa de `index.html` a `iniciar-sesion.html` (`js/iniciar-sesion.js`); `index.html` es una landing provisional; los 401 y `irAlLogin` llevan a `iniciar-sesion.html`.
+- Pruebas: `cabecera.test.js`, `pestanas.test.js` y `enlaces.test.js` nuevas; `navegacion.test.js` sustituida por `cabecera.test.js`; `login.test.js` renombrada a `iniciar-sesion.test.js`; `app.test.js`, `recuperacion.test.js`, `usuario.test.js` y `estados.test.js` apuntan a las rutas nuevas.
+
+### Decisiones
+#### Cabecera repetida con prueba de igualdad, no pintada por JavaScript
+- **Contexto:** la cabecera está en cinco páginas y debe ser idéntica.
+- **Decisión:** el mismo bloque HTML en cada página y una prueba que compara su `outerHTML` sin `aria-current`.
+- **Alternativas:** inyectarla con JavaScript (parpadeo, y sin JS no hay navegación) o plantillas en el servidor (cambia la arquitectura estática).
+- **Consecuencias:** un cambio de cabecera se hace en cinco archivos; la prueba avisa si alguno se queda atrás.
+- **Decidió:** Joaquín, a propuesta de Claude.
+
+#### Menú de cuenta con `<details>` y `cabecera.js`
+- **Contexto:** la regla del repo prohíbe el JavaScript de Bootstrap.
+- **Decisión:** `<details>` nativo; `cabecera.js` lo cierra con clic fuera, Escape o al elegir una opción, devolviendo el foco al resumen. «Cerrar sesión» usa `api()` y, si falla, muestra un aviso `role="alert"` tras la cabecera.
+- **Alternativas:** dropdown de Bootstrap; se descarta por la regla.
+- **Consecuencias:** cualquier `button[data-cerrar-sesion]` (el de «Ajustes») se enlaza solo.
+- **Decidió:** Joaquín, a propuesta de Claude.
+
+### Comprobación
+- TDD: T2.1 dejó 7 suites (45 pruebas) en rojo por lo esperado (cabecera sin `aria-label`, `cabecera.js` y `pestanas.js` inexistentes, `iniciar-sesion.html` inexistente); T2.3 las pasó a verde. `npm test`: 55 suites, 658 pruebas, 0 fallos (línea base 53 y 590).
+- Auditoría visual a 1024, 1280 y 1440 px: R2, R3 y R5 en cero; R6 solo en `perfil.html` (dos botones principales, se corrige al rediseñar la página). Revisión de la fase sin hallazgos graves.
+
+### Pendiente
+- Aplicar el diseño al resto de páginas (fases siguientes). La landing es provisional.
+
+## CS-65: auditoría y SVG de concepto
+
+**Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
+**Historia:** CS-65, objetivos 1 a 4
+
+### Cambios
+- `documentacion/diseno.md` reescrito solo para escritorio, con diez pantallas (se añaden la landing `index.html` e `iniciar-sesion.html`), la cabecera común y las interacciones; `arte.md` con los componentes nuevos (cabecera con sesión y sin ella, pantalla dividida, pestañas, fila de resultado, rejilla de tarjetas con etiqueta de visibilidad, cabecera de perfil, marco de captura, botón con estado de espera) y la sección «Interacciones».
+- `inventario-pantallas.md` y `sitemap.mmd` al día: landing, `iniciar-sesion`, «Cerrar sesión», búsqueda desde la cabecera y los 401 hacia el login.
+- `documentacion/diseno/`: 11 SVG de concepto en blanco y negro, solo escritorio (`index`, `iniciar-sesion`, `registro`, `recuperar`, `restablecer`, `cabecera`, `bienvenida`, `personas`, `experiencia`, `perfil`, `usuario`) y `guia-estilo.svg` regenerada (única hoja con color). Se borran `navegacion-movil.svg`, `usuario-a.svg` y `usuario-b.svg`.
+
+### Decisiones
+#### Landing en `/` y login en `iniciar-sesion.html`
+- **Contexto:** la decisión del 26/10/2026 era «sin landing page»; Joaquín pidió una página de presentación con acceso a iniciar sesión y registrarse.
+- **Decisión:** `index.html` pasa a ser la landing, estática y sin JavaScript, con marcos de captura; el login se mueve a `iniciar-sesion.html` y los 401 llevan allí. El libro y el sitemap pasan de 9 a 10 pantallas.
+- **Alternativas:** dejar el login en `/` y poner la landing aparte (`presentacion.html`); se descarta porque la raíz es lo primero que ve cualquiera.
+- **Consecuencias:** cambian las referencias a `/` del frontend y cuatro archivos de pruebas (fase de implementación). Los textos y capturas de la landing son un concepto que se sustituirá con capturas reales.
+- **Decidió:** Joaquín.
+
+#### Solo escritorio; móvil aparcado
+- **Contexto:** Joaquín pidió quitar de momento todo lo de móvil.
+- **Decisión:** los SVG, `diseno.md` y `arte.md` quedan sin barra inferior ni medidas de 375 px; se comprueba a 1024, 1280 y 1440 px.
+- **Alternativas:** mantener móvil como segunda hoja; se descarta por alcance.
+- **Consecuencias:** el móvil queda sin diseño hasta que se retome.
+- **Decidió:** Joaquín.
+
+#### Cabecera B, experiencia A, búsqueda unificada y perfil sin pestañas
+- **Contexto:** variantes probadas durante el diseño.
+- **Decisión:** cabecera con buscador en píldora (botón «Buscar» dentro) y menú «Cuenta»; experiencia en una columna con pestañas «De amigos y seguidores | Todas»; Buscar unificado con pestañas Personas y Experiencias (esta última vacía por diseño hasta CS-24); perfil con secciones apiladas, sin pestañas; usuario en la variante A.
+- **Alternativas:** cabecera A con pestañas, experiencia B con portada, perfil con pestañas; se descartan por no seguir el patrón de las webs de referencia o por trabajar de más.
+- **Consecuencias:** «Experiencias» de Buscar, «Útil» y «Reportar» quedan como huecos conocidos.
+- **Decidió:** Joaquín, a propuesta de Claude.
+
+#### Un solo botón principal por pantalla
+- **Contexto:** el diseño ponía «Crear cuenta» como principal tres veces en la landing y «Aceptar» y «Guardar» en el perfil, contra la regla de un único `.btn-primary` por pantalla y estado.
+- **Decisión:** en la landing solo es principal el «Crear cuenta» de la portada; el perfil no tiene botón principal (Aceptar, Rechazar y los de «Ajustes» son secundarios); las pantallas de acceso van sin barra de cabecera.
+- **Alternativas:** dejar varios principales; se descarta por R6.
+- **Consecuencias:** `perfil.js` aún usa `btn-success` y `btn-primary` en esos botones; se alinea en la fase de implementación.
+- **Decidió:** Joaquín, a propuesta de Claude.
+
+### Comprobación
+- Sin TDD (documentación y dibujos). Hay 12 SVG; sin «móvil» ni «375» fuera de la guía; solo `#000`, `#fff` y `#999`; XML válido; Chrome los renderiza y se revisaron los PNG. `enlaces-md.mjs` sin enlaces rotos. Contrastes de `arte.md` recalculados con la fórmula WCAG. Revisión de la oleada en dos ciclos sin hallazgos graves.
+- El sitemap no se validó con Mermaid (sin red); se revisó nodo a nodo.
+
+### Pendiente
+- Implementar el diseño en el frontend (CS-66).
+- Landing con capturas reales; el móvil, aparcado.
+
 ## CS-66: diseño provisional de las pantallas de acceso
 
 **Autor:** Matthew Puente Villegas Michavil, con Codex (GPT-5)

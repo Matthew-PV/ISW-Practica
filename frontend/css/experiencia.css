@@ -1,0 +1,29 @@
+/* Página de una experiencia: una sola columna de 720 px como máximo */
+
+.columna-experiencia {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* Autor, ciudad y visibilidad en una línea */
+.metadatos-experiencia {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-8) var(--espacio-16);
+}
+
+.campo-puntuacion {
+  max-width: 100px;
+}
+
+/* El comentario ocupa una fila y crece al enfocarlo */
+.campo-comentario {
+  min-height: 44px;
+  resize: vertical;
+  transition: min-height var(--duracion-corta);
+}
+
+.campo-comentario:focus {
+  min-height: 112px;
+}

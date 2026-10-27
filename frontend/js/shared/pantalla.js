@@ -25,7 +25,7 @@ function ocultarCargando() {
 
 // Sin sesión no se puede usar la página: se vuelve al inicio de sesión.
 function irAlLogin() {
-  window.location.href = '/';
+  window.location.href = 'iniciar-sesion.html';
 }
 
 // Convierte `enlace` (un <a>) en el enlace al perfil de `usuario`: el mío lleva a «Mi perfil» y

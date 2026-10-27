@@ -3,49 +3,70 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PlanB · Iniciar sesión</title>
+  <title>PlanB · Comparte y descubre planes</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
+  <link href="css/landing.css" rel="stylesheet">
 </head>
-<body class="pagina-acceso">
-  <a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
-  <nav class="barra-acceso" aria-label="Acceso">
-    <div class="container">
-      <a class="marca-planb" href="index.html">PlanB</a>
+<body>
+  <!-- Landing pública y estática: no comprueba sesión ni carga scripts -->
+  <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
+  <header class="cabecera">
+    <div class="cabecera-interior">
+      <a class="cabecera-marca" href="index.html">PlanB</a>
+      <div class="cabecera-acciones">
+        <a class="btn btn-outline-primary" href="iniciar-sesion.html">Iniciar sesión</a>
+        <a class="btn btn-outline-primary" href="registro.html">Crear cuenta</a>
+      </div>
     </div>
-  </nav>
+  </header>
 
-  <main id="contenido-principal" class="container contenedor-formulario pagina-acceso-contenido" tabindex="-1">
-    <section class="tarjeta-formulario" aria-labelledby="titulo-login">
-    <p class="presentacion-acceso">Comparte y descubre planes por tu ciudad.</p>
-    <h1 id="titulo-login">Iniciar sesión</h1>
-
-    <form id="form-login">
-      <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control" id="email" required>
+  <main id="contenido" class="landing">
+    <section class="landing-portada">
+      <div class="landing-portada-texto">
+        <h1>Comparte y descubre planes por tu ciudad</h1>
+        <p class="landing-subtitulo">Guarda tus mejores planes y encuentra los de tus amigos.</p>
+        <a class="btn btn-primary" href="registro.html">Crear cuenta</a>
       </div>
-      <div class="mb-3">
-        <label for="password" class="form-label">Contraseña</label>
-        <input type="password" class="form-control" id="password" required>
+      <div class="marco-captura">Captura de PlanB</div>
+    </section>
+
+    <section class="landing-bloques" aria-label="Qué puedes hacer en PlanB">
+      <article class="bloque-landing">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        <h2>Comparte</h2>
+        <p>Publica los planes que te han gustado y elige quién puede verlos.</p>
+      </article>
+      <article class="bloque-landing">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+        <h2>Descubre</h2>
+        <p>Encuentra ideas nuevas para tu ciudad a partir de lo que cuentan otras personas.</p>
+      </article>
+      <article class="bloque-landing">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.5a3 3 0 0 1 0 5M18 14.5c1.8.8 3 2.6 3 5.5"/></svg>
+        <h2>Confía en tus amigos</h2>
+        <p>Valora los planes y fíate de las recomendaciones de la gente que conoces.</p>
+      </article>
+    </section>
+
+    <section class="landing-pasos" aria-labelledby="titulo-pasos">
+      <h2 id="titulo-pasos">Cómo funciona</h2>
+      <ol>
+        <li>Crea tu cuenta</li>
+        <li>Publica un plan</li>
+        <li>Descubre y valora</li>
+      </ol>
+    </section>
+
+    <section class="landing-cierre" aria-labelledby="titulo-cierre">
+      <h2 id="titulo-cierre">Empieza a compartir tus planes</h2>
+      <div class="landing-cierre-acciones">
+        <a class="btn btn-outline-primary" href="registro.html">Crear cuenta</a>
+        <a class="btn btn-outline-primary" href="iniciar-sesion.html">Iniciar sesión</a>
       </div>
-      <div id="error-login" role="alert" class="alert alert-danger d-none"></div>
-      <button type="submit" class="btn boton-principal w-100">Entrar</button>
-    </form>
-
-    <!-- CS-64: recuperar la contraseña por email -->
-    <p class="mt-3 text-center">
-      <a class="enlace-acceso" href="recuperar.html">¿Has olvidado tu contraseña?</a>
-    </p>
-
-    <p class="mt-3 text-center">
-      ¿No tienes cuenta?
-    </p>
-    <a href="registro.html" class="btn boton-secundario w-100">Crear cuenta</a>
     </section>
   </main>
 
-  <script src="js/shared/api.js"></script>
-  <script src="js/index.js"></script>
+  <footer class="landing-pie">PlanB · Ingeniería del Software</footer>
 </body>
 </html>

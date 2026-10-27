@@ -5,6 +5,13 @@
 // Usa `api` de shared/api.js y `listaConCargarMas`, `crearEnlacePerfil`, `mostrarMensaje`,
 // `ocultarMensaje` e `irAlLogin` de shared/pantalla.js.
 
+// Etiqueta de visibilidad (clases de styles.css)
+const ETIQUETAS_VISIBILIDAD = {
+  PUBLICA: { clase: 'etiqueta-publica', texto: 'Pública' },
+  AMIGOS: { clase: 'etiqueta-amigos', texto: 'Amigos' },
+  PRIVADA: { clase: 'etiqueta-privada', texto: 'Privada' },
+};
+
 // Obtener parámetros de la URL
 const parametros = new URLSearchParams(window.location.search);
 const experienciaId = parametros.get('id');
@@ -16,6 +23,7 @@ const contenidoExperiencia = document.getElementById('contenido-experiencia');
 const tituloEl = document.getElementById('detalle-titulo');
 const autorEl = document.getElementById('detalle-autor');
 const ciudadEl = document.getElementById('detalle-ciudad');
+const visibilidadEl = document.getElementById('detalle-visibilidad');
 const descEl = document.getElementById('detalle-descripcion');
 const cajaFormulario = document.getElementById('caja-formulario-valoracion');
 const listaComentarios = document.getElementById('lista-comentarios');
@@ -47,6 +55,11 @@ async function cargarPaginaExperiencia() {
       autorEl.textContent = 'Usuario anónimo';
     }
     ciudadEl.textContent = experiencia.ciudad?.nombre || 'Ciudad desconocida';
+    const etiqueta = ETIQUETAS_VISIBILIDAD[experiencia.visibilidad];
+    if (etiqueta) {
+      visibilidadEl.className = etiqueta.clase;
+      visibilidadEl.textContent = etiqueta.texto;
+    }
     descEl.textContent = experiencia.descripcion;
 
     // El autor no puede valorar su propia experiencia: solo los demás ven el formulario
@@ -79,6 +92,7 @@ function mostrarNoDisponible() {
   autorEl.textContent = '';
   autorEl.removeAttribute('href');
   ciudadEl.textContent = '';
+  visibilidadEl.textContent = '';
   descEl.textContent = '';
   listaComentarios.replaceChildren();
   listaAmigos.replaceChildren();
@@ -104,22 +118,22 @@ function tratarErrorDeAcceso(error) {
 // Devuelve { tarjeta, cuerpo } para poder añadirle botones.
 function crearTarjetaValoracion(valoracion) {
   const tarjeta = document.createElement('div');
-  tarjeta.className = 'card tarjeta-valoracion-lista';
+  tarjeta.className = 'card shadow-sm';
   tarjeta.dataset.valoracionId = valoracion.id;
 
   const cuerpo = document.createElement('div');
   cuerpo.className = 'card-body';
 
   const cabecera = document.createElement('div');
-  cabecera.className = 'cabecera-valoracion';
+  cabecera.className = 'd-flex justify-content-between mb-2';
 
   // Autor enlazado a su perfil
   const autorEnlace = crearEnlacePerfil(document.createElement('a'), valoracion.usuario, miUsuarioId);
-  autorEnlace.className = 'enlace-autor-valoracion';
+  autorEnlace.className = 'text-decoration-none fw-bold';
 
   // Puntuación
   const puntuacion = document.createElement('span');
-  puntuacion.className = 'etiqueta-puntuacion';
+  puntuacion.className = 'badge bg-secondary';
   puntuacion.textContent = `${valoracion.puntuacion}/5`;
 
   cabecera.append(autorEnlace, puntuacion);
@@ -162,7 +176,7 @@ async function pedirValoraciones(ruta, cursor) {
 // Escribe el texto del botón con su contador
 function pintarUtil(boton, cantidad) {
   const contador = document.createElement('span');
-  contador.className = 'contador-util';
+  contador.className = 'badge text-bg-light ms-1';
   contador.textContent = cantidad;
   boton.replaceChildren('Útil ', contador);
 }
@@ -171,16 +185,16 @@ function pintarUtil(boton, cantidad) {
 function crearElementoComentario(valoracion) {
   const { tarjeta, cuerpo } = crearTarjetaValoracion(valoracion);
   const acciones = document.createElement('div');
-  acciones.className = 'acciones-valoracion';
+  acciones.className = 'mt-2';
   // En mi propio comentario no se puede marcar «Útil» ni reportar
   const esMio = valoracion.usuario?.id === miUsuarioId;
 
   const btnUtil = document.createElement('button');
   btnUtil.type = 'button';
-  btnUtil.className = 'btn accion-valoracion accion-util';
+  btnUtil.className = 'btn btn-sm btn-outline-success';
   let cantidadUtiles = valoracion.utiles || 0;
   let leDiUtil = valoracion.leDiUtil || false;
-  btnUtil.classList.toggle('activo', leDiUtil);
+  if (leDiUtil) btnUtil.classList.replace('btn-outline-success', 'btn-success');
   pintarUtil(btnUtil, cantidadUtiles);
   if (esMio) {
     btnUtil.disabled = true;
@@ -190,14 +204,15 @@ function crearElementoComentario(valoracion) {
   btnUtil.addEventListener('click', () => {
     leDiUtil = !leDiUtil;
     cantidadUtiles += leDiUtil ? 1 : -1;
-    btnUtil.classList.toggle('activo', leDiUtil);
+    btnUtil.classList.toggle('btn-success', leDiUtil);
+    btnUtil.classList.toggle('btn-outline-success', !leDiUtil);
     pintarUtil(btnUtil, cantidadUtiles);
   });
 
   // --- OBJETIVO 8: «Reportar» (solo en la pantalla hasta CS-04) ---
   const btnReportar = document.createElement('button');
   btnReportar.type = 'button';
-  btnReportar.className = 'btn accion-valoracion accion-reportar';
+  btnReportar.className = 'btn btn-sm btn-outline-danger ms-2';
   btnReportar.textContent = 'Reportar';
   btnReportar.disabled = esMio;
   btnReportar.addEventListener('click', () => abrirReporte(valoracion));
@@ -235,6 +250,9 @@ const listadoAmigos = listaConCargarMas({
     }
   },
 });
+
+// Pestañas «De amigos y seguidores» y «Todas»
+activarPestanas(document.querySelector('[role="tablist"]'));
 
 // --- OBJETIVO 5 y 6: FORMULARIO, CONTADOR Y GUARDADO ---
 const formValoracion = document.getElementById('form-valoracion');
@@ -287,7 +305,10 @@ formValoracion.addEventListener('submit', async (e) => {
   }
 
   ocultarMensaje(errorValoracion);
+  const textoGuardar = btnGuardarValoracion.textContent;
   btnGuardarValoracion.disabled = true;
+  btnGuardarValoracion.setAttribute('aria-busy', 'true');
+  btnGuardarValoracion.textContent = 'Guardando…';
 
   const datos = { puntuacion: Number(inputPuntuacion.value) };
   if (inputComentario.value.trim() !== '') {
@@ -308,11 +329,13 @@ formValoracion.addEventListener('submit', async (e) => {
     }, 2000);
   } catch (error) {
     // Lo escrito no se borra: se puede volver a intentar
+    btnGuardarValoracion.textContent = textoGuardar;
     if (!tratarErrorDeAcceso(error)) {
       mostrarMensaje(errorValoracion, error.message || 'Error al guardar la valoración');
     }
   } finally {
     btnGuardarValoracion.disabled = false;
+    btnGuardarValoracion.removeAttribute('aria-busy');
   }
 });
 

@@ -3,44 +3,73 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PlanB · Buscar personas</title>
+  <title>PlanB · Buscar</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="css/styles.css" rel="stylesheet">
+  <link href="css/buscar.css" rel="stylesheet">
 </head>
-<body class="pagina-sesion">
-  <a class="saltar-contenido" href="#contenido-principal">Saltar al contenido</a>
-  <nav class="barra-sesion" aria-label="Navegación principal">
-    <div class="container">
-      <a class="marca-planb" href="bienvenida.html">PlanB</a>
-      <div class="navegacion-sesion">
-        <a href="bienvenida.html">Inicio</a>
-        <a href="personas.html" aria-current="page">Buscar personas</a>
-        <a href="perfil.html">Mi perfil</a>
-      </div>
-    </div>
-  </nav>
-
-  <main id="contenido-principal" class="container pagina-personas" tabindex="-1">
-    <section class="buscador-personas" aria-labelledby="titulo-busqueda">
-      <h1 id="titulo-busqueda">Buscar personas</h1>
-
-      <form id="form-busqueda">
-        <label for="texto-busqueda" class="form-label">Nombre de usuario</label>
-        <input id="texto-busqueda" type="search" class="form-control" required>
-        <button type="submit" class="btn boton-principal">Buscar</button>
+<body class="pagina-buscar">
+  <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
+  <header class="cabecera">
+    <div class="cabecera-interior">
+      <nav class="cabecera-nav" aria-label="Principal">
+        <a class="cabecera-marca" href="bienvenida.html">PlanB</a>
+        <a class="cabecera-enlace" href="bienvenida.html">Inicio</a>
+      </nav>
+      <form class="cabecera-busqueda" role="search" action="personas.html" method="get">
+        <input type="search" name="q" aria-label="Buscar personas" placeholder="Buscar personas" autocomplete="off">
+        <button type="submit" class="btn btn-outline-primary">Buscar</button>
       </form>
+      <details class="menu-cuenta">
+        <summary><span class="menu-avatar" aria-hidden="true"></span>Cuenta</summary>
+        <div class="menu-cuenta-lista">
+          <a href="perfil.html">Mi perfil</a>
+          <button type="button" id="cerrar-sesion" data-cerrar-sesion>Cerrar sesión</button>
+        </div>
+      </details>
+    </div>
+  </header>
 
-      <!-- Antes de buscar se explica qué escribir; mientras se busca, «Cargando…» (js/personas.js) -->
-      <p id="ayuda-busqueda" class="texto-suave">Escribe parte de un nombre.</p>
-      <p id="cargando" class="texto-suave d-none" role="status">Cargando…</p>
+  <main id="contenido" class="container contenedor-formulario py-5">
+    <h1 class="mb-4">Buscar</h1>
+
+    <form id="form-busqueda" class="formulario-busqueda mb-4">
+      <label for="texto-busqueda" class="form-label">Texto a buscar</label>
+      <div class="input-group">
+        <input id="texto-busqueda" type="search" class="form-control campo-grande" required>
+        <button type="submit" class="btn btn-primary">Buscar</button>
+      </div>
+    </form>
+
+    <div role="tablist" aria-label="Tipo de resultado" id="pestanas-busqueda">
+      <button type="button" role="tab" id="pestana-personas" aria-controls="panel-personas" aria-selected="true">Personas</button>
+      <button type="button" role="tab" id="pestana-experiencias" aria-controls="panel-experiencias" aria-selected="false" tabindex="-1">Experiencias</button>
+    </div>
+
+    <!-- «Cargando…» y el aviso de error valen para cualquier pestaña (js/personas.js) -->
+    <div class="pt-3">
+      <p id="cargando" class="text-secondary d-none" role="status">Cargando…</p>
       <div id="error-busqueda" class="alert alert-danger d-none" role="alert"></div>
-      <p id="sin-resultados" class="texto-suave d-none">No se han encontrado personas.</p>
-      <div id="resultados" class="lista-resultados-personas" aria-live="polite"></div>
-    </section>
+    </div>
+
+    <!-- Antes de buscar se explica qué escribir -->
+    <div role="tabpanel" id="panel-personas" aria-labelledby="pestana-personas" class="pt-3">
+      <p id="ayuda-busqueda" class="text-secondary">Escribe parte de un nombre.</p>
+      <p id="sin-resultados" class="text-secondary d-none">No se han encontrado personas.</p>
+      <div id="resultados" class="lista-resultados" aria-live="polite"></div>
+    </div>
+
+    <div role="tabpanel" id="panel-experiencias" aria-labelledby="pestana-experiencias" class="pt-3" hidden>
+      <p id="ayuda-experiencias" class="text-secondary">Escribe para buscar experiencias.</p>
+      <p id="sin-experiencias" class="text-secondary d-none">Todavía no hay experiencias que mostrar.</p>
+      <div id="resultados-experiencias" class="lista-resultados" aria-live="polite"></div>
+    </div>
   </main>
 
   <script src="js/shared/api.js"></script>
   <script src="js/shared/pantalla.js"></script>
+  <script src="js/shared/pestanas.js"></script>
+  <script src="js/shared/cabecera.js"></script>
   <script src="js/personas.js"></script>
 </body>
 </html>
