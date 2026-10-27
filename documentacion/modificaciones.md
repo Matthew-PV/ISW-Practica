@@ -38,6 +38,39 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 
 # 2026-10-27
 
+## CS-66: base visual compartida y cabecera
+
+**Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)
+**Historia:** CS-66
+
+### Cambios
+- `frontend/css/styles.css`: tema con las variables `--color-*` de `arte.md`, reasignadas sobre Bootstrap, y los componentes comunes (cabecera, botones, campos, avisos, tarjetas, etiquetas de visibilidad, pestañas, pantalla dividida, rejilla, foco, transiciones de 120 y 150 ms con `prefers-reduced-motion`).
+- Cabecera común en `bienvenida`, `perfil`, `personas`, `usuario` y `experiencia`: marca, «Inicio», buscador con botón «Buscar», menú «Cuenta» con «Mi perfil» y «Cerrar sesión», y «Saltar al contenido». `js/shared/cabecera.js` cierra sesión (`POST /api/auth/logout`) y gestiona el menú; `js/shared/pestanas.js` activa pestañas con teclado.
+- El login pasa de `index.html` a `iniciar-sesion.html` (`js/iniciar-sesion.js`); `index.html` es una landing provisional; los 401 y `irAlLogin` llevan a `iniciar-sesion.html`.
+- Pruebas: `cabecera.test.js`, `pestanas.test.js` y `enlaces.test.js` nuevas; `navegacion.test.js` sustituida por `cabecera.test.js`; `login.test.js` renombrada a `iniciar-sesion.test.js`; `app.test.js`, `recuperacion.test.js`, `usuario.test.js` y `estados.test.js` apuntan a las rutas nuevas.
+
+### Decisiones
+#### Cabecera repetida con prueba de igualdad, no pintada por JavaScript
+- **Contexto:** la cabecera está en cinco páginas y debe ser idéntica.
+- **Decisión:** el mismo bloque HTML en cada página y una prueba que compara su `outerHTML` sin `aria-current`.
+- **Alternativas:** inyectarla con JavaScript (parpadeo, y sin JS no hay navegación) o plantillas en el servidor (cambia la arquitectura estática).
+- **Consecuencias:** un cambio de cabecera se hace en cinco archivos; la prueba avisa si alguno se queda atrás.
+- **Decidió:** Joaquín, a propuesta de Claude.
+
+#### Menú de cuenta con `<details>` y `cabecera.js`
+- **Contexto:** la regla del repo prohíbe el JavaScript de Bootstrap.
+- **Decisión:** `<details>` nativo; `cabecera.js` lo cierra con clic fuera, Escape o al elegir una opción, devolviendo el foco al resumen. «Cerrar sesión» usa `api()` y, si falla, muestra un aviso `role="alert"` tras la cabecera.
+- **Alternativas:** dropdown de Bootstrap; se descarta por la regla.
+- **Consecuencias:** cualquier `button[data-cerrar-sesion]` (el de «Ajustes») se enlaza solo.
+- **Decidió:** Joaquín, a propuesta de Claude.
+
+### Comprobación
+- TDD: T2.1 dejó 7 suites (45 pruebas) en rojo por lo esperado (cabecera sin `aria-label`, `cabecera.js` y `pestanas.js` inexistentes, `iniciar-sesion.html` inexistente); T2.3 las pasó a verde. `npm test`: 55 suites, 658 pruebas, 0 fallos (línea base 53 y 590).
+- Auditoría visual a 1024, 1280 y 1440 px: R2, R3 y R5 en cero; R6 solo en `perfil.html` (dos botones principales, se corrige al rediseñar la página). Revisión de la fase sin hallazgos graves.
+
+### Pendiente
+- Aplicar el diseño al resto de páginas (fases siguientes). La landing es provisional.
+
 ## CS-65: auditoría y SVG de concepto
 
 **Autor:** Joaquín de Vicente Abad, con Claude (aplicación de escritorio)

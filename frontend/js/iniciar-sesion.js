@@ -1,4 +1,4 @@
-// Página de inicio de sesión (index.html). Usa `api` de shared/api.js.
+// Página de inicio de sesión (iniciar-sesion.html). Usa `api` de shared/api.js.
 
 const formulario = document.getElementById('form-login');
 const cajaError = document.getElementById('error-login');

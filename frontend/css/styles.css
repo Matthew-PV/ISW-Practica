@@ -1,32 +1,759 @@
-/* Estilos propios que complementan a Bootstrap */
+/* Estilos de PlanB sobre Bootstrap 5.3.3 (se carga antes por CDN). Los valores salen de documentacion/arte.md.
+   Los colores solo se escriben en este bloque; el resto del archivo usa var(--color-*). */
 
-/* Columna estrecha y centrada para los formularios de login y registro */
-.contenedor-formulario {
+:root {
+  /* Paleta */
+  --color-fondo: #FFFFFF;
+  --color-superficie: #F3F4F6;
+  --color-texto: #1F2937;
+  --color-texto-suave: #4B5563;
+  --color-primario: #0F766E;
+  --color-primario-hover: #115E59;
+  --color-primario-suave: #CCFBF1;
+  --color-peligro: #B91C1C;
+  --color-exito: #15803D;
+  --color-foco: #1D4ED8;
+  --color-borde-campo: #6B7280;
+  --color-borde-suave: #D1D5DB;
+  --color-barra: #0F172A;
+  --color-barra-texto: #F8FAFC;
+
+  /* Avisos (fondo y texto) */
+  --color-error-fondo: #FEE2E2;
+  --color-error-texto: #7F1D1D;
+  --color-exito-fondo: #DCFCE7;
+  --color-exito-texto: #14532D;
+  --color-aviso-fondo: #FEF3C7;
+  --color-aviso-texto: #78350F;
+  --color-info-fondo: #E0F2FE;
+  --color-info-texto: #0C4A6E;
+
+  /* Velo detrás de los diálogos (no figura en arte.md) */
+  --color-velo: rgb(0 0 0 / 0.5);
+
+  /* Tripletas RGB que Bootstrap necesita para sus utilidades (text-secondary, enlaces...) */
+  --color-primario-rgb: 15, 118, 110;
+  --color-primario-hover-rgb: 17, 94, 89;
+  --color-texto-rgb: 31, 41, 55;
+  --color-texto-suave-rgb: 75, 85, 99;
+
+  /* Espaciado: escala de múltiplos de 4 px */
+  --espacio-4: 4px;
+  --espacio-8: 8px;
+  --espacio-12: 12px;
+  --espacio-16: 16px;
+  --espacio-24: 24px;
+  --espacio-32: 32px;
+  --espacio-48: 48px;
+
+  /* Radios */
+  --radio-boton: 8px;
+  --radio-tarjeta: 12px;
+  --radio-pildora: 999px;
+
+  /* Duraciones */
+  --duracion-corta: 120ms;
+  --duracion-fundido: 150ms;
+
+  /* Reasignación de las variables de Bootstrap */
+  --bs-primary: var(--color-primario);
+  --bs-primary-rgb: var(--color-primario-rgb);
+  --bs-secondary-rgb: var(--color-texto-suave-rgb);
+  --bs-secondary-color: var(--color-texto-suave);
+  --bs-body-color: var(--color-texto);
+  --bs-body-color-rgb: var(--color-texto-rgb);
+  --bs-body-bg: var(--color-fondo);
+  --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --bs-body-font-size: 1rem;
+  --bs-body-line-height: 1.5;
+  --bs-link-color: var(--color-primario);
+  --bs-link-color-rgb: var(--color-primario-rgb);
+  --bs-link-hover-color: var(--color-primario-hover);
+  --bs-link-hover-color-rgb: var(--color-primario-hover-rgb);
+  --bs-border-color: var(--color-borde-suave);
+  --bs-border-radius: var(--radio-boton);
+  --bs-border-radius-sm: var(--radio-boton);
+  --bs-border-radius-lg: var(--radio-tarjeta);
+  --bs-border-radius-xl: var(--radio-tarjeta);
+}
+
+/* ---------- Base ---------- */
+
+body {
+  background: var(--color-fondo);
+  color: var(--color-texto);
+}
+
+/* Títulos: solo tres tamaños y negrita */
+h1, .h1 { font-size: 28px; font-weight: 700; }
+h2, .h2 { font-size: 22px; font-weight: 700; }
+h3, .h3, h4, .h4, h5, .h5, h6, .h6 { font-size: 18px; font-weight: 700; }
+
+.small, small, .form-text { font-size: 14px; }
+
+/* Contenido centrado de 960 px como máximo, con 24 px de margen lateral */
+.container {
+  --bs-gutter-x: var(--espacio-48);
+  max-width: 960px;
+}
+
+/* Sin sombras: la profundidad se consigue con borde y color de fondo */
+.shadow, .shadow-sm, .shadow-lg {
+  box-shadow: none !important;
+}
+
+/* ---------- Anillo de foco: 2 px, separado 2 px, nunca se quita ---------- */
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible,
+.btn:focus-visible,
+.btn-link:focus-visible,
+.form-check-input:focus-visible,
+.form-control:focus,
+.form-select:focus {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+
+/* ---------- Enlaces ---------- */
+
+a {
+  transition: color var(--duracion-corta);
+}
+
+/* ---------- Botones ---------- */
+
+.btn {
+  --bs-btn-padding-x: var(--espacio-16);
+  --bs-btn-padding-y: var(--espacio-8);
+  --bs-btn-font-size: 16px;
+  --bs-btn-border-radius: var(--radio-boton);
+  --bs-btn-focus-box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  line-height: 1.5;
+  transition: color var(--duracion-corta), background-color var(--duracion-corta),
+    border-color var(--duracion-corta), box-shadow var(--duracion-corta);
+}
+
+/* Principal: como máximo uno por pantalla y estado */
+.btn-primary {
+  --bs-btn-color: var(--color-fondo);
+  --bs-btn-bg: var(--color-primario);
+  --bs-btn-border-color: var(--color-primario);
+  --bs-btn-hover-color: var(--color-fondo);
+  --bs-btn-hover-bg: var(--color-primario-hover);
+  --bs-btn-hover-border-color: var(--color-primario-hover);
+  --bs-btn-active-color: var(--color-fondo);
+  --bs-btn-active-bg: var(--color-primario-hover);
+  --bs-btn-active-border-color: var(--color-primario-hover);
+  font-weight: 700;
+}
+
+/* Secundario (btn-outline-secondary se trata igual: solo hay una jerarquía) */
+.btn-outline-primary,
+.btn-outline-secondary {
+  --bs-btn-color: var(--color-primario);
+  --bs-btn-bg: var(--color-fondo);
+  --bs-btn-border-color: var(--color-primario);
+  --bs-btn-hover-color: var(--color-primario);
+  --bs-btn-hover-bg: var(--color-primario-suave);
+  --bs-btn-hover-border-color: var(--color-primario);
+  --bs-btn-active-color: var(--color-primario);
+  --bs-btn-active-bg: var(--color-primario-suave);
+  --bs-btn-active-border-color: var(--color-primario-hover);
+}
+
+/* Peligro y «Aceptar»: con el ratón el borde pasa a 2 px (con un anillo interior, para que no salte el tamaño);
+   pulsado, se rellenan */
+.btn-outline-danger {
+  --bs-btn-color: var(--color-peligro);
+  --bs-btn-bg: var(--color-fondo);
+  --bs-btn-border-color: var(--color-peligro);
+  --bs-btn-hover-color: var(--color-peligro);
+  --bs-btn-hover-bg: var(--color-fondo);
+  --bs-btn-hover-border-color: var(--color-peligro);
+  --bs-btn-active-color: var(--color-fondo);
+  --bs-btn-active-bg: var(--color-peligro);
+  --bs-btn-active-border-color: var(--color-peligro);
+}
+
+.btn-outline-success {
+  --bs-btn-color: var(--color-exito);
+  --bs-btn-bg: var(--color-fondo);
+  --bs-btn-border-color: var(--color-exito);
+  --bs-btn-hover-color: var(--color-exito);
+  --bs-btn-hover-bg: var(--color-fondo);
+  --bs-btn-hover-border-color: var(--color-exito);
+  --bs-btn-active-color: var(--color-fondo);
+  --bs-btn-active-bg: var(--color-exito);
+  --bs-btn-active-border-color: var(--color-exito);
+}
+
+.btn-outline-danger:hover { box-shadow: inset 0 0 0 1px var(--color-peligro); }
+.btn-outline-success:hover { box-shadow: inset 0 0 0 1px var(--color-exito); }
+.btn-outline-danger:active,
+.btn-outline-success:active { box-shadow: none; }
+
+/* Botón de texto: se ve como enlace, pero mide 44 px de alto */
+.btn-link {
+  --bs-btn-color: var(--color-primario);
+  --bs-btn-hover-color: var(--color-primario-hover);
+  --bs-btn-active-color: var(--color-primario-hover);
+  text-decoration: underline;
+}
+
+/* btn-sm no reduce la zona pulsable */
+.btn-sm {
+  --bs-btn-padding-y: var(--espacio-8);
+  --bs-btn-padding-x: var(--espacio-16);
+  --bs-btn-font-size: 16px;
+}
+
+/* Desactivado: fondo superficie, texto suave, borde suave, cursor normal */
+.btn:disabled,
+.btn.disabled,
+fieldset:disabled .btn {
+  background-color: var(--color-superficie);
+  border-color: var(--color-borde-suave);
+  color: var(--color-texto-suave);
+  box-shadow: none;
+  opacity: 1;
+  cursor: default;
+}
+
+/* Espera: el aspecto del desactivado, pero con cursor de espera y sin cambiar de tamaño */
+.btn[aria-busy="true"],
+.btn[aria-busy="true"]:hover,
+.btn[aria-busy="true"]:active {
+  background-color: var(--color-superficie);
+  border-color: var(--color-borde-suave);
+  color: var(--color-texto-suave);
+  box-shadow: none;
+  opacity: 1;
+  cursor: progress;
+  pointer-events: auto;
+}
+
+/* ---------- Campos de formulario ---------- */
+
+.form-label {
+  margin-bottom: var(--espacio-4);
+}
+
+.form-control,
+.form-select {
+  min-height: 44px;
+  padding: var(--espacio-8) var(--espacio-12);
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  border: 1px solid var(--color-borde-campo);
+  border-radius: var(--radio-boton);
+  transition: border-color var(--duracion-corta);
+}
+
+.form-control:hover:not(:disabled),
+.form-select:hover:not(:disabled) {
+  border-color: var(--color-texto);
+}
+
+.form-control::placeholder {
+  color: var(--color-texto-suave);
+  opacity: 1;
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  background-color: var(--color-superficie);
+  color: var(--color-texto-suave);
+}
+
+/* Error: borde de peligro (el mensaje, con texto, va debajo) */
+.form-control.is-invalid,
+.form-select.is-invalid,
+[aria-invalid="true"] {
+  border-color: var(--color-peligro);
+}
+
+.form-control.is-invalid {
+  background-image: none;
+  padding-right: var(--espacio-12);
+}
+
+.invalid-feedback {
+  color: var(--color-peligro);
+}
+
+/* Casillas: 44 px de zona pulsable */
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  min-height: 44px;
+  padding-left: 0;
+}
+
+.form-check-input {
+  float: none;
+  margin: 0;
+  border-color: var(--color-borde-campo);
+}
+
+.form-check-input:checked {
+  background-color: var(--color-primario);
+  border-color: var(--color-primario);
+}
+
+/* ---------- Tarjetas ---------- */
+
+.card {
+  --bs-card-bg: var(--color-fondo);
+  --bs-card-border-color: var(--color-borde-suave);
+  --bs-card-border-radius: var(--radio-tarjeta);
+  --bs-card-inner-border-radius: calc(var(--radio-tarjeta) - 1px);
+  --bs-card-spacer-x: var(--espacio-16);
+  --bs-card-spacer-y: var(--espacio-16);
+  --bs-card-title-color: var(--color-texto);
+}
+
+.card-title {
+  font-weight: 700;
+}
+
+/* ---------- Avisos: siempre con texto; los de error llevan role="alert" ---------- */
+
+.alert {
+  --bs-alert-padding-x: var(--espacio-16);
+  --bs-alert-padding-y: var(--espacio-12);
+  --bs-alert-border-radius: var(--radio-boton);
+}
+
+.alert-danger {
+  --bs-alert-bg: var(--color-error-fondo);
+  --bs-alert-color: var(--color-error-texto);
+  --bs-alert-border-color: var(--color-error-fondo);
+  --bs-alert-link-color: var(--color-error-texto);
+}
+
+.alert-success {
+  --bs-alert-bg: var(--color-exito-fondo);
+  --bs-alert-color: var(--color-exito-texto);
+  --bs-alert-border-color: var(--color-exito-fondo);
+  --bs-alert-link-color: var(--color-exito-texto);
+}
+
+.alert-warning {
+  --bs-alert-bg: var(--color-aviso-fondo);
+  --bs-alert-color: var(--color-aviso-texto);
+  --bs-alert-border-color: var(--color-aviso-fondo);
+  --bs-alert-link-color: var(--color-aviso-texto);
+}
+
+.alert-info {
+  --bs-alert-bg: var(--color-info-fondo);
+  --bs-alert-color: var(--color-info-texto);
+  --bs-alert-border-color: var(--color-info-fondo);
+  --bs-alert-link-color: var(--color-info-texto);
+}
+
+/* ---------- Listas: filas separadas por borde suave ---------- */
+
+.list-group {
+  --bs-list-group-bg: var(--color-fondo);
+  --bs-list-group-color: var(--color-texto);
+  --bs-list-group-border-color: var(--color-borde-suave);
+  --bs-list-group-border-radius: var(--radio-tarjeta);
+  --bs-list-group-item-padding-x: var(--espacio-16);
+  --bs-list-group-item-padding-y: var(--espacio-12);
+  --bs-list-group-action-color: var(--color-texto);
+  --bs-list-group-action-hover-color: var(--color-texto);
+  --bs-list-group-action-hover-bg: var(--color-superficie);
+  --bs-list-group-action-active-color: var(--color-texto);
+  --bs-list-group-action-active-bg: var(--color-primario-suave);
+}
+
+/* ---------- Etiquetas de visibilidad: píldora de 24 px, no pulsable, siempre con texto ---------- */
+
+.etiqueta-publica,
+.etiqueta-amigos,
+.etiqueta-privada {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 var(--espacio-12);
+  font-size: 14px;
+  border-radius: var(--radio-pildora);
+}
+
+.etiqueta-publica {
+  color: var(--color-texto-suave);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-campo);
+}
+
+.etiqueta-amigos {
+  color: var(--color-primario-hover);
+  background: var(--color-primario-suave);
+}
+
+.etiqueta-privada {
+  color: var(--color-texto-suave);
+  background: var(--color-superficie);
+}
+
+/* ---------- Pestañas ---------- */
+
+[role="tablist"] {
+  display: flex;
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+[role="tab"] {
+  min-height: 44px;
+  padding: 0 var(--espacio-24);
+  margin-bottom: -1px;
+  font: inherit;
+  color: var(--color-texto-suave);
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  transition: color var(--duracion-corta), background-color var(--duracion-corta);
+}
+
+[role="tab"]:hover {
+  color: var(--color-texto);
+  background: var(--color-superficie);
+}
+
+[role="tab"]:active {
+  background: var(--color-primario-suave);
+}
+
+[role="tab"][aria-selected="true"] {
+  color: var(--color-texto);
+  font-weight: 700;
+  border-bottom-color: var(--color-primario);
+}
+
+/* ---------- Cabecera común (contrato en .superpowers/plan/contrato-cabecera.md) ---------- */
+
+.saltar-contenido {
+  position: absolute;
+  top: -100px;
+  left: var(--espacio-8);
+  z-index: 2000;
+  padding: var(--espacio-12) var(--espacio-16);
+  color: var(--color-primario);
+  background: var(--color-fondo);
+  border-radius: var(--radio-boton);
+}
+
+.saltar-contenido:focus {
+  top: var(--espacio-8);
+}
+
+.cabecera {
+  background: var(--color-barra);
+  color: var(--color-barra-texto);
+}
+
+.cabecera-interior {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-16);
+  height: 56px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--espacio-24);
+}
+
+/* El nav no genera caja: sus enlaces se ordenan junto al buscador y al menú */
+.cabecera-nav {
+  display: contents;
+}
+
+.cabecera-marca {
+  order: 1;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cabecera-busqueda {
+  order: 2;
+  flex: 1 1 auto;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  background: var(--color-fondo);
+  border-radius: var(--radio-pildora);
+}
+
+.cabecera-busqueda input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0 var(--espacio-16);
+  color: var(--color-texto);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radio-pildora);
+}
+
+.cabecera-busqueda input::placeholder {
+  color: var(--color-texto-suave);
+  opacity: 1;
+}
+
+/* El anillo del campo lo muestra la píldora entera */
+.cabecera-busqueda input:focus-visible {
+  outline: 0;
+}
+
+.cabecera-busqueda:has(input:focus-visible) {
+  outline: 2px solid var(--color-barra-texto);
+  outline-offset: 2px;
+}
+
+.cabecera-busqueda .btn {
+  min-height: 44px;
+  margin-right: 2px;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-radius: var(--radio-pildora);
+}
+
+.cabecera-marca,
+.cabecera-enlace {
+  color: var(--color-barra-texto);
+  text-decoration: none;
+}
+
+.cabecera-marca:hover,
+.cabecera-enlace:hover,
+.menu-cuenta summary:hover {
+  color: var(--color-barra-texto);
+  text-decoration: underline;
+}
+
+.cabecera-marca:active,
+.cabecera-enlace:active {
+  font-weight: 700;
+}
+
+.cabecera-marca,
+.cabecera-enlace,
+.menu-cuenta summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.cabecera-enlace {
+  order: 3;
+  padding: 0 var(--espacio-8);
+  border-bottom: 3px solid transparent;
+}
+
+/* Sección activa: negrita y línea gruesa debajo, además de aria-current */
+.cabecera-enlace[aria-current="page"] {
+  font-weight: 700;
+  border-bottom-color: var(--color-barra-texto);
+}
+
+/* Dentro de la barra el anillo es claro; sobre fondo blanco (buscador y panel) vuelve a ser azul */
+.cabecera :focus-visible {
+  outline-color: var(--color-barra-texto);
+}
+
+.cabecera-busqueda .btn:focus-visible,
+.menu-cuenta-lista :focus-visible {
+  outline-color: var(--color-foco);
+}
+
+/* La página de búsqueda lleva su propio campo */
+body.pagina-buscar .cabecera-busqueda {
+  display: none;
+}
+
+/* Sin buscador, «Inicio» y «Cuenta» siguen a la derecha */
+body.pagina-buscar .cabecera-enlace {
+  margin-left: auto;
+}
+
+/* Botones en la barra sin sesión (landing): borde claro para distinguirse del fondo oscuro */
+.cabecera-acciones {
+  display: flex;
+  gap: var(--espacio-8);
+  margin-left: auto;
+}
+
+.cabecera-acciones .btn {
+  border-color: var(--color-barra-texto);
+}
+
+/* Aviso de error al cerrar sesión, justo debajo de la cabecera */
+.cabecera-aviso {
+  width: min(960px, calc(100% - 48px));
+  margin: var(--espacio-16) auto 0;
+}
+
+/* Menú de cuenta */
+.menu-cuenta {
+  order: 4;
+  position: relative;
+}
+
+.menu-cuenta summary {
+  gap: var(--espacio-8);
+  list-style: none;
+  cursor: pointer;
+}
+
+.menu-cuenta summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Flecha hecha con bordes, del color del texto */
+.menu-cuenta summary::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  margin-left: var(--espacio-4);
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.menu-avatar {
+  width: 32px;
+  height: 32px;
+  background: var(--color-superficie);
+  border-radius: 50%;
+}
+
+.menu-cuenta-lista {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  width: 200px;
+  padding: var(--espacio-4);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-tarjeta);
+}
+
+.menu-cuenta[open] .menu-cuenta-lista {
+  animation: entrar var(--duracion-fundido);
+}
+
+.menu-cuenta-lista a,
+.menu-cuenta-lista button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--espacio-12);
+  font: inherit;
+  text-align: left;
+  color: var(--color-texto);
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: var(--radio-boton);
+  cursor: pointer;
+  transition: background-color var(--duracion-corta);
+}
+
+.menu-cuenta-lista a:hover,
+.menu-cuenta-lista button:hover {
+  background: var(--color-superficie);
+}
+
+.menu-cuenta-lista a[aria-current="page"] {
+  font-weight: 700;
+  border-bottom-color: var(--color-primario);
+}
+
+.menu-cuenta-lista button:disabled {
+  color: var(--color-texto-suave);
+  cursor: default;
+}
+
+.menu-cuenta-lista button[aria-busy="true"] {
+  cursor: progress;
+}
+
+/* ---------- Pantalla dividida de acceso ---------- */
+
+.pantalla-dividida {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+.pantalla-dividida-marca {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--espacio-24);
+  padding: var(--espacio-48);
+  font-size: 18px;
+  color: var(--color-texto);
+  background: var(--color-superficie);
+}
+
+.pantalla-dividida-marca a:first-child {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.pantalla-dividida-formulario {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--espacio-48);
+  background: var(--color-fondo);
+}
+
+.pantalla-dividida-formulario > * {
+  width: 100%;
   max-width: 400px;
 }
 
-/* Bienvenida: botón «+» grande para crear una experiencia, del mismo tamaño que las tarjetas */
-.tarjeta-nueva {
-  width: 100%;
-  height: 100%;
-  min-height: 10rem;
-  font-size: 4rem;
-  line-height: 1;
-  color: var(--bs-secondary-color);
-  background: transparent;
-  border: 2px dashed var(--bs-border-color);
-  border-radius: var(--bs-border-radius-lg);
+/* ---------- Rejilla de experiencias: 4 columnas y alto uniforme ---------- */
+
+.rejilla-experiencias {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 1fr;
+  gap: var(--espacio-16);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.tarjeta-nueva:hover,
-.tarjeta-nueva:focus-visible {
-  color: var(--bs-primary);
-  border-color: var(--bs-primary);
-}
-
-/* Tarjeta de experiencia: misma altura mínima que el «+» y descripción cortada a tres líneas */
+/* Tarjeta de experiencia (va sobre .card): descripción cortada a tres líneas */
 .tarjeta-experiencia {
   min-height: 10rem;
+  transition: border-color var(--duracion-corta), background-color var(--duracion-corta);
+}
+
+.tarjeta-experiencia:hover {
+  border-color: var(--color-borde-campo);
+}
+
+.tarjeta-experiencia:active {
+  background: var(--color-superficie);
 }
 
 .descripcion-corta {
@@ -36,14 +763,196 @@
   overflow: hidden;
 }
 
+/* Tarjeta «+» para crear una experiencia, del mismo tamaño que las demás */
+.tarjeta-nueva {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 10rem;
+  font: inherit;
+  font-weight: 700;
+  color: var(--color-primario);
+  background: transparent;
+  border: 2px dashed var(--color-borde-suave);
+  border-radius: var(--radio-tarjeta);
+  transition: background-color var(--duracion-corta), border-color var(--duracion-corta);
+}
+
+.tarjeta-nueva-signo {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.tarjeta-nueva:hover {
+  background: var(--color-primario-suave);
+}
+
+/* ---------- Cabecera de perfil con contadores ---------- */
+
+.cabecera-perfil {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-24);
+}
+
+.cabecera-perfil img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Perfil de otra persona: la misma cabecera, centrada */
+.cabecera-perfil-otra {
+  flex-direction: column;
+  text-align: center;
+}
+
+.cabecera-perfil-contadores {
+  display: flex;
+  gap: var(--espacio-24);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contador-numero {
+  display: block;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.contador-rotulo {
+  display: block;
+  font-size: 14px;
+  color: var(--color-texto-suave);
+}
+
+/* Solicitudes recibidas (solo perfil propio) */
+.banda-solicitudes {
+  padding: var(--espacio-16) var(--espacio-24);
+  color: var(--color-texto);
+  background: var(--color-primario-suave);
+}
+
+/* «Ajustes»: un details cuyo resumen se ve como botón secundario */
+.resumen-boton {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--espacio-16);
+  color: var(--color-primario);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-primario);
+  border-radius: var(--radio-boton);
+  cursor: pointer;
+  transition: background-color var(--duracion-corta), border-color var(--duracion-corta);
+}
+
+.resumen-boton:hover {
+  background: var(--color-primario-suave);
+}
+
+.resumen-boton:active {
+  background: var(--color-primario-suave);
+  border-color: var(--color-primario-hover);
+}
+
+/* ---------- Fila de resultado (búsqueda de personas) ---------- */
+
+.fila-resultado {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-12);
+  min-height: 64px;
+  padding: var(--espacio-8) var(--espacio-16);
+  color: var(--color-texto);
+  text-decoration: none;
+  background: var(--color-fondo);
+  border-bottom: 1px solid var(--color-borde-suave);
+  transition: background-color var(--duracion-corta);
+}
+
+.fila-resultado:hover {
+  color: var(--color-texto);
+  background: var(--color-superficie);
+}
+
+.fila-resultado:active {
+  background: var(--color-primario-suave);
+}
+
+.fila-resultado img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.fila-resultado-nombre {
+  display: block;
+  font-weight: 700;
+}
+
+.fila-resultado-ciudad {
+  display: block;
+  font-size: 14px;
+  color: var(--color-texto-suave);
+}
+
+/* ---------- Marco de captura de la landing ---------- */
+
+.marco-captura {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 10;
+  color: var(--color-texto-suave);
+  background: var(--color-superficie);
+  border: 1px dashed var(--color-borde-suave);
+  border-radius: var(--radio-tarjeta);
+}
+
+/* ---------- Formularios y diálogos ---------- */
+
+/* Columna estrecha para los formularios de acceso */
+.contenedor-formulario {
+  max-width: 400px;
+}
+
 /* Ventana del formulario de experiencia */
 .dialogo-experiencia {
   width: min(32rem, calc(100% - 2rem));
   padding: 0;
-  border: 0;
-  border-radius: var(--bs-border-radius-lg);
+  color: var(--color-texto);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-tarjeta);
 }
 
 .dialogo-experiencia::backdrop {
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-velo);
+}
+
+/* ---------- Fundidos y movimiento ---------- */
+
+@keyframes entrar {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Resultados que aparecen tras buscar */
+.entrando {
+  animation: entrar var(--duracion-fundido);
+}
+
+/* Con movimiento reducido, los cambios son instantáneos */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+    animation: none !important;
+  }
 }

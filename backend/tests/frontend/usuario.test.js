@@ -315,6 +315,6 @@ describe('usuario inexistente y perfil propio', () => {
   test('sin sesión se sigue yendo al login', async () => {
     await abrirVigilandoRedireccion('ana', respuesta(401, { error: 'No hay sesión iniciada' }));
 
-    expect(window.location.href).toBe('/');
+    expect(window.location.href).toBe('iniciar-sesion.html');
   });
 });

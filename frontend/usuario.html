@@ -8,18 +8,28 @@
   <link href="css/styles.css" rel="stylesheet">
 </head>
 <body>
-  <nav class="navbar navbar-dark bg-dark">
-    <div class="container">
-      <a class="navbar-brand" href="bienvenida.html">PlanB</a>
-      <div class="d-flex gap-3">
-        <a class="nav-link text-light" href="bienvenida.html">Inicio</a>
-        <a class="nav-link text-light" href="personas.html">Buscar personas</a>
-        <a class="nav-link text-light" href="perfil.html">Mi perfil</a>
-      </div>
+  <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
+  <header class="cabecera">
+    <div class="cabecera-interior">
+      <nav class="cabecera-nav" aria-label="Principal">
+        <a class="cabecera-marca" href="bienvenida.html">PlanB</a>
+        <a class="cabecera-enlace" href="bienvenida.html">Inicio</a>
+      </nav>
+      <form class="cabecera-busqueda" role="search" action="personas.html" method="get">
+        <input type="search" name="q" aria-label="Buscar personas" placeholder="Buscar personas" autocomplete="off">
+        <button type="submit" class="btn btn-outline-primary">Buscar</button>
+      </form>
+      <details class="menu-cuenta">
+        <summary><span class="menu-avatar" aria-hidden="true"></span>Cuenta</summary>
+        <div class="menu-cuenta-lista">
+          <a href="perfil.html">Mi perfil</a>
+          <button type="button" id="cerrar-sesion" data-cerrar-sesion>Cerrar sesión</button>
+        </div>
+      </details>
     </div>
-  </nav>
+  </header>
 
-  <main class="container contenedor-formulario py-5">
+  <main id="contenido" class="container contenedor-formulario py-5">
     <!-- Se muestra solo si el usuario no existe (js/usuario.js) -->
     <div id="no-encontrado" class="alert alert-warning text-center d-none">Usuario no encontrado</div>
 
@@ -53,6 +63,7 @@
 
   <script src="js/shared/api.js"></script>
   <script src="js/shared/pantalla.js"></script>
+  <script src="js/shared/cabecera.js"></script>
   <script src="js/shared/experiencias.js"></script>
   <script src="js/usuario.js"></script>
 </body>

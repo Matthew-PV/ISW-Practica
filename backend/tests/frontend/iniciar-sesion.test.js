@@ -1,12 +1,12 @@
 /**
  * @jest-environment jsdom
  */
-// CS-59: la pantalla de inicio de sesión (frontend/index.html y js/index.js) en un navegador
+// CS-59: la pantalla de inicio de sesión (frontend/iniciar-sesion.html y js/iniciar-sesion.js) en un navegador
 // simulado (jsdom). Se simula el servidor (fetch), así que no hace falta arrancar nada.
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
-const HTML = leer('index.html');
-const SCRIPTS = ['js/shared/api.js', 'js/index.js'];
+const HTML = leer('iniciar-sesion.html');
+const SCRIPTS = ['js/shared/api.js', 'js/iniciar-sesion.js'];
 
 // Respuesta de fetch con el código y el JSON indicados
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });

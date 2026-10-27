@@ -37,7 +37,7 @@ const escribir = (campo, valor) => {
 const cuerpoEnviado = () => JSON.parse(window.fetch.mock.calls.at(-1)[1].body);
 
 test('el inicio de sesión enlaza a «¿Has olvidado tu contraseña?»', () => {
-  document.documentElement.innerHTML = leer('index.html');
+  document.documentElement.innerHTML = leer('iniciar-sesion.html');
 
   const enlace = [...document.querySelectorAll('a')].find((a) => a.textContent.includes('¿Has olvidado tu contraseña?'));
   expect(enlace.getAttribute('href')).toBe('recuperar.html');
@@ -104,7 +104,7 @@ describe('restablecer.html', () => {
 
     expect(cuerpoEnviado()).toEqual({ token: 'abc123', nueva: 'Nueva12345' });
     expect($('#exito-restablecer').textContent).toContain('Contraseña cambiada.');
-    expect($('#exito-restablecer a').getAttribute('href')).toBe('index.html');
+    expect($('#exito-restablecer a').getAttribute('href')).toBe('iniciar-sesion.html');
     expect(visible('#form-restablecer')).toBe(false);
   });
 

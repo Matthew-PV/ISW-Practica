@@ -43,7 +43,7 @@ formulario.addEventListener('submit', async (e) => {
     // El enlace ya no sirve: se oculta el formulario y se ofrece ir al inicio de sesión
     formulario.classList.add('d-none');
     const enlace = document.createElement('a');
-    enlace.href = 'index.html';
+    enlace.href = 'iniciar-sesion.html';
     enlace.textContent = 'Iniciar sesión';
     cajaExito.replaceChildren(`${mensaje} `, enlace);
     cajaExito.classList.remove('d-none');

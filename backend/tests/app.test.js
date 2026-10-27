@@ -21,3 +21,27 @@ describe('cabeceras de seguridad', () => {
     expect(res.headers['x-powered-by']).toBeUndefined();
   });
 });
+
+describe('páginas de entrada', () => {
+  test('GET / responde la portada, con un título h1', async () => {
+    const res = await request(app).get('/');
+
+    expect(res.status).toBe(200);
+    expect(res.text).toContain('<h1');
+  });
+
+  test('GET /iniciar-sesion.html responde el formulario de inicio de sesión', async () => {
+    const res = await request(app).get('/iniciar-sesion.html');
+
+    expect(res.status).toBe(200);
+    expect(res.text).toContain('id="form-login"');
+  });
+
+  test('/ y /index.html son la misma página', async () => {
+    const raiz = await request(app).get('/');
+    const indice = await request(app).get('/index.html');
+
+    expect(indice.status).toBe(200);
+    expect(indice.text).toBe(raiz.text);
+  });
+});
