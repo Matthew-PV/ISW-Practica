@@ -2,7 +2,7 @@
 
 > Qué elementos tiene cada pantalla y cómo se colocan, en escritorio (1280 px). Es solo estructura: sin colores, sin imágenes y sin código. Cómo se ve cada cosa (colores, bordes, tipografía) está en [arte.md](arte.md). Móvil: aparcado, ver registro.
 > Documentos relacionados: [sitemap.mmd](sitemap.mmd), [frontend.md](frontend.md) (cómo está hecho hoy) y [flujos.md](flujos.md).
-> Inventario de las diez pantallas con sus estados y flujos: [inventario-pantallas.md](inventario-pantallas.md).
+> Inventario de las páginas con sus estados y flujos: [inventario-pantallas.md](inventario-pantallas.md).
 > Estado: el equipo dio por buenos los esquemas (Flavia, 26/10/2026) y el diseño se rehizo para escritorio el 26/10/2026. La guía de estilo, en [arte.md](arte.md), es una propuesta para aprobar.
 
 ## Cómo se lee un esquema
@@ -25,23 +25,22 @@ Cada esquema se dibuja en **escritorio (1280 px)**, a escala 0,5. El contenido v
 - **No se usa el JavaScript de Bootstrap** (lo bloquea la política de seguridad). Los desplegables se hacen con `<details>` y las ventanas con `<dialog>`.
 - Sin scripts ni manejadores en línea; el texto aportado por usuarios se inserta con `textContent`.
 - Cada página `x.html` tiene su `js/x.js`; lo compartido va en `js/shared/`.
-- **Cabecera común:** las cinco pantallas con sesión comparten el mismo marcado. Ver [diseno/cabecera.svg](diseno/cabecera.svg) y la sección siguiente.
+- **Cabecera común:** las pantallas con sesión comparten el mismo marcado. Ver [diseno/cabecera.svg](diseno/cabecera.svg) y la sección siguiente.
 - Todo lo que se pueda pulsar corresponde a una flecha del sitemap.
 - Cada pantalla con datos tiene los estados de [frontend.md](frontend.md): cargando, vacío, error y «Contenido no disponible».
 - No cambian los `id` ni los `data-*` que usan los scripts y las pruebas.
 
 ## Cabecera (pantallas con sesión)
 
-Esquema: [diseno/cabecera.svg](diseno/cabecera.svg) (en reposo, con el menú abierto y con el campo de búsqueda).
+Esquema: [diseno/cabecera.svg](diseno/cabecera.svg) (aún con la cabecera anterior; la nueva está descrita aquí y en [arte.md](arte.md)).
 
-- **Marca PlanB** a la izquierda; enlaza a `bienvenida.html`.
-- **Centro:** buscador en píldora con el campo «Buscar personas» y, dentro, un botón «Buscar» (`type=submit`, texto visible); también se envía con Intro. Es un formulario GET a `personas.html?q=`. Con el campo vacío no navega.
-- **Derecha:** «Inicio» y el menú de cuenta (avatar, texto «Cuenta» y flecha; un `<details>`) con «Mi perfil» y «Cerrar sesión».
-- **Cerrar sesión:** envía `POST /api/auth/logout` y va a `iniciar-sesion.html`. Si falla, aparece un aviso con `role="alert"`.
-- **En `personas.html`** el campo de la cabecera no se ve, porque la página lleva su propio campo grande; el marcado es el mismo y se oculta con una clase en el `body`. Desde otra página, enviar el campo lleva a `personas.html?q=texto`, que rellena su campo y busca al cargar.
-- **Sección activa:** línea gruesa y negrita, con `aria-current="page"`. El `nav` lleva `aria-label="Principal"` y hay un enlace «Saltar al contenido».
-- **Pantallas sin sesión:** la landing lleva cabecera con la marca, «Iniciar sesión» y «Crear cuenta». Las pantallas de acceso no llevan barra de cabecera: la marca va dentro de la columna izquierda y enlaza a `index.html`.
-- **Pie:** solo la landing lo lleva; las pantallas de la aplicación no.
+- **Fila superior (64 px):** logo a la izquierda (enlaza a Inicio); buscador en píldora al centro («Buscar personas y planes», con botón «Buscar»; formulario GET a `personas.html?q=`); a la derecha, «Crear plan» (único botón principal de la cabecera), la campana de notificaciones y el menú de cuenta.
+- **Barra de pestañas de sección (debajo):** Inicio, Explorar, Mis planes y Amigos. La activa lleva línea naranja de 3 px, negrita y `aria-current="page"`.
+- **Menú de cuenta** (`<details>`): Mi perfil, Guardados, Ajustes, Ayuda y Cerrar sesión (`POST /api/auth/logout` y va a `iniciar-sesion.html`; si falla, aviso con `role="alert"`).
+- **En `personas.html`** el campo de la cabecera se oculta porque la página lleva el suyo.
+- **Sin sesión:** páginas públicas con logo, «Iniciar sesión» (secundario) y «Crear cuenta» (principal), y **pie** con Ayuda y Términos y privacidad. Las pantallas de acceso van divididas, sin cabecera.
+- Enlace «Saltar al contenido» y `nav` con `aria-label="Principal"`.
+- **Estado:** Explorar, Amigos, la campana y Guardados aún no existen; sus entradas se muestran como en la maqueta.
 
 ## Interacciones
 
@@ -57,7 +56,7 @@ Iguales en todas las pantallas. Nada más se anima: sin carruseles, sin desplaza
 
 | Elemento | Dónde aparece | Esquema |
 |---|---|---|
-| Cabecera con buscador y menú de cuenta | Las 5 pantallas con sesión | [diseno/cabecera.svg](diseno/cabecera.svg) |
+| Cabecera con buscador y menú de cuenta | Todas las pantallas con sesión | [diseno/cabecera.svg](diseno/cabecera.svg) |
 | Pantalla dividida, sin barra de cabecera (marca y tres frases a la izquierda, formulario a la derecha) | Iniciar sesión, registro, recuperar y restablecer | Cada esquema de acceso |
 | Avisos (error, éxito, información) | Todas | Recuadro de línea discontinua en cada esquema |
 | Pestañas | Buscar y Experiencia | [diseno/personas.svg](diseno/personas.svg), [diseno/experiencia.svg](diseno/experiencia.svg) |
@@ -138,6 +137,30 @@ Una sección por pantalla, con el mismo formato. Son diez.
 - **Estados:** cargando, sin id, 401 (a `iniciar-sesion.html`), «Contenido no disponible» (404), error y mostrando.
 - **Nota:** «Útil» y «Reportar» solo funcionan en la pantalla hasta que se implementen CS-02 y CS-04.
 - **Enlaces (sitemap):** perfil o usuario del autor (y de cada valoración).
+
+
+### Páginas del rediseño
+
+Maquetas de escritorio (solo estructura y estado vacío). Las de «diseño futuro» no tienen backend; las «a reorganizar» ya existen con otra forma. Estado y flujos de cada una: [inventario-pantallas.md](inventario-pantallas.md).
+
+| Página | Grupo | Estado | Estructura | Esquema |
+|---|---|---|---|---|
+| `ayuda.html` | Público | diseño futuro | Buscador de ayuda; Preguntas frecuentes (lista plegable); Contacto. Sin artículos todavía | [ayuda.svg](diseno/ayuda.svg) |
+| `terminos.html` | Público | diseño futuro | Pestañas: Términos | Privacidad; Texto legal en una columna. Texto legal pendiente | [terminos.svg](diseno/terminos.svg) |
+| `no-encontrada.html` | Público | diseño futuro | Icono y «No encontramos esta página»; Botón «Ir al inicio». Estado vacío | [no-encontrada.svg](diseno/no-encontrada.svg) |
+| `explorar.html` | Inicio y descubrir | diseño futuro | Chips de categoría; Rejilla de tarjetas con bloque de color; Ciudades destacadas. Aún no hay planes que explorar | [explorar.svg](diseno/explorar.svg) |
+| `ciudad.html?id=` | Inicio y descubrir | diseño futuro | Cabecera de ciudad (nombre y nº de planes); Chips de categoría; Rejilla de planes de la ciudad. Aún no hay planes en esta ciudad | [ciudad.svg](diseno/ciudad.svg) |
+| `crear-plan.html` | Planes | a reorganizar | Título, ciudad, categoría, descripción; Visibilidad (pública, amigos, privada); Botón principal «Publicar». Hoy es un diálogo en Inicio | [crear-plan.svg](diseno/crear-plan.svg) |
+| `editar-plan.html?id=` | Planes | a reorganizar | Mismo formulario que Crear plan, relleno; Botón principal «Guardar cambios»; Eliminar plan (peligro). Hoy es un diálogo en Inicio | [editar-plan.svg](diseno/editar-plan.svg) |
+| `guardados.html` | Planes | diseño futuro | Rejilla de planes guardados. Aún no has guardado planes | [guardados.svg](diseno/guardados.svg) |
+| `mis-planes.html` | Planes | a reorganizar | Pestañas: Publicados | Borradores; Rejilla con tarjeta «+». Aún no has publicado planes | [mis-planes.svg](diseno/mis-planes.svg) |
+| `amigos.html` | Personas y social | diseño futuro | Buscador de amigos; Filas de persona. Aún no tienes amigos | [amigos.svg](diseno/amigos.svg) |
+| `seguidores.html` | Personas y social | diseño futuro | Pestañas: Seguidores | Seguidos; Filas de persona. Aún no tienes seguidores | [seguidores.svg](diseno/seguidores.svg) |
+| `solicitudes.html` | Personas y social | implementada | Solicitudes | [solicitudes.svg](diseno/solicitudes.svg) |
+| `ajustes.html` | Cuenta | a reorganizar | Pestañas: Datos | Foto | Contraseña | Privacidad | Notificaciones; Formulario de la pestaña activa; Botón secundario «Guardar cambios» | [ajustes.svg](diseno/ajustes.svg) |
+| `notificaciones.html` | Sistema | diseño futuro | Filas de actividad (nuevo seguidor, solicitud, valoración); «Marcar todo como leído». No tienes notificaciones | [notificaciones.svg](diseno/notificaciones.svg) |
+| `error.html` | Sistema | diseño futuro | Icono y «Algo ha fallado»; Botón «Reintentar». Estado de error | [error.svg](diseno/error.svg) |
+| `sin-permiso.html` | Sistema | diseño futuro | Icono y «Contenido no disponible»; Botón «Ir al inicio». Mismo texto que el 404 de plan | [sin-permiso.svg](diseno/sin-permiso.svg) |
 
 ## Requisitos mínimos de un buen diseño de frontend
 
