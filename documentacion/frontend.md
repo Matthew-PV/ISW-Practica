@@ -82,6 +82,12 @@ stateDiagram-v2
 
 Sus controles principales miden al menos 44 px de alto, los campos usan un borde con contraste suficiente y el enlace «Saltar al contenido» solo aparece al recibir el foco del teclado. Cada barra se identifica como navegación de acceso mediante `aria-label`; no se añadió JavaScript de Bootstrap ni scripts en línea. La prueba `diseno.acceso.test.js` comprueba esa estructura y las reglas CSS comunes.
 
+### Diseño del detalle de experiencia (CS-66, objetivo 2)
+
+`experiencia.html` adopta temporalmente los componentes de la guía actual de [arte.md](arte.md). En escritorio, la experiencia y el formulario de valoración quedan en una columna, y las listas de valoraciones en otra. En móvil, ambas se apilan y la navegación de sesión queda fijada en la parte inferior para mantener accesibles los enlaces principales.
+
+La tarjeta de experiencia, el formulario, cada valoración y la ventana nativa de reporte usan los mismos bordes, espaciados y botones. Se conserva el comportamiento existente: el formulario solo aparece a quien puede valorar, «Útil» y «Reportar» siguen siendo acciones solo visuales hasta sus historias correspondientes, y los textos de usuarios se siguen insertando con `textContent`. No se incorpora JavaScript de Bootstrap ni manejadores en línea. `diseno.experiencia.test.js` comprueba la estructura, la adaptación declarada en CSS y esos límites; queda una revisión manual autenticada a 375, 768 y 1280 px.
+
 ### `index.html`: iniciar sesión
 
 Formulario de email y contraseña. Si el login es correcto va a `bienvenida.html`; si no, muestra el mensaje del servidor en `#error-login`. Presenta la frase «Comparte y descubre planes por tu ciudad», enlaza a la recuperación y ofrece «Crear cuenta» como botón secundario visible.
@@ -153,7 +159,7 @@ Pruebas: `usuario.test.js`, `estados.test.js` y `shared/experiencias.test.js`.
 * **«Útil» y «Reportar»:** solo funcionan en la pantalla y no guardan nada, hasta que se implementen CS-02 y CS-04. «Reportar» abre el `<dialog>` `#dialogo-reporte`.
 * Si cualquier petición responde 404, se borra lo que se mostraba y queda solo «Contenido no disponible».
 
-Pruebas: `experiencia.test.js` y `experiencia.formulario.test.js`.
+Pruebas: `experiencia.test.js`, `experiencia.formulario.test.js` y `diseno.experiencia.test.js`.
 
 ## Módulos compartidos (`js/shared/`)
 

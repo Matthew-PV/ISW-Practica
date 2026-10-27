@@ -67,6 +67,7 @@ async function cargarPaginaExperiencia() {
 
 function mostrarError(mensaje) {
   mensajeEstado.className = 'alert alert-danger';
+  mensajeEstado.setAttribute('role', 'alert');
   mensajeEstado.textContent = mensaje;
   contenidoExperiencia.classList.add('d-none');
 }
@@ -103,22 +104,22 @@ function tratarErrorDeAcceso(error) {
 // Devuelve { tarjeta, cuerpo } para poder añadirle botones.
 function crearTarjetaValoracion(valoracion) {
   const tarjeta = document.createElement('div');
-  tarjeta.className = 'card shadow-sm';
+  tarjeta.className = 'card tarjeta-valoracion-lista';
   tarjeta.dataset.valoracionId = valoracion.id;
 
   const cuerpo = document.createElement('div');
   cuerpo.className = 'card-body';
 
   const cabecera = document.createElement('div');
-  cabecera.className = 'd-flex justify-content-between mb-2';
+  cabecera.className = 'cabecera-valoracion';
 
   // Autor enlazado a su perfil
   const autorEnlace = crearEnlacePerfil(document.createElement('a'), valoracion.usuario, miUsuarioId);
-  autorEnlace.className = 'text-decoration-none fw-bold';
+  autorEnlace.className = 'enlace-autor-valoracion';
 
   // Puntuación
   const puntuacion = document.createElement('span');
-  puntuacion.className = 'badge bg-secondary';
+  puntuacion.className = 'etiqueta-puntuacion';
   puntuacion.textContent = `${valoracion.puntuacion}/5`;
 
   cabecera.append(autorEnlace, puntuacion);
@@ -161,24 +162,25 @@ async function pedirValoraciones(ruta, cursor) {
 // Escribe el texto del botón con su contador
 function pintarUtil(boton, cantidad) {
   const contador = document.createElement('span');
-  contador.className = 'badge text-bg-light ms-1';
+  contador.className = 'contador-util';
   contador.textContent = cantidad;
-  boton.replaceChildren('👍 Útil ', contador);
+  boton.replaceChildren('Útil ', contador);
 }
 
 // Crea la tarjeta de una valoración de la lista general, con «Útil» y «Reportar»
 function crearElementoComentario(valoracion) {
   const { tarjeta, cuerpo } = crearTarjetaValoracion(valoracion);
   const acciones = document.createElement('div');
-  acciones.className = 'mt-2';
+  acciones.className = 'acciones-valoracion';
   // En mi propio comentario no se puede marcar «Útil» ni reportar
   const esMio = valoracion.usuario?.id === miUsuarioId;
 
   const btnUtil = document.createElement('button');
-  btnUtil.className = 'btn btn-sm btn-outline-success';
+  btnUtil.type = 'button';
+  btnUtil.className = 'btn accion-valoracion accion-util';
   let cantidadUtiles = valoracion.utiles || 0;
   let leDiUtil = valoracion.leDiUtil || false;
-  if (leDiUtil) btnUtil.classList.replace('btn-outline-success', 'btn-success');
+  btnUtil.classList.toggle('activo', leDiUtil);
   pintarUtil(btnUtil, cantidadUtiles);
   if (esMio) {
     btnUtil.disabled = true;
@@ -188,15 +190,15 @@ function crearElementoComentario(valoracion) {
   btnUtil.addEventListener('click', () => {
     leDiUtil = !leDiUtil;
     cantidadUtiles += leDiUtil ? 1 : -1;
-    btnUtil.classList.toggle('btn-success', leDiUtil);
-    btnUtil.classList.toggle('btn-outline-success', !leDiUtil);
+    btnUtil.classList.toggle('activo', leDiUtil);
     pintarUtil(btnUtil, cantidadUtiles);
   });
 
   // --- OBJETIVO 8: «Reportar» (solo en la pantalla hasta CS-04) ---
   const btnReportar = document.createElement('button');
-  btnReportar.className = 'btn btn-sm btn-outline-danger ms-2';
-  btnReportar.textContent = '🚨 Reportar';
+  btnReportar.type = 'button';
+  btnReportar.className = 'btn accion-valoracion accion-reportar';
+  btnReportar.textContent = 'Reportar';
   btnReportar.disabled = esMio;
   btnReportar.addEventListener('click', () => abrirReporte(valoracion));
 

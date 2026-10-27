@@ -66,6 +66,34 @@ Las entradas anteriores al 09/10/2026 se han pasado a este formato sin cambiar s
 - Antes de ampliar el diseño, confirmar si el equipo aprueba la guía actual de `arte.md` y comprobar las cuatro páginas a 375, 768 y 1280 px.
 - Resolver primero el problema de resolución de módulos de Jest antes de usar una batería completa como evidencia de regresión del frontend.
 
+## CS-66: diseño provisional del detalle de experiencia y sus valoraciones
+
+**Autor:** Matthew Puente Villegas Michavil, con Codex (GPT-5)
+**Historia:** CS-66, objetivo 2 · **Commits:** pendiente (esta entrada se incluirá en el mismo commit)
+
+### Cambios
+- `frontend/experiencia.html` adopta una barra de navegación accesible, enlace para saltar al contenido y una rejilla de dos columnas que reúne el detalle, el formulario de valoración, las listas y la ventana de reporte.
+- `frontend/css/styles.css` añade los componentes de sesión, tarjetas, acciones de valoración, diálogo de reporte y la adaptación móvil para esta pantalla.
+- `frontend/js/experiencia.js` conserva las llamadas y reglas existentes, pero asigna las clases visuales de las valoraciones creadas dinámicamente y anuncia los errores con `role="alert"`.
+- `backend/tests/frontend/diseno.experiencia.test.js` comprueba la estructura adaptable, los controles y la ausencia de scripts o manejadores en línea. `documentacion/frontend.md` describe el nuevo alcance.
+
+### Decisiones
+#### Extender de forma acotada la guía temporal al detalle de experiencia
+- **Contexto:** Matthew seleccionó el objetivo 2 de CS-66 después de aplicar temporalmente la guía vigente al flujo de acceso. `arte.md` sigue siendo una propuesta, no una norma definitiva para todo el producto.
+- **Decisión:** aplicar sus componentes únicamente a `experiencia.html`: dos columnas en escritorio, contenido apilado y navegación inferior en móvil, y la misma jerarquía de botones para valorar o reportar.
+- **Alternativas:** esperar al diseño definitivo, que dejaría este objetivo incompleto; o rediseñar también las páginas sociales, que corresponde al objetivo 3 y ampliaría el alcance.
+- **Consecuencias:** una aprobación distinta de la guía exigirá revisar estos estilos. Las rutas, la API, las reglas de autorización y las acciones provisionales «Útil» y «Reportar» no cambian.
+- **Decidió:** Matthew, a propuesta de Codex.
+
+### Comprobación
+- **TDD:** `diseno.experiencia.test.js` se escribió antes. Falló porque aún no existían la estructura de sesión, la rejilla ni los componentes de valoración y reporte. Tras el cambio pasa (2 pruebas). Al hacerlo pasar se ajustó una expectativa para reconocer una clase entre varias clases CSS, sin reducir el comportamiento comprobado.
+- **Batería:** `npm test -- --runInBand` no termina en verde: las suites de pantalla que cargan scripts siguen sin resolver `frontend/js/shared/api.js` desde `backend/tests/helpers/pantalla.js`, aunque el archivo existe. La prueba nueva no usa ese cargador y pasa; el bloqueo impide usar la batería completa como evidencia de regresión.
+- **Manual:** no se creó ni se usó una cuenta de prueba sin autorización. Para ver el detalle real hace falta una sesión iniciada; queda comprobarlo a 375, 768 y 1280 px y recorrer con teclado los controles y el diálogo.
+
+### Para quien continúe
+- Iniciar sesión en el entorno local y abrir una experiencia visible con valoraciones para revisar los dos estados del formulario (autor y visitante), las listas y el diálogo de reporte en los tres anchos.
+- Resolver el cargador de scripts de Jest antes de volver a ejecutar las pruebas dinámicas existentes de `experiencia.html` como regresión completa.
+
 # 2026-10-26
 
 ## CS-67: base de datos en Aiven y conexión de PlanB

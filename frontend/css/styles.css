@@ -158,6 +158,22 @@ body {
   color: var(--color-primario-hover);
 }
 
+.boton-peligro {
+  min-height: 44px;
+  border: 1px solid var(--color-peligro);
+  border-radius: 8px;
+  background: var(--color-peligro);
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+.boton-peligro:hover,
+.boton-peligro:active {
+  border-color: #991B1B;
+  background: #991B1B;
+  color: #FFFFFF;
+}
+
 .enlace-acceso {
   color: var(--color-primario);
   font-weight: 700;
@@ -177,6 +193,341 @@ body {
   border-color: #BBF7D0;
   background: #DCFCE7;
   color: #14532D;
+}
+
+/* Pantallas con sesión. Por ahora solo experiencia.html usa esta variante (CS-66, objetivo 2). */
+.pagina-sesion {
+  background: var(--color-superficie);
+}
+
+.barra-sesion {
+  min-height: 64px;
+  background: var(--color-barra);
+}
+
+.barra-sesion .container {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.barra-sesion .marca-planb {
+  color: var(--color-barra-texto);
+}
+
+.barra-sesion .marca-planb:hover {
+  color: #FFFFFF;
+}
+
+.navegacion-sesion {
+  display: flex;
+  align-self: stretch;
+  gap: 8px;
+}
+
+.navegacion-sesion a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  padding: 8px 12px;
+  border-bottom: 3px solid transparent;
+  color: var(--color-barra-texto);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.navegacion-sesion a:hover {
+  border-bottom-color: var(--color-primario-suave);
+  color: #FFFFFF;
+}
+
+.pagina-experiencia {
+  padding-top: 32px;
+  padding-bottom: 48px;
+}
+
+.rejilla-experiencia {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(18rem, 2fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.columna-experiencia,
+.columna-valoraciones,
+.lista-valoraciones {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.tarjeta-detalle-experiencia,
+.tarjeta-valoracion,
+.seccion-valoraciones,
+.tarjeta-valoracion-lista {
+  border: 1px solid var(--color-borde-suave);
+  border-radius: 12px;
+  background: var(--color-fondo);
+}
+
+.tarjeta-detalle-experiencia,
+.tarjeta-valoracion,
+.seccion-valoraciones {
+  padding: 24px;
+}
+
+.tarjeta-detalle-experiencia h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.metadatos-experiencia,
+.texto-suave,
+.contador-caracteres {
+  color: var(--color-texto-suave);
+}
+
+.descripcion-experiencia {
+  margin: 24px 0 0;
+  font-size: 16px;
+  white-space: pre-wrap;
+}
+
+.tarjeta-valoracion h2,
+.seccion-valoraciones h2 {
+  margin: 0 0 16px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.pagina-sesion .form-label {
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.pagina-sesion .form-control {
+  min-height: 44px;
+  border-color: var(--color-borde-campo);
+  border-radius: 8px;
+  color: var(--color-texto);
+}
+
+.pagina-sesion .form-control:focus {
+  border-color: var(--color-foco);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-foco) 25%, transparent);
+}
+
+.input-puntuacion {
+  max-width: 120px;
+}
+
+.contador-caracteres {
+  margin-top: 8px;
+  text-align: end;
+}
+
+.acciones-lista,
+.acciones-dialogo {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+.tarjeta-valoracion-lista .card-body {
+  padding: 16px;
+}
+
+.cabecera-valoracion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.enlace-autor-valoracion {
+  color: var(--color-primario);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.etiqueta-puntuacion,
+.contador-util {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.etiqueta-puntuacion {
+  padding: 4px 8px;
+  background: var(--color-primario-suave);
+  color: var(--color-texto);
+}
+
+.acciones-valoracion {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.accion-valoracion {
+  min-height: 44px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.accion-util {
+  border-color: var(--color-exito);
+  color: var(--color-exito);
+}
+
+.accion-util.activo,
+.accion-util:hover {
+  background: var(--color-exito);
+  color: #FFFFFF;
+}
+
+.accion-reportar {
+  border-color: var(--color-peligro);
+  color: var(--color-peligro);
+}
+
+.accion-reportar:hover {
+  background: #FEE2E2;
+  color: var(--color-peligro);
+}
+
+.pagina-sesion .alert {
+  border-radius: 8px;
+}
+
+.pagina-sesion .alert-info {
+  border-color: #BAE6FD;
+  background: #E0F2FE;
+  color: #0C4A6E;
+}
+
+.pagina-sesion .alert-danger {
+  border-color: #FECACA;
+  background: #FEE2E2;
+  color: #7F1D1D;
+}
+
+.pagina-sesion .alert-success {
+  border-color: #BBF7D0;
+  background: #DCFCE7;
+  color: #14532D;
+}
+
+.pagina-sesion .alert-warning {
+  border-color: #FDE68A;
+  background: #FEF3C7;
+  color: #78350F;
+}
+
+.dialogo-experiencia.dialogo-reporte {
+  width: min(32rem, calc(100% - 2rem));
+  padding: 24px;
+  border: 1px solid var(--color-borde-suave);
+  border-radius: 12px;
+  color: var(--color-texto);
+}
+
+.cabecera-dialogo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.cabecera-dialogo h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.boton-cerrar {
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-primario);
+  font-weight: 700;
+}
+
+@media (max-width: 767px) {
+  .pagina-sesion {
+    padding-bottom: 72px;
+  }
+
+  .barra-sesion {
+    position: fixed;
+    z-index: 5;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    min-height: 56px;
+    border-top: 1px solid var(--color-borde-suave);
+    background: var(--color-fondo);
+  }
+
+  .barra-sesion .container {
+    min-height: 56px;
+    padding: 0;
+  }
+
+  .barra-sesion .marca-planb {
+    display: none;
+  }
+
+  .navegacion-sesion {
+    width: 100%;
+    gap: 0;
+  }
+
+  .navegacion-sesion a {
+    flex: 1;
+    min-height: 56px;
+    justify-content: center;
+    border-bottom: 0;
+    border-top: 3px solid transparent;
+    color: var(--color-texto);
+    font-size: 14px;
+  }
+
+  .navegacion-sesion a:hover {
+    border-top-color: var(--color-primario);
+    color: var(--color-primario);
+  }
+
+  .pagina-experiencia {
+    padding-top: 16px;
+    padding-bottom: 24px;
+  }
+
+  .rejilla-experiencia {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .columna-experiencia,
+  .columna-valoraciones,
+  .lista-valoraciones {
+    gap: 16px;
+  }
+
+  .tarjeta-detalle-experiencia,
+  .tarjeta-valoracion,
+  .seccion-valoraciones,
+  .dialogo-experiencia.dialogo-reporte {
+    padding: 16px;
+  }
 }
 
 @media (max-width: 767px) {

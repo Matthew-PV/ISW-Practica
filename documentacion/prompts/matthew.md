@@ -4,6 +4,25 @@ Identificador habitual: MAT / Matthew-PV.
 
 Las interacciones siguientes proceden de la conversación conservada en Codex. Cuando no consta la fecha exacta de la interacción, `2026-10-02` indica la fecha en la que se incorporó al registro, no necesariamente la fecha en que se escribió el prompt original. Se omiten mensajes de cortesía y confirmaciones que no influyeron en el trabajo.
 
+## 2026-10-27 — Aplicar el diseño al detalle de experiencia (CS-66, objetivo 2)
+
+- **Historia u objetivo:** CS-66, objetivo 2: aplicar temporalmente el diseño vigente al detalle de una experiencia, sus valoraciones y la ventana de reporte, sin extenderlo a las pantallas sociales.
+- **Agente/herramienta:** Codex, GPT-5.
+- **Entorno:** Windows, PowerShell, Jest, servidor local de PlanB y navegador integrado.
+- **Contexto aportado:** captura actualizada del libro de historias de OneDrive, con el objetivo 1 terminado y el objetivo 2 asignado a Matthew; guía vigente de `documentacion/arte.md` utilizada de forma provisional.
+- **Prompt inicial:**
+
+  > Perfecto, ahora vamos a trabajar en el objetivo 2
+
+- **Correcciones relevantes:** ninguna.
+- **Resultado propuesto por la IA:** reorganizar el detalle en dos columnas para escritorio y una para móvil, añadir navegación accesible de sesión, homogeneizar tarjetas, acciones y diálogo de reporte, sin cambiar las llamadas a la API ni el alcance de las funciones pendientes.
+- **TDD:** se añadió primero `diseno.experiencia.test.js`; falló porque la estructura y los componentes de diseño no existían. Tras incorporar el cambio pasó. Una expectativa se adaptó para comprobar una clase CSS entre otras clases ya presentes, sin alterar el comportamiento protegido.
+- **Comprensión humana de las pruebas:** la preparación lee el HTML, la hoja CSS y el JavaScript de la pantalla; la acción busca sus componentes; el resultado comprueba que la pantalla se puede adaptar a móvil, mantiene controles de 44 px y no añade scripts en línea ni JavaScript de Bootstrap.
+- **Intervención humana:** Matthew seleccionó explícitamente el objetivo 2 después de completar el primero y mantuvo el uso temporal de la guía actual.
+- **Decisiones:** [2026-10-27 — CS-66: diseño provisional del detalle de experiencia y sus valoraciones](../modificaciones.md#cs-66-diseño-provisional-del-detalle-de-experiencia-y-sus-valoraciones).
+- **Comprobación final:** la prueba nueva pasa. La batería completa queda bloqueada por la resolución de `frontend/js/shared/api.js` en el cargador de pruebas de pantalla. La comprobación visual real queda pendiente de una sesión local autorizada, a 375, 768 y 1280 px.
+- **Resultado en Git:** pendiente de commit.
+
 ## 2026-10-27 — Aplicar temporalmente el diseño al flujo de acceso (CS-66, objetivo 1)
 
 - **Historia u objetivo:** CS-66, objetivo 1: aplicar el diseño aprobado a inicio de sesión, registro y recuperación de contraseña, manteniendo el comportamiento y la seguridad actuales.
