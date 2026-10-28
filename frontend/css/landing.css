@@ -345,3 +345,153 @@
   .landing-ruta-trazo { stroke-dashoffset: 0; }
   .landing-parada { stroke-width: 14px; }
 }
+
+/* ---------- Capa expresiva ampliada: formas libres, colores extra y dibujos ---------- */
+
+/* Palabra subrayada a mano en el titular */
+.subrayado {
+  padding-bottom: 0.15em;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 12' preserveAspectRatio='none'%3E%3Cpath d='M2 8C20 2 40 11 60 6S88 3 98 7' fill='none' stroke='%23FF5A36' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E") left bottom / 100% 0.32em no-repeat;
+}
+
+/* Pegatinas alrededor de la ilustración de portada */
+.landing-ilustracion {
+  position: relative;
+}
+
+.landing-sticker {
+  position: absolute;
+  pointer-events: none;
+}
+
+.landing-sticker-brillo {
+  top: -20px;
+  left: 4%;
+  width: 44px;
+  animation: landing-brillo 2.8s ease-in-out infinite alternate;
+}
+
+.landing-sticker-estrellas {
+  bottom: -16px;
+  left: -28px;
+  width: 132px;
+  transform: rotate(-6deg);
+  animation: landing-subir 7s ease-in-out infinite alternate;
+}
+
+.landing-sticker-garabato {
+  top: 6%;
+  right: -36px;
+  width: 80px;
+  animation: landing-flotar 9s ease-in-out infinite alternate;
+}
+
+.landing-sticker-sol {
+  bottom: 8%;
+  right: -28px;
+  width: 52px;
+  animation: landing-flotar 12s ease-in-out infinite alternate-reverse;
+}
+
+@keyframes landing-brillo {
+  from { transform: scale(0.6) rotate(0deg); }
+  to { transform: scale(1.1) rotate(35deg); }
+}
+
+/* Chips con un color cada uno */
+.chip-categoria:nth-child(1) { background: var(--color-melocoton); }
+.chip-categoria:nth-child(2) { background: var(--expr-lila); }
+.chip-categoria:nth-child(3) { background: var(--expr-menta); }
+.chip-categoria:nth-child(4) { background: var(--expr-cielo); }
+.chip-categoria:nth-child(5) { background: var(--expr-sol); }
+.chip-categoria:nth-child(6) { background: var(--color-crema); }
+
+/* Bloques de valor: forma de icono distinta, mancha de color en la esquina y ritmo vertical irregular */
+.bloque-landing {
+  position: relative;
+  overflow: hidden;
+}
+
+.bloque-landing > * {
+  position: relative;
+}
+
+.bloque-landing::after {
+  content: "";
+  position: absolute;
+  top: -36px;
+  right: -36px;
+  width: 120px;
+  height: 120px;
+  background: var(--tinte);
+  border-radius: 58% 42% 55% 45% / 50% 55% 45% 50%;
+}
+
+.bloque-landing:nth-child(1) { --tinte: var(--color-melocoton); }
+.bloque-landing:nth-child(2) { --tinte: var(--expr-lila); margin-top: var(--espacio-24); }
+.bloque-landing:nth-child(3) { --tinte: var(--expr-menta); }
+
+.bloque-landing-icono {
+  width: 56px;
+  height: 56px;
+  background: var(--tinte);
+}
+
+.bloque-landing:nth-child(1) .bloque-landing-icono { border-radius: 58% 42% 55% 45% / 50% 55% 45% 50%; }
+.bloque-landing:nth-child(2) .bloque-landing-icono { border-radius: 40% 60% 45% 55% / 55% 45% 60% 40%; }
+.bloque-landing:nth-child(3) .bloque-landing-icono { border-radius: 50% 50% 38% 62% / 60% 42% 58% 40%; }
+
+/* Cómo funciona: un dibujo por paso unidos por un camino de puntos */
+.landing-pasos ol {
+  gap: 64px;
+}
+
+.landing-pasos li {
+  position: relative;
+}
+
+.landing-pasos li::before {
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  z-index: 1;
+  margin: 0;
+}
+
+.paso-dibujo {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: var(--espacio-12);
+}
+
+.landing-pasos li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 80px;
+  right: -56px;
+  width: 48px;
+  height: 24px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 24' fill='none' stroke='%23FF5A36' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 18C14 4 30 4 42 14' stroke-dasharray='0 7'/%3E%3Cpath d='M35 7l8 7-10 3'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+.landing-pasos li:nth-child(2) .paso-dibujo { transform: rotate(1.5deg); }
+.landing-pasos li:nth-child(3) .paso-dibujo { transform: rotate(-1.5deg); }
+
+/* Onda que lleva a la banda de cierre */
+.landing-onda {
+  height: 80px;
+  margin-top: var(--espacio-48);
+  color: var(--color-texto);
+  line-height: 0;
+}
+
+.landing-onda svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.landing-onda + .landing-cierre {
+  margin-top: -1px;
+}

@@ -210,7 +210,7 @@ Para toda acción con espera (buscar, entrar, guardar, cerrar sesión).
 Para `iniciar-sesion`, `registro`, `recuperar` y `restablecer`.
 
 - Dos columnas iguales que ocupan toda la ventana, con altura mínima de la ventana.
-- Izquierda: fondo `--color-crema`, logo y **tres frases** de 18 px en `--color-texto` (el detalle, en `--color-texto-suave`), con 48 px de relleno.
+- Izquierda: fondo `--color-crema` con la escena animada de la capa expresiva (ver más abajo), logo y **tres frases** de 24 px en negrita sobre una tarjeta blanca con borde, con 48 px de relleno.
 - Derecha: fondo `--color-fondo`, formulario de 400 px de ancho máximo centrado; título `h1`, campos, botón principal a todo el ancho y debajo los enlaces secundarios.
 - El CAPTCHA (iframe de unos 300 px) cabe en los 400 px del formulario.
 
@@ -279,6 +279,13 @@ Reglas normativas, iguales en todas las pantallas. Nada se anima más que esto, 
 | **Movimiento reducido** | Con `prefers-reduced-motion: reduce` se desactivan todas las transiciones y animaciones: los cambios son instantáneos |
 
 Duraciones: **120 ms** (botones y enlaces) y **150 ms** (fundidos de resultados y del menú). No hay otras.
+
+### Capa expresiva (landing y pantallas de acceso)
+
+Zonas donde no se lee ni se pulsa nada crítico: ahí la marca se sigue con más libertad. Se permiten **formas orgánicas, tonos extra** (`--expr-lila`, `--expr-menta`, `--expr-sol`, `--expr-cielo`, solo para formas, nunca para texto), pegatinas, garabatos y dibujos de producto en SVG. Siguen valiendo: una sola tipografía, contraste AA del texto y zonas pulsables de 44 px.
+
+- **Pantallas de acceso:** la columna de marca lleva la escena animada `img/escena-acceso.svg` (manchas, ruta de puntos, pines con ondas, tarjetas y brillos) como fondo de `.pantalla-dividida-marca`. Las tres frases van en una tarjeta blanca con borde, para que se lean sobre la escena.
+- **Landing:** cada paso de «Cómo funciona» lleva su dibujo (`svg.paso-dibujo`), con un camino de puntos entre ellos; pegatinas alrededor de la ilustración; chips y bloques con un color y una forma cada uno; onda hacia la banda de cierre.
 
 ### Movimiento decorativo de la landing
 

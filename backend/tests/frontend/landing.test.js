@@ -68,6 +68,16 @@ describe('landing', () => {
     });
   });
 
+  test('cada paso de «Cómo funciona» lleva su dibujo decorativo', () => {
+    const pasos = document.querySelectorAll('main ol > li');
+    pasos.forEach((paso) => {
+      const dibujo = paso.querySelector('svg.paso-dibujo');
+      expect(dibujo).not.toBeNull();
+      expect(dibujo.getAttribute('aria-hidden')).toBe('true');
+      expect(dibujo.querySelector('text')).toBeNull();
+    });
+  });
+
   test('no incluye scripts', () => {
     expect(document.querySelectorAll('script')).toHaveLength(0);
   });
