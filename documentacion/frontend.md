@@ -161,7 +161,7 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 
 * `css/styles.css` es el archivo común: define las variables `--color-*` (`--color-lienzo` es el fondo de la página y las tarjetas y paneles son blancos con borde; los colores solo se escriben en ese bloque; el resto de los CSS usa `var(--color-*)`) y los componentes compartidos: cabecera, botones, tarjetas, avisos y el enlace «Saltar al contenido».
 * `landing.css`: la landing (`index.html`).
-* Tarjetas de experiencia: bloque de color con icono (`.bloque-categoria`, color según `data-categoria`). Estados vacíos: `.estado-vacio` con ilustración de `img/vacio-*.svg`.
+* Tarjetas de experiencia: bloque de color con icono (`.bloque-categoria`, color según `data-categoria`). Estados vacíos: `.estado-vacio` con ilustración animada de `img/vacio-*.svg` (mancha de color, objeto con microanimación; decorativa y sin movimiento con `prefers-reduced-motion`).
 * `acceso.css`: la tarjeta de formulario de `iniciar-sesion`, `registro`, `recuperar` y `restablecer`. La columna de marca usa como fondo la escena animada `img/escena-acceso.svg` (puesta en `styles.css`).
 * `experiencia.css`: el detalle de experiencia, con la experiencia y el formulario en una columna y las valoraciones en otra.
 * `perfil.css`: `/cuenta/perfil.html` y `/social/usuario.html`.

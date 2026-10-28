@@ -1026,5 +1026,5 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
   text-align: center;
 }
 
-.estado-vacio img { max-width: 160px; height: auto; }
+.estado-vacio img { width: 100%; max-width: 280px; height: auto; }
 .estado-vacio p { margin: 0; }

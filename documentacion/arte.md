@@ -307,7 +307,7 @@ Solo en `index.html`, en CSS y sin scripts. Nunca se anima lo que se lee o se pu
 
 ## Estado de la aplicación
 
-Aplicado: paleta y botones, cabecera blanca con logo y buscador en píldora, pestañas subrayadas, landing con ilustración y banda ciruela, tarjetas con bloque de color por categoría (`crearBloqueCategoria` en `js/shared/pantalla.js`) y estados vacíos con ilustración (`.estado-vacio`).
+Aplicado: paleta y botones, cabecera blanca con logo y buscador en píldora, pestañas subrayadas, landing con ilustración y banda ciruela, tarjetas con bloque de color por categoría (`crearBloqueCategoria` en `js/shared/pantalla.js`) y estados vacíos con ilustración animada (`.estado-vacio`: mancha de color y un objeto que se mueve; CSS embebido en el SVG).
 
 Pendiente: chips de categoría y filas de actividad en las pantallas con sesión, «Crear plan» y notificaciones en la cabecera, y las pantallas nuevas del sitemap.
 
