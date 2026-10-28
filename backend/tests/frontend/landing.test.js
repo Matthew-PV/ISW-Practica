@@ -58,6 +58,16 @@ describe('landing', () => {
     expect(pasos).toHaveLength(3);
   });
 
+  test('la capa de movimiento es decorativa: oculta a lectores y sin texto ni enlaces', () => {
+    const decorativos = document.querySelectorAll('.landing-fondo, .landing-mancha, .landing-cierre-pin');
+    expect(decorativos.length).toBeGreaterThanOrEqual(3);
+    decorativos.forEach((el) => {
+      expect(el.getAttribute('aria-hidden')).toBe('true');
+      expect(el.textContent.trim()).toBe('');
+      expect(el.querySelector('a, button, input')).toBeNull();
+    });
+  });
+
   test('no incluye scripts', () => {
     expect(document.querySelectorAll('script')).toHaveLength(0);
   });

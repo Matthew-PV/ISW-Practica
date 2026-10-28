@@ -224,7 +224,7 @@ Antes de la cabecera, cada una de estas páginas (y la landing) lleva el enlace 
 
 ### `index.html`: landing
 
-Página pública y estática: no tiene JavaScript, no comprueba la sesión y no llama a la API. Su cabecera solo ofrece «Iniciar sesión» y «Crear cuenta». Presenta la frase «Comparte y descubre planes por tu ciudad» con una ilustración, las categorías, tres bloques de valor, los tres pasos de uso y una banda de cierre con los dos accesos. Es la página que sirve `/`.
+Página pública y estática: no tiene JavaScript, no comprueba la sesión y no llama a la API. Su cabecera solo ofrece «Iniciar sesión» y «Crear cuenta». Presenta la frase «Comparte y descubre planes por tu ciudad» con una ilustración, las categorías, tres bloques de valor, los tres pasos de uso y una banda de cierre con los dos accesos. Es la página que sirve `/`. Lleva una capa decorativa de movimiento solo con CSS (ruta que se dibuja con el scroll, manchas y pines flotantes), descrita en `arte.md`.
 
 Pruebas: `landing.test.js`.
 

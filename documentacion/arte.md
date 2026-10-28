@@ -267,7 +267,7 @@ Para `iniciar-sesion`, `registro`, `recuperar` y `restablecer`.
 
 ## Interacciones
 
-Reglas normativas, iguales en todas las pantallas. Nada se anima más que esto: sin carruseles, sin desplazamientos animados, sin esqueletos de carga.
+Reglas normativas, iguales en todas las pantallas. Nada se anima más que esto, salvo la capa decorativa de la landing (más abajo): sin carruseles, sin esqueletos de carga.
 
 | Interacción | Regla |
 |---|---|
@@ -279,6 +279,15 @@ Reglas normativas, iguales en todas las pantallas. Nada se anima más que esto: 
 | **Movimiento reducido** | Con `prefers-reduced-motion: reduce` se desactivan todas las transiciones y animaciones: los cambios son instantáneos |
 
 Duraciones: **120 ms** (botones y enlaces) y **150 ms** (fundidos de resultados y del menú). No hay otras.
+
+### Movimiento decorativo de la landing
+
+Solo en `index.html`, en CSS y sin scripts. Nunca se anima lo que se lee o se pulsa: el movimiento va en capas `aria-hidden` detrás del contenido, con colores suaves (crema, melocotón) y sin degradados ni sombras.
+
+- **Ruta de puntos** fija al viewport que se dibuja con el scroll, con tres paradas que se encienden (`animation-timeline: scroll()`).
+- **Manchas orgánicas** que flotan tras la portada y **pines** que flotan en la banda de cierre.
+- **Bloques y pasos** que entran con un fundido al verse (`animation-timeline: view()`); los chips de categoría se inclinan al pasar el ratón.
+- Sin soporte de `animation-timeline` o con `prefers-reduced-motion`, todo queda estático y visible.
 
 ## Tono de los textos
 

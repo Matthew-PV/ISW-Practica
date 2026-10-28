@@ -12,6 +12,21 @@
 <body>
   <!-- Landing pública y estática: no comprueba sesión ni carga scripts -->
   <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
+  <!-- Capa decorativa (css/landing.css): una ruta de puntos que se dibuja al hacer scroll. Sin texto ni scripts -->
+  <div class="landing-fondo" aria-hidden="true">
+    <svg viewBox="0 0 1000 1000" preserveAspectRatio="none" focusable="false">
+      <defs>
+        <mask id="ruta-visible" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1000">
+          <path class="landing-ruta-trazo" pathLength="1" d="M70 0C70 160 230 170 130 330C40 470 60 540 150 640C240 740 90 840 190 960"/>
+        </mask>
+      </defs>
+      <path class="landing-ruta" mask="url(#ruta-visible)" d="M70 0C70 160 230 170 130 330C40 470 60 540 150 640C240 740 90 840 190 960"/>
+      <path class="landing-parada" d="M130 330h0"/>
+      <path class="landing-parada" d="M150 640h0"/>
+      <path class="landing-parada" d="M190 960h0"/>
+    </svg>
+  </div>
+
   <header class="cabecera">
     <div class="cabecera-interior">
       <a class="cabecera-marca" href="/index.html"><img src="/img/logo.svg" alt="PlanB" width="112" height="32"></a>
@@ -24,6 +39,8 @@
 
   <main id="contenido" class="landing">
     <section class="landing-portada">
+      <span class="landing-mancha landing-mancha-1" aria-hidden="true"></span>
+      <span class="landing-mancha landing-mancha-2" aria-hidden="true"></span>
       <div class="landing-portada-texto">
         <p class="landing-etiqueta">Tu ciudad, contada por la gente que la vive</p>
         <h1>Comparte y descubre planes por tu ciudad</h1>
@@ -73,6 +90,9 @@
   </main>
 
   <section class="landing-cierre" aria-labelledby="titulo-cierre">
+    <span class="landing-cierre-pin landing-cierre-pin-1" aria-hidden="true"></span>
+    <span class="landing-cierre-pin landing-cierre-pin-2" aria-hidden="true"></span>
+    <span class="landing-cierre-pin landing-cierre-pin-3" aria-hidden="true"></span>
     <div class="landing-cierre-interior">
       <img src="/img/logo-claro.svg" alt="" width="112" height="32">
       <h2 id="titulo-cierre">Empieza a compartir tus planes</h2>
