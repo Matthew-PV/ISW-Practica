@@ -30,6 +30,12 @@
   --color-info-fondo: #E0F2FE;
   --color-info-texto: #0C4A6E;
 
+  /* Capa expresiva (landing y pantallas de acceso): tonos extra solo para formas decorativas, nunca para texto */
+  --expr-lila: #E4D7FA;
+  --expr-menta: #C6EBD6;
+  --expr-sol: #FFD66B;
+  --expr-cielo: #BFE3FF;
+
   /* Velo detrás de los diálogos (no figura en arte.md) */
   --color-velo: rgb(0 0 0 / 0.5);
 
@@ -706,7 +712,7 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
   padding: var(--espacio-48);
   font-size: 18px;
   color: var(--color-texto);
-  background: var(--color-crema);
+  background: var(--color-crema) url("/img/escena-acceso.svg") center / cover no-repeat;
 }
 
 .pantalla-dividida-marca a:first-child {
