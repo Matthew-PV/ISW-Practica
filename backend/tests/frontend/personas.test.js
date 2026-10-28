@@ -75,6 +75,12 @@ test('muestra el mensaje del servidor si la búsqueda falla', async () => {
 
 // CS-66 (T4.5): pantalla Buscar con pestañas, estados de espera y descarte de respuestas atrasadas.
 describe('Buscar (diseño aplicado)', () => {
+  test('la pantalla usa una columna ancha, no la estrecha de los formularios', () => {
+    const principal = $('#contenido');
+    expect(principal.classList.contains('contenedor-formulario')).toBe(false);
+    expect(principal.classList.contains('contenedor-buscar')).toBe(true);
+  });
+
   test('mientras busca, el botón dice «Buscando…» y vuelve a «Buscar» al llegar los resultados', async () => {
     const pendiente = diferida();
     window.fetch.mockReturnValueOnce(pendiente.promesa);

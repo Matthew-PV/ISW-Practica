@@ -1,5 +1,11 @@
 /* Pantalla Buscar (personas.html). Solo variables --color-* y --espacio-*. */
 
+/* Columna ancha: con los 400 px de los formularios la pantalla quedaba achatada en el centro */
+.contenedor-buscar {
+  max-width: 720px;
+  min-height: 70vh;
+}
+
 /* Campo grande: más alto que un campo normal */
 .campo-grande {
   min-height: 52px;
