@@ -2,6 +2,13 @@
 // En las pruebas no se lee .env, así que se da un secreto de sesión cualquiera.
 process.env.SESSION_SECRET = 'test';
 
+// Las pruebas con MySQL borran datos: solo pueden apuntar a la base local de Docker (.env.test),
+// nunca a la base online compartida.
+const baseUrl = process.env.DATABASE_URL;
+if (baseUrl && !/@(localhost|127\.0\.0\.1)[:/]/.test(baseUrl)) {
+  throw new Error('Las pruebas solo pueden usar la base local (backend/.env.test), no una base remota.');
+}
+
 // Las pruebas guardan las sesiones en memoria en lugar de en MySQL
 jest.mock('../src/repositories/shared/sesionStore', () => {
   const session = require('express-session');
