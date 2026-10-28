@@ -338,7 +338,7 @@ Los módulos se cargan con `<script>` normales (no son módulos ES) y exponen su
 * **La seguridad está en el backend.** Ocultar un botón (por ejemplo, el formulario de valorar en una experiencia propia) solo mejora la interfaz: el servidor comprueba siempre los permisos.
 * **Llamadas con `api`.** Ninguna página usa `fetch` directamente.
 * **Colores en variables.** Los colores solo se definen como `--color-*` en `css/styles.css`; los demás CSS las usan.
-* **Escritorio.** El diseño se comprueba en escritorio; el móvil está aparcado.
+* **Escritorio.** El diseño se comprueba en escritorio.
 
 ## Pruebas del frontend
 

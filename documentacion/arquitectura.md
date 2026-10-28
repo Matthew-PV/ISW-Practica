@@ -9,7 +9,7 @@ Los diagramas están escritos en [Mermaid](anexo/glosario.md#mermaid): GitHub lo
 
 ### 1. Alcance técnico
 
-PlanB se construye como una **aplicación web responsive**: una única web que se adapta tanto al ordenador como a la pantalla del móvil. No hay aplicación móvil nativa.
+PlanB es una **aplicación web** para el navegador de escritorio.
 
 Funcionalidades implementadas, con su historia de usuario:
 
@@ -407,7 +407,7 @@ backend/tests/
 * **Rutas y criterios:** pruebas de la API con Supertest. Cada frase del criterio de validación de una tarjeta se traduce en al menos una prueba; las de `criterios/` simulan los repositorios en memoria para recorrer una historia completa.
 * **Pantallas (jsdom):** cargan el HTML de una página y su JavaScript (con `require`, para medir su cobertura) y simulan el servidor con `fetch`.
 * **MySQL real (`tests/mysql/`):** lo que solo la base de datos puede demostrar: restricciones únicas, peticiones simultáneas, filtros y cursores de las consultas, y que no se devuelven emails. No simulan nada, crean sus propios datos y los borran al terminar. `npm test` no los incluye, para que funcione sin Docker. Usan `backend/.env.test` (Docker local) y `tests/setup.js` aborta si `DATABASE_URL` no es local, para no borrar nunca la base online.
-* **Navegador real:** las pantallas se comprueban también a mano, en tamaño de ordenador y de móvil.
+* **Navegador real:** las pantallas se comprueban también a mano, en el navegador de escritorio.
 
 Para que una prueba valga tiene que **fallar cuando se rompe el comportamiento que protege**. Por eso cada comportamiento nuevo sigue el ciclo TDD (primero la prueba en rojo) y las reglas críticas se comprueban además con una **mutación manual**: se rompe la regla a propósito, se ve la prueba en rojo y se deshace el cambio. No se escriben pruebas que solo comprueban que una función pasa los mismos datos a otra.
 

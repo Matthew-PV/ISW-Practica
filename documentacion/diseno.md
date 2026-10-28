@@ -1,6 +1,6 @@
 # Diseño de PlanB: estructura de las pantallas
 
-> Qué elementos tiene cada pantalla y cómo se colocan, en escritorio (1280 px). Los esquemas SVG van en color (paleta Verbena) y con contenido de ejemplo, pero no son el diseño final: el código es la referencia visual. Cómo se ve cada cosa (colores, bordes, tipografía) está en [arte.md](arte.md). Móvil: aparcado, ver registro.
+> Qué elementos tiene cada pantalla y cómo se colocan, en escritorio (1280 px). Los esquemas SVG van en color (paleta Verbena) y con contenido de ejemplo, pero no son el diseño final: el código es la referencia visual. Cómo se ve cada cosa (colores, bordes, tipografía) está en [arte.md](arte.md).
 > Documentos relacionados: [sitemap.mmd](sitemap.mmd), [frontend.md](frontend.md) (cómo está hecho hoy) y [flujos.md](flujos.md).
 > Inventario de las páginas con sus estados y flujos: [inventario-pantallas.md](inventario-pantallas.md).
 > Estado: el equipo dio por buenos los esquemas (Flavia, 26/10/2026) y el diseño se rehizo para escritorio el 26/10/2026. La guía de estilo, en [arte.md](arte.md), es una propuesta para aprobar.
@@ -168,7 +168,7 @@ Lista con la que se revisa cada esquema y, después, cada pantalla. Parte de las
 
 | # | Requisito | Cómo se comprueba | Cómo lo cumple el diseño | Estado del código hoy |
 |---|---|---|---|---|
-| 1 | **Adaptable** | Sin desplazamiento horizontal a 1024, 1280 y 1440 px | Contenido centrado de hasta unos 960 px | Las 10 páginas llevan `viewport`. El diseño se comprueba en escritorio; el móvil está aparcado |
+| 1 | **Adaptable** | Sin desplazamiento horizontal a 1024, 1280 y 1440 px | Contenido centrado de hasta unos 960 px | Las 10 páginas llevan `viewport`. El diseño se comprueba en escritorio |
 | 2 | **Navegación clara** | Se llega a los destinos principales en un clic y se sabe dónde se está | Cabecera común; la sección activa se marca con línea gruesa y negrita | Cabecera común en las 5 páginas con sesión: `nav` con `aria-label="Principal"` y `aria-current="page"` en la página actual |
 | 3 | **Zonas pulsables suficientes** | Al menos 24 × 24 px (mínimo AA) y, mejor, 44 × 44 px | Alto mínimo de 44 px en botones y campos | Botones y campos de al menos 44 px de alto |
 | 4 | **Contraste suficiente** | Texto 4,5:1; texto grande y componentes de interfaz 3:1 | Paleta de `arte.md` con estos mínimos | Los colores salen de las variables `--color-*` de `styles.css`, con el contraste calculado en `arte.md`; el borde de los campos cumple 3:1 |

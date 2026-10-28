@@ -73,7 +73,7 @@ Convenciones de la API (detalle en `documentacion/api.md`):
 - La CSP de Helmet prohíbe scripts en línea: sin `onclick` ni bloques `<script>` en el HTML.
 - Texto de usuarios con `textContent`, nunca como HTML.
 - Con `FormData`, no fijes `Content-Type`: lo añade el navegador.
-- Si el cambio afecta a la interfaz, comprueba escritorio y móvil.
+- Si el cambio afecta a la interfaz, comprueba el navegador de escritorio.
 
 ## Datos, configuración y seguridad
 
