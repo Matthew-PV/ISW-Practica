@@ -6,6 +6,7 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "node --watch --env-file=.env src/server.js",
+    "dev:demo": "node --watch --env-file=.env --env-file=.env.demo src/server.js",
     "start": "node --env-file=.env src/server.js",
     "test": "jest",
     "test:mysql": "node --env-file=.env.test node_modules/jest/bin/jest.js --testPathIgnorePatterns=/node_modules/ --runInBand tests/mysql",
@@ -14,7 +15,8 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "node --env-file=.env prisma/seed.js",
-    "db:seed-demo": "node --env-file=.env prisma/seed-demo.js"
+    "db:seed-demo": "node --env-file=.env prisma/seed-demo.js",
+    "demo:preparar": "node --env-file=.env --env-file=.env.demo node_modules/prisma/build/index.js migrate deploy && node --env-file=.env --env-file=.env.demo prisma/seed.js && node --env-file=.env --env-file=.env.demo prisma/seed-demo.js"
   },
   "engines": {
     "node": ">=22"

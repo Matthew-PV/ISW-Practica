@@ -171,7 +171,8 @@ async function main() {
   const passwordHash = await cifrarPassword(PASSWORD_DEMO);
   const usuario = {};
   for (const [nombreUsuario, ciudad, fotoOrigen] of USUARIOS) {
-    const foto = await fotoRepository.subirFotoDemo(nombreUsuario, fotoOrigen);
+    // Con SEED_SIN_FOTOS (modo demo sin internet) no se sube nada a Cloudinary
+    const foto = process.env.SEED_SIN_FOTOS ? null : await fotoRepository.subirFotoDemo(nombreUsuario, fotoOrigen);
     usuario[nombreUsuario] = await prisma.usuario.create({
       data: { nombreUsuario, email: `${nombreUsuario}@planb.local`, passwordHash, ciudad, foto },
     });

@@ -6,6 +6,7 @@
 !.env.example
 # Valores de la base de datos local para las pruebas: son los de docker-compose.yml, no son secretos
 !.env.test
+!.env.demo
 *.pem
 *.key
 

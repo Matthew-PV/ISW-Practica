@@ -10,6 +10,7 @@ Desde `backend/`:
 - `npm run test:mysql`: pruebas con MySQL real en Docker (necesita `docker compose up -d`; usa `.env.test`).
 - `npm run test:cobertura`: todas las pruebas con informe; falla por debajo de los mínimos de `package.json`.
 - `npm run dev`: servidor de desarrollo.
+- `npm run demo:preparar` y `npm run dev:demo`: modo demo con MySQL local (`docker compose up -d`) y datos `demo_*`, sin la base online.
 - `npm run db:migrate`, `npm run db:seed`, `npm run db:studio`: Prisma (migraciones, catálogo de ciudades repetible sin duplicados, visor). Actúan sobre la base online compartida: una migración afecta a todo el equipo. `npm run db:seed-demo` carga los datos de demostración (`demo_*`).
 
 ## Cómo trabajar

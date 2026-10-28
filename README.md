@@ -54,7 +54,7 @@ npm install
 npm run dev                   # http://localhost:3000
 ```
 
-**Hay una única base de datos de desarrollo: la online compartida (Aiven).** Sin la contraseña y el certificado que te da el equipo, la aplicación no arranca. No hay base local de desarrollo. Las migraciones y los datos que cambies los ve todo el equipo: no ejecutes `db:migrate` sin acordarlo. Para dar de alta usuarios, experiencias, valoraciones y amistades de ejemplo (`demo_*@planb.local`, contraseña `Demo1234`, fotos en Cloudinary) existe `npm run db:seed-demo`; es repetible y solo toca a los usuarios `demo_*`.
+**Hay una única base de datos de desarrollo: la online compartida (Aiven).** Sin la contraseña y el certificado que te da el equipo, la aplicación no arranca. Para trabajar sin ella (sin internet o con la red caída) existe el modo demo: `docker compose up -d`, `npm run demo:preparar` (una vez) y `npm run dev:demo` desde `backend/` usan la base local `planb_demo` con los datos `demo_*` y sin fotos. Las migraciones y los datos que cambies los ve todo el equipo: no ejecutes `db:migrate` sin acordarlo. Para dar de alta usuarios, experiencias, valoraciones y amistades de ejemplo (`demo_*@planb.local`, contraseña `Demo1234`, fotos en Cloudinary) existe `npm run db:seed-demo`; es repetible y solo toca a los usuarios `demo_*`.
 
 Pruebas, desde `backend/`:
 
