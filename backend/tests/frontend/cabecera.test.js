@@ -63,6 +63,15 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
     expect(cerrar.textContent.trim()).toBe('Cerrar sesión');
   });
 
+  test('el menú de cuenta lleva el avatar como imagen decorativa de 32 px con la foto por defecto', () => {
+    const avatar = $('details.menu-cuenta summary img.menu-avatar');
+    expect(avatar).not.toBeNull();
+    expect(avatar.getAttribute('src')).toBe('/img/foto-por-defecto.svg');
+    expect(avatar.getAttribute('alt')).toBe('');
+    expect(avatar.getAttribute('width')).toBe('32');
+    expect(avatar.getAttribute('height')).toBe('32');
+  });
+
   test('tiene el enlace «Saltar al contenido» y el contenido principal', () => {
     const saltar = [...document.querySelectorAll('a')].find((a) => a.textContent.trim() === 'Saltar al contenido');
     expect(saltar.getAttribute('href')).toBe('#contenido');
@@ -110,6 +119,7 @@ describe('comportamiento de js/shared/cabecera.js', () => {
       writable: true,
     });
     cargarScripts(['js/shared/api.js', 'js/shared/cabecera.js']);
+    window.fetch.mockClear(); // la petición del avatar al cargar no es lo que miden las pruebas de abajo
   });
 
   afterEach(() => {
@@ -134,6 +144,7 @@ describe('comportamiento de js/shared/cabecera.js', () => {
     otro.textContent = 'Cerrar sesión';
     document.body.append(otro);
     cargarScripts(['js/shared/api.js', 'js/shared/cabecera.js']);
+    window.fetch.mockClear();
     window.fetch.mockReturnValue(respuesta204());
 
     otro.click();
@@ -211,5 +222,35 @@ describe('comportamiento de js/shared/cabecera.js', () => {
     formulario.dispatchEvent(envio);
 
     expect(envio.defaultPrevented).toBe(false);
+  });
+});
+
+describe('avatar del menú de cuenta', () => {
+  const avatar = () => $('summary img.menu-avatar');
+  const cargarCon = async (respuesta) => {
+    cargar('bienvenida');
+    window.fetch = jest.fn().mockImplementation(respuesta);
+    cargarScripts(['js/shared/api.js', 'js/shared/cabecera.js']);
+    await terminar();
+  };
+  const json = (datos) => () => Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(datos) });
+
+  test('pide el perfil propio al cargar y muestra su foto', async () => {
+    await cargarCon(json({ foto: 'https://cdn.example/ana.jpg' }));
+
+    expect(window.fetch.mock.calls[0][0]).toBe('/api/perfil');
+    expect(avatar().getAttribute('src')).toBe('https://cdn.example/ana.jpg');
+  });
+
+  test('sin foto en el perfil deja la foto por defecto', async () => {
+    await cargarCon(json({ foto: null }));
+
+    expect(avatar().getAttribute('src')).toBe('/img/foto-por-defecto.svg');
+  });
+
+  test('si falla la petición deja la foto por defecto y no rompe la cabecera', async () => {
+    await cargarCon(() => Promise.reject(new TypeError('Failed to fetch')));
+
+    expect(avatar().getAttribute('src')).toBe('/img/foto-por-defecto.svg');
   });
 });

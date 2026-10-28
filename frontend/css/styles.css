@@ -638,6 +638,7 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
 .menu-avatar {
   width: 32px;
   height: 32px;
+  object-fit: cover;
   background: var(--color-superficie);
   border-radius: 50%;
 }

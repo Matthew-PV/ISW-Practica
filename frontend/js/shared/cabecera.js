@@ -59,6 +59,17 @@ if (menuCuenta) {
   });
 }
 
+// Avatar del menú: la foto del usuario en pequeño. Si no tiene o la petición falla, se queda la
+// foto por defecto del HTML
+const avatar = menuCuenta?.querySelector('img.menu-avatar');
+if (avatar) {
+  api('/perfil')
+    .then((perfil) => {
+      if (perfil?.foto) avatar.src = perfil.foto;
+    })
+    .catch(() => {});
+}
+
 // El buscador no se envía si no hay texto (aparte de espacios)
 document.querySelector('header.cabecera form[role="search"]')?.addEventListener('submit', (e) => {
   if (e.currentTarget.elements.q.value.trim() === '') e.preventDefault();
