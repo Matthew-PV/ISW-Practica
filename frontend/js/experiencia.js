@@ -132,10 +132,8 @@ function crearTarjetaValoracion(valoracion) {
   const autorEnlace = crearEnlacePerfil(document.createElement('a'), valoracion.usuario, miUsuarioId);
   autorEnlace.className = 'text-decoration-none fw-bold';
 
-  // Puntuación
-  const puntuacion = document.createElement('span');
-  puntuacion.className = 'badge bg-secondary';
-  puntuacion.textContent = `${valoracion.puntuacion}/5`;
+  // Puntuación, con estrellas
+  const puntuacion = crearEstrellas(valoracion.puntuacion);
 
   cabecera.append(autorEnlace, puntuacion);
   cuerpo.appendChild(cabecera);
@@ -255,6 +253,32 @@ const listadoAmigos = listaConCargarMas({
 // Pestañas «De amigos y seguidores» y «Todas»
 activarPestanas(document.querySelector('[role="tablist"]'));
 
+// --- ESTRELLAS ---
+const MAX_PUNTUACION = 5;
+
+// Una estrella dibujada en SVG; `.on` la rellena
+function crearEstrella(encendida) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '-11 -11 22 22');
+  svg.setAttribute('class', encendida ? 'estrella on' : 'estrella');
+  svg.setAttribute('aria-hidden', 'true');
+  const forma = document.createElementNS(ns, 'path');
+  forma.setAttribute('d', 'M0-10L2.9-3.1 10-2.5 4.6 2 6.2 9 0 5.3-6.2 9-4.6 2-10-2.5-2.9-3.1Z');
+  svg.append(forma);
+  return svg;
+}
+
+// Puntuación ya publicada: n estrellas rellenas de 5, con el valor como texto alternativo
+function crearEstrellas(puntuacion) {
+  const contenedor = document.createElement('span');
+  contenedor.className = 'estrellas';
+  contenedor.setAttribute('role', 'img');
+  contenedor.setAttribute('aria-label', `${puntuacion} de ${MAX_PUNTUACION}`);
+  for (let i = 1; i <= MAX_PUNTUACION; i++) contenedor.append(crearEstrella(i <= puntuacion));
+  return contenedor;
+}
+
 // --- OBJETIVO 5 y 6: FORMULARIO, CONTADOR Y GUARDADO ---
 const formValoracion = document.getElementById('form-valoracion');
 const inputPuntuacion = document.getElementById('val-puntuacion');
@@ -264,6 +288,32 @@ const errorValoracion = document.getElementById('error-valoracion');
 const btnGuardarValoracion = document.getElementById('btn-guardar-valoracion');
 
 const MAX_COMENTARIO = 1000; // El mismo máximo que comprueba el backend (CS-01)
+
+// Selector de puntuación: cinco botones de estrella (radiogroup). El valor elegido se guarda en
+// el campo oculto #val-puntuacion
+const grupoEstrellas = formValoracion.querySelector('[role="radiogroup"]');
+const botonesEstrella = [];
+for (let n = 1; n <= MAX_PUNTUACION; n++) {
+  const boton = document.createElement('button');
+  boton.type = 'button';
+  boton.className = 'estrella-boton';
+  boton.setAttribute('role', 'radio');
+  boton.setAttribute('aria-label', n === 1 ? '1 estrella' : `${n} estrellas`);
+  boton.append(crearEstrella(false));
+  boton.addEventListener('click', () => elegirPuntuacion(n));
+  botonesEstrella.push(boton);
+}
+grupoEstrellas.append(...botonesEstrella);
+
+// Fija la puntuación y rellena las estrellas hasta ella
+function elegirPuntuacion(valor) {
+  inputPuntuacion.value = valor;
+  botonesEstrella.forEach((boton, i) => {
+    boton.classList.toggle('on', i < valor);
+    boton.setAttribute('aria-checked', String(i + 1 === valor));
+  });
+}
+elegirPuntuacion(0);
 
 // Actualiza el contador «n / 1000» y lo resalta al acercarse al máximo
 function actualizarContador() {
@@ -283,7 +333,7 @@ async function cargarMiValoracion() {
     const miValoracion = await api(`/experiencias/${experienciaId}/valoracion`);
 
     if (miValoracion) {
-      inputPuntuacion.value = miValoracion.puntuacion;
+      elegirPuntuacion(miValoracion.puntuacion);
       inputComentario.value = miValoracion.comentario ?? '';
       actualizarContador();
       btnGuardarValoracion.textContent = 'Actualizar valoración';
@@ -298,10 +348,10 @@ async function cargarMiValoracion() {
 formValoracion.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  // El navegador ya impide enviar sin una puntuación entera del 1 al 5 (required, min y max);
-  // esto lo asegura también si el envío no pasa por su validación
-  if (!formValoracion.checkValidity()) {
-    formValoracion.reportValidity();
+  // Hace falta una puntuación entera del 1 al 5 (el campo oculto no lo valida el navegador)
+  const valor = Number(inputPuntuacion.value);
+  if (inputPuntuacion.value === '' || !Number.isInteger(valor) || valor < 1 || valor > MAX_PUNTUACION) {
+    mostrarMensaje(errorValoracion, 'Elige una puntuación de 1 a 5 estrellas.');
     return;
   }
 

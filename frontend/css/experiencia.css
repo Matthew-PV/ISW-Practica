@@ -13,8 +13,56 @@
   gap: var(--espacio-8) var(--espacio-16);
 }
 
-.campo-puntuacion {
-  max-width: 100px;
+/* Estrellas de puntuación: vacías con borde, rellenas en color primario */
+.estrella {
+  width: 24px;
+  height: 24px;
+  fill: transparent;
+  stroke: var(--color-borde-campo);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+  transition: fill var(--duracion-corta), transform var(--duracion-corta);
+}
+
+.estrella.on {
+  fill: var(--color-primario);
+  stroke: var(--color-texto);
+}
+
+.estrellas {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.estrellas-entrada {
+  display: flex;
+  gap: var(--espacio-4);
+}
+
+.estrella-boton {
+  padding: var(--espacio-4);
+  line-height: 0;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+}
+
+.estrella-boton .estrella {
+  width: 32px;
+  height: 32px;
+}
+
+/* Al pasar el ratón se previsualiza hasta esa estrella */
+.estrella-boton:hover .estrella,
+.estrella-boton:has(~ .estrella-boton:hover) .estrella {
+  fill: var(--color-primario);
+  stroke: var(--color-texto);
+  transform: scale(1.12);
+}
+
+.estrella-boton:focus-visible {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 2px;
 }
 
 /* El comentario ocupa una fila y crece al enfocarlo */

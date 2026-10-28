@@ -55,8 +55,9 @@
         <h2 class="h6 mb-2">Deja tu valoración</h2>
         <form id="form-valoracion">
           <div class="mb-2">
-            <label for="val-puntuacion" class="form-label">Puntuación (1 al 5)</label>
-            <input type="number" class="form-control campo-puntuacion" id="val-puntuacion" min="1" max="5" required>
+            <span id="etiqueta-puntuacion" class="form-label d-block">Puntuación</span>
+            <input type="hidden" id="val-puntuacion">
+            <div class="estrellas-entrada" role="radiogroup" aria-labelledby="etiqueta-puntuacion"></div>
           </div>
 
           <div class="mb-2">

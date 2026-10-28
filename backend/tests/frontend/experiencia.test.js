@@ -96,7 +96,12 @@ describe('CS-63: la experiencia y sus valoraciones', () => {
     const tarjeta = $('#lista-comentarios [data-valoracion-id="30"]');
     expect(tarjeta.querySelector('a').textContent).toBe('carlos');
     expect(tarjeta.querySelector('a').getAttribute('href')).toBe('/social/usuario.html?nombre=carlos');
-    expect(tarjeta.textContent).toContain('4/5');
+    const estrellas = tarjeta.querySelector('.estrellas');
+    expect(estrellas.getAttribute('role')).toBe('img');
+    expect(estrellas.getAttribute('aria-label')).toBe('4 de 5');
+    expect(estrellas.querySelectorAll('.estrella')).toHaveLength(5);
+    expect(estrellas.querySelectorAll('.estrella.on')).toHaveLength(4);
+    expect(tarjeta.textContent).not.toContain('/5');
     expect(tarjeta.textContent).toContain('Comentario 30');
     expect(tarjeta.textContent).toContain('8/10/2026');
   });
@@ -140,6 +145,56 @@ describe('CS-63: el formulario de valoración', () => {
     await enviarValoracion();
 
     expect(peticiones('PUT', `${BASE}/valoracion`)).toHaveLength(0);
+  });
+
+  test('la puntuación se elige con cinco estrellas, no con un campo numérico', async () => {
+    await abrir();
+
+    const grupo = $('#form-valoracion [role="radiogroup"]');
+    const estrellas = [...grupo.querySelectorAll('button[role="radio"]')];
+    expect(estrellas).toHaveLength(5);
+    expect(estrellas.map((e) => e.getAttribute('aria-label'))).toEqual(
+      ['1 estrella', '2 estrellas', '3 estrellas', '4 estrellas', '5 estrellas']
+    );
+    expect($('#val-puntuacion').type).not.toBe('number');
+    expect(estrellas.every((e) => e.getAttribute('aria-checked') === 'false')).toBe(true);
+  });
+
+  test('pulsar una estrella rellena hasta ella y fija la puntuación', async () => {
+    await abrir();
+    const estrellas = [...document.querySelectorAll('#form-valoracion [role="radio"]')];
+
+    estrellas[3].click();
+
+    expect($('#val-puntuacion').value).toBe('4');
+    expect(estrellas.map((e) => e.classList.contains('on'))).toEqual([true, true, true, true, false]);
+    expect(estrellas.map((e) => e.getAttribute('aria-checked'))).toEqual(['false', 'false', 'false', 'true', 'false']);
+  });
+
+  test('la valoración propia ya guardada se ve en las estrellas', async () => {
+    await abrir({ [`GET ${BASE}/valoracion`]: [200, { id: 50, puntuacion: 2, comentario: null }] });
+
+    expect(document.querySelectorAll('#form-valoracion [role="radio"].on')).toHaveLength(2);
+  });
+
+  test('sin estrellas elegidas no se envía y se pide una puntuación', async () => {
+    await abrir();
+
+    await enviarValoracion();
+
+    expect(peticiones('PUT', `${BASE}/valoracion`)).toHaveLength(0);
+    expect(visible('#error-valoracion')).toBe(true);
+    expect($('#error-valoracion').textContent).toBe('Elige una puntuación de 1 a 5 estrellas.');
+  });
+
+  test('con una estrella elegida se envía esa puntuación', async () => {
+    await abrir({ [`PUT ${BASE}/valoracion`]: [200, { id: 1, puntuacion: 5 }] });
+    document.querySelectorAll('#form-valoracion [role="radio"]')[4].click();
+
+    await enviarValoracion();
+
+    const [[, opciones]] = peticiones('PUT', `${BASE}/valoracion`);
+    expect(JSON.parse(opciones.body)).toEqual({ puntuacion: 5 });
   });
 
   test('el contador muestra «n / 1000» y avisa al acercarse al límite', async () => {
