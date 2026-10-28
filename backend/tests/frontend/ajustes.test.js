@@ -67,31 +67,67 @@ describe('botones de ajustes', () => {
     expect($('main [data-cerrar-sesion]')).toBeNull();
   });
 
-  test('«Guardar cambios» pasa a «Guardando…», ocupado y desactivado mientras espera', async () => {
-    await abrir({ 'PUT /api/perfil': [200, PERFIL] });
-    const boton = $('#form-perfil button[type="submit"]');
-    expect(boton.textContent).toBe('Guardar cambios');
-    expect(boton.classList.contains('btn-outline-primary')).toBe(true);
-    window.fetch.mockImplementationOnce(() => new Promise(() => {}));
+  test('el perfil no tiene botón de guardar: se guarda solo', async () => {
+    await abrir();
 
-    $('#form-perfil').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    await terminar();
-
-    expect(boton.textContent).toBe('Guardando…');
-    expect(boton.disabled).toBe(true);
-    expect(boton.getAttribute('aria-busy')).toBe('true');
+    expect($('#form-perfil button')).toBeNull();
+    expect($('#form-perfil [type="submit"]')).toBeNull();
+    expect($('#estado-guardado').getAttribute('role')).toBe('status');
   });
 
-  test('«Guardar cambios» recupera su texto al terminar', async () => {
-    await abrir({ 'PUT /api/perfil': [200, PERFIL] });
-    const boton = $('#form-perfil button[type="submit"]');
+  test.each(['nombreUsuario', 'ciudad'])('al cambiar %s se guarda solo con nombre y ciudad', async (campo) => {
+    await abrir({ 'PUT /api/perfil': [200, { ...PERFIL, nombreUsuario: 'ana2', ciudad: 'Leon' }] });
+    $('#nombreUsuario').value = 'ana2';
+    $('#ciudad').value = 'Leon';
 
-    $('#form-perfil').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    $(`#${campo}`).dispatchEvent(new Event('change', { bubbles: true }));
     await terminar();
 
-    expect(boton.textContent).toBe('Guardar cambios');
-    expect(boton.disabled).toBe(false);
-    expect(boton.hasAttribute('aria-busy')).toBe(false);
+    const [[, opciones]] = window.fetch.mock.calls.filter(([r, o]) => r === '/api/perfil' && o?.method === 'PUT');
+    expect(JSON.parse(opciones.body)).toEqual({ nombreUsuario: 'ana2', ciudad: 'Leon' });
+    expect($('#estado-guardado').textContent).toBe('Guardado');
+  });
+
+  test('mientras guarda el estado dice «Guardando…»', async () => {
+    await abrir({ 'PUT /api/perfil': [200, PERFIL] });
+    window.fetch.mockImplementationOnce(() => new Promise(() => {}));
+
+    $('#ciudad').dispatchEvent(new Event('change', { bubbles: true }));
+    await terminar();
+
+    expect($('#estado-guardado').textContent).toBe('Guardando…');
+  });
+
+  test('si el servidor rechaza el cambio se muestra su error y no «Guardado»', async () => {
+    await abrir({ 'PUT /api/perfil': [400, { error: 'Ese nombre de usuario ya existe' }] });
+
+    $('#nombreUsuario').dispatchEvent(new Event('change', { bubbles: true }));
+    await terminar();
+
+    expect($('#error-perfil').classList.contains('d-none')).toBe(false);
+    expect($('#error-perfil').textContent).toBe('Ese nombre de usuario ya existe');
+    expect($('#estado-guardado').textContent).toBe('');
+  });
+
+  test('con el nombre de usuario vacío no se envía', async () => {
+    await abrir();
+    $('#nombreUsuario').value = '';
+
+    $('#nombreUsuario').dispatchEvent(new Event('change', { bubbles: true }));
+    await terminar();
+
+    expect(window.fetch.mock.calls.filter(([, o]) => o?.method === 'PUT')).toHaveLength(0);
+  });
+
+  test('la foto es un avatar grande que se pulsa para cambiarla (sin selector de archivo a la vista)', async () => {
+    await abrir();
+
+    const etiqueta = $('label.foto-editable[for="foto"]');
+    expect(etiqueta).not.toBeNull();
+    expect(etiqueta.querySelector('#foto-perfil')).not.toBeNull();
+    expect(etiqueta.querySelector('svg.foto-editable-icono')).not.toBeNull();
+    expect($('#foto').classList.contains('visually-hidden')).toBe(true);
+    expect($('#foto').classList.contains('form-control')).toBe(false);
   });
 
   test('«Cambiar contraseña» pasa a «Cambiando…» mientras espera y luego se recupera', async () => {

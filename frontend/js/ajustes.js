@@ -7,8 +7,7 @@ activarPestanas(document.getElementById('pestanas-ajustes'));
 const formulario = document.getElementById('form-perfil');
 const cajaError = document.getElementById('error-perfil');
 const cajaExito = document.getElementById('exito-perfil');
-const boton = formulario.querySelector('button[type="submit"]');
-const textoBoton = boton.textContent;
+const estadoGuardado = document.getElementById('estado-guardado');
 
 // Pone en el formulario los datos del perfil que devuelve el backend
 function mostrarPerfil(perfil) {
@@ -33,16 +32,28 @@ async function cargarPerfil() {
   }
 }
 
-// Al pulsar «Guardar cambios» se envían el nombre de usuario y la ciudad al backend
+// Los cambios se guardan solos: al terminar de editar un campo (change) se envían el nombre de
+// usuario y la ciudad. Si llega otro cambio mientras se guarda, se guarda otra vez al terminar.
+let guardando = false;
+let pendiente = false;
+
+formulario.addEventListener('change', () => formulario.requestSubmit());
+
+// Enter en un campo termina su edición, igual que salir de él
+formulario.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.tagName === 'INPUT') e.target.blur();
+});
+
 formulario.addEventListener('submit', async (e) => {
   // Evita que el navegador envíe el formulario por su cuenta y recargue la página
   e.preventDefault();
-  // Se ocultan los mensajes del intento anterior y se desactiva el botón para no enviar dos veces
+  if (guardando) {
+    pendiente = true;
+    return;
+  }
+  guardando = true;
   cajaError.classList.add('d-none');
-  cajaExito.classList.add('d-none');
-  boton.textContent = 'Guardando…';
-  boton.disabled = true;
-  boton.setAttribute('aria-busy', 'true');
+  estadoGuardado.textContent = 'Guardando…';
 
   const datos = {
     nombreUsuario: document.getElementById('nombreUsuario').value,
@@ -53,23 +64,24 @@ formulario.addEventListener('submit', async (e) => {
     // El backend devuelve el perfil ya guardado (sin espacios sobrantes y normalizado)
     const perfil = await api('/perfil', { method: 'PUT', body: JSON.stringify(datos) });
     mostrarPerfil(perfil);
-    cajaExito.textContent = 'Perfil actualizado.';
-    cajaExito.classList.remove('d-none');
+    estadoGuardado.textContent = 'Guardado';
   } catch (err) {
     // Se muestra el mensaje del backend tal cual
+    estadoGuardado.textContent = '';
     cajaError.textContent = err.message;
     cajaError.classList.remove('d-none');
   }
-  // Se vuelve a habilitar el botón, haya ido bien o mal
-  boton.textContent = textoBoton;
-  boton.disabled = false;
-  boton.removeAttribute('aria-busy');
+  guardando = false;
+  if (pendiente) {
+    pendiente = false;
+    formulario.requestSubmit();
+  }
 });
 
 cargarPerfil();
 
 // Subida de la foto de perfil: se envía en cuanto se elige el archivo, con su propia petición
-// (un archivo en lugar de JSON). «Guardar cambios» solo guarda el nombre y la ciudad.
+// (un archivo en lugar de JSON); el nombre y la ciudad se guardan por su lado.
 const campoFoto = document.getElementById('foto');
 const ayudaFoto = document.getElementById('ayuda-foto');
 const textoAyudaFoto = ayudaFoto.textContent;

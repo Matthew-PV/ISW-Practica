@@ -959,6 +959,82 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
   max-width: 400px;
 }
 
+/* Ajustes: la foto es un avatar grande clicable con el icono de cámara */
+.ajustes-foto {
+  text-align: center;
+}
+
+.foto-editable {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+  cursor: pointer;
+}
+
+.foto-editable img {
+  object-fit: cover;
+  border: 3px solid var(--color-borde-suave);
+  transition: border-color var(--duracion-corta);
+}
+
+.foto-editable:hover img {
+  border-color: var(--color-primario);
+}
+
+.foto-editable-icono {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  box-sizing: content-box;
+  width: 22px;
+  height: 22px;
+  padding: 8px;
+  fill: none;
+  stroke: var(--color-fondo);
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+  background: var(--color-primario);
+  border: 3px solid var(--color-fondo);
+  border-radius: 50%;
+  transition: transform var(--duracion-corta);
+}
+
+.foto-editable:hover .foto-editable-icono {
+  transform: scale(1.1) rotate(-6deg);
+}
+
+/* El selector de archivo está oculto: el foco se ve en el avatar */
+.ajustes-foto:focus-within .foto-editable img {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 3px;
+}
+
+/* Campos del perfil ligeros: solo subrayado, sin recuadros ni fondos grises */
+.ajustes-panel #form-perfil .form-control {
+  padding-left: 0;
+  padding-right: 0;
+  background-color: transparent;
+  border-width: 0 0 2px;
+  border-radius: 0;
+}
+
+.ajustes-panel #form-perfil .form-control:focus {
+  border-bottom-color: var(--color-primario);
+  box-shadow: none;
+}
+
+.ajustes-panel #form-perfil .form-control:disabled {
+  background-color: transparent;
+  border-bottom-style: dashed;
+}
+
+.estado-guardado {
+  min-height: 1.5em;
+  margin: 0;
+  color: var(--color-exito);
+  font-weight: 600;
+}
+
 /* Ventana del formulario de experiencia */
 .dialogo-experiencia {
   width: min(32rem, calc(100% - 2rem));

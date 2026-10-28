@@ -277,7 +277,7 @@ Pruebas: `perfil.relaciones.test.js`, `perfil.cabecera.test.js`, `estados.test.j
 
 Dos pestañas (`shared/pestanas.js`); «Cerrar sesión» está solo en el menú de la cuenta:
 
-* **Perfil:** la foto, que se sube nada más elegirla, y el nombre de usuario y la ciudad editables; el email es solo de lectura.
+* **Perfil:** la foto es un avatar grande clicable con icono de cámara (el `input` de archivo va oculto y la etiqueta lo abre); se sube nada más elegirla. El nombre de usuario y la ciudad son editables, con solo subrayado, y se guardan solos al salir del campo (sin botón): `#estado-guardado` (`role="status"`) muestra «Guardando…» y «Guardado», y los errores salen en `#error-perfil`. Los envíos se serializan. El email es solo de lectura.
 * **Contraseña:** actual, nueva y repetida, con la lista de requisitos.
 
 Pruebas: `ajustes.test.js`, `ajustes.foto.test.js`, `ajustes.password.test.js` y `estados.test.js`.
