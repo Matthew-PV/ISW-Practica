@@ -51,7 +51,7 @@ describe('/social/personas.html', () => {
 
   test('antes de buscar explica qué escribir y no muestra «Cargando…»', () => {
     expect(oculto('#ayuda-busqueda')).toBe(false);
-    expect($('#ayuda-busqueda').textContent).toBe('Escribe parte de un nombre.');
+    expect($('#ayuda-busqueda').textContent).toBe('Escribe parte de un nombre o de un plan.');
     expect(oculto('#cargando')).toBe(true);
   });
 

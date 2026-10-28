@@ -9,7 +9,7 @@ const { cargarScripts } = require('../helpers/pantalla');
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('/social/personas.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/personas.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/ejemplos.js', 'js/personas.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -140,18 +140,31 @@ describe('Buscar (diseño aplicado)', () => {
     expect($('#ayuda-busqueda').classList.contains('d-none')).toBe(false);
   });
 
-  test('con la pestaña Experiencias activa no se llama a fetch y se muestra «sin experiencias»', async () => {
+  test('una búsqueda llena a la vez Personas y Planes (planes de ejemplo, sin llamar a la API de planes)', async () => {
+    window.fetch.mockReturnValueOnce(respuesta(200, [{ id: 2, nombreUsuario: 'museo_fan' }]));
     const pestanas = [...document.querySelectorAll('[role="tab"]')];
-    expect(pestanas.map((p) => p.textContent)).toEqual(['Personas', 'Experiencias']);
-    pestanas[1].click();
+    expect(pestanas.map((p) => p.textContent)).toEqual(['Personas', 'Planes']);
 
     buscar('museo');
     await terminar();
 
-    expect(window.fetch).not.toHaveBeenCalled();
+    expect(window.fetch).toHaveBeenCalledTimes(1);
+    expect(document.querySelectorAll('#resultados .fila-resultado')).toHaveLength(1);
+    const titulos = [...document.querySelectorAll('#resultados-experiencias .tarjeta-plan h3')].map((t) => t.textContent);
+    expect(titulos).toContain('Tarde en el Museo del Prado');
     expect($('#ayuda-experiencias').classList.contains('d-none')).toBe(true);
+    expect($('#sin-experiencias').classList.contains('d-none')).toBe(true);
+  });
+
+  test('si ningún plan coincide se muestra «No se han encontrado planes.»', async () => {
+    window.fetch.mockReturnValueOnce(respuesta(200, []));
+
+    buscar('zzzz');
+    await terminar();
+
+    expect(document.querySelectorAll('#resultados-experiencias .tarjeta-plan')).toHaveLength(0);
     expect($('#sin-experiencias').classList.contains('d-none')).toBe(false);
-    expect($('#sin-experiencias').textContent).toBe('Todavía no hay experiencias que mostrar.');
+    expect($('#sin-experiencias').textContent).toBe('No se han encontrado planes.');
   });
 
   test('dos búsquedas seguidas: solo se pintan los resultados de la última', async () => {

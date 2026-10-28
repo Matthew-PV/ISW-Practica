@@ -154,7 +154,7 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 | `/cuenta/perfil.html` | `perfil.js` | `perfil.css` | `api`, `pantalla`, `pestanas`, `cabecera`, `experiencias` | `GET /perfil`, `GET /perfil/resumen`, `/perfil/amigos` y `/perfil/seguidores`, `GET /experiencias?autor=` | CS-45, CS-44 |
 | `/cuenta/ajustes.html` | `ajustes.js` | ninguno | `api`, `pantalla`, `pestanas`, `cabecera`, `password` | `GET` y `PUT /perfil`, `PUT /perfil/foto`, `PUT /perfil/password` | CS-47, CS-64 |
 | `/social/amigos.html` | `solicitudes.js` | `perfil.css` | `api`, `pantalla`, `cabecera` | `GET /amistades/solicitudes`, `PATCH /amistades/:id` | CS-61 |
-| `/social/personas.html` | `personas.js` | `buscar.css` | `api`, `pantalla`, `pestanas`, `cabecera` | `GET /usuarios?texto=` | CS-61 |
+| `/social/personas.html` | `personas.js` | `descubrir.css`, `buscar.css` | `api`, `pantalla`, `pestanas`, `ejemplos`, `cabecera` | `GET /usuarios?texto=` | CS-61 |
 | `/social/usuario.html` | `usuario.js` | `perfil.css` | `api`, `pantalla`, `cabecera`, `experiencias` | `GET /usuarios/:nombre`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id`, `POST` y `DELETE /seguimientos`, `GET /experiencias?autor=` | CS-62, CS-61, CS-44 |
 | `/experiencias/experiencia.html` | `experiencia.js` | `experiencia.css` | `api`, `pestanas`, `pantalla`, `cabecera` | `GET /experiencias/:id`, `GET /auth/yo`, `GET` y `PUT /experiencias/:id/valoracion`, `GET /experiencias/:id/valoraciones` y `/valoraciones/amigos` | CS-30, CS-63, CS-48, CS-01 |
 
@@ -214,7 +214,7 @@ stateDiagram-v2
 Las nueve páginas con sesión llevan `header.cabecera`, con el mismo HTML en todas:
 
 * La marca PlanB y los enlaces «Inicio», «Explorar», «Mis planes» y «Amigos», dentro de un `nav` con `aria-label="Principal"`; en la página actual el enlace lleva `aria-current="page"`.
-* Un buscador (`form[role="search"]`) que envía a `/social/personas.html?q=`. No se envía si el texto está vacío.
+* Un buscador de planes y personas (`form[role="search"]`, píldora con el botón relleno encajado) que envía a `/social/personas.html?q=`. No se envía si el texto está vacío.
 * La campana, un `<details class="menu-notificaciones">` con el contador `#contador-notificaciones`, la lista `#lista-notificaciones` (una por solicitud de amistad pendiente, de `GET /api/amistades/solicitudes`, que lleva al perfil de quien la envía), `#sin-notificaciones` y el enlace «Ver amigos y solicitudes» a `/social/amigos.html`. Se cierra con clic fuera o Escape.
 * El menú de cuenta, un `<details class="menu-cuenta">` cuyo resumen lleva el avatar (`img.menu-avatar`, 32 px: la foto del usuario que `cabecera.js` pide a `/api/perfil`, o la foto por defecto) y que contiene «Mi perfil», «Ajustes» y el botón «Cerrar sesión» (`data-cerrar-sesion`). Se cierra al hacer clic fuera, al pulsar Escape (el foco vuelve al resumen) y al elegir una opción.
 
@@ -306,10 +306,10 @@ Se llega desde la pestaña «Amigos» o desde la campana de la cabecera. Pruebas
 
 ### `/social/personas.html`: buscar
 
-Un buscador con dos pestañas, «Personas» y «Experiencias» (`shared/pestanas.js`). Si la URL trae `?q=`, rellena el campo y busca al cargarse.
+Un buscador de planes y personas con dos pestañas, «Personas» y «Planes» (`shared/pestanas.js`). Cada búsqueda llena las dos a la vez. Si la URL trae `?q=`, rellena el campo y busca al cargarse.
 
 * **Personas:** busca por parte del nombre (como mucho 20 resultados) con `GET /api/usuarios?texto=`. Cada resultado es un enlace a su perfil. Antes de buscar, `#ayuda-busqueda` explica qué escribir; mientras se busca se ve «Cargando…» (`#cargando`) y el botón pasa a «Buscando…».
-* **Experiencias:** `buscarExperiencias` devuelve siempre una lista vacía, así que se ve «sin experiencias»; la búsqueda real llegará con CS-24.
+* **Planes:** `buscarExperiencias` filtra los planes de ejemplo (`shared/ejemplos.js`) por título, descripción, categoría, ciudad o autor y los pinta como tarjetas en `#resultados-experiencias`; sin coincidencias se ve «No se han encontrado planes.». La búsqueda real llegará con CS-24.
 
 Pruebas: `personas.test.js`, `pestanas.test.js` y `estados.test.js`.
 

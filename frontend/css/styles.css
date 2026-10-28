@@ -92,18 +92,38 @@ body {
   color: var(--color-texto);
 }
 
-/* Fondo: manchas de color muy suaves que no se mueven al desplazar la página */
+/* Fondo: manchas de color suaves que derivan despacio y una trama de puntos que se desvanece hacia abajo.
+   Ambas capas son fijas: no se mueven al desplazar la página. */
 body::before {
+  content: "";
+  position: fixed;
+  inset: -8%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(520px 420px at 8% 6%, rgb(255 199 179 / 0.6), transparent 70%),
+    radial-gradient(480px 420px at 94% 10%, rgb(228 215 250 / 0.7), transparent 70%),
+    radial-gradient(460px 380px at 50% 46%, rgb(255 214 107 / 0.18), transparent 70%),
+    radial-gradient(560px 460px at 72% 100%, rgb(198 235 214 / 0.55), transparent 70%),
+    radial-gradient(420px 360px at 4% 92%, rgb(191 227 255 / 0.45), transparent 70%),
+    var(--color-lienzo);
+  animation: deriva 28s ease-in-out infinite alternate;
+}
+
+body::after {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
-    radial-gradient(520px 420px at 8% 4%, rgb(255 199 179 / 0.45), transparent 70%),
-    radial-gradient(480px 420px at 94% 12%, rgb(228 215 250 / 0.55), transparent 70%),
-    radial-gradient(560px 460px at 70% 100%, rgb(198 235 214 / 0.4), transparent 70%),
-    var(--color-lienzo);
+  background: radial-gradient(circle, rgb(var(--color-texto-rgb) / 0.2) 1px, transparent 1.5px) 0 0 / 26px 26px;
+  -webkit-mask-image: linear-gradient(to bottom, #000, transparent 70%);
+  mask-image: linear-gradient(to bottom, #000, transparent 70%);
+}
+
+@keyframes deriva {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(2%, -2%) scale(1.06); }
 }
 
 /* La página entra con un pequeño ascenso */
@@ -517,22 +537,23 @@ fieldset:disabled .btn {
 .cabecera-busqueda {
   order: 3;
   flex: 1 1 auto;
-  max-width: 220px;
+  max-width: 280px;
   margin: 0 var(--espacio-4) 0 auto;
   display: flex;
   align-items: center;
-  height: 48px;
+  height: 44px;
+  padding: 4px;
   background: var(--color-superficie);
-  border: 1px solid var(--color-borde-campo);
+  border: 1px solid var(--color-borde-suave);
   border-radius: var(--radio-pildora);
-  transition: border-color var(--duracion-corta);
+  transition: border-color var(--duracion-corta), background-color var(--duracion-corta);
 }
 
 .cabecera-busqueda input {
   flex: 1 1 auto;
   min-width: 0;
   height: 100%;
-  padding: 0 var(--espacio-16);
+  padding: 0 var(--espacio-12) 0 var(--espacio-16);
   color: var(--color-texto);
   background: transparent;
   border: 0;
@@ -552,18 +573,28 @@ fieldset:disabled .btn {
 .cabecera-busqueda:has(input:focus-visible) {
   outline: 2px solid var(--color-foco);
   outline-offset: 2px;
+  background: var(--color-fondo);
 }
 
 .cabecera-busqueda:hover {
-  border-color: var(--color-texto);
+  border-color: var(--color-borde-campo);
 }
 
+/* El botón va relleno y encajado en la píldora, sin borde propio */
 .cabecera-busqueda .btn {
-  min-height: 44px;
-  margin-right: 2px;
-  padding-top: 0;
-  padding-bottom: 0;
+  flex: none;
+  height: 100%;
+  min-height: 0;
+  padding: 0 var(--espacio-16);
+  color: var(--color-fondo);
+  font-weight: 600;
+  background: var(--color-acento);
+  border: 0;
   border-radius: var(--radio-pildora);
+}
+
+.cabecera-busqueda .btn:hover {
+  background: var(--color-acento-hover);
 }
 
 .cabecera-marca,
@@ -1307,4 +1338,72 @@ body.pagina-buscar .menu-notificaciones {
   font-weight: 700;
   text-align: center;
   border-top: 1px solid var(--color-borde-suave);
+}
+
+/* ---------- Animaciones ---------- */
+
+/* Enlaces de la barra: el subrayado crece desde el centro al pasar el ratón */
+.cabecera-enlace {
+  background: linear-gradient(var(--color-primario), var(--color-primario)) center bottom / 0 2px no-repeat;
+  transition: background-size 180ms ease-out;
+}
+
+.cabecera-enlace:hover {
+  background-size: 100% 2px;
+}
+
+/* Botones: se hunden un poco al pulsarlos */
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Diálogos: entran con ascenso y el velo con fundido */
+dialog[open] {
+  animation: subir 220ms ease-out both;
+}
+
+dialog[open]::backdrop {
+  animation: velar 220ms ease-out both;
+}
+
+@keyframes velar {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Resultados y tarjetas de las listas: entran escalonados */
+.tarjeta-experiencia:not(.tarjeta-plan) {
+  animation: subir 380ms ease-out both;
+}
+
+.tarjeta-experiencia:not(.tarjeta-plan):nth-child(2) { animation-delay: 50ms; }
+.tarjeta-experiencia:not(.tarjeta-plan):nth-child(3) { animation-delay: 100ms; }
+.tarjeta-experiencia:not(.tarjeta-plan):nth-child(4) { animation-delay: 150ms; }
+.tarjeta-experiencia:not(.tarjeta-plan):nth-child(n+5) { animation-delay: 200ms; }
+
+.fila-resultado {
+  transition: transform var(--duracion-corta), background-color var(--duracion-corta);
+}
+
+.fila-resultado:hover {
+  transform: translateX(4px);
+}
+
+/* Ilustraciones de los estados vacíos: flotan despacio */
+.estado-vacio img {
+  animation: flotar-suave 5s ease-in-out infinite;
+}
+
+@keyframes flotar-suave {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Avatar de la cuenta: un aro al pasar el ratón */
+.menu-cuenta summary:hover .menu-avatar {
+  box-shadow: 0 0 0 2px var(--color-primario);
+}
+
+.menu-avatar {
+  transition: box-shadow var(--duracion-corta);
 }

@@ -42,7 +42,7 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
 
     const campo = formulario.querySelector('input[type="search"][name="q"]');
     expect(campo).not.toBeNull();
-    expect(campo.getAttribute('aria-label')).toBe('Buscar personas');
+    expect(campo.getAttribute('aria-label')).toBe('Buscar planes y personas');
 
     const boton = formulario.querySelector('button[type="submit"]');
     expect(boton).not.toBeNull();

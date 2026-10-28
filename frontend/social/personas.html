@@ -7,6 +7,7 @@
   <link rel="icon" href="/img/logo-pin.svg" type="image/svg+xml">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/styles.css" rel="stylesheet">
+  <link href="/css/descubrir.css" rel="stylesheet">
   <link href="/css/buscar.css" rel="stylesheet">
 </head>
 <body class="pagina-buscar">
@@ -21,7 +22,7 @@
         <a class="cabecera-enlace" href="/social/amigos.html">Amigos</a>
       </nav>
       <form class="cabecera-busqueda" role="search" action="/social/personas.html" method="get">
-        <input type="search" name="q" aria-label="Buscar personas" placeholder="Buscar personas" autocomplete="off">
+        <input type="search" name="q" aria-label="Buscar planes y personas" placeholder="Planes y personas" autocomplete="off">
         <button type="submit" class="btn btn-outline-primary">Buscar</button>
       </form>
       <details class="menu-notificaciones">
@@ -48,7 +49,7 @@
   </header>
 
   <main id="contenido" class="container contenedor-buscar py-5">
-    <h1 class="mb-4">Buscar</h1>
+    <h1 class="mb-4">Buscar planes y personas</h1>
 
     <form id="form-busqueda" class="formulario-busqueda mb-4">
       <label for="texto-busqueda" class="form-label">Texto a buscar</label>
@@ -60,7 +61,7 @@
 
     <div role="tablist" aria-label="Tipo de resultado" id="pestanas-busqueda">
       <button type="button" role="tab" id="pestana-personas" aria-controls="panel-personas" aria-selected="true">Personas</button>
-      <button type="button" role="tab" id="pestana-experiencias" aria-controls="panel-experiencias" aria-selected="false" tabindex="-1">Experiencias</button>
+      <button type="button" role="tab" id="pestana-experiencias" aria-controls="panel-experiencias" aria-selected="false" tabindex="-1">Planes</button>
     </div>
 
     <!-- «Cargando…» y el aviso de error valen para cualquier pestaña (js/personas.js) -->
@@ -71,21 +72,22 @@
 
     <!-- Antes de buscar se explica qué escribir -->
     <div role="tabpanel" id="panel-personas" aria-labelledby="pestana-personas" class="pt-3">
-      <p id="ayuda-busqueda" class="text-secondary">Escribe parte de un nombre.</p>
+      <p id="ayuda-busqueda" class="text-secondary">Escribe parte de un nombre o de un plan.</p>
       <div id="sin-resultados" class="estado-vacio d-none"><img src="/img/vacio-personas.svg" alt="" width="240" height="180"><p>No se han encontrado personas.</p></div>
       <div id="resultados" class="lista-resultados" aria-live="polite"></div>
     </div>
 
     <div role="tabpanel" id="panel-experiencias" aria-labelledby="pestana-experiencias" class="pt-3" hidden>
-      <p id="ayuda-experiencias" class="text-secondary">Escribe para buscar experiencias.</p>
-      <div id="sin-experiencias" class="estado-vacio d-none"><img src="/img/vacio-planes.svg" alt="" width="240" height="180"><p>Todavía no hay experiencias que mostrar.</p></div>
-      <div id="resultados-experiencias" class="lista-resultados" aria-live="polite"></div>
+      <p id="ayuda-experiencias" class="text-secondary">Escribe para buscar planes. De momento se busca entre planes de ejemplo.</p>
+      <div id="sin-experiencias" class="estado-vacio d-none"><img src="/img/vacio-planes.svg" alt="" width="240" height="180"><p>No se han encontrado planes.</p></div>
+      <div id="resultados-experiencias" class="rejilla-planes rejilla-busqueda" aria-live="polite"></div>
     </div>
   </main>
 
   <script src="/js/shared/api.js"></script>
   <script src="/js/shared/pantalla.js"></script>
   <script src="/js/shared/pestanas.js"></script>
+  <script src="/js/shared/ejemplos.js"></script>
   <script src="/js/shared/cabecera.js"></script>
   <script src="/js/personas.js"></script>
 </body>

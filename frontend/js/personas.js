@@ -1,5 +1,5 @@
 // Página de búsqueda (/social/personas.html). Cada resultado lleva al perfil público de esa persona en
-// /social/usuario.html. Usa `api` de shared/api.js, `activarPestanas` de shared/pestanas.js y
+// /social/usuario.html. Usa `api` de shared/api.js, `PLANES_EJEMPLO` y `crearTarjetaPlan` de shared/ejemplos.js, `activarPestanas` de shared/pestanas.js y
 // `crearEnlacePerfil`, `mostrarMensaje`, `ocultarMensaje`, `mostrarCargando` y `ocultarCargando`
 // de shared/pantalla.js.
 
@@ -13,7 +13,6 @@ const ayudaBusqueda = document.getElementById('ayuda-busqueda');
 const ayudaExperiencias = document.getElementById('ayuda-experiencias');
 const sinExperiencias = document.getElementById('sin-experiencias');
 const resultadosExperiencias = document.getElementById('resultados-experiencias');
-const pestanaExperiencias = document.getElementById('pestana-experiencias');
 
 activarPestanas(document.getElementById('pestanas-busqueda'));
 
@@ -62,47 +61,53 @@ function animarEntrada(elementos) {
   }
 }
 
-// CS-24 la sustituirá por la llamada real
+// De momento los planes salen de los de ejemplo (shared/ejemplos.js); CS-24 los sustituirá por la llamada real
 function buscarExperiencias(texto) {
-  return Promise.resolve([]);
+  const buscado = texto.toLowerCase();
+  const coincidencias = PLANES_EJEMPLO.filter((plan) =>
+    [plan.titulo, plan.descripcion, plan.tipo, plan.ciudad, plan.autor].some((campo) => campo.toLowerCase().includes(buscado)));
+  return Promise.resolve(coincidencias);
 }
 
-// Busca según la pestaña activa y reemplaza los resultados anteriores.
+// Busca a la vez personas y planes y reemplaza los resultados anteriores de las dos pestañas.
 async function buscar() {
   const numero = ++ultimaBusqueda;
   const texto = campoBusqueda.value.trim();
-  const enExperiencias = pestanaExperiencias.getAttribute('aria-selected') === 'true';
 
   // Acción con espera: «Buscando…» y desactivado hasta que acabe
   botonBuscar.textContent = 'Buscando…';
   botonBuscar.disabled = true;
   botonBuscar.setAttribute('aria-busy', 'true');
-
   resultados.replaceChildren();
   resultadosExperiencias.replaceChildren();
   ocultarMensaje(sinResultados);
   ocultarMensaje(sinExperiencias);
   ocultarMensaje(errorBusqueda);
   // Tras la primera búsqueda ya no hace falta explicar qué escribir; mientras llega la respuesta, «Cargando…»
-  ocultarMensaje(enExperiencias ? ayudaExperiencias : ayudaBusqueda);
+  ocultarMensaje(ayudaBusqueda);
+  ocultarMensaje(ayudaExperiencias);
   mostrarCargando();
 
   try {
-    if (enExperiencias) {
-      const experiencias = await buscarExperiencias(texto);
-      if (numero !== ultimaBusqueda) return;
-      if (experiencias.length === 0) sinExperiencias.classList.remove('d-none');
-      return;
-    }
-    const usuarios = await api(`/usuarios?texto=${encodeURIComponent(texto)}`);
+    const [usuarios, planes] = await Promise.all([
+      api(`/usuarios?texto=${encodeURIComponent(texto)}`),
+      buscarExperiencias(texto),
+    ]);
     if (numero !== ultimaBusqueda) return;
+
     if (usuarios.length === 0) {
       sinResultados.classList.remove('d-none');
-      return;
+    } else {
+      const filas = usuarios.map(crearResultado);
+      resultados.append(...filas);
+      animarEntrada(filas);
     }
-    const filas = usuarios.map(crearResultado);
-    resultados.append(...filas);
-    animarEntrada(filas);
+
+    if (planes.length === 0) {
+      sinExperiencias.classList.remove('d-none');
+    } else {
+      resultadosExperiencias.append(...planes.map((plan, indice) => crearTarjetaPlan(plan, plan.ciudad, indice)));
+    }
   } catch (err) {
     if (numero === ultimaBusqueda) mostrarMensaje(errorBusqueda, err.message);
   } finally {

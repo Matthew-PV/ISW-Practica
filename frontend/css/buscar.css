@@ -12,11 +12,20 @@
   font-size: 18px;
 }
 
-/* Filas separadas entre sí */
+/* Las filas forman un solo bloque con borde y esquinas redondeadas */
 .lista-resultados {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-8);
+  overflow: hidden;
+  border-radius: var(--radio-tarjeta);
+}
+
+.lista-resultados:not(:empty) {
+  border: 1px solid var(--color-borde-suave);
+}
+
+.lista-resultados .fila-resultado:last-child {
+  border-bottom: 0;
 }
 
 /* Foto vacía: círculo del mismo tamaño que la foto de 40 px */
@@ -26,4 +35,41 @@
   height: 40px;
   background: var(--color-superficie);
   border-radius: 50%;
+}
+
+/* En la columna de Buscar los planes van de dos en dos */
+.rejilla-busqueda {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* El campo de la pantalla va como el de la cabecera: píldora con el botón encajado dentro */
+.formulario-busqueda .input-group {
+  flex-wrap: nowrap;
+  padding: 4px;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-campo);
+  border-radius: var(--radio-pildora);
+}
+
+.formulario-busqueda .input-group:focus-within {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 2px;
+}
+
+.formulario-busqueda .form-control {
+  padding-left: var(--espacio-16);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radio-pildora);
+  box-shadow: none;
+}
+
+.formulario-busqueda .form-control:focus {
+  outline: 0;
+  box-shadow: none;
+}
+
+.formulario-busqueda .btn {
+  padding: 0 var(--espacio-24);
+  border-radius: var(--radio-pildora);
 }
