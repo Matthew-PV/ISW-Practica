@@ -13,7 +13,8 @@
     "test:cobertura": "node --env-file=.env node_modules/jest/bin/jest.js --testPathIgnorePatterns=/node_modules/ --runInBand --coverage",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "db:seed": "node --env-file=.env prisma/seed.js"
+    "db:seed": "node --env-file=.env prisma/seed.js",
+    "db:seed-demo": "node --env-file=.env prisma/seed-demo.js"
   },
   "engines": {
     "node": ">=22"

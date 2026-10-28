@@ -32,4 +32,22 @@ function subirFotoPerfil(usuarioId, contenido) {
   });
 }
 
-module.exports = { subirFotoPerfil };
+// Sube a Cloudinary una foto que ya está en internet (la descarga Cloudinary) y devuelve su URL.
+// Solo para los datos de demo (prisma/seed-demo.js): van a su propia carpeta y con nombre fijo,
+// así no pisan las fotos reales (planb/perfiles/usuario-<id>) y repetir la carga no duplica.
+// - `nombre`: da nombre al archivo (planb/demo/<nombre>).
+// - `urlOrigen`: dirección https de la imagen original. Se guarda recortada en cuadrado de 400 px,
+//   centrada en la cara.
+async function subirFotoDemo(nombre, urlOrigen) {
+  const resultado = await cloudinary.uploader.upload(urlOrigen, {
+    folder: 'planb/demo',
+    public_id: nombre,
+    overwrite: true,
+    invalidate: true,
+    resource_type: 'image',
+    transformation: [{ width: 400, height: 400, crop: 'fill', gravity: 'face' }],
+  });
+  return resultado.secure_url;
+}
+
+module.exports = { subirFotoPerfil, subirFotoDemo };
