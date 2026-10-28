@@ -49,7 +49,7 @@ flowchart LR
     estaticos["Archivos del frontend"]
     apiRest["API REST /api<br/>(Helmet, sesiones,<br/>límites de peticiones)"]
   end
-  mysql[("MySQL en Docker<br/>datos y sesiones")]
+  mysql[("MySQL online (Aiven)<br/>datos y sesiones")]
   cloudinary["Cloudinary<br/>fotos de perfil"]
   turnstile["Cloudflare Turnstile<br/>CAPTCHA del registro"]
   smtp["Servidor de correo SMTP<br/>(sin configurar: consola)"]
@@ -202,7 +202,7 @@ flowchart LR
 
 ### 3. Herramientas
 
-Todo el proyecto está escrito en **JavaScript**. Backend: Node.js, Express, Prisma sobre MySQL, `express-session` con `bcrypt`, `helmet`, `express-rate-limit`, Cloudinary (fotos), Nodemailer (correo) y Cloudflare Turnstile (captcha). Frontend: HTML, CSS y JavaScript sin framework, con Bootstrap. Pruebas: Jest, Supertest y jsdom. MySQL se ejecuta en Docker (`docker-compose`).
+Todo el proyecto está escrito en **JavaScript**. Backend: Node.js, Express, Prisma sobre MySQL, `express-session` con `bcrypt`, `helmet`, `express-rate-limit`, Cloudinary (fotos), Nodemailer (correo) y Cloudflare Turnstile (captcha). Frontend: HTML, CSS y JavaScript sin framework, con Bootstrap. Pruebas: Jest, Supertest y jsdom. La base de datos es un MySQL online compartido (Aiven); Docker solo levanta un MySQL local para las pruebas.
 
 Qué hace cada herramienta: [anexo/herramientas-e-instalacion.md](anexo/herramientas-e-instalacion.md).
 
@@ -295,7 +295,7 @@ ISW-Practica/
 │   ├── img/
 │   └── js/                    # un archivo por página, con el mismo nombre que su HTML
 │       └── shared/            # código común a varias páginas (api.js, pantalla.js...)
-├── docker-compose.yml         # MySQL para desarrollo
+├── docker-compose.yml         # MySQL local solo para pruebas
 └── documentacion/
     ├── customer-stories/      # documentos de partida y copia obsoleta del libro de historias
     └── *.md                   # propuesta, arquitectura, api, flujos, frontend, glosario...
@@ -313,19 +313,18 @@ El frontend no necesita instalación: Bootstrap se carga desde CDN y `js/shared/
 
 ### 7. Instalación de herramientas
 
-Hacen falta Git, Node.js (LTS, 22 o superior) y Docker con Docker Compose. Pasos por sistema operativo: [anexo/herramientas-e-instalacion.md](anexo/herramientas-e-instalacion.md).
+Hacen falta Git y Node.js (LTS, 22 o superior); Docker con Docker Compose solo para las pruebas con MySQL real. Pasos por sistema operativo: [anexo/herramientas-e-instalacion.md](anexo/herramientas-e-instalacion.md).
 
 ### 8. Entorno de desarrollo
 
-Requisitos: Git, Node.js y Docker (sección 7).
+Requisitos: Git y Node.js (sección 7), y la contraseña y el certificado de la base online, que se piden al equipo. Docker solo para `npm run test:mysql`.
 
 Puesta en marcha en local, desde la raíz del repositorio:
 
-1. `docker compose up -d` levanta MySQL en `localhost:3306`.
-2. `cd backend` y copiar `.env.example` a `.env`. Los valores de la base de datos ya coinciden con `docker-compose.yml`; solo hay que cambiar `SESSION_SECRET` y rellenar `CLOUDINARY_URL` y `SMTP_URL` cuando hagan falta.
-3. `npm install` instala las dependencias.
-4. `npm run db:migrate` crea o actualiza las tablas a partir de `prisma/schema.prisma`, y `npm run db:seed` carga el catálogo de ciudades (se puede repetir).
-5. `npm run dev` arranca el servidor en http://localhost:3000, que sirve la API y la web, y se reinicia solo al guardar cambios.
+1. `cd backend` y copiar `.env.example` a `.env`. Rellenar `DATABASE_URL` (base online Aiven, la pide cada integrante al equipo), `CLOUDINARY_URL` y, cuando haga falta, `SMTP_URL`; cambiar `SESSION_SECRET`. El certificado de Aiven se guarda como `backend/prisma/aiven-ca.pem` (ignorado por Git).
+2. `npm install` instala las dependencias.
+3. La base online ya tiene las tablas y el catálogo de ciudades. Quien cambie `prisma/schema.prisma` ejecuta `npm run db:migrate` sobre ella, y afecta a todo el equipo. `npm run db:seed-demo` carga o repone los datos de demostración (usuarios `demo_*@planb.local`, contraseña `Demo1234`, con fotos en Cloudinary); solo toca a los `demo_*`.
+4. `npm run dev` arranca el servidor en http://localhost:3000, que sirve la API y la web, y se reinicia solo al guardar cambios.
 
 Tras un `git pull` que traiga migraciones o dependencias nuevas: `npm install`, `npx prisma migrate deploy` y `npx prisma generate`.
 
@@ -349,14 +348,15 @@ Scripts de `backend/package.json`:
 | `npm run dev` | Arranca el servidor y lo reinicia al cambiar el código |
 | `npm start` | Arranca el servidor sin reinicio automático |
 | `npm test` | Ejecuta las pruebas con Jest, sin base de datos (todo simulado) |
-| `npm run test:mysql` | Ejecuta las pruebas de `tests/mysql/` contra la base de datos del `.env` (Docker en marcha) |
+| `npm run test:mysql` | Ejecuta las pruebas de `tests/mysql/` contra el MySQL local de Docker (`.env.test`; `docker compose up -d`) |
 | `npm run test:todo` | Ejecuta `npm test` y después `npm run test:mysql` |
 | `npm run test:cobertura` | Ejecuta todas las pruebas, también las de MySQL, con el informe de cobertura |
 | `npm run db:migrate` | Aplica los cambios de `schema.prisma` a la base de datos y genera la migración |
 | `npm run db:seed` | Carga el catálogo inicial de ciudades sin duplicar entradas |
+| `npm run db:seed-demo` | Carga los datos de demostración (usuarios `demo_*`, experiencias, valoraciones, amistades y fotos); repetible |
 | `npm run db:studio` | Abre Prisma Studio, una interfaz web para ver y editar los datos |
 
-`docker compose down` para MySQL; los datos se conservan en un volumen de Docker. `docker compose down -v` los borra.
+`docker compose down` apaga el MySQL de las pruebas; los datos se conservan en un volumen de Docker. `docker compose down -v` los borra.
 
 
 
@@ -406,7 +406,7 @@ backend/tests/
 * **Servicios:** pruebas unitarias de la lógica de negocio con los repositorios simulados: validaciones, permisos y cálculos.
 * **Rutas y criterios:** pruebas de la API con Supertest. Cada frase del criterio de validación de una tarjeta se traduce en al menos una prueba; las de `criterios/` simulan los repositorios en memoria para recorrer una historia completa.
 * **Pantallas (jsdom):** cargan el HTML de una página y su JavaScript (con `require`, para medir su cobertura) y simulan el servidor con `fetch`.
-* **MySQL real (`tests/mysql/`):** lo que solo la base de datos puede demostrar: restricciones únicas, peticiones simultáneas, filtros y cursores de las consultas, y que no se devuelven emails. No simulan nada, crean sus propios datos y los borran al terminar. `npm test` no los incluye, para que funcione sin Docker.
+* **MySQL real (`tests/mysql/`):** lo que solo la base de datos puede demostrar: restricciones únicas, peticiones simultáneas, filtros y cursores de las consultas, y que no se devuelven emails. No simulan nada, crean sus propios datos y los borran al terminar. `npm test` no los incluye, para que funcione sin Docker. Usan `backend/.env.test` (Docker local) y `tests/setup.js` aborta si `DATABASE_URL` no es local, para no borrar nunca la base online.
 * **Navegador real:** las pantallas se comprueban también a mano, en tamaño de ordenador y de móvil.
 
 Para que una prueba valga tiene que **fallar cuando se rompe el comportamiento que protege**. Por eso cada comportamiento nuevo sigue el ciclo TDD (primero la prueba en rojo) y las reglas críticas se comprueban además con una **mutación manual**: se rompe la regla a propósito, se ve la prueba en rojo y se deshace el cambio. No se escriben pruebas que solo comprueban que una función pasa los mismos datos a otra.

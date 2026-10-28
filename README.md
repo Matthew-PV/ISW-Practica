@@ -35,7 +35,7 @@ PlanB es una **aplicación web** organizada en capas: un único backend con ruta
 | Backend | Node.js + Express (sesiones con express-session guardadas en MySQL, contraseñas con bcrypt, cabeceras de seguridad con helmet, límite de intentos con express-rate-limit) |
 | Protección contra bots | CAPTCHA Cloudflare Turnstile en el registro |
 | Persistencia | Prisma |
-| Base de datos | MySQL (en Docker para desarrollo) |
+| Base de datos | MySQL online compartida (Aiven); MySQL en Docker solo para las pruebas |
 | Imágenes | Cloudinary |
 | Correo | Nodemailer por SMTP (sin configurar, el email se escribe en la consola) |
 | Pruebas | Jest + Supertest (API) y jsdom (pantallas) |
@@ -44,30 +44,30 @@ El detalle de cada herramienta, los diagramas de capas y del modelo de datos, la
 
 ## Puesta en marcha
 
-Requiere Git, Node.js 22+ y Docker. Cómo instalarlos en Windows, macOS y Linux: [sección 7 de la arquitectura](documentacion/arquitectura.md#7-instalación-de-herramientas).
+Requiere Git, Node.js 22+ y, solo para las pruebas con MySQL real, Docker. Cómo instalarlos en Windows, macOS y Linux: [sección 7 de la arquitectura](documentacion/arquitectura.md#7-instalación-de-herramientas).
 
 ```bash
-docker compose up -d          # MySQL
 cd backend
-cp .env.example .env          # cambiar SESSION_SECRET; CLOUDINARY_URL y SMTP_URL cuando hagan falta
+cp .env.example .env          # rellenar DATABASE_URL y CLOUDINARY_URL (pídelos al equipo); cambiar SESSION_SECRET
+# guardar el certificado de Aiven (también te lo da el equipo) como backend/prisma/aiven-ca.pem
 npm install
-npm run db:migrate
-npm run db:seed               # catálogo inicial de ciudades (se puede repetir)
 npm run dev                   # http://localhost:3000
 ```
+
+**Hay una única base de datos de desarrollo: la online compartida (Aiven).** Sin la contraseña y el certificado que te da el equipo, la aplicación no arranca. No hay base local de desarrollo. Las migraciones y los datos que cambies los ve todo el equipo: no ejecutes `db:migrate` sin acordarlo. Para dar de alta usuarios, experiencias, valoraciones y amistades de ejemplo (`demo_*@planb.local`, contraseña `Demo1234`, fotos en Cloudinary) existe `npm run db:seed-demo`; es repetible y solo toca a los usuarios `demo_*`.
 
 Pruebas, desde `backend/`:
 
 ```bash
 npm test                      # sin base de datos (todo simulado)
-npm run test:mysql            # con MySQL real (Docker en marcha)
+npm run test:mysql            # con MySQL real en Docker (docker compose up -d); usa backend/.env.test
 npm run test:todo             # las dos anteriores
 npm run test:cobertura        # todas, con el informe de cobertura en backend/coverage/
 ```
 
 Tras un `git pull` que traiga migraciones o dependencias nuevas: `npm install`, `npx prisma migrate deploy` y `npx prisma generate`.
 
-Por defecto PlanB usa el MySQL de Docker. Para conectarlo a la base de datos online compartida (Aiven), sigue las instrucciones del final de `backend/.env.example`. Las pruebas siguen usando siempre la base local.
+Las pruebas con MySQL real borran datos, por eso usan siempre la base local de Docker (`backend/.env.test`) y se niegan a arrancar si `DATABASE_URL` apunta a otra.
 
 ## Documentación
 
@@ -98,7 +98,7 @@ La copia de `documentacion/customer-stories/Customer_Stories_PlanB.xlsx` está o
 
 * `backend/` — servidor Node.js + Express: API REST, lógica de negocio, persistencia con Prisma y pruebas.
 * `frontend/` — páginas HTML, CSS y JavaScript con Bootstrap.
-* `docker-compose.yml` — MySQL para desarrollo local.
+* `docker-compose.yml` — MySQL local, solo para las pruebas con MySQL real.
 * `documentacion/` — documentación del proyecto, documentos de partida de las historias de usuario y copia obsoleta del libro (`customer-stories/`) y los scripts del libro online (`office-scripts/`).
 
 ## Licencia
