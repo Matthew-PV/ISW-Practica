@@ -24,7 +24,7 @@
 | 6 | `ayuda.html` | Público | diseño futuro | Ayuda | [ayuda.svg](diseno/ayuda.svg) |
 | 7 | `terminos.html` | Público | diseño futuro | Términos y privacidad | [terminos.svg](diseno/terminos.svg) |
 | 8 | `no-encontrada.html` | Público | diseño futuro | Página no encontrada (404) | [no-encontrada.svg](diseno/no-encontrada.svg) |
-| 9 | `/cuenta/bienvenida.html` | Inicio y descubrir | a reorganizar | Inicio | [bienvenida.svg](diseno/bienvenida.svg) |
+| 9 | `/cuenta/bienvenida.html` | Inicio y descubrir | implementada | Inicio | [bienvenida.svg](diseno/bienvenida.svg) |
 | 10 | `explorar.html` | Inicio y descubrir | diseño futuro | Explorar | [explorar.svg](diseno/explorar.svg) |
 | 11 | `ciudad.html?id=` | Inicio y descubrir | diseño futuro | Ciudad | [ciudad.svg](diseno/ciudad.svg) |
 | 12 | `/social/personas.html` | Inicio y descubrir | a reorganizar | Resultados de búsqueda | [personas.svg](diseno/personas.svg) |
@@ -37,7 +37,7 @@
 | 19 | `/social/usuario.html?nombre=` | Personas y social | implementada | Perfil de otra persona | [usuario.svg](diseno/usuario.svg) |
 | 20 | `amigos.html` | Personas y social | diseño futuro | Amigos | [amigos.svg](diseno/amigos.svg) |
 | 21 | `seguidores.html` | Personas y social | diseño futuro | Seguidores y seguidos | [seguidores.svg](diseno/seguidores.svg) |
-| 22 | `/social/solicitudes.html` | Personas y social | implementada | Solicitudes | [solicitudes.svg](diseno/solicitudes.svg) |
+| 22 | `/social/amigos.html` | Personas y social | implementada | Amigos | [solicitudes.svg](diseno/solicitudes.svg) |
 | 23 | `/cuenta/ajustes.html` | Cuenta | a reorganizar | Ajustes | [ajustes.svg](diseno/ajustes.svg) |
 | 24 | `notificaciones.html` | Sistema | diseño futuro | Notificaciones | [notificaciones.svg](diseno/notificaciones.svg) |
 | 25 | `error.html` | Sistema | diseño futuro | Error del servidor | [error.svg](diseno/error.svg) |
@@ -58,7 +58,7 @@ Los cuatro estados que pide la tarjeta, más los propios de cada pantalla.
 | `registro` | — | — | ✔ validación, duplicado y CAPTCHA no disponible | — | ✔ «Creando cuenta…» mientras se envía; requisitos de la contraseña marcados al escribir |
 | `recuperar` | — | — | ✔ aviso de error | — | ✔ éxito, con el mismo mensaje exista o no la cuenta |
 | `restablecer` | — | — | ✔ aviso de error | — | ✔ sin token en la dirección (aviso y formulario oculto); contraseñas que no coinciden; éxito con enlace al inicio de sesión |
-| `bienvenida` | ✔ «Cargando…» | ✔ «Todavía no has publicado experiencias.», junto a la tarjeta «+» | ✔ error de la lista y error del diálogo | — | Diálogo de crear o editar abierto; «Cargar más» |
+| `mis-planes` | ✔ «Cargando…» | ✔ «Todavía no has publicado experiencias.», junto a la tarjeta «+» | ✔ error de la lista y error del diálogo | — | Diálogo de crear o editar abierto; «Cargar más» |
 | `perfil` | ✔ «Cargando…» | ✔ cuatro: sin experiencias, sin solicitudes, sin amigos y sin seguidores | ✔ seis avisos (foto, datos, contraseña, experiencias, solicitudes y relaciones) | — | ✔ «Subiendo foto…»; avisos de éxito en foto, datos y contraseña; «Cargar más» |
 | `personas` | ✔ «Cargando…» mientras busca | ✔ «No se han encontrado personas.»; en la pestaña Experiencias, vacío por diseño (CS-24): «Todavía no hay experiencias que mostrar» | ✔ aviso de error | — | ✔ antes de buscar: «Escribe parte de un nombre.» (Personas) o «Escribe para buscar experiencias.» (Experiencias); «Buscando…» mientras se envía |
 | `usuario` | ✔ «Cargando…», sin datos de relleno hasta que llega el perfil | ✔ «No hay experiencias que puedas ver.» | ✔ error de la acción y error de la lista | ✔ **«Usuario no encontrado»** | Si es el propio usuario, va a `/cuenta/perfil.html`; cuatro versiones del botón de amistad; «Seguir» o «Dejar de seguir» |

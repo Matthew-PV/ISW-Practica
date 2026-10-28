@@ -92,6 +92,25 @@ body {
   color: var(--color-texto);
 }
 
+/* Fondo: manchas de color muy suaves que no se mueven al desplazar la página */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(520px 420px at 8% 4%, rgb(255 199 179 / 0.45), transparent 70%),
+    radial-gradient(480px 420px at 94% 12%, rgb(228 215 250 / 0.55), transparent 70%),
+    radial-gradient(560px 460px at 70% 100%, rgb(198 235 214 / 0.4), transparent 70%),
+    var(--color-lienzo);
+}
+
+/* La página entra con un pequeño ascenso */
+main {
+  animation: subir 320ms ease-out both;
+}
+
 /* Títulos: solo tres tamaños y negrita */
 h1, .h1 { font-size: 28px; font-weight: 700; }
 h2, .h2 { font-size: 22px; font-weight: 700; }
@@ -476,7 +495,7 @@ fieldset:disabled .btn {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0 var(--espacio-16);
+  gap: 0 var(--espacio-8);
   min-height: 64px;
   max-width: 960px;
   margin: 0 auto;
@@ -490,15 +509,16 @@ fieldset:disabled .btn {
 
 .cabecera-marca {
   order: 1;
+  margin-right: var(--espacio-8);
   font-size: 18px;
   font-weight: 700;
 }
 
 .cabecera-busqueda {
-  order: 2;
+  order: 3;
   flex: 1 1 auto;
-  max-width: 420px;
-  margin: 0 auto;
+  max-width: 220px;
+  margin: 0 var(--espacio-4) 0 auto;
   display: flex;
   align-items: center;
   height: 48px;
@@ -573,7 +593,7 @@ fieldset:disabled .btn {
 }
 
 .cabecera-enlace {
-  order: 3;
+  order: 2;
   padding: 0 var(--espacio-8);
   border-bottom: 3px solid transparent;
 }
@@ -589,8 +609,8 @@ body.pagina-buscar .cabecera-busqueda {
   display: none;
 }
 
-/* Sin buscador, «Inicio» y «Cuenta» siguen a la derecha */
-body.pagina-buscar .cabecera-marca + .cabecera-enlace {
+/* Sin buscador, la campana y «Cuenta» siguen a la derecha */
+body.pagina-buscar .menu-notificaciones {
   margin-left: auto;
 }
 
@@ -610,7 +630,7 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
 
 /* Menú de cuenta */
 .menu-cuenta {
-  order: 4;
+  order: 5;
   position: relative;
 }
 
@@ -1105,3 +1125,186 @@ body.pagina-buscar .cabecera-marca + .cabecera-enlace {
 
 .estado-vacio img { width: 100%; max-width: 280px; height: auto; }
 .estado-vacio p { margin: 0; }
+
+/* ---------- Microanimaciones y cabecera pegajosa ---------- */
+
+@keyframes subir {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes campanada {
+  0%, 100% { transform: rotate(0); }
+  20% { transform: rotate(14deg); }
+  40% { transform: rotate(-12deg); }
+  60% { transform: rotate(8deg); }
+  80% { transform: rotate(-4deg); }
+}
+
+@keyframes latido {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.18); }
+}
+
+/* La cabecera se queda arriba, translúcida */
+.cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  background: rgb(255 255 255 / 0.82);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.cabecera-enlace {
+  transition: color var(--duracion-corta), border-color var(--duracion-corta), background-color var(--duracion-corta);
+}
+
+.cabecera-enlace:hover {
+  text-decoration: none;
+  border-bottom-color: var(--color-melocoton);
+}
+
+.cabecera-enlace[aria-current="page"]:hover {
+  border-bottom-color: var(--color-primario);
+}
+
+.btn {
+  transition: transform var(--duracion-corta), background-color var(--duracion-corta), border-color var(--duracion-corta);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+/* Las tarjetas se elevan al pasar el ratón */
+.tarjeta-experiencia {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color var(--duracion-corta), background-color var(--duracion-corta);
+}
+
+.tarjeta-experiencia:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px -12px rgb(42 30 63 / 0.35);
+}
+
+.tarjeta-nueva {
+  transition: transform 180ms ease, background-color var(--duracion-corta), border-color var(--duracion-corta);
+}
+
+.tarjeta-nueva:hover {
+  transform: translateY(-4px);
+  border-color: var(--color-primario);
+}
+
+/* Campana de notificaciones */
+.menu-notificaciones {
+  order: 4;
+  position: relative;
+}
+
+.menu-notificaciones summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  list-style: none;
+  color: var(--color-texto);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color var(--duracion-corta);
+}
+
+.menu-notificaciones summary::-webkit-details-marker {
+  display: none;
+}
+
+.menu-notificaciones summary:hover {
+  background: var(--color-superficie);
+}
+
+.menu-notificaciones summary:hover svg {
+  animation: campanada 600ms ease;
+  transform-origin: 50% 0;
+}
+
+.contador-notificaciones {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+  color: #fff;
+  text-align: center;
+  background: var(--color-acento);
+  border-radius: var(--radio-pildora);
+  animation: latido 1.6s ease-in-out 2;
+}
+
+.menu-notificaciones-lista {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  width: 320px;
+  padding: var(--espacio-8);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-tarjeta);
+}
+
+.menu-notificaciones[open] .menu-notificaciones-lista {
+  animation: subir 160ms ease-out;
+}
+
+.menu-notificaciones-titulo {
+  margin: 0;
+  padding: var(--espacio-8) var(--espacio-12);
+  font-weight: 700;
+}
+
+.menu-notificaciones-vacio {
+  margin: 0;
+  padding: var(--espacio-12);
+  color: var(--color-texto-suave);
+}
+
+.notificacion {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-12);
+  min-height: 48px;
+  padding: var(--espacio-8) var(--espacio-12);
+  color: var(--color-texto);
+  text-decoration: none;
+  border-radius: var(--radio-boton);
+  transition: background-color var(--duracion-corta);
+}
+
+.notificacion:hover {
+  background: var(--color-superficie);
+}
+
+.notificacion img {
+  flex: none;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.menu-notificaciones-pie {
+  display: block;
+  margin-top: var(--espacio-4);
+  padding: var(--espacio-12);
+  font-weight: 700;
+  text-align: center;
+  border-top: 1px solid var(--color-borde-suave);
+}

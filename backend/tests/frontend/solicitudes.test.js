@@ -1,14 +1,14 @@
 /**
  * @jest-environment jsdom
  */
-// CS-61, objetivo 13: solicitudes de amistad recibidas en su página (/social/solicitudes.html).
+// CS-61, objetivo 13: solicitudes de amistad recibidas en su página (/social/amigos.html).
 const fs = require('node:fs');
 const path = require('node:path');
 const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const HTML = leer('/social/solicitudes.html');
+const HTML = leer('/social/amigos.html');
 const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/solicitudes.js'];
 const SOLICITUDES = [{
   id: 10,

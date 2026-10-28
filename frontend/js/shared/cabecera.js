@@ -1,7 +1,7 @@
 // Comportamiento de la cabecera común de las pantallas con sesión (header.cabecera). Cada página
 // la carga después de shared/api.js y shared/pantalla.js. No exporta nada: al cargarse, engancha
 // sus eventos.
-// Lo usan: /cuenta/bienvenida.html, /cuenta/perfil.html, /social/personas.html, /social/usuario.html y /experiencias/experiencia.html.
+// Lo usan todas las pantallas con sesión (Inicio, Explorar, Mis planes, Amigos, perfil, ajustes, búsqueda, usuario y experiencia).
 
 const menuCuenta = document.querySelector('details.menu-cuenta');
 
@@ -66,6 +66,54 @@ if (avatar) {
   api('/perfil')
     .then((perfil) => {
       if (perfil?.foto) avatar.src = perfil.foto;
+    })
+    .catch(() => {});
+}
+
+// Campana: las solicitudes de amistad pendientes como notificaciones, con un contador. Cada una lleva a
+// la persona; «Ver amigos y solicitudes» lleva a /social/amigos.html, donde se aceptan o rechazan.
+const menuNotificaciones = document.querySelector('details.menu-notificaciones');
+
+if (menuNotificaciones) {
+  const contador = document.getElementById('contador-notificaciones');
+  const lista = document.getElementById('lista-notificaciones');
+  const sinNotificaciones = document.getElementById('sin-notificaciones');
+
+  // Mismo cierre que el menú de cuenta: clic fuera o Escape
+  document.addEventListener('click', (e) => {
+    if (!menuNotificaciones.contains(e.target)) menuNotificaciones.open = false;
+  });
+  menuNotificaciones.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      menuNotificaciones.open = false;
+      menuNotificaciones.querySelector('summary').focus();
+    }
+  });
+
+  // Los textos de otras personas se ponen con textContent, nunca como HTML
+  function crearNotificacion(solicitud) {
+    const enlace = document.createElement('a');
+    enlace.className = 'notificacion';
+    enlace.href = `/social/usuario.html?nombre=${encodeURIComponent(solicitud.solicitante.nombreUsuario)}`;
+    const foto = document.createElement('img');
+    foto.src = solicitud.solicitante.foto;
+    foto.alt = '';
+    foto.width = 32;
+    foto.height = 32;
+    const texto = document.createElement('span');
+    const nombre = document.createElement('strong');
+    nombre.textContent = solicitud.solicitante.nombreUsuario;
+    texto.append(nombre, ' quiere ser tu amigo');
+    enlace.append(foto, texto);
+    return enlace;
+  }
+
+  api('/amistades/solicitudes')
+    .then((solicitudes) => {
+      lista.replaceChildren(...solicitudes.map(crearNotificacion));
+      sinNotificaciones.classList.toggle('d-none', solicitudes.length !== 0);
+      contador.textContent = solicitudes.length;
+      contador.classList.toggle('d-none', solicitudes.length === 0);
     })
     .catch(() => {});
 }

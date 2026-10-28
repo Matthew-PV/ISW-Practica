@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-// Pantalla de bienvenida: selector de visibilidad del formulario (CS-22),
+// Pantalla Mis planes: selector de visibilidad del formulario (CS-22),
 // enlace al detalle de cada experiencia (CS-63) y edición.
 // Se simula el navegador con jsdom y el servidor con fetch.
 
@@ -18,9 +18,9 @@ const leer = (archivo) =>
     'utf8'
   );
 
-const HTML = leer('/cuenta/bienvenida.html');
+const HTML = leer('/cuenta/mis-planes.html');
 
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/bienvenida.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/mis-planes.js'];
 
 const USUARIO = {
   id: 1,
@@ -311,4 +311,46 @@ test('la rejilla usa .rejilla-experiencias y la tarjeta «+» es la primera con 
   expect(rejilla.firstElementChild.id).toBe('columna-nueva');
   expect($('#boton-nueva .tarjeta-nueva-signo').textContent).toBe('+');
   expect($('#boton-nueva').textContent).toContain('Nueva experiencia');
+});
+
+describe('enlaces desde otras pantallas', () => {
+  const abrirCon = async (busqueda) => {
+    window.history.pushState({}, '', `/cuenta/mis-planes.html${busqueda}`);
+    document.documentElement.innerHTML = HTML;
+    const dialogo = $('dialog');
+    dialogo.showModal = jest.fn();
+    dialogo.close = jest.fn();
+    window.fetch = jest.fn((ruta) => {
+      if (ruta === '/api/auth/yo') return respuesta(200, USUARIO);
+      if (ruta === '/api/ciudades') return respuesta(200, CIUDADES);
+      if (ruta === `/api/experiencias/${EXPERIENCIA.id}`) return respuesta(200, EXPERIENCIA);
+      if (ruta.startsWith('/api/experiencias?')) return respuesta(200, { experiencias: [], siguiente: null });
+      throw new Error(`Petición inesperada: ${ruta}`);
+    });
+    cargarScripts(SCRIPTS);
+    await terminar();
+    await terminar();
+    return dialogo;
+  };
+
+  test('?nuevo=1 abre el formulario vacío', async () => {
+    const dialogo = await abrirCon('?nuevo=1');
+
+    expect(dialogo.showModal).toHaveBeenCalled();
+    expect($('#titulo-dialogo').textContent).toBe('Nueva experiencia');
+  });
+
+  test('?editar=<id> abre el formulario con los datos de esa experiencia', async () => {
+    const dialogo = await abrirCon(`?editar=${EXPERIENCIA.id}`);
+
+    expect(dialogo.showModal).toHaveBeenCalled();
+    expect($('#titulo-dialogo').textContent).toBe('Editar experiencia');
+    expect($('#titulo').value).toBe('Tarde cultural');
+  });
+
+  test('sin parámetros no se abre ningún formulario', async () => {
+    const dialogo = await abrirCon('');
+
+    expect(dialogo.showModal).not.toHaveBeenCalled();
+  });
 });

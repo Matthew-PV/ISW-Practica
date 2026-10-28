@@ -6,10 +6,10 @@
 // Sustituye a navegacion.test.js, que comprobaba la barra anterior.
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
-const PAGINAS = ['bienvenida', 'perfil', 'ajustes', 'solicitudes', 'personas', 'usuario', 'experiencia'];
+const PAGINAS = ['bienvenida', 'explorar', 'mis-planes', 'amigos', 'perfil', 'ajustes', 'personas', 'usuario', 'experiencia'];
 // Enlace de la cabecera que lleva aria-current="page" en cada página (ninguno en el resto)
 const ACTUAL = {
-  bienvenida: 'Inicio', perfil: 'Mi perfil', ajustes: 'Ajustes', solicitudes: 'Solicitudes', personas: null, usuario: null, experiencia: null,
+  bienvenida: 'Inicio', explorar: 'Explorar', 'mis-planes': 'Mis planes', amigos: 'Amigos', perfil: 'Mi perfil', ajustes: 'Ajustes', personas: null, usuario: null, experiencia: null,
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -21,7 +21,7 @@ const cargar = (pagina) => {
 describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
   beforeEach(() => cargar(pagina));
 
-  test('tiene la navegación principal con la marca, «Inicio» y «Solicitudes»', () => {
+  test('tiene la navegación principal con la marca, «Inicio», «Explorar», «Mis planes» y «Amigos»', () => {
     const enlaces = [...document.querySelectorAll('header.cabecera nav[aria-label="Principal"] a')].map((a) => [
       a.textContent.trim() || a.querySelector('img')?.getAttribute('alt'),
       a.getAttribute('href'),
@@ -30,7 +30,9 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
     expect(enlaces).toEqual([
       ['PlanB', '/cuenta/bienvenida.html'],
       ['Inicio', '/cuenta/bienvenida.html'],
-      ['Solicitudes', '/social/solicitudes.html'],
+      ['Explorar', '/experiencias/explorar.html'],
+      ['Mis planes', '/cuenta/mis-planes.html'],
+      ['Amigos', '/social/amigos.html'],
     ]);
   });
 
@@ -252,5 +254,48 @@ describe('avatar del menú de cuenta', () => {
     await cargarCon(() => Promise.reject(new TypeError('Failed to fetch')));
 
     expect(avatar().getAttribute('src')).toBe('/img/foto-por-defecto.svg');
+  });
+});
+
+describe('campana de notificaciones', () => {
+  const json = (datos) => () => Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(datos) });
+  const SOLICITUDES = [{ id: 3, solicitante: { id: 5, nombreUsuario: 'luis', foto: '/img/foto-por-defecto.svg' } }];
+  const cargarCon = async (respuesta) => {
+    cargar('bienvenida');
+    window.fetch = jest.fn().mockImplementation((ruta) => (ruta === '/api/amistades/solicitudes' ? respuesta() : json({})()));
+    cargarScripts(['js/shared/api.js', 'js/shared/cabecera.js']);
+    await terminar();
+  };
+
+  test('muestra cada solicitud pendiente como notificación con el contador', async () => {
+    await cargarCon(json(SOLICITUDES));
+
+    expect($('#contador-notificaciones').textContent).toBe('1');
+    expect($('#contador-notificaciones').classList.contains('d-none')).toBe(false);
+    expect($('#lista-notificaciones a').getAttribute('href')).toBe('/social/usuario.html?nombre=luis');
+    expect($('#lista-notificaciones').textContent).toContain('luis quiere ser tu amigo');
+    expect($('#sin-notificaciones').classList.contains('d-none')).toBe(true);
+  });
+
+  test('sin solicitudes oculta el contador y avisa de que no hay nada', async () => {
+    await cargarCon(json([]));
+
+    expect($('#contador-notificaciones').classList.contains('d-none')).toBe(true);
+    expect($('#sin-notificaciones').classList.contains('d-none')).toBe(false);
+  });
+
+  test('si falla la petición la cabecera sigue funcionando', async () => {
+    await cargarCon(() => Promise.reject(new TypeError('Failed to fetch')));
+
+    expect($('#contador-notificaciones').classList.contains('d-none')).toBe(true);
+  });
+
+  test('un clic fuera cierra el desplegable', async () => {
+    await cargarCon(json([]));
+    $('details.menu-notificaciones').open = true;
+
+    document.body.click();
+
+    expect($('details.menu-notificaciones').open).toBe(false);
   });
 });

@@ -1,0 +1,135 @@
+/* Inicio y Explorar: portada, tiras horizontales de planes y filtros. Solo variables --color-* y --espacio-*. */
+
+/* Portada con degradado y una forma decorativa */
+.portada-inicio {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-24);
+  margin-bottom: var(--espacio-16);
+  padding: var(--espacio-32);
+  overflow: hidden;
+  background: linear-gradient(120deg, var(--color-melocoton), var(--color-crema) 55%, var(--expr-lila));
+  border-radius: var(--radio-tarjeta);
+}
+
+.portada-inicio::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  top: -60px;
+  width: 200px;
+  height: 200px;
+  background: var(--expr-sol);
+  border-radius: 50%;
+  opacity: 0.45;
+  animation: flotar 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.portada-inicio > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes flotar {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(-14px, 12px); }
+}
+
+.nota-ejemplo {
+  margin-bottom: var(--espacio-24);
+}
+
+/* Tira: cabecera con «Ver más» y una fila que se desplaza en horizontal */
+.tira {
+  margin-bottom: var(--espacio-32);
+}
+
+.tira-cabecera {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--espacio-16);
+  margin-bottom: var(--espacio-12);
+}
+
+.tira-subtitulo {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-acento);
+}
+
+.tira-ver-mas {
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform var(--duracion-corta);
+}
+
+.tira-ver-mas:hover {
+  text-decoration: none;
+  transform: translateX(4px);
+}
+
+.tira-fila {
+  display: flex;
+  gap: var(--espacio-16);
+  padding: var(--espacio-8) var(--espacio-4) var(--espacio-16);
+  margin: calc(var(--espacio-8) * -1) calc(var(--espacio-4) * -1) 0;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+}
+
+.tira-fila > .tarjeta-plan {
+  flex: 0 0 220px;
+  scroll-snap-align: start;
+}
+
+/* Las tarjetas entran una tras otra */
+.tarjeta-plan {
+  animation: subir 360ms ease-out both;
+  animation-delay: calc(var(--i, 0) * 50ms);
+  background: var(--color-fondo);
+}
+
+/* Explorar */
+.filtros-explorar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-8);
+  margin-bottom: var(--espacio-16);
+}
+
+.filtro {
+  min-height: 40px;
+  padding: 0 var(--espacio-16);
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-texto);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-campo);
+  border-radius: var(--radio-pildora);
+  cursor: pointer;
+  transition: transform var(--duracion-corta), background-color var(--duracion-corta), border-color var(--duracion-corta);
+}
+
+.filtro:hover {
+  background: var(--color-crema);
+  transform: translateY(-1px);
+}
+
+.filtro[aria-pressed="true"] {
+  color: #fff;
+  background: var(--color-texto);
+  border-color: var(--color-texto);
+}
+
+.rejilla-planes {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--espacio-16);
+}

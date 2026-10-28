@@ -7,7 +7,7 @@
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
 const PAGINAS = [
-  'index', 'iniciar-sesion', 'registro', 'recuperar', 'restablecer', 'bienvenida', 'perfil', 'ajustes', 'solicitudes', 'personas', 'usuario', 'experiencia',
+  'index', 'iniciar-sesion', 'registro', 'recuperar', 'restablecer', 'bienvenida', 'mis-planes', 'explorar', 'perfil', 'ajustes', 'amigos', 'personas', 'usuario', 'experiencia',
 ];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
@@ -94,7 +94,7 @@ describe('/social/personas.html', () => {
   });
 });
 
-describe('/cuenta/bienvenida.html', () => {
+describe('/cuenta/mis-planes.html', () => {
   const EXPERIENCIA = {
     id: 10, titulo: 'Tarde cultural', descripcion: 'Museos', ciudadId: 1, ciudad: { id: 1, nombre: 'Madrid' },
     tipo: 'Cultural', momentoAdecuado: 'Tarde', visibilidad: 'PUBLICA',
@@ -102,7 +102,7 @@ describe('/cuenta/bienvenida.html', () => {
 
   // `rutas` dice qué responde el servidor a cada dirección; lo que no figure, un 404
   function arrancar(rutas) {
-    document.documentElement.innerHTML = leer('/cuenta/bienvenida.html');
+    document.documentElement.innerHTML = leer('/cuenta/mis-planes.html');
     for (const dialogo of document.querySelectorAll('dialog')) {
       dialogo.showModal = jest.fn();
       dialogo.close = jest.fn();
@@ -111,7 +111,7 @@ describe('/cuenta/bienvenida.html', () => {
       const clave = `${opciones.method || 'GET'} ${ruta}`;
       return rutas[clave] ? rutas[clave]() : respuesta(404, { error: 'No encontrado' });
     });
-    cargarScripts(scriptsDe('bienvenida'));
+    cargarScripts(scriptsDe('mis-planes'));
   }
 
   const base = (experiencias) => ({

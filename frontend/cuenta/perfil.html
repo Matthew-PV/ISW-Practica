@@ -16,12 +16,26 @@
       <nav class="cabecera-nav" aria-label="Principal">
         <a class="cabecera-marca" href="/cuenta/bienvenida.html"><img src="/img/logo.svg" alt="PlanB" width="112" height="32"></a>
         <a class="cabecera-enlace" href="/cuenta/bienvenida.html">Inicio</a>
-        <a class="cabecera-enlace" href="/social/solicitudes.html">Solicitudes</a>
+        <a class="cabecera-enlace" href="/experiencias/explorar.html">Explorar</a>
+        <a class="cabecera-enlace" href="/cuenta/mis-planes.html">Mis planes</a>
+        <a class="cabecera-enlace" href="/social/amigos.html">Amigos</a>
       </nav>
       <form class="cabecera-busqueda" role="search" action="/social/personas.html" method="get">
         <input type="search" name="q" aria-label="Buscar personas" placeholder="Buscar personas" autocomplete="off">
         <button type="submit" class="btn btn-outline-primary">Buscar</button>
       </form>
+      <details class="menu-notificaciones">
+        <summary aria-label="Notificaciones">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+          <span id="contador-notificaciones" class="contador-notificaciones d-none" aria-live="polite"></span>
+        </summary>
+        <div class="menu-notificaciones-lista">
+          <p class="menu-notificaciones-titulo">Notificaciones</p>
+          <div id="lista-notificaciones"></div>
+          <p id="sin-notificaciones" class="menu-notificaciones-vacio">No tienes notificaciones nuevas.</p>
+          <a class="menu-notificaciones-pie" href="/social/amigos.html">Ver amigos y solicitudes</a>
+        </div>
+      </details>
       <details class="menu-cuenta">
         <summary><img class="menu-avatar" src="/img/foto-por-defecto.svg" alt="" width="32" height="32">Cuenta</summary>
         <div class="menu-cuenta-lista">

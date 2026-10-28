@@ -15,8 +15,8 @@ flowchart TB
         no_encontrada["Página no encontrada (404)<br/>no-encontrada.html<br/>(diseño futuro)"]
     end
     subgraph g_1["Inicio y descubrir"]
-        bienvenida["Inicio<br/>bienvenida.html<br/>(a reorganizar)"]
-        explorar["Explorar<br/>explorar.html<br/>(diseño futuro)"]
+        bienvenida["Inicio<br/>bienvenida.html<br/>(implementada)"]
+        explorar["Explorar<br/>explorar.html<br/>(implementada, con ejemplos)"]
         ciudad["Ciudad<br/>ciudad.html?id=<br/>(diseño futuro)"]
         personas["Resultados de búsqueda<br/>personas.html<br/>(a reorganizar)"]
     end
@@ -25,14 +25,13 @@ flowchart TB
         crear_plan["Crear plan<br/>crear-plan.html<br/>(a reorganizar)"]
         editar_plan["Editar plan<br/>editar-plan.html?id=<br/>(a reorganizar)"]
         guardados["Guardados<br/>guardados.html<br/>(diseño futuro)"]
-        mis_planes["Mis planes<br/>mis-planes.html<br/>(a reorganizar)"]
+        mis_planes["Mis planes<br/>mis-planes.html<br/>(implementada)"]
     end
     subgraph g_3["Personas y social"]
         perfil["Mi perfil<br/>perfil.html<br/>(a reorganizar)"]
         usuario["Perfil de otra persona<br/>usuario.html?nombre=<br/>(implementada)"]
-        amigos["Amigos<br/>amigos.html<br/>(diseño futuro)"]
+        amigos["Amigos<br/>amigos.html<br/>(implementada)"]
         seguidores["Seguidores y seguidos<br/>seguidores.html<br/>(diseño futuro)"]
-        solicitudes["Solicitudes<br/>solicitudes.html<br/>(implementada)"]
     end
     subgraph g_4["Cuenta"]
         ajustes["Ajustes<br/>ajustes.html<br/>(a reorganizar)"]
@@ -97,14 +96,14 @@ flowchart TB
     perfil -->|"Mis planes"| mis_planes
     perfil -->|"Contador de amigos"| amigos
     perfil -->|"Contador de seguidores"| seguidores
-    perfil -->|"Banda de solicitudes"| solicitudes
+    perfil -->|"Banda de solicitudes"| amigos
     perfil -->|"Editar perfil"| ajustes
     usuario -->|"Un plan suyo"| experiencia
     usuario -->|"Si es mi nombre"| perfil
     amigos -->|"Una persona"| usuario
     seguidores -->|"Una persona"| usuario
-    solicitudes -->|"Solicitante"| usuario
-    notificaciones -->|"Solicitud de amistad"| solicitudes
+    amigos -->|"Solicitante"| usuario
+    notificaciones -->|"Solicitud de amistad"| amigos
     notificaciones -->|"Valoración o plan"| experiencia
     notificaciones -->|"Nuevo seguidor"| usuario
     experiencia -->|"Contenido no visible"| sin_permiso

@@ -245,6 +245,15 @@ describe('CS-63: el formulario de valoración', () => {
 
     expect(visible('#caja-formulario-valoracion')).toBe(false);
   });
+
+  test('el autor ve «Editar plan», que abre el formulario de Mis planes; los demás no', async () => {
+    await abrir({ 'GET /api/auth/yo': [200, { id: 2, nombreUsuario: 'bea' }] });
+    expect(visible('#caja-editar')).toBe(true);
+    expect($('#boton-editar').getAttribute('href')).toBe('/cuenta/mis-planes.html?editar=7');
+
+    await abrir();
+    expect(visible('#caja-editar')).toBe(false);
+  });
 });
 
 describe('CS-63: «Útil» y «Reportar» (solo en la pantalla hasta CS-02 y CS-04)', () => {

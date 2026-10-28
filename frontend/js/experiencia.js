@@ -68,6 +68,9 @@ async function cargarPaginaExperiencia() {
     if (autorId !== yo.id) {
       cajaFormulario.classList.remove('d-none');
       cargarMiValoracion();
+    } else {
+      document.getElementById('boton-editar').href = `/cuenta/mis-planes.html?editar=${experiencia.id}`;
+      document.getElementById('caja-editar').classList.remove('d-none');
     }
 
     listadoAmigos.cargar();
