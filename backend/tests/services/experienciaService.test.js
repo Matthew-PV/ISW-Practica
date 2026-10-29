@@ -19,7 +19,7 @@ const datosValidos = {
   titulo: 'Paseo por el casco antiguo',
   descripcion: 'Una ruta tranquila por las calles históricas.',
   ciudadId: CIUDAD_ID,
-  tipo: 'Cultural',
+  tipo: 'Cultura',
   momentoAdecuado: 'Primavera',
 };
 

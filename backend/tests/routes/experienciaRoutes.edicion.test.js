@@ -33,7 +33,7 @@ beforeEach(() => {
   ciudadRepository.buscarPorId.mockImplementation(async (id) => CIUDADES[id] ?? null);
   guardada = {
     id: 10, titulo: 'Tarde cultural', descripcion: 'Museo y paseo', ciudadId: 1, ciudad: MADRID,
-    tipo: 'Cultural', momentoAdecuado: 'Por la tarde', autorId: 1,
+    tipo: 'Cultura', momentoAdecuado: 'Por la tarde', autorId: 1,
   };
   experienciaRepository.buscarPorId.mockImplementation(async (id) => (id === guardada.id ? { ...guardada } : null));
   // Igual que Prisma: sustituye los campos recibidos y devuelve la experiencia con su ciudad
@@ -90,17 +90,17 @@ describe('Objetivo 7 - los cambios sustituyen a los datos anteriores', () => {
     const agente = await agenteConSesion();
 
     const res = await agente.patch('/api/experiencias/10').send({
-      titulo: '  Tarde de museos  ', ciudadId: 2, momentoAdecuado: 'En invierno',
+      titulo: '  Tarde de museos  ', ciudadId: 2, momentoAdecuado: 'Invierno',
     });
 
     expect(res.status).toBe(200);
     // Solo se mandan a guardar los campos cambiados, ya limpios
     expect(experienciaRepository.actualizar).toHaveBeenCalledWith(10, {
-      titulo: 'Tarde de museos', ciudadId: 2, momentoAdecuado: 'En invierno',
+      titulo: 'Tarde de museos', ciudadId: 2, momentoAdecuado: 'Invierno',
     });
     expect(res.body).toEqual({
       id: 10, titulo: 'Tarde de museos', descripcion: 'Museo y paseo', ciudadId: 2, ciudad: PARIS,
-      tipo: 'Cultural', momentoAdecuado: 'En invierno', autorId: 1,
+      tipo: 'Cultura', momentoAdecuado: 'Invierno', autorId: 1,
     });
   });
 

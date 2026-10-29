@@ -6,7 +6,8 @@
 //      repositories/experienciaRepository.js (guardar la experiencia),
 //      repositories/usuarioRepository.js (comprobar que el autor existe),
 //      services/shared/visibilidad.js, services/shared/identificadores.js,
-//      services/shared/paginacion.js, services/shared/fotoPorDefecto.js y errores.js.
+//      services/shared/paginacion.js, services/shared/fotoPorDefecto.js,
+//      services/shared/opcionesExperiencia.js (categorías y momentos permitidos) y errores.js.
 //
 // Orden de trabajo: primero se valida todo lo que no necesita la base de datos (textos,
 // longitudes, tipo de ciudadId) y solo después se consulta MySQL. Así una petición con
@@ -18,12 +19,14 @@ const { puedeVerExperiencia, nivelesVisibles } = require('./shared/visibilidad')
 const { leerPaginacion, cortarPagina } = require('./shared/paginacion');
 const { leerId } = require('./shared/identificadores');
 const { conFotoPorDefecto } = require('./shared/fotoPorDefecto');
+const { CATEGORIAS, MOMENTOS } = require('./shared/opcionesExperiencia');
 const { crearError } = require('../errores');
 
 const TEXTO_CORTO_MAX = 191; // Columnas VARCHAR(191) de MySQL.
 const DESCRIPCION_MAX_BYTES = 65535; // Capacidad de la columna TEXT en UTF-8.
 const CIUDAD_ID_MAX = 2147483647; // Mayor entero positivo de una columna Int.
 const VISIBILIDADES_VALIDAS = new Set(['PRIVADA', 'AMIGOS', 'PUBLICA']);
+const MOMENTOS_VALIDOS = MOMENTOS.flatMap((grupo) => grupo.valores);
 
 // Devuelve el texto limpio; si falta o está vacío, null cuando es opcional o error 400 cuando es obligatorio.
 // - `valor`: lo que llega en la petición (puede ser cualquier cosa).
@@ -72,10 +75,19 @@ function leerVisibilidad(valor) {
   return visibilidad;
 }
 
-// Lee un texto que cabe en una columna VARCHAR(191) (título, tipo o momento adecuado).
+// Lee un texto que cabe en una columna VARCHAR(191) (el título).
 function leerTextoCorto(valor, nombre, obligatorio) {
   const texto = leerTexto(valor, nombre, obligatorio);
   comprobarTextoCorto(texto, nombre);
+  return texto;
+}
+
+// Lee un texto opcional que, si llega, debe ser exactamente uno de `permitidos` (CS-55 y CS-56).
+function leerOpcion(valor, nombre, permitidos) {
+  const texto = leerTexto(valor, nombre, false);
+  if (texto !== null && !permitidos.includes(texto)) {
+    throw crearError(`${nombre} debe ser una de: ${permitidos.join(', ')}`, 400);
+  }
   return texto;
 }
 
@@ -106,8 +118,8 @@ async function leerCiudadId(ciudadId) {
 const LECTORES = {
   titulo: (valor) => leerTextoCorto(valor, 'El título', true),
   descripcion: leerDescripcion,
-  tipo: (valor) => leerTextoCorto(valor, 'El tipo', false),
-  momentoAdecuado: (valor) => leerTextoCorto(valor, 'El momento adecuado', false),
+  tipo: (valor) => leerOpcion(valor, 'La categoría', CATEGORIAS),
+  momentoAdecuado: (valor) => leerOpcion(valor, 'El momento adecuado', MOMENTOS_VALIDOS),
   visibilidad: leerVisibilidad,
 };
 
@@ -228,6 +240,11 @@ async function obtenerExperiencia(usuarioId, experienciaId) {
   return experiencia.autor ? { ...experiencia, autor: conFotoPorDefecto(experiencia.autor) } : experiencia;
 }
 
+// CS-55 y CS-56: categorías y momentos que admite una experiencia, para el formulario.
+function listarOpciones() {
+  return { categorias: CATEGORIAS, momentos: MOMENTOS };
+}
+
 const EXPERIENCIAS_POR_PAGINA = 10;
 
 // CS-44: experiencias publicadas por un usuario, de la más reciente a la más antigua y por
@@ -254,6 +271,7 @@ async function listarDeAutor(usuarioId, nombreUsuario, paginacion) {
 }
 
 module.exports = {
+  listarOpciones,
   listarDeAutor,
   obtenerExperiencia,
   validarCreacion,

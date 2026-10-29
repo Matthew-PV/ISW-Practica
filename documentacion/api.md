@@ -37,6 +37,7 @@
 | [`GET /api/perfil/amigos`](#get-apiperfilamigos) | sí | Mis amigos | CS-45 |
 | [`GET /api/perfil/seguidores`](#get-apiperfilseguidores) | sí | Mis seguidores | CS-45 |
 | [`PUT /api/perfil/password`](#put-apiperfilpassword) | sí | Cambiar mi contraseña | CS-64 |
+| [`GET /api/experiencias/opciones`](#get-apiexperienciasopciones) | no | Categorías y momentos permitidos | CS-55, CS-56 |
 | [`GET /api/experiencias?autor=`](#get-apiexperienciasautor) | sí | Experiencias de un autor | CS-44 |
 | [`GET /api/experiencias/:id`](#get-apiexperienciasid) | sí | Una experiencia | CS-30, CS-63 |
 | [`POST /api/experiencias`](#post-apiexperiencias) | sí | Crear una experiencia | CS-49, CS-22 |
@@ -177,7 +178,13 @@ Todas exigen sesión y trabajan sobre el usuario de la sesión.
 
 ## Experiencias (`experienciaRoutes.js` → `experienciaService`)
 
-Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, pais, codigoPais }, tipo, momentoAdecuado, visibilidad, autorId }`. `tipo` y `momentoAdecuado` pueden ser `null`; `visibilidad` es `PRIVADA`, `AMIGOS` o `PUBLICA`.
+Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, pais, codigoPais }, tipo, momentoAdecuado, visibilidad, autorId }`. `tipo` (la categoría) y `momentoAdecuado` pueden ser `null` o uno de los valores de `GET /api/experiencias/opciones`; `visibilidad` es `PRIVADA`, `AMIGOS` o `PUBLICA`.
+
+### `GET /api/experiencias/opciones`
+
+`experienciaService.listarOpciones` (lista en `services/shared/opcionesExperiencia.js`).
+
+* **Responde:** 200 `{ categorias, momentos }`: `categorias` es `["Gastronomía", "Cultura", "Naturaleza", "Noche", "Deporte", "Rincones"]` y `momentos`, `[{ grupo, valores }]` con «Franja del día», «Día de la semana» y «Estación».
 
 ### `GET /api/experiencias?autor=`
 
@@ -203,7 +210,8 @@ Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, p
 * **Errores 400:**
   * «Los datos de la experiencia deben ser un objeto».
   * «El título es obligatorio», «La descripción es obligatoria», «... debe ser un texto».
-  * «... no puede superar los 191 caracteres» (título, tipo o momento adecuado).
+  * «El título no puede superar los 191 caracteres».
+  * «La categoría debe ser una de: ...», «El momento adecuado debe ser una de: ...» (se comparan tal cual, con mayúsculas y tildes).
   * «La descripción es demasiado larga (máximo 65535 bytes en UTF-8)».
   * «La visibilidad debe ser una de: PRIVADA, AMIGOS o PUBLICA».
   * «Debes indicar una ciudad con un identificador entero positivo válido», «La ciudad seleccionada no existe», «La ciudad seleccionada ya no está disponible».

@@ -85,10 +85,10 @@ test('rechaza una visibilidad no permitida', async () => {
 test('normaliza textos y conserva los opcionales con contenido', async () => {
   await expect(validarCreacion({
     ...VALIDA, titulo: '  Cafe\u0301  ', descripcion: '  Primera parada\nSegunda parada  ',
-    tipo: ' Cultural ', momentoAdecuado: ' Tarde ', id: 999,
+    tipo: ' Cultura ', momentoAdecuado: ' Por la tarde ', id: 999,
   })).resolves.toEqual({
     titulo: 'Café', descripcion: 'Primera parada\nSegunda parada', ciudadId: 1,
-    tipo: 'Cultural', momentoAdecuado: 'Tarde', visibilidad: 'PUBLICA',
+    tipo: 'Cultura', momentoAdecuado: 'Por la tarde', visibilidad: 'PUBLICA',
   });
 });
 
@@ -100,9 +100,9 @@ test('los opcionales vacíos se guardarán como ausencia de valor', async () => 
 test('acepta los límites de caracteres y bytes de MySQL', async () => {
   const datos = {
     ...VALIDA, titulo: '😀'.repeat(191), descripcion: 'a'.repeat(65535),
-    tipo: 'a'.repeat(191), momentoAdecuado: 'a'.repeat(191), visibilidad: 'PUBLICA',
+    visibilidad: 'PUBLICA',
   };
-  await expect(validarCreacion(datos)).resolves.toEqual(datos);
+  await expect(validarCreacion(datos)).resolves.toEqual({ ...datos, tipo: null, momentoAdecuado: null });
 });
 
 test('un fallo de base de datos no se presenta como ciudad inexistente', async () => {

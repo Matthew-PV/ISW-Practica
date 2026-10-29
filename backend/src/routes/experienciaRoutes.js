@@ -1,5 +1,5 @@
 // Rutas de las experiencias, bajo /api/experiencias: listar las de un autor (CS-44), leer
-// una (CS-30), crear (CS-49) y editar (CS-57).
+// una (CS-30), crear (CS-49), editar (CS-57) y las opciones del formulario (CS-55, CS-56).
 // Capa: rutas (routes).
 // Lo usa: routes/index.js.
 // Usa: services/experienciaService.js (la lógica) y middlewares/sesionMiddleware.js (exigir sesión).
@@ -17,6 +17,13 @@ const router = express.Router();
 router.get('/', requiereSesion, async (req, res) => {
   const { autor, despuesDe, limite } = req.query;
   res.json(await experienciaService.listarDeAutor(req.session.usuarioId, autor, { despuesDe, limite }));
+});
+
+// GET /api/experiencias/opciones → experienciaService.listarOpciones
+// CS-55 y CS-56: { categorias, momentos } que admite el formulario. Público, como el catálogo de
+// ciudades. Va antes de /:id para que «opciones» no se lea como un identificador.
+router.get('/opciones', (req, res) => {
+  res.json(experienciaService.listarOpciones());
 });
 
 // GET /api/experiencias/:id → experienciaService.obtenerExperiencia

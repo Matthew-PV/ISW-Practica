@@ -74,12 +74,12 @@ test('datos válidos: crea y devuelve 201 con una única ciudad y el autor de la
 test('normaliza textos y no permite elegir otro autor ni identificador', async () => {
   const agente = await agenteConSesion();
   const res = await agente.post('/api/experiencias').send({
-    ...DATOS, titulo: '  Cafe\u0301  ', tipo: ' Cultural ', momentoAdecuado: ' Tarde ',
+    ...DATOS, titulo: '  Cafe\u0301  ', tipo: ' Cultura ', momentoAdecuado: ' Por la tarde ',
     autorId: 999, id: 999, ciudad: { id: 2 },
   });
   expect(res.status).toBe(201);
   expect(experienciaRepository.crear).toHaveBeenCalledWith({
-    ...DATOS, titulo: 'Café', tipo: 'Cultural', momentoAdecuado: 'Tarde', visibilidad: 'PUBLICA', autorId: 1,
+    ...DATOS, titulo: 'Café', tipo: 'Cultura', momentoAdecuado: 'Por la tarde', visibilidad: 'PUBLICA', autorId: 1,
   });
 });
 
@@ -197,4 +197,14 @@ describe('GET /api/experiencias/:id (CS-63)', () => {
 
       expect(response.status).toBe(404);
     });
+});
+
+// CS-55 y CS-56: la lista de categorías y momentos que usa el formulario sale del backend
+test('GET /api/experiencias/opciones devuelve las categorías y los momentos permitidos', async () => {
+  const res = await request(app).get('/api/experiencias/opciones');
+
+  expect(res.status).toBe(200);
+  expect(res.body.categorias).toContain('Gastronomía');
+  expect(res.body.momentos[0]).toEqual({ grupo: 'Franja del día', valores: expect.arrayContaining(['Por la tarde']) });
+  expect(experienciaRepository.buscarPorId).not.toHaveBeenCalled();
 });
