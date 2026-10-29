@@ -280,15 +280,15 @@ describe('C9: tras crear', () => {
     const aviso = $('#aviso-creada');
     expect(aviso.classList.contains('d-none')).toBe(false);
     const enlace = aviso.querySelector('a');
-    expect(enlace.textContent).toBe('Ver experiencia');
+    expect(enlace.textContent).toBe('Ver plan');
     expect(enlace.getAttribute('href')).toBe('/experiencias/experiencia.html?id=99');
     expect(document.activeElement).toBe(enlace);
     expect($('#cargando').textContent).not.toContain('Cargando');
   });
 
-  test('el botón de envío dice «Publicar experiencia» al crear y «Guardar cambios» al editar', () => {
+  test('el botón de envío dice «Publicar plan» al crear y «Guardar cambios» al editar', () => {
     $('#boton-nueva').click();
-    expect($('#form-experiencia button[type="submit"]').textContent.trim()).toBe('Publicar experiencia');
+    expect($('#form-experiencia button[type="submit"]').textContent.trim()).toBe('Publicar plan');
 
     $('.tarjeta-experiencia .boton-editar').click();
     expect($('#form-experiencia button[type="submit"]').textContent.trim()).toBe('Guardar cambios');

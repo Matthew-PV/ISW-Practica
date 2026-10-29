@@ -51,7 +51,7 @@ document.getElementById('enlace-volver').href = rutaDeVuelta();
 
 async function cargarPaginaExperiencia() {
   if (!experienciaId) {
-    mostrarError('No se ha especificado ninguna experiencia.');
+    mostrarError('No se ha especificado ningún plan.');
     return;
   }
 

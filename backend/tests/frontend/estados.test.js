@@ -143,7 +143,7 @@ describe('/cuenta/mis-planes.html', () => {
     await terminar();
 
     expect(oculto('#sin-experiencias')).toBe(false);
-    expect($('#sin-experiencias').textContent).toBe('Todavía no has publicado experiencias.');
+    expect($('#sin-experiencias').textContent).toBe('Todavía no has publicado planes.');
     expect($('#boton-nueva')).not.toBeNull();
   });
 

@@ -184,7 +184,7 @@ sequenceDiagram
       S->>ER: crear o actualizar (autorId = usuario de la sesión)
       ER-->>S: experiencia con su ciudad
       S-->>P: 201 o 200 y la experiencia
-      P->>U: tarjeta nueva con aviso «Ver experiencia», tarjeta actualizada o vuelta al detalle si se llegó con ?editar=
+      P->>U: tarjeta nueva con aviso «Ver plan», tarjeta actualizada o vuelta al detalle si se llegó con ?editar=
     end
   end
 ```
@@ -560,7 +560,7 @@ stateDiagram-v2
   amigos : amigos, «Eliminar amigo»
 ```
 
-Al pasar a `amigos` o volver a `ninguna`, la página vuelve a pedir «Sus experiencias», porque cambia cuáles se pueden ver.
+Al pasar a `amigos` o volver a `ninguna`, la página vuelve a pedir «Sus planes», porque cambia cuáles se pueden ver.
 
 ### E3. Valoración de un usuario en una experiencia
 

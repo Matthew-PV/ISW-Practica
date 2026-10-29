@@ -230,7 +230,7 @@ Para `iniciar-sesion`, `registro`, `recuperar` y `restablecer`.
 
 - Rejilla de **4 columnas** con 16 px de hueco, dentro de los 960 px del contenido.
 - Cada tarjeta: arriba un **bloque de color de 96 px** (sin foto) con el icono de su categoría centrado, en `--color-melocoton` o `--color-crema` según la categoría; debajo título en negrita, ciudad en `--color-texto-suave` y la etiqueta de visibilidad. Alto de tarjeta uniforme; toda la tarjeta es un enlace.
-- Tarjeta «+» (Nueva experiencia): mismo tamaño, borde discontinuo `--color-borde-suave`, signo «+» y texto en `--color-acento`.
+- Tarjeta «+» (Nuevo plan): mismo tamaño, borde discontinuo `--color-borde-suave`, signo «+» y texto en `--color-acento`.
 - Reposo: fondo blanco. Ratón encima: borde `--color-borde-campo`. Pulsada: `--color-superficie`. Foco: anillo. En espera: «Cargando…».
 
 **Etiqueta de visibilidad:** píldora de 24 px de alto, texto de 14 px, relleno lateral de 12 px; no es pulsable. Siempre con texto.

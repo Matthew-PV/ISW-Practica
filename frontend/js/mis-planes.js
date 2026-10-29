@@ -161,7 +161,7 @@ function actualizarPrevia() {
   const datos = leerFormulario();
   const tarjeta = crearTarjeta({
     id: 0,
-    titulo: datos.titulo || 'Título de la experiencia',
+    titulo: datos.titulo || 'Título del plan',
     descripcion: datos.descripcion || 'La descripción aparecerá aquí.',
     ciudad: buscarCiudad(datos.ciudad),
     tipo: datos.tipo,
@@ -180,8 +180,8 @@ formulario.addEventListener('change', actualizarPrevia);
 // experiencia para editarla.
 function abrirFormulario(experiencia) {
   editando = experiencia;
-  document.getElementById('titulo-dialogo').textContent = experiencia ? 'Editar experiencia' : 'Nueva experiencia';
-  boton.textContent = experiencia ? 'Guardar cambios' : 'Publicar experiencia';
+  document.getElementById('titulo-dialogo').textContent = experiencia ? 'Editar plan' : 'Nuevo plan';
+  boton.textContent = experiencia ? 'Guardar cambios' : 'Publicar plan';
 
   document.getElementById('titulo').value = experiencia?.titulo ?? '';
   descripcion.value = experiencia?.descripcion ?? '';

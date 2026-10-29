@@ -131,7 +131,7 @@ test('si falla la petición muestra el error con «Reintentar»', async () => {
 test('?tira=ciudad titula la página y filtra por la ciudad del perfil', async () => {
   await abrir('?tira=ciudad');
 
-  expect($('#titulo-explorar').textContent).toBe('Planes en mi ciudad');
+  expect($('#titulo-explorar').textContent).toBe('Experiencias en mi ciudad');
   expect($('#filtro-ciudad').value).toBe('3');
   expect(peticionesDePlanes()).toEqual(['/api/experiencias?ciudadId=3&limite=12']);
 });

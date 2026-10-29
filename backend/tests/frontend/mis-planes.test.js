@@ -176,7 +176,7 @@ test('el botón Editar sigue abriendo el formulario de edición', () => {
 
   expect(
     $('#titulo-dialogo').textContent
-  ).toBe('Editar experiencia');
+  ).toBe('Editar plan');
 
   expect(
     $('#titulo').value
@@ -244,7 +244,7 @@ describe('Publicar con espera (R11)', () => {
     $('#form-experiencia').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
   };
 
-  test('«Publicar experiencia» pasa a «Guardando…», desactivado, mientras espera y se restaura al resolver', async () => {
+  test('«Publicar plan» pasa a «Guardando…», desactivado, mientras espera y se restaura al resolver', async () => {
     let resolver;
     window.fetch.mockImplementationOnce(() => new Promise((r) => { resolver = r; }));
     enviar();
@@ -255,17 +255,17 @@ describe('Publicar con espera (R11)', () => {
 
     resolver(await respuesta(201, { ...EXPERIENCIA, id: 99 }));
     await terminar();
-    expect(boton.textContent.trim()).toBe('Publicar experiencia');
+    expect(boton.textContent.trim()).toBe('Publicar plan');
     expect(boton.disabled).toBe(false);
     expect(boton.hasAttribute('aria-busy')).toBe(false);
   });
 
-  test('«Publicar experiencia» se restaura también si la petición falla', async () => {
+  test('«Publicar plan» se restaura también si la petición falla', async () => {
     window.fetch.mockImplementationOnce(() => respuesta(400, { error: 'Datos no válidos' }));
     enviar();
     await terminar();
     const boton = $('#form-experiencia button[type="submit"]');
-    expect(boton.textContent.trim()).toBe('Publicar experiencia');
+    expect(boton.textContent.trim()).toBe('Publicar plan');
     expect(boton.disabled).toBe(false);
     expect(boton.hasAttribute('aria-busy')).toBe(false);
   });
@@ -276,7 +276,7 @@ test('la rejilla usa .rejilla-experiencias y la tarjeta «+» es la primera con 
   expect(rejilla.classList.contains('rejilla-experiencias')).toBe(true);
   expect(rejilla.firstElementChild.id).toBe('columna-nueva');
   expect($('#boton-nueva .tarjeta-nueva-signo').textContent).toBe('+');
-  expect($('#boton-nueva').textContent).toContain('Nueva experiencia');
+  expect($('#boton-nueva').textContent).toContain('Nuevo plan');
 });
 
 describe('enlaces desde otras pantallas', () => {
@@ -304,14 +304,14 @@ describe('enlaces desde otras pantallas', () => {
     const dialogo = await abrirCon('?nuevo=1');
 
     expect(dialogo.showModal).toHaveBeenCalled();
-    expect($('#titulo-dialogo').textContent).toBe('Nueva experiencia');
+    expect($('#titulo-dialogo').textContent).toBe('Nuevo plan');
   });
 
   test('?editar=<id> abre el formulario con los datos de esa experiencia', async () => {
     const dialogo = await abrirCon(`?editar=${EXPERIENCIA.id}`);
 
     expect(dialogo.showModal).toHaveBeenCalled();
-    expect($('#titulo-dialogo').textContent).toBe('Editar experiencia');
+    expect($('#titulo-dialogo').textContent).toBe('Editar plan');
     expect($('#titulo').value).toBe('Tarde cultural');
   });
 

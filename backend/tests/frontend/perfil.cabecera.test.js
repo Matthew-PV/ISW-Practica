@@ -84,7 +84,7 @@ describe('cabecera del perfil', () => {
     await abrir();
 
     const pestanas = [...document.querySelectorAll('#pestanas-perfil [role="tab"]')];
-    expect(pestanas.map((p) => p.textContent)).toEqual(['Experiencias', 'Amigos', 'Seguidores']);
+    expect(pestanas.map((p) => p.textContent)).toEqual(['Planes', 'Amigos', 'Seguidores']);
     expect($('#panel-experiencias').hidden).toBe(false);
     expect($('#panel-amigos').hidden).toBe(true);
 

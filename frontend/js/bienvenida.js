@@ -9,15 +9,15 @@ const PLANES_POR_TIRA = 8;
 function definirTiras(ciudad, ciudadId) {
   return [
     {
-      id: 'ciudad', titulo: 'Ver planes en mi ciudad', subtitulo: ciudad ?? 'Indica tu ciudad en el perfil',
+      id: 'ciudad', titulo: 'Ver experiencias en mi ciudad', subtitulo: ciudad ?? 'Indica tu ciudad en el perfil',
       filtros: ciudadId === null ? null : { ciudadId },
       vacio: ciudadId === null && ciudad ? 'Tu ciudad no está en el catálogo de PlanB.'
-        : ciudadId === null ? 'Indica tu ciudad en tu perfil para ver aquí sus planes.' : 'Aún no hay planes en tu ciudad.',
+        : ciudadId === null ? 'Indica tu ciudad en tu perfil para ver aquí sus experiencias.' : 'Aún no hay experiencias en tu ciudad.',
     },
-    { id: 'nuevos', titulo: 'Nuevos planes', subtitulo: 'Lo último que ha publicado la gente', filtros: {}, vacio: 'Aún no hay planes publicados.' },
+    { id: 'nuevos', titulo: 'Nuevas experiencias', subtitulo: 'Lo último que ha publicado la gente', filtros: {}, vacio: 'Aún no hay experiencias publicadas.' },
     {
-      id: 'amigos', titulo: 'Lo que hacen tus amigos', subtitulo: 'Planes de personas que conoces', filtros: { amigos: true },
-      vacio: 'Tus amigos aún no han publicado planes.',
+      id: 'amigos', titulo: 'Lo que hacen tus amigos', subtitulo: 'Experiencias de personas que conoces', filtros: { amigos: true },
+      vacio: 'Tus amigos aún no han publicado experiencias.',
     },
   ];
 }

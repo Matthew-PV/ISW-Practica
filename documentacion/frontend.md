@@ -262,8 +262,8 @@ Pruebas: `recuperacion.test.js`.
 
 ### `/cuenta/bienvenida.html`: inicio
 
-* Portada con «Hola, <nombre>» y «Crear plan» (a `/cuenta/mis-planes.html?nuevo=1`), y debajo tiras horizontales de planes (`#tiras`): «Ver planes en mi ciudad» (con la ciudad del perfil debajo), «Nuevos planes» y «Lo que hacen tus amigos». Cada una lleva «Ver más →» a `/experiencias/explorar.html?tira=<id>`. La fila de tarjetas es un grupo enfocable con Tab (`tabindex="0"`, `role="group"`, nombrado por el título de la tira) para poder desplazarla con las flechas.
-* Cada tira pide hasta 8 planes a `GET /api/experiencias`: la de la ciudad con `ciudadId` (la ciudad del perfil es texto libre y se busca por nombre en `GET /ciudades`, sin distinguir mayúsculas ni acentos), «Nuevos planes» sin filtros y la de amigos con `amigos=true`. Una tira sin planes, o sin ciudad en el catálogo, muestra un aviso (`.tira-vacia`); si una petición falla, las demás tiras siguen.
+* Portada con «Hola, <nombre>» y «Crear plan» (a `/cuenta/mis-planes.html?nuevo=1`), y debajo tiras horizontales de planes (`#tiras`): «Ver experiencias en mi ciudad» (con la ciudad del perfil debajo), «Nuevas experiencias» y «Lo que hacen tus amigos». Cada una lleva «Ver más →» a `/experiencias/explorar.html?tira=<id>`. La fila de tarjetas es un grupo enfocable con Tab (`tabindex="0"`, `role="group"`, nombrado por el título de la tira) para poder desplazarla con las flechas.
+* Cada tira pide hasta 8 planes a `GET /api/experiencias`: la de la ciudad con `ciudadId` (la ciudad del perfil es texto libre y se busca por nombre en `GET /ciudades`, sin distinguir mayúsculas ni acentos), «Nuevas experiencias» sin filtros y la de amigos con `amigos=true`. Una tira sin planes, o sin ciudad en el catálogo, muestra un aviso (`.tira-vacia`); si una petición falla, las demás tiras siguen.
 * Cada tarjeta (`crearTarjetaPlan`, `js/shared/planes.js`) es un enlace al detalle del plan, con su ciudad real y su autor.
 
 Pruebas: `inicio.test.js`.
@@ -286,10 +286,10 @@ Pruebas: `explorar.test.js`.
   * Descripción, con una pista de qué contar y un contador de caracteres (`#contador-descripcion`).
   * Momento adecuado (opcional): «Sin indicar» y pastillas agrupadas por franja del día, día de la semana y estación.
   * Quién la verá: tres tarjetas de radio (Pública, Amigos, Privada) con icono y quién la verá; Pública por defecto.
-* El botón dice «Publicar experiencia» al crear y «Guardar cambios» al editar.
+* El botón dice «Publicar plan» al crear y «Guardar cambios» al editar.
 * Cancelar o Esc con cambios sin guardar abren `#dialogo-descartar` («Seguir editando» o «Descartar»); sin cambios, cierran.
 * `?nuevo=1` abre el diálogo de creación y `?editar=<id>` el de edición de esa experiencia; el botón «Editar plan» del detalle usa este último. La dirección se limpia al abrirlo. Desde `?editar=`, guardar o cancelar vuelven al detalle de la experiencia.
-* Al guardar, la tarjeta nueva aparece la primera y la editada se sustituye en su sitio, sin recargar la página. Tras crear, `#aviso-creada` dice «Experiencia publicada.» con el enlace «Ver experiencia», que recibe el foco.
+* Al guardar, la tarjeta nueva aparece la primera y la editada se sustituye en su sitio, sin recargar la página. Tras crear, `#aviso-creada` dice «Plan publicado.» con el enlace «Ver plan», que recibe el foco.
 
 Pruebas: `mis-planes.test.js`, `mis-planes.formulario.test.js` y `estados.test.js`.
 
@@ -329,7 +329,7 @@ Pruebas: `personas.test.js`, `pestanas.test.js` y `estados.test.js`.
 * Foto, nombre, ciudad y contadores de amigos y seguidores. Hasta que llega el perfil se ve «Cargando…» (`#cargando`) y no los datos de relleno. Si el usuario no existe, solo se muestra `#no-encontrado`; si es el propio usuario, va a `/cuenta/perfil.html`.
 * En `#botones-amistad` aparecen los botones que corresponden a la relación (ver [E2](flujos.md#e2-la-relación-vista-desde-el-perfil-de-otro-usuario)). «Eliminar amigo» pide confirmación en un `<dialog>` (`#dialogo-eliminar-amigo`) y «Cancelar solicitud» borra la solicitud enviada.
 * `#boton-seguir` alterna entre «Seguir» y «Dejar de seguir».
-* Tras cada acción se vuelve a pedir el perfil, para que los contadores y botones sean los reales, y también «Sus experiencias», porque al cambiar la amistad cambian las que se pueden ver.
+* Tras cada acción se vuelve a pedir el perfil, para que los contadores y botones sean los reales, y también «Sus planes», porque al cambiar la amistad cambian las que se pueden ver.
 
 Pruebas: `usuario.test.js`, `estados.test.js`, `usuario.cabecera.test.js` y `shared/experiencias.test.js`.
 
