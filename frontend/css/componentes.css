@@ -1496,21 +1496,3 @@ dialog[open]::backdrop {
   transition: box-shadow var(--duracion-corta);
 }
 }
-
-/* Ayuda del perfil de otra persona: dos líneas cortas y centradas bajo los botones */
-.ayuda-relacion {
-  max-width: 34rem;
-  margin: var(--espacio-16) auto 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--color-texto-suave);
-  text-align: left;
-}
-
-.ayuda-relacion p {
-  margin: 0 0 var(--espacio-4);
-}
-
-.ayuda-relacion strong {
-  color: var(--color-texto);
-}

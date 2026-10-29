@@ -108,13 +108,6 @@ describe('botón de amistad', () => {
     expect(textosBotones()).toEqual(['Añadir amigo']);
   });
 
-  test('una nota explica en qué se diferencian ser amigos y seguir', async () => {
-    await abrirPagina('ana', conRelacion('ninguna'));
-
-    expect($('#ayuda-relacion').textContent).toMatch(/amigos/);
-    expect($('#ayuda-relacion').textContent).toMatch(/seguir/i);
-  });
-
   test('con una solicitud recibida muestra «Aceptar» y «Rechazar»', async () => {
     await abrirPagina('ana', conRelacion('recibida', 10));
 
