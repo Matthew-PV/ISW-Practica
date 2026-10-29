@@ -1,6 +1,7 @@
-// Página de ajustes (/cuenta/ajustes.html): edición de nombreUsuario, ciudad, foto y contraseña.
+// Página de ajustes (/cuenta/ajustes.html): edición de nombreUsuario, ciudad, foto, contraseña y animaciones.
 // Se ejecuta nada más cargar la página. Usa `api` de shared/api.js, `ocultarCargando` de
-// shared/pantalla.js, `activarPestanas` de shared/pestanas.js y `mostrarRequisitosPassword` de shared/password.js (CS-64).
+// shared/pantalla.js, `activarPestanas` de shared/pestanas.js, `mostrarRequisitosPassword` de shared/password.js (CS-64)
+// y `fijarMovimiento`/`movimientoPausado` de shared/movimiento.js.
 
 activarPestanas(document.getElementById('pestanas-ajustes'));
 
@@ -8,10 +9,16 @@ const formulario = document.getElementById('form-perfil');
 const cajaError = document.getElementById('error-perfil');
 const cajaExito = document.getElementById('exito-perfil');
 const estadoGuardado = document.getElementById('estado-guardado');
+const campoNombre = document.getElementById('nombreUsuario');
+const botonNombre = document.getElementById('cambiar-nombre');
+// Nombre de usuario guardado: el que se envía al guardar la ciudad y con el que se compara lo escrito
+let nombreGuardado = '';
 
 // Pone en el formulario los datos del perfil que devuelve el backend
 function mostrarPerfil(perfil) {
-  document.getElementById('nombreUsuario').value = perfil.nombreUsuario;
+  campoNombre.value = perfil.nombreUsuario;
+  nombreGuardado = perfil.nombreUsuario;
+  botonNombre.hidden = true;
   document.getElementById('email').value = perfil.email;
   document.getElementById('ciudad').value = perfil.ciudad ?? '';
 
@@ -32,12 +39,25 @@ async function cargarPerfil() {
   }
 }
 
-// Los cambios se guardan solos: al terminar de editar un campo (change) se envían el nombre de
-// usuario y la ciudad. Si llega otro cambio mientras se guarda, se guarda otra vez al terminar.
+// La ciudad se guarda sola al terminar de editarla (change). El nombre de usuario es la dirección del
+// perfil: solo se envía al pulsar «Cambiar nombre» (P2). Si llega otro cambio mientras se guarda, se
+// guarda otra vez al terminar.
 let guardando = false;
 let pendiente = false;
+let enviarNombre = false;
 
-formulario.addEventListener('change', () => formulario.requestSubmit());
+campoNombre.addEventListener('input', () => {
+  botonNombre.hidden = campoNombre.value.trim() === nombreGuardado;
+});
+
+botonNombre.addEventListener('click', () => {
+  enviarNombre = true;
+  formulario.requestSubmit();
+});
+
+formulario.addEventListener('change', (e) => {
+  if (e.target !== campoNombre) formulario.requestSubmit();
+});
 
 // Enter en un campo termina su edición, igual que salir de él
 formulario.addEventListener('keydown', (e) => {
@@ -56,14 +76,22 @@ formulario.addEventListener('submit', async (e) => {
   estadoGuardado.textContent = 'Guardando…';
 
   const datos = {
-    nombreUsuario: document.getElementById('nombreUsuario').value,
+    nombreUsuario: enviarNombre ? campoNombre.value : nombreGuardado,
     ciudad: document.getElementById('ciudad').value,
   };
+  const cambiaNombre = enviarNombre;
+  enviarNombre = false;
 
   try {
     // El backend devuelve el perfil ya guardado (sin espacios sobrantes y normalizado)
     const perfil = await api('/perfil', { method: 'PUT', body: JSON.stringify(datos) });
+    // Un nombre a medio escribir se conserva mientras se guarda la ciudad
+    const nombreEscrito = campoNombre.value;
     mostrarPerfil(perfil);
+    if (!cambiaNombre && nombreEscrito.trim() !== perfil.nombreUsuario) {
+      campoNombre.value = nombreEscrito;
+      botonNombre.hidden = false;
+    }
     estadoGuardado.textContent = 'Guardado';
   } catch (err) {
     // Se muestra el mensaje del backend tal cual
@@ -79,6 +107,23 @@ formulario.addEventListener('submit', async (e) => {
 });
 
 cargarPerfil();
+
+// P1: la ciudad del perfil sigue siendo texto libre, pero se proponen las del catálogo de los planes
+async function cargarCiudades() {
+  try {
+    const ciudades = await api('/ciudades');
+    document.getElementById('lista-ciudades').replaceChildren(...ciudades.map((c) => new Option(c.nombre)));
+  } catch {
+    // Sin catálogo se puede escribir igualmente
+  }
+}
+
+cargarCiudades();
+
+// P5: las animaciones del fondo se detienen solas a los 5 s; aquí se puede dejarlas pausadas o fijas
+const interruptorAnimaciones = document.getElementById('pausar-animaciones');
+interruptorAnimaciones.checked = movimientoPausado();
+interruptorAnimaciones.addEventListener('change', () => fijarMovimiento(interruptorAnimaciones.checked));
 
 // Subida de la foto de perfil: se envía en cuanto se elige el archivo, con su propia petición
 // (un archivo en lugar de JSON); el nombre y la ciudad se guardan por su lado.

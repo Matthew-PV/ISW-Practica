@@ -1159,30 +1159,11 @@ body.pagina-buscar .menu-notificaciones {
   }
 }
 
-/* Pausa elegida con el botón de js/shared/movimiento.js (WCAG 2.2.2): sin animaciones, con las transiciones */
+/* Pausa de js/shared/movimiento.js (a los 5 s o desde Ajustes) (WCAG 2.2.2): sin animaciones, con las transiciones */
 :root[data-movimiento="pausado"] *,
 :root[data-movimiento="pausado"] *::before,
 :root[data-movimiento="pausado"] *::after {
   animation: none !important;
-}
-
-.boton-movimiento {
-  position: fixed;
-  bottom: var(--espacio-16);
-  left: var(--espacio-16);
-  z-index: 10;
-  min-height: 32px;
-  padding: var(--espacio-4) var(--espacio-12);
-  font-size: 14px;
-  color: var(--color-texto-suave);
-  background: var(--color-fondo);
-  border: 1px solid var(--color-borde-campo);
-  border-radius: var(--radio-pildora);
-}
-
-.boton-movimiento:hover {
-  color: var(--color-texto);
-  background: var(--color-superficie);
 }
 
 /* Pantallas estrechas: el buscador baja a una segunda fila para que la barra se lea */

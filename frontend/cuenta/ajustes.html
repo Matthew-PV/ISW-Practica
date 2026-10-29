@@ -74,25 +74,38 @@
       <form id="form-perfil">
         <div class="mb-3">
           <label for="nombreUsuario" class="form-label">Nombre de usuario</label>
-          <input type="text" class="form-control" id="nombreUsuario" required minlength="3" maxlength="30" autocomplete="username">
+          <div class="d-flex gap-2">
+            <input type="text" class="form-control" id="nombreUsuario" required minlength="3" maxlength="30" autocomplete="username" aria-describedby="ayuda-nombre">
+            <button type="button" class="btn btn-outline-primary" id="cambiar-nombre" hidden>Cambiar nombre</button>
+          </div>
+          <div id="ayuda-nombre" class="form-text">Es la dirección de tu perfil: si lo cambias, los enlaces anteriores dejan de funcionar.</div>
         </div>
         <div class="mb-3">
           <label for="email" class="form-label">Email</label>
-          <input type="email" class="form-control" id="email" disabled>
+          <input type="email" class="form-control" id="email" disabled aria-describedby="ayuda-email">
+          <div id="ayuda-email" class="form-text">El email no se puede cambiar.</div>
         </div>
         <div class="mb-3">
           <label for="ciudad" class="form-label">Ciudad</label>
-          <input type="text" class="form-control" id="ciudad" maxlength="191" autocomplete="address-level2">
+          <input type="text" class="form-control" id="ciudad" list="lista-ciudades" maxlength="191" autocomplete="address-level2">
+          <datalist id="lista-ciudades"></datalist>
         </div>
         <div id="error-perfil" role="alert" class="alert alert-danger d-none"></div>
         <p id="estado-guardado" class="estado-guardado" role="status"></p>
       </form>
+
+      <div class="form-check mt-4">
+        <input class="form-check-input" type="checkbox" id="pausar-animaciones">
+        <label class="form-check-label" for="pausar-animaciones">Pausar las animaciones del fondo</label>
+        <div class="form-text">Por defecto el fondo se detiene solo a los 5 segundos.</div>
+      </div>
       </div>
 
       <div role="tabpanel" id="panel-password" aria-labelledby="pestana-password" hidden>
       <!-- CS-64: cambiar la contraseña (js/ajustes.js; los requisitos los marca js/shared/password.js) -->
       <section aria-labelledby="titulo-password">
         <h2 id="titulo-password" class="h4">Cambiar contraseña</h2>
+        <p id="aviso-password" class="text-secondary">Seguirás con la sesión iniciada en este y otros dispositivos.</p>
         <form id="form-password">
           <div class="mb-3">
             <label for="password-actual" class="form-label">Contraseña actual</label>
@@ -121,7 +134,7 @@
   <script src="/js/shared/cabecera.js"></script>
   <script src="/js/shared/pestanas.js"></script>
   <script src="/js/shared/password.js"></script>
-  <script src="/js/ajustes.js"></script>
   <script src="/js/shared/movimiento.js"></script>
+  <script src="/js/ajustes.js"></script>
 </body>
 </html>

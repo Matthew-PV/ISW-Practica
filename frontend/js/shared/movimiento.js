@@ -1,9 +1,12 @@
-// Pausa del movimiento decorativo (WCAG 2.2.2). Añade un botón fijo que detiene las animaciones que no
-// terminan (fondo, ilustraciones) poniendo data-movimiento="pausado" en <html>; el CSS hace el resto.
-// Arranca pausado si la persona lo pausó antes o si el sistema pide reducir el movimiento.
-// Lo cargan todas las páginas; no exporta nada.
+// Pausa del movimiento decorativo (WCAG 2.2.2). Las animaciones que no terminan (fondo, ilustraciones)
+// se detienen solas a los 5 s poniendo data-movimiento="pausado" en <html>; el CSS hace el resto.
+// La preferencia vive en Ajustes (interruptor «Pausar las animaciones del fondo»): «pausado» arranca ya
+// detenido y «activo» no las detiene nunca. Con «reducir movimiento» en el sistema arranca pausado.
+// Lo cargan todas las páginas; expone fijarMovimiento(pausado) y movimientoPausado().
 
 const CLAVE_MOVIMIENTO = 'movimiento';
+const SEGUNDOS_DE_MOVIMIENTO = 5;
+let temporizador;
 
 // El almacenamiento puede estar bloqueado (ventana privada, datos desactivados): entonces no se recuerda
 function leerMovimiento() {
@@ -22,28 +25,31 @@ function guardarMovimiento(valor) {
   }
 }
 
-function aplicarMovimiento(boton, pausado) {
+function aplicarMovimiento(pausado) {
   if (pausado) document.documentElement.dataset.movimiento = 'pausado';
   else document.documentElement.removeAttribute('data-movimiento');
-  boton.setAttribute('aria-pressed', String(pausado));
-  boton.textContent = pausado ? 'Reanudar animaciones' : 'Pausar animaciones';
+}
+
+// Elección de la persona (Ajustes): se aplica y se recuerda
+function fijarMovimiento(pausado) {
+  clearTimeout(temporizador);
+  aplicarMovimiento(pausado);
+  guardarMovimiento(pausado ? 'pausado' : 'activo');
+}
+
+function movimientoPausado() {
+  return document.documentElement.dataset.movimiento === 'pausado';
 }
 
 function iniciarMovimiento() {
-  const boton = document.createElement('button');
-  boton.type = 'button';
-  boton.className = 'boton-movimiento';
-
   const guardado = leerMovimiento();
   const reducir = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-  aplicarMovimiento(boton, guardado ? guardado === 'pausado' : Boolean(reducir));
-
-  boton.addEventListener('click', () => {
-    const pausado = boton.getAttribute('aria-pressed') !== 'true';
-    aplicarMovimiento(boton, pausado);
-    guardarMovimiento(pausado ? 'pausado' : 'activo');
-  });
-  document.body.append(boton);
+  aplicarMovimiento(guardado ? guardado === 'pausado' : Boolean(reducir));
+  // Sin elección guardada, el movimiento dura solo 5 s
+  if (!guardado) temporizador = setTimeout(() => aplicarMovimiento(true), SEGUNDOS_DE_MOVIMIENTO * 1000);
 }
 
 iniciarMovimiento();
+
+window.fijarMovimiento = fijarMovimiento;
+window.movimientoPausado = movimientoPausado;

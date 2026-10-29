@@ -18,64 +18,76 @@ function simularPreferencia(reducir) {
 function cargar() {
   document.body.innerHTML = '<main></main>';
   cargarScripts([SCRIPT]);
-  return document.querySelector('.boton-movimiento');
 }
 
 beforeEach(() => {
+  jest.useFakeTimers();
   localStorage.clear();
   document.documentElement.removeAttribute('data-movimiento');
   simularPreferencia(false);
 });
 
-test('añade un botón de pausa sin pulsar y el movimiento sigue activo', () => {
-  const boton = cargar();
+afterEach(() => jest.useRealTimers());
 
-  expect(boton.type).toBe('button');
-  expect(boton.getAttribute('aria-pressed')).toBe('false');
-  expect(boton.textContent).toBe('Pausar animaciones');
-  expect(document.documentElement.hasAttribute('data-movimiento')).toBe(false);
+const pausado = () => document.documentElement.dataset.movimiento === 'pausado';
+
+test('ya no añade ningún botón flotante a las páginas', () => {
+  cargar();
+
+  expect(document.querySelector('.boton-movimiento')).toBeNull();
+  expect(document.querySelector('button')).toBeNull();
 });
 
-test('al pulsarlo pausa el movimiento y recuerda la elección; al volver a pulsarlo lo reanuda', () => {
-  const boton = cargar();
+test('el fondo se mueve al entrar y se detiene solo a los 5 segundos (WCAG 2.2.2)', () => {
+  cargar();
+  expect(pausado()).toBe(false);
 
-  boton.click();
-  expect(document.documentElement.dataset.movimiento).toBe('pausado');
-  expect(boton.getAttribute('aria-pressed')).toBe('true');
-  expect(boton.textContent).toBe('Reanudar animaciones');
-  expect(localStorage.getItem('movimiento')).toBe('pausado');
-
-  boton.click();
-  expect(document.documentElement.hasAttribute('data-movimiento')).toBe(false);
-  expect(boton.getAttribute('aria-pressed')).toBe('false');
-  expect(localStorage.getItem('movimiento')).toBe('activo');
+  jest.advanceTimersByTime(4900);
+  expect(pausado()).toBe(false);
+  jest.advanceTimersByTime(200);
+  expect(pausado()).toBe(true);
 });
 
-test('arranca pausado si la persona lo pausó antes', () => {
+test('arranca pausado si la persona lo pausó en Ajustes', () => {
   localStorage.setItem('movimiento', 'pausado');
 
-  const boton = cargar();
+  cargar();
 
-  expect(document.documentElement.dataset.movimiento).toBe('pausado');
-  expect(boton.getAttribute('aria-pressed')).toBe('true');
+  expect(pausado()).toBe(true);
 });
 
 test('arranca pausado si el sistema pide reducir el movimiento, aunque no haya elección guardada', () => {
   simularPreferencia(true);
 
-  const boton = cargar();
+  cargar();
 
-  expect(document.documentElement.dataset.movimiento).toBe('pausado');
-  expect(boton.getAttribute('aria-pressed')).toBe('true');
+  expect(pausado()).toBe(true);
 });
 
-test('una elección guardada de reanudar gana a la preferencia del sistema', () => {
+test('una elección guardada de mantener el movimiento gana a la preferencia del sistema y a los 5 segundos', () => {
   simularPreferencia(true);
   localStorage.setItem('movimiento', 'activo');
 
   cargar();
+  jest.advanceTimersByTime(10000);
 
-  expect(document.documentElement.hasAttribute('data-movimiento')).toBe(false);
+  expect(pausado()).toBe(false);
+});
+
+test('fijarMovimiento aplica la elección y la recuerda', () => {
+  cargar();
+
+  window.fijarMovimiento(true);
+  expect(pausado()).toBe(true);
+  expect(localStorage.getItem('movimiento')).toBe('pausado');
+  expect(window.movimientoPausado()).toBe(true);
+
+  window.fijarMovimiento(false);
+  expect(pausado()).toBe(false);
+  expect(localStorage.getItem('movimiento')).toBe('activo');
+  expect(window.movimientoPausado()).toBe(false);
+  jest.advanceTimersByTime(10000);
+  expect(pausado()).toBe(false);
 });
 
 test('funciona aunque el almacenamiento del navegador no esté disponible', () => {
@@ -86,10 +98,10 @@ test('funciona aunque el almacenamiento del navegador no esté disponible', () =
     throw new Error('bloqueado');
   });
 
-  const boton = cargar();
-  boton.click();
+  cargar();
+  window.fijarMovimiento(true);
 
-  expect(document.documentElement.dataset.movimiento).toBe('pausado');
+  expect(pausado()).toBe(true);
   espia.mockRestore();
   guardar.mockRestore();
 });
