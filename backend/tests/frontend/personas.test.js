@@ -268,3 +268,30 @@ describe('Buscar (menores de la revisión)', () => {
     expect(fila.classList.contains('entrando')).toBe(false);
   });
 });
+
+describe('Buscar (recuento anunciado)', () => {
+  test('al terminar la búsqueda, un único aviso role="status" dice cuántas personas y planes hay', async () => {
+    window.fetch.mockReturnValueOnce(respuesta(200, [{ id: 2, nombreUsuario: 'museo_fan' }]));
+    expect($('#recuento-busqueda').getAttribute('role')).toBe('status');
+    expect($('#recuento-busqueda').textContent).toBe('');
+
+    buscar('museo');
+    await terminar();
+
+    expect($('#recuento-busqueda').textContent).toBe('1 persona y 1 plan');
+  });
+
+  test('sin resultados el recuento dice 0 personas y 0 planes', async () => {
+    window.fetch.mockReturnValueOnce(respuesta(200, []));
+
+    buscar('zzzz');
+    await terminar();
+
+    expect($('#recuento-busqueda').textContent).toBe('0 personas y 0 planes');
+  });
+
+  test('las listas de resultados ya no se anuncian enteras (aria-live)', () => {
+    expect($('#resultados').hasAttribute('aria-live')).toBe(false);
+    expect($('#resultados-experiencias').hasAttribute('aria-live')).toBe(false);
+  });
+});

@@ -307,7 +307,7 @@ Se llega desde la pestaña «Amigos» o desde la campana de la cabecera. Pruebas
 
 ### `/social/personas.html`: buscar
 
-Un buscador de planes y personas con dos pestañas, «Personas» y «Planes» (`shared/pestanas.js`). Cada búsqueda llena las dos a la vez. Si la URL trae `?q=`, rellena el campo y busca al cargarse.
+Un buscador de planes y personas con dos pestañas, «Personas» y «Planes» (`shared/pestanas.js`). Cada búsqueda llena las dos a la vez. Si la URL trae `?q=`, rellena el campo y busca al cargarse. Al terminar, `#recuento-busqueda` (`role="status"`, oculto) anuncia el total, por ejemplo «1 persona y 3 planes»; las listas de resultados no se anuncian enteras.
 
 * **Personas:** busca por parte del nombre (como mucho 20 resultados) con `GET /api/usuarios?texto=`. Cada resultado es un enlace a su perfil. Antes de buscar, `#ayuda-busqueda` explica qué escribir; mientras se busca se ve «Cargando…» (`#cargando`) y el botón pasa a «Buscando…».
 * **Planes:** `buscarExperiencias` filtra los planes de ejemplo (`shared/ejemplos.js`) por título, descripción, categoría, ciudad o autor y los pinta como tarjetas en `#resultados-experiencias`; sin coincidencias se ve «No se han encontrado planes.». La búsqueda real llegará con CS-24.

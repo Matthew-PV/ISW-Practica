@@ -13,6 +13,7 @@ const ayudaBusqueda = document.getElementById('ayuda-busqueda');
 const ayudaExperiencias = document.getElementById('ayuda-experiencias');
 const sinExperiencias = document.getElementById('sin-experiencias');
 const resultadosExperiencias = document.getElementById('resultados-experiencias');
+const recuento = document.getElementById('recuento-busqueda');
 
 activarPestanas(document.getElementById('pestanas-busqueda'));
 
@@ -83,6 +84,7 @@ async function buscar() {
   ocultarMensaje(sinResultados);
   ocultarMensaje(sinExperiencias);
   ocultarMensaje(errorBusqueda);
+  recuento.textContent = '';
   // Tras la primera búsqueda ya no hace falta explicar qué escribir; mientras llega la respuesta, «Cargando…»
   ocultarMensaje(ayudaBusqueda);
   ocultarMensaje(ayudaExperiencias);
@@ -94,6 +96,10 @@ async function buscar() {
       buscarExperiencias(texto),
     ]);
     if (numero !== ultimaBusqueda) return;
+
+    // Un único aviso (role=status) en lugar de anunciar las listas enteras
+    const personas = `${usuarios.length} ${usuarios.length === 1 ? 'persona' : 'personas'}`;
+    recuento.textContent = `${personas} y ${planes.length} ${planes.length === 1 ? 'plan' : 'planes'}`;
 
     if (usuarios.length === 0) {
       sinResultados.classList.remove('d-none');

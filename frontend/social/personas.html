@@ -69,19 +69,20 @@
     <div class="pt-3">
       <p id="cargando" class="text-secondary d-none" role="status">Cargando…</p>
       <div id="error-busqueda" class="alert alert-danger d-none" role="alert"></div>
+      <p id="recuento-busqueda" class="visually-hidden" role="status"></p>
     </div>
 
     <!-- Antes de buscar se explica qué escribir -->
     <div role="tabpanel" id="panel-personas" aria-labelledby="pestana-personas" class="pt-3">
       <p id="ayuda-busqueda" class="text-secondary">Escribe parte de un nombre o de un plan.</p>
       <div id="sin-resultados" class="estado-vacio d-none"><img src="/img/vacio-personas.svg" alt="" width="240" height="180"><p>No se han encontrado personas.</p></div>
-      <div id="resultados" class="lista-resultados" aria-live="polite"></div>
+      <div id="resultados" class="lista-resultados"></div>
     </div>
 
     <div role="tabpanel" id="panel-experiencias" aria-labelledby="pestana-experiencias" class="pt-3" hidden>
       <p id="ayuda-experiencias" class="text-secondary">Escribe para buscar planes. De momento se busca entre planes de ejemplo.</p>
       <div id="sin-experiencias" class="estado-vacio d-none"><img src="/img/vacio-planes.svg" alt="" width="240" height="180"><p>No se han encontrado planes.</p></div>
-      <div id="resultados-experiencias" class="rejilla-planes rejilla-busqueda" aria-live="polite"></div>
+      <div id="resultados-experiencias" class="rejilla-planes rejilla-busqueda"></div>
     </div>
   </main>
 
