@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-// Landing pública (index.html): estática, sin sesión y sin scripts.
+// Landing pública (index.html): estructura estática; su único script lleva a Inicio si hay sesión.
 // Se comprueba su estructura leyendo el HTML con jsdom.
 
 const fs = require('node:fs');
@@ -78,9 +78,9 @@ describe('landing', () => {
     });
   });
 
-  test('solo incluye el script de pausa del movimiento', () => {
+  test('solo incluye los scripts de la sesión y de la pausa del movimiento', () => {
     const scripts = [...document.querySelectorAll('script')].map((s) => s.getAttribute('src'));
-    expect(scripts).toEqual(['js/shared/movimiento.js']);
+    expect(scripts).toEqual(['js/shared/api.js', 'js/landing.js', 'js/shared/movimiento.js']);
   });
 
   test('no incluye cifras inventadas', () => {
@@ -96,5 +96,38 @@ describe('landing', () => {
   test('la cabecera no tiene buscador ni menú de cuenta', () => {
     expect(document.querySelector('header.cabecera form')).toBeNull();
     expect(document.querySelector('.menu-cuenta')).toBeNull();
+  });
+});
+
+// E3: con la sesión iniciada la landing lleva a Inicio; sin sesión se queda como está
+describe('landing con sesión', () => {
+  const { cargarScripts } = require('../helpers/pantalla');
+  const locationReal = window.location;
+  const terminar = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+  async function abrir(estado) {
+    Object.defineProperty(window, 'location', { value: { href: '', replace: jest.fn() }, configurable: true, writable: true });
+    window.fetch = jest.fn(() => Promise.resolve({ ok: estado < 400, status: estado, json: async () => ({ id: 1 }) }));
+    cargarScripts(['js/shared/api.js', 'js/landing.js']);
+    await terminar();
+  }
+
+  afterEach(() => Object.defineProperty(window, 'location', { value: locationReal, configurable: true, writable: true }));
+
+  test('con sesión redirige a Inicio', async () => {
+    await abrir(200);
+
+    expect(window.fetch).toHaveBeenCalledWith('/api/auth/yo', expect.anything());
+    expect(window.location.replace).toHaveBeenCalledWith('/cuenta/bienvenida.html');
+  });
+
+  test('sin sesión se queda en la landing', async () => {
+    await abrir(401);
+
+    expect(window.location.replace).not.toHaveBeenCalled();
+  });
+
+  test('la landing carga api.js y landing.js', () => {
+    expect(leer('index.html')).toMatch(/js\/shared\/api\.js[\s\S]*js\/landing\.js/);
   });
 });

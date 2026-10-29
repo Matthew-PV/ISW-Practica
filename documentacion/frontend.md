@@ -129,7 +129,7 @@ flowchart TB
     bienvenida -->|"Sesión no válida (401)"| iniciar_sesion
 ```
 
-**Entrada:** `/` sirve `index.html`, la landing pública, con enlaces a `/acceso/iniciar-sesion.html` y `/acceso/registro.html`. Un inicio de sesión o un registro correctos llevan a `/cuenta/bienvenida.html`.
+**Entrada:** `/` sirve `index.html`, la landing pública, con enlaces a `/acceso/iniciar-sesion.html` y `/acceso/registro.html`. Con la sesión ya iniciada, la landing lleva a `/cuenta/bienvenida.html` (`landing.js`); un inicio de sesión o un registro correctos también.
 
 **Cabecera común:** las nueve páginas con sesión (`bienvenida`, `explorar`, `mis-planes`, `amigos`, `perfil`, `ajustes`, `personas`, `usuario` y `experiencia`) comparten `header.cabecera`: la marca PlanB, las pestañas «Inicio», «Explorar», «Mis planes» y «Amigos», un buscador, la campana de notificaciones y el menú de cuenta (ver «Cabecera común» más abajo).
 
@@ -143,7 +143,7 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 
 | Página | Script | CSS propio | Módulos compartidos | Llamadas a la API | Historias |
 |---|---|---|---|---|---|
-| `index.html` | ninguno | `landing.css` | ninguno | ninguna | CS-66 |
+| `index.html` | `landing.js` | `landing.css` | `api`, `movimiento` | `GET /auth/yo` | CS-66 |
 | `/acceso/iniciar-sesion.html` | `iniciar-sesion.js` | `acceso.css` | `api` | `POST /auth/login` | CS-59 |
 | `/acceso/registro.html` | `registro.js` | `acceso.css` | `api`, `password` y Turnstile | `GET /auth/captcha`, `POST /auth/registro` | CS-59, CS-64 |
 | `/acceso/recuperar.html` | `recuperar.js` | `acceso.css` | `api` | `POST /auth/recuperar` | CS-64 |

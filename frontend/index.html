@@ -11,7 +11,7 @@
   <link href="css/landing.css" rel="stylesheet">
 </head>
 <body>
-  <!-- Landing pública y estática: no comprueba sesión ni carga scripts -->
+  <!-- Landing pública: js/landing.js solo comprueba la sesión para llevar a Inicio -->
   <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
   <!-- Capa decorativa (css/landing.css): una ruta de puntos que se dibuja al hacer scroll. Sin texto ni scripts -->
   <div class="landing-fondo" aria-hidden="true">
@@ -111,6 +111,8 @@
   </section>
 
   <footer class="landing-pie">PlanB · Ingeniería del Software</footer>
+  <script src="js/shared/api.js"></script>
+  <script src="js/landing.js"></script>
   <script src="js/shared/movimiento.js"></script>
 </body>
 </html>
