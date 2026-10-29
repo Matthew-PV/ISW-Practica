@@ -115,14 +115,15 @@ describe('/cuenta/mis-planes.html', () => {
   }
 
   const base = (experiencias) => ({
-    'GET /api/auth/yo': () => respuesta(200, { id: 1, nombreUsuario: 'ana' }),
+    'GET /api/perfil': () => respuesta(200, { id: 1, nombreUsuario: 'ana', ciudad: 'Madrid' }),
+    'GET /api/experiencias/opciones': () => respuesta(200, { categorias: ['Cultura'], momentos: [] }),
     'GET /api/ciudades': () => respuesta(200, [{ id: 1, nombre: 'Madrid', pais: 'España' }]),
     'GET /api/experiencias?autor=ana': () => respuesta(200, { experiencias, siguiente: null }),
   });
 
   test('mientras llegan los datos se ve «Cargando…» y después desaparece', async () => {
     const { promesa, resolver } = pendiente();
-    arrancar({ ...base([]), 'GET /api/auth/yo': () => promesa });
+    arrancar({ ...base([]), 'GET /api/perfil': () => promesa });
 
     expect(oculto('#cargando')).toBe(false);
     expect($('#cargando').textContent).toBe('Cargando…');
@@ -171,7 +172,6 @@ describe('/cuenta/mis-planes.html', () => {
     $('#boton-nueva').click();
     $('#titulo').value = 'Tarde cultural';
     $('#descripcion').value = 'Museos';
-    $('#ciudadId').value = '1';
     $('#form-experiencia').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
     await terminar();
 

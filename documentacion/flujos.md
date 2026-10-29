@@ -147,18 +147,18 @@ Qué protege: en MySQL solo se guarda la URL; un archivo que no es una imagen se
 
 ### F4. Crear y editar una experiencia
 
-CS-49, CS-57 y CS-22. Archivos: `bienvenida.js` → `experienciaRoutes.js` → `experienciaService.crearExperiencia` o `editarExperiencia` → `ciudadRepository` y `experienciaRepository`.
+CS-49, CS-57, CS-22, CS-55 y CS-56. Archivos: `mis-planes.js` → `experienciaRoutes.js` → `experienciaService.crearExperiencia` o `editarExperiencia` → `ciudadRepository` y `experienciaRepository`.
 
 ```mermaid
 sequenceDiagram
   actor U as Autor
-  participant P as bienvenida.js
+  participant P as mis-planes.js
   participant R as experienciaRoutes
   participant S as experienciaService
   participant CR as ciudadRepository
   participant ER as experienciaRepository
-  U->>P: rellena el formulario y elige la visibilidad
-  Note over P: debajo del selector se describe la visibilidad elegida
+  U->>P: rellena el formulario: categoría, ciudad, momento y visibilidad
+  Note over P: la ciudad escrita debe ser del catálogo; si no, error junto al campo y no se envía
   alt experiencia nueva
     P->>R: POST /api/experiencias
     R->>S: crearExperiencia(usuarioId, datos)
@@ -184,12 +184,12 @@ sequenceDiagram
       S->>ER: crear o actualizar (autorId = usuario de la sesión)
       ER-->>S: experiencia con su ciudad
       S-->>P: 201 o 200 y la experiencia
-      P->>U: tarjeta nueva o actualizada en la rejilla
+      P->>U: tarjeta nueva con aviso «Ver experiencia», tarjeta actualizada o vuelta al detalle si se llegó con ?editar=
     end
   end
 ```
 
-Qué protege: el autor sale siempre de la sesión y nunca del cuerpo de la petición, y la visibilidad solo admite PRIVADA, AMIGOS o PUBLICA (PUBLICA si no se indica).
+Qué protege: el autor sale siempre de la sesión y nunca del cuerpo de la petición, la visibilidad solo admite PRIVADA, AMIGOS o PUBLICA (PUBLICA si no se indica), y la categoría y el momento adecuado solo valores de `services/shared/opcionesExperiencia.js`.
 
 ### F5. Abrir una experiencia
 

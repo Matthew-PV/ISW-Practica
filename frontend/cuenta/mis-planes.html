@@ -51,6 +51,8 @@
     <h1 class="mb-1">Mis planes</h1>
     <p class="text-secondary mb-4">Los planes que has publicado, con los privados y los de tus amigos.</p>
     <p id="cargando" class="text-secondary" role="status">Cargando…</p>
+    <!-- Tras crear una experiencia, con enlace a su detalle -->
+    <p id="aviso-creada" class="alert alert-success d-none" role="status">Experiencia publicada. <a id="enlace-creada">Ver experiencia</a></p>
     <div id="error-lista" role="alert" class="alert alert-danger d-none"></div>
 
     <h2 class="visually-hidden">Tus planes</h2>
@@ -73,96 +75,93 @@
     </div>
   </main>
 
-  <!-- Formulario para crear o editar una experiencia -->
-  <dialog
-    id="dialogo-experiencia"
-    class="dialogo-experiencia"
-    aria-labelledby="titulo-dialogo"
-  >
-    <form id="form-experiencia" class="p-4">
-      <h2 id="titulo-dialogo" class="h5 mb-3">Nueva experiencia</h2>
+  <!-- Formulario para crear o editar una experiencia, con su vista previa al lado -->
+  <dialog id="dialogo-experiencia" class="dialogo-experiencia dialogo-ancho" aria-labelledby="titulo-dialogo">
+    <form id="form-experiencia" class="formulario-experiencia">
+      <div class="formulario-experiencia-campos">
+        <h2 id="titulo-dialogo" class="h5 mb-3">Nueva experiencia</h2>
 
-      <div class="mb-3">
-        <label for="titulo" class="form-label">Título</label>
-        <input
-          type="text"
-          class="form-control"
-          id="titulo"
-          maxlength="191"
-          required
-        >
+        <div class="mb-3" data-campo="titulo">
+          <label for="titulo" class="form-label">Título</label>
+          <input type="text" class="form-control" id="titulo" maxlength="191" required>
+        </div>
+
+        <!-- CS-55: categorías de GET /api/experiencias/opciones -->
+        <fieldset class="mb-3" data-campo="tipo">
+          <legend class="form-label">Categoría</legend>
+          <div id="opciones-tipo" class="opciones-pastilla"></div>
+        </fieldset>
+
+        <div class="mb-3" data-campo="ciudad">
+          <label for="ciudad" class="form-label">Ciudad</label>
+          <input type="text" class="form-control" id="ciudad" list="lista-ciudades" autocomplete="off" required aria-describedby="mensaje-ciudad">
+          <datalist id="lista-ciudades"></datalist>
+          <p id="mensaje-ciudad" class="mensaje-campo d-none"></p>
+        </div>
+
+        <div class="mb-3" data-campo="descripcion">
+          <label for="descripcion" class="form-label">Descripción</label>
+          <textarea class="form-control" id="descripcion" rows="4" required aria-describedby="ayuda-descripcion contador-descripcion"></textarea>
+          <div class="d-flex justify-content-between gap-2 form-text">
+            <span id="ayuda-descripcion">Cuenta qué hacer, cuándo ir y algún consejo práctico.</span>
+            <span id="contador-descripcion">0 caracteres</span>
+          </div>
+        </div>
+
+        <!-- CS-56: momentos agrupados; se guarda uno o ninguno -->
+        <fieldset class="mb-3" data-campo="momentoAdecuado">
+          <legend class="form-label">Momento adecuado <span class="text-secondary">(opcional)</span></legend>
+          <div id="opciones-momento"></div>
+        </fieldset>
+
+        <!-- CS-22: quién verá la experiencia -->
+        <fieldset class="mb-3" data-campo="visibilidad">
+          <legend class="form-label">Quién la verá</legend>
+          <div class="opciones-visibilidad">
+            <label class="opcion-visibilidad">
+              <input type="radio" name="visibilidad" value="PUBLICA">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>
+              <span><strong>Pública</strong><span class="opcion-visibilidad-texto">Cualquier usuario puede verla.</span></span>
+            </label>
+            <label class="opcion-visibilidad">
+              <input type="radio" name="visibilidad" value="AMIGOS">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></svg>
+              <span><strong>Amigos</strong><span class="opcion-visibilidad-texto">Solo tus amigos (con la amistad aceptada) y tú.</span></span>
+            </label>
+            <label class="opcion-visibilidad">
+              <input type="radio" name="visibilidad" value="PRIVADA">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+              <span><strong>Privada</strong><span class="opcion-visibilidad-texto">Solo tú.</span></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div id="error-experiencia" role="alert" class="alert alert-danger d-none"></div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" id="boton-cancelar" class="btn btn-outline-primary">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Publicar experiencia</button>
+        </div>
       </div>
 
-      <div class="mb-3">
-        <label for="descripcion" class="form-label">Descripción</label>
-        <textarea
-          class="form-control"
-          id="descripcion"
-          rows="4"
-          required
-        ></textarea>
-      </div>
-
-      <div class="mb-3">
-        <label for="ciudadId" class="form-label">Ciudad</label>
-        <select class="form-select" id="ciudadId" required>
-          <option value="">Elige una ciudad</option>
-        </select>
-      </div>
-
-      <div class="mb-3">
-        <label for="visibilidad" class="form-label">Visibilidad</label>
-        <select class="form-select" id="visibilidad">
-          <option value="PRIVADA">Privada</option>
-          <option value="AMIGOS">Amigos</option>
-          <option value="PUBLICA" selected>Pública</option>
-        </select>
-        <div id="descripcion-visibilidad" class="form-text"></div>
-      </div>
-
-      <div class="mb-3">
-        <label for="tipo" class="form-label">Tipo (opcional)</label>
-        <input
-          type="text"
-          class="form-control"
-          id="tipo"
-          maxlength="191"
-          placeholder="Cultural, gastronómica..."
-        >
-      </div>
-
-      <div class="mb-3">
-        <label for="momentoAdecuado" class="form-label">
-          Momento adecuado (opcional)
-        </label>
-        <input
-          type="text"
-          class="form-control"
-          id="momentoAdecuado"
-          maxlength="191"
-          placeholder="Por la tarde, en primavera..."
-        >
-      </div>
-
-      <div
-        id="error-experiencia" role="alert"
-        class="alert alert-danger d-none"
-      ></div>
-
-      <div class="d-flex justify-content-end gap-2">
-        <button
-          type="button"
-          id="boton-cancelar"
-          class="btn btn-outline-primary"
-        >
-          Cancelar
-        </button>
-
-        <button type="submit" class="btn btn-primary">
-          Guardar
-        </button>
-      </div>
+      <!-- Vista previa: la tarjeta tal como se verá en las listas -->
+      <aside class="formulario-experiencia-previa" aria-hidden="true">
+        <p class="small text-secondary mb-2">Vista previa</p>
+        <div id="vista-previa"></div>
+      </aside>
     </form>
+  </dialog>
+
+  <!-- Aviso al cerrar el formulario con cambios sin guardar -->
+  <dialog id="dialogo-descartar" class="dialogo-experiencia" aria-labelledby="titulo-descartar">
+    <div class="p-4">
+      <h2 id="titulo-descartar" class="h5 mb-2">¿Descartar los cambios?</h2>
+      <p class="mb-3">Lo que has escrito no se ha guardado.</p>
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" id="seguir-editando" class="btn btn-outline-primary">Seguir editando</button>
+        <button type="button" id="confirmar-descartar" class="btn btn-primary">Descartar</button>
+      </div>
+    </div>
   </dialog>
 
   <script src="/js/shared/api.js"></script>

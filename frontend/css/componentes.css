@@ -968,6 +968,146 @@ body.pagina-buscar .menu-notificaciones {
   background: var(--color-velo);
 }
 
+/* Formulario de crear y editar: datos a la izquierda y vista previa de la tarjeta a la derecha */
+.dialogo-ancho {
+  width: min(60rem, calc(100% - 2rem));
+  max-height: calc(100vh - 2rem);
+}
+
+.formulario-experiencia {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 16rem;
+}
+
+.formulario-experiencia-campos {
+  padding: var(--espacio-24);
+}
+
+.formulario-experiencia-previa {
+  padding: var(--espacio-24);
+  background: var(--color-superficie);
+  border-left: 1px solid var(--color-borde-suave);
+}
+
+#vista-previa {
+  position: sticky;
+  top: var(--espacio-24);
+}
+
+.formulario-experiencia fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* La leyenda de cada grupo, igual que la etiqueta de un campo */
+.formulario-experiencia legend {
+  font: inherit;
+  margin-bottom: var(--espacio-8);
+}
+
+/* Opciones de radio con forma de pastilla (categoría y momento) */
+.opciones-pastilla {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-8);
+}
+
+.pastilla-opcion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-8);
+  min-height: 40px;
+  padding: 0 var(--espacio-16);
+  font-weight: 600;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-campo);
+  border-radius: var(--radio-pildora);
+  cursor: pointer;
+  transition: background-color var(--duracion-corta), border-color var(--duracion-corta);
+}
+
+/* El radio queda accesible con teclado, pero se ve la pastilla entera */
+.pastilla-opcion input,
+.opcion-visibilidad input {
+  position: absolute;
+  opacity: 0;
+}
+
+.pastilla-opcion svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pastilla-opcion:hover {
+  background: var(--color-crema);
+}
+
+.pastilla-opcion:has(input:checked) {
+  color: var(--color-blanco);
+  background: var(--color-texto);
+  border-color: var(--color-texto);
+}
+
+/* Con el color de su categoría, el mismo que el bloque de la tarjeta */
+.pastilla-opcion[data-categoria="gastronomia"]:has(input:checked) { color: var(--color-texto); background: var(--color-melocoton); }
+.pastilla-opcion[data-categoria="cultura"]:has(input:checked) { color: var(--color-texto); background: var(--color-cultura); }
+.pastilla-opcion[data-categoria="naturaleza"]:has(input:checked) { color: var(--color-texto); background: var(--color-naturaleza); }
+.pastilla-opcion[data-categoria="noche"]:has(input:checked) { color: var(--color-melocoton); background: var(--color-texto); }
+.pastilla-opcion[data-categoria="deporte"]:has(input:checked) { color: var(--color-texto); background: var(--color-deporte); }
+.pastilla-opcion[data-categoria="rincones"]:has(input:checked) { color: var(--color-texto); background: var(--color-crema); }
+
+.pastilla-opcion[data-categoria]:has(input:checked) {
+  border-color: var(--color-texto);
+  box-shadow: inset 0 0 0 1px var(--color-texto);
+}
+
+.pastilla-opcion:has(input:focus-visible),
+.opcion-visibilidad:has(input:focus-visible) {
+  outline: 3px solid var(--color-foco);
+  outline-offset: 2px;
+}
+
+.grupo-momento-titulo {
+  margin: 0 0 var(--espacio-4);
+  font-size: 0.875rem;
+  color: var(--color-texto-suave);
+}
+
+/* Visibilidad: tres tarjetas con icono y quién la verá; la elegida, destacada */
+.opciones-visibilidad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--espacio-8);
+}
+
+.opcion-visibilidad {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-8);
+  padding: var(--espacio-12);
+  border: 1px solid var(--color-borde-campo);
+  border-radius: var(--radio-tarjeta);
+  cursor: pointer;
+}
+
+.opcion-visibilidad svg {
+  flex: none;
+}
+
+.opcion-visibilidad-texto {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-texto-suave);
+}
+
+.opcion-visibilidad:has(input:checked) {
+  background: var(--color-crema);
+  border-color: var(--color-acento);
+  box-shadow: inset 0 0 0 1px var(--color-acento);
+}
+
 /* ---------- Fundidos y movimiento ---------- */
 
 @keyframes entrar {

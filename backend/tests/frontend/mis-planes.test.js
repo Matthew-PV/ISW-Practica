@@ -2,8 +2,8 @@
  * @jest-environment jsdom
  */
 
-// Pantalla Mis planes: selector de visibilidad del formulario (CS-22),
-// enlace al detalle de cada experiencia (CS-63) y edición.
+// Pantalla Mis planes: visibilidad elegida al crear (CS-22), enlace al detalle de cada
+// experiencia (CS-63), edición y carga por páginas. El formulario en detalle, en mis-planes.formulario.test.js.
 // Se simula el navegador con jsdom y el servidor con fetch.
 
 const fs = require('node:fs');
@@ -25,7 +25,10 @@ const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/mis-planes.js'
 const USUARIO = {
   id: 1,
   nombreUsuario: 'ana',
+  ciudad: 'Madrid',
 };
+
+const OPCIONES = { categorias: ['Cultura', 'Rincones'], momentos: [{ grupo: 'Franja del día', valores: ['Por la tarde'] }] };
 
 const CIUDADES = [
   {
@@ -44,7 +47,7 @@ const EXPERIENCIA = {
     id: 1,
     nombre: 'Madrid',
   },
-  tipo: 'Cultural',
+  tipo: 'Cultura',
   momentoAdecuado: 'Por la tarde',
   visibilidad: 'AMIGOS',
 };
@@ -78,11 +81,15 @@ beforeEach(async () => {
 
   window.fetch = jest.fn(
     (ruta) => {
-      if (ruta === '/api/auth/yo') {
+      if (ruta === '/api/perfil') {
         return respuesta(
           200,
           USUARIO
         );
+      }
+
+      if (ruta === '/api/experiencias/opciones') {
+        return respuesta(200, OPCIONES);
       }
 
       if (ruta === '/api/ciudades') {
@@ -131,53 +138,12 @@ beforeEach(async () => {
   await terminar();
 });
 
-test('el formulario de experiencia incluye el selector de visibilidad con las tres opciones', () => {
-  $('#boton-nueva').click();
-
-  const selector = $('#visibilidad');
-
-  expect(selector).not.toBeNull();
-  expect(selector.value).toBe('PUBLICA');
-  expect([...selector.options].map((op) => op.value)).toEqual([
-    'PRIVADA',
-    'AMIGOS',
-    'PUBLICA',
-  ]);
-});
-
-test('al editar una experiencia, el selector de visibilidad conserva su valor actual', () => {
-  $('.tarjeta-experiencia .boton-editar').click();
-
-  const selector = $('#visibilidad');
-
-  expect(selector).not.toBeNull();
-  expect(selector.value).toBe('AMIGOS');
-});
-
-test('debajo del selector se describe la visibilidad elegida y cambia al elegir otra (CS-22)', () => {
-  $('#boton-nueva').click();
-
-  expect($('#descripcion-visibilidad').textContent).toBe('Cualquier usuario puede verla.');
-
-  $('#visibilidad').value = 'PRIVADA';
-  $('#visibilidad').dispatchEvent(new Event('change'));
-
-  expect($('#descripcion-visibilidad').textContent).toBe('Solo tú puedes verla.');
-});
-
-test('al editar, la descripción corresponde a la visibilidad actual de la experiencia (CS-22)', () => {
-  $('.tarjeta-experiencia .boton-editar').click();
-
-  expect($('#descripcion-visibilidad').textContent).toBe('Solo la ven tus amigos (con la amistad aceptada) y tú.');
-});
-
 test('al enviar el formulario se incluye la visibilidad elegida', async () => {
   $('#boton-nueva').click();
 
   $('#titulo').value = 'Nueva experiencia';
   $('#descripcion').value = 'Descripción de prueba';
-  $('#ciudadId').value = '1';
-  $('#visibilidad').value = 'AMIGOS';
+  $('input[name="visibilidad"][value="AMIGOS"]').checked = true;
 
   $('#form-experiencia').dispatchEvent(
     new Event('submit', { bubbles: true, cancelable: true })
@@ -272,13 +238,13 @@ test('Ver detalle de una experiencia con id 7 enlaza a /experiencias/experiencia
   expect(enlace.classList.contains('btn-outline-primary')).toBe(true);
 });
 
-describe('Guardar con espera (R11)', () => {
+describe('Publicar con espera (R11)', () => {
   const enviar = () => {
     $('#boton-nueva').click();
     $('#form-experiencia').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
   };
 
-  test('«Guardar» pasa a «Guardando…», desactivado, mientras espera y se restaura al resolver', async () => {
+  test('«Publicar experiencia» pasa a «Guardando…», desactivado, mientras espera y se restaura al resolver', async () => {
     let resolver;
     window.fetch.mockImplementationOnce(() => new Promise((r) => { resolver = r; }));
     enviar();
@@ -289,17 +255,17 @@ describe('Guardar con espera (R11)', () => {
 
     resolver(await respuesta(201, { ...EXPERIENCIA, id: 99 }));
     await terminar();
-    expect(boton.textContent.trim()).toBe('Guardar');
+    expect(boton.textContent.trim()).toBe('Publicar experiencia');
     expect(boton.disabled).toBe(false);
     expect(boton.hasAttribute('aria-busy')).toBe(false);
   });
 
-  test('«Guardar» se restaura también si la petición falla', async () => {
+  test('«Publicar experiencia» se restaura también si la petición falla', async () => {
     window.fetch.mockImplementationOnce(() => respuesta(400, { error: 'Datos no válidos' }));
     enviar();
     await terminar();
     const boton = $('#form-experiencia button[type="submit"]');
-    expect(boton.textContent.trim()).toBe('Guardar');
+    expect(boton.textContent.trim()).toBe('Publicar experiencia');
     expect(boton.disabled).toBe(false);
     expect(boton.hasAttribute('aria-busy')).toBe(false);
   });
@@ -317,11 +283,12 @@ describe('enlaces desde otras pantallas', () => {
   const abrirCon = async (busqueda) => {
     window.history.pushState({}, '', `/cuenta/mis-planes.html${busqueda}`);
     document.documentElement.innerHTML = HTML;
-    const dialogo = $('dialog');
+    const dialogo = $('#dialogo-experiencia');
     dialogo.showModal = jest.fn();
     dialogo.close = jest.fn();
     window.fetch = jest.fn((ruta) => {
-      if (ruta === '/api/auth/yo') return respuesta(200, USUARIO);
+      if (ruta === '/api/perfil') return respuesta(200, USUARIO);
+      if (ruta === '/api/experiencias/opciones') return respuesta(200, OPCIONES);
       if (ruta === '/api/ciudades') return respuesta(200, CIUDADES);
       if (ruta === `/api/experiencias/${EXPERIENCIA.id}`) return respuesta(200, EXPERIENCIA);
       if (ruta.startsWith('/api/experiencias?')) return respuesta(200, { experiencias: [], siguiente: null });

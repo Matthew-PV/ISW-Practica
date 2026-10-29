@@ -150,7 +150,7 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 | `/acceso/restablecer.html` | `restablecer.js` | `acceso.css` | `api`, `password` | `POST /auth/restablecer` | CS-64 |
 | `/cuenta/bienvenida.html` | `bienvenida.js` | `descubrir.css` | `api`, `pantalla`, `ejemplos`, `cabecera` | `GET /auth/yo`, `GET /perfil` | pendiente |
 | `/experiencias/explorar.html` | `explorar.js` | `descubrir.css` | `api`, `pantalla`, `ejemplos`, `cabecera` | ninguno (planes de ejemplo) | pendiente |
-| `/cuenta/mis-planes.html` | `mis-planes.js` | ninguno | `api`, `pantalla`, `cabecera` | `GET /auth/yo`, `GET /ciudades`, `GET /experiencias?autor=`, `GET /experiencias/:id`, `POST /experiencias`, `PATCH /experiencias/:id` | CS-44, CS-49, CS-57, CS-22 |
+| `/cuenta/mis-planes.html` | `mis-planes.js` | ninguno | `api`, `pantalla`, `cabecera` | `GET /perfil`, `GET /ciudades`, `GET /experiencias/opciones`, `GET /experiencias?autor=`, `GET /experiencias/:id`, `POST /experiencias`, `PATCH /experiencias/:id` | CS-44, CS-49, CS-57, CS-22, CS-55, CS-56 |
 | `/cuenta/perfil.html` | `perfil.js` | `perfil.css` | `api`, `pantalla`, `pestanas`, `cabecera`, `experiencias` | `GET /perfil`, `GET /perfil/resumen`, `/perfil/amigos` y `/perfil/seguidores`, `GET /experiencias?autor=` | CS-45, CS-44 |
 | `/cuenta/ajustes.html` | `ajustes.js` | ninguno | `api`, `pantalla`, `pestanas`, `cabecera`, `password` | `GET` y `PUT /perfil`, `PUT /perfil/foto`, `PUT /perfil/password` | CS-47, CS-64 |
 | `/social/amigos.html` | `solicitudes.js` | `perfil.css` | `api`, `pantalla`, `cabecera` | `GET /amistades/solicitudes`, `PATCH /amistades/:id` | CS-61 |
@@ -277,12 +277,19 @@ Pruebas: `explorar.test.js`.
 
 * Muestra las experiencias del usuario en una rejilla, de 10 en 10, con «Cargar más» (`#mas-experiencias`). Mientras llegan los datos se ve «Cargando…» (`#cargando`) y, si no hay ninguna experiencia, `#sin-experiencias` dice «Todavía no has publicado experiencias.» junto a la tarjeta «+».
 * La primera tarjeta, «+», abre el `<dialog>` `#dialogo-experiencia` para crear una experiencia. «Editar» abre el mismo diálogo relleno con sus datos.
-* `?nuevo=1` abre el diálogo de creación y `?editar=<id>` el de edición de esa experiencia; el botón «Editar plan» del detalle usa este último.
-* Debajo del selector de visibilidad, `#descripcion-visibilidad` explica la opción elegida.
-* Al guardar, la tarjeta nueva aparece la primera y la editada se sustituye en su sitio, sin recargar la página.
-* El desplegable de ciudades se llena con `GET /api/ciudades`.
+* El diálogo tiene dos columnas: los campos a la izquierda y, a la derecha, `#vista-previa` con la tarjeta tal como quedará (la misma `crearTarjeta`, sin botones), que cambia al escribir. Campos, en orden:
+  * Título.
+  * Categoría: una pastilla de radio por cada categoría de `GET /api/experiencias/opciones`, con su icono y color; obligatoria.
+  * Ciudad: campo de texto con `<datalist>` (`#lista-ciudades`) que sugiere primero la ciudad del perfil (`GET /api/perfil`, si coincide con una del catálogo), después las de mis experiencias y luego el resto. Al crear se propone la del perfil. Si lo escrito no es una ciudad del catálogo, `#mensaje-ciudad` dice «Elige una ciudad de la lista.» y no se envía nada.
+  * Descripción, con una pista de qué contar y un contador de caracteres (`#contador-descripcion`).
+  * Momento adecuado (opcional): «Sin indicar» y pastillas agrupadas por franja del día, día de la semana y estación.
+  * Quién la verá: tres tarjetas de radio (Pública, Amigos, Privada) con icono y quién la verá; Pública por defecto.
+* El botón dice «Publicar experiencia» al crear y «Guardar cambios» al editar.
+* Cancelar o Esc con cambios sin guardar abren `#dialogo-descartar` («Seguir editando» o «Descartar»); sin cambios, cierran.
+* `?nuevo=1` abre el diálogo de creación y `?editar=<id>` el de edición de esa experiencia; el botón «Editar plan» del detalle usa este último. La dirección se limpia al abrirlo. Desde `?editar=`, guardar o cancelar vuelven al detalle de la experiencia.
+* Al guardar, la tarjeta nueva aparece la primera y la editada se sustituye en su sitio, sin recargar la página. Tras crear, `#aviso-creada` dice «Experiencia publicada.» con el enlace «Ver experiencia», que recibe el foco.
 
-Pruebas: `mis-planes.test.js` y `estados.test.js`.
+Pruebas: `mis-planes.test.js`, `mis-planes.formulario.test.js` y `estados.test.js`.
 
 ### `/cuenta/perfil.html`: mi perfil
 
