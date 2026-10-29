@@ -11,7 +11,7 @@ Desde `backend/`:
 - `npm run test:cobertura`: todas las pruebas con informe; falla por debajo de los mínimos de `package.json`.
 - `npm run dev`: servidor de desarrollo.
 - `npm run demo:preparar` y `npm run dev:demo`: modo demo con MySQL local (`docker compose up -d`) y datos `demo_*`, sin la base online.
-- `npm run db:migrate`, `npm run db:seed`, `npm run db:studio`: Prisma (migraciones, catálogo de ciudades repetible sin duplicados, visor). Actúan sobre la base online compartida: una migración afecta a todo el equipo. `npm run db:seed-demo` carga los datos de demostración (`demo_*`).
+- `npm run db:migrate`, `npm run db:seed`, `npm run db:studio`: Prisma (migraciones, catálogo de ciudades repetible sin duplicados, visor). Actúan sobre la base online compartida: `db:migrate` solo aplica las migraciones que ya están en el repositorio (`migrate deploy`) y afecta a todo el equipo. `npm run db:migrate:nueva` crea una migración nueva tras cambiar `schema.prisma`, siempre contra la base local de demo (necesita `docker compose up -d`). `npm run db:seed-demo` carga los datos de demostración (`demo_*`).
 
 ## Cómo trabajar
 
@@ -26,7 +26,7 @@ No leas esto salvo que la tarea lo pida expresamente:
 
 - `documentacion/anexo/`: histórico (`modificaciones.md`), prompts del equipo, glosario, hoja de ruta de aprendizaje, propuesta inicial, libro de historias, herramientas e instalación. Única excepción: `anexo/fichas-integrantes.md` al poner a alguien en contexto (ver más abajo).
 - `documentacion/customer-stories/` (copia obsoleta del libro de historias) y `documentacion/office-scripts/`.
-- `.planes/` (borradores locales).
+- `.planes/` (borradores locales; no se sube a Git y en otras copias del repositorio no existe).
 
 ## Poner en contexto a un integrante
 

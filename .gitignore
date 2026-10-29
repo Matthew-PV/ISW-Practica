@@ -40,7 +40,3 @@ cookies.txt
 ~$*
 .~lock.*#
 
-# Plan de trabajo personal (auditoría y refactorización) y su mapa de la arquitectura,
-# solo para uso local
-/PLAN.md
-/architecture_map.md

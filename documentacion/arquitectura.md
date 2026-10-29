@@ -287,7 +287,7 @@ ISW-Practica/
 │   │   ├── app.js             # configuración de Express
 │   │   └── server.js          # arranque del servidor
 │   ├── tests/                 # pruebas con Jest, Supertest y jsdom (sección 9)
-│   ├── .env.example           # variables de entorno necesarias (sin valores reales)
+│   ├── .env.example           # plantilla de .env (sin valores reales); .env.test y .env.demo llevan los valores del MySQL local
 │   └── package.json           # dependencias, scripts de npm y configuración de Jest
 ├── frontend/
 │   ├── index.html             # portada (la ruta «/»)
@@ -326,7 +326,7 @@ Puesta en marcha en local, desde la raíz del repositorio:
 
 1. `cd backend` y copiar `.env.example` a `.env`. Rellenar `DATABASE_URL` (base online Aiven, la pide cada integrante al equipo), `CLOUDINARY_URL` y, cuando haga falta, `SMTP_URL`; cambiar `SESSION_SECRET`. El certificado de Aiven se guarda como `backend/prisma/aiven-ca.pem` (ignorado por Git).
 2. `npm install` instala las dependencias.
-3. La base online ya tiene las tablas y el catálogo de ciudades. Quien cambie `prisma/schema.prisma` ejecuta `npm run db:migrate` sobre ella, y afecta a todo el equipo. `npm run db:seed-demo` carga o repone los datos de demostración (usuarios `demo_*@planb.local`, contraseña `Demo1234`, con fotos en Cloudinary); solo toca a los `demo_*`.
+3. La base online ya tiene las tablas y el catálogo de ciudades. Quien cambie `prisma/schema.prisma` genera la migración con `npm run db:migrate:nueva` (contra la base local de demo, con Docker levantado), la sube al repositorio y las aplica a la online con `npm run db:migrate`, que afecta a todo el equipo. `npm run db:seed-demo` carga o repone los datos de demostración (usuarios `demo_*@planb.local`, contraseña `Demo1234`, con fotos en Cloudinary); solo toca a los `demo_*`.
 4. `npm run dev` arranca el servidor en http://localhost:3000, que sirve la API y la web, y se reinicia solo al guardar cambios.
 
 Tras un `git pull` que traiga migraciones o dependencias nuevas: `npm install`, `npx prisma migrate deploy` y `npx prisma generate`.
@@ -354,7 +354,8 @@ Scripts de `backend/package.json`:
 | `npm run test:mysql` | Ejecuta las pruebas de `tests/mysql/` contra el MySQL local de Docker (`.env.test`; `docker compose up -d`) |
 | `npm run test:todo` | Ejecuta `npm test` y después `npm run test:mysql` |
 | `npm run test:cobertura` | Ejecuta todas las pruebas, también las de MySQL, con el informe de cobertura |
-| `npm run db:migrate` | Aplica los cambios de `schema.prisma` a la base de datos y genera la migración |
+| `npm run db:migrate` | Aplica a la base online las migraciones del repositorio que aún no tiene (`prisma migrate deploy`) |
+| `npm run db:migrate:nueva` | Genera la migración de los cambios de `schema.prisma` y la aplica a la base local de demo (`prisma migrate dev`) |
 | `npm run db:seed` | Carga el catálogo inicial de ciudades sin duplicar entradas |
 | `npm run db:seed-demo` | Carga los datos de demostración (usuarios `demo_*`, experiencias, valoraciones, amistades y fotos); repetible |
 | `npm run db:studio` | Abre Prisma Studio, una interfaz web para ver y editar los datos |
