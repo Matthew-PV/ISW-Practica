@@ -28,7 +28,14 @@ function mostrarRequisitosPassword(campoPassword, lista, obtenerNombre) {
     REQUISITOS_PASSWORD.forEach(([texto, cumple], i) => {
       // Con el campo vacío no se da ninguno por cumplido
       const cumplido = password !== '' && cumple(password, obtenerNombre());
-      elementos[i].textContent = `${cumplido ? '✓' : '○'} ${texto}`;
+      // El símbolo es decorativo: el estado va también en texto para quien no distingue colores o usa lector
+      const simbolo = document.createElement('span');
+      simbolo.setAttribute('aria-hidden', 'true');
+      simbolo.textContent = cumplido ? '✓ ' : '○ ';
+      const estado = document.createElement('span');
+      estado.className = 'visually-hidden';
+      estado.textContent = cumplido ? ' (cumplido)' : ' (pendiente)';
+      elementos[i].replaceChildren(simbolo, texto, estado);
       elementos[i].dataset.cumple = cumplido;
       elementos[i].classList.toggle('text-success', cumplido);
       elementos[i].classList.toggle('text-secondary', !cumplido);

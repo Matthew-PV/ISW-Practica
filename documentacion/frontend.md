@@ -238,7 +238,7 @@ Pruebas: `iniciar-sesion.test.js`.
 
 ### `/acceso/registro.html`: crear una cuenta
 
-* Pide nombre de usuario, email y contraseña. Mientras se escribe la contraseña, `mostrarRequisitosPassword` marca cada requisito cumplido en `#requisitos-password`, también el de no contener el nombre.
+* Pide nombre de usuario, email y contraseña. Mientras se escribe la contraseña, `mostrarRequisitosPassword` marca cada requisito cumplido en `#requisitos-password`, también el de no contener el nombre; cada uno lleva el estado también como texto oculto («cumplido» o «pendiente»), no solo con el símbolo.
 * El CAPTCHA de Cloudflare Turnstile se dibuja en `#captcha` cuando su script llama a `window.iniciarCaptcha`, con la clave pública de `GET /api/auth/captcha`.
 * Con el registro correcto, la sesión ya está abierta y va a `/cuenta/bienvenida.html`.
 
@@ -260,7 +260,7 @@ Pruebas: `recuperacion.test.js`.
 
 ### `/cuenta/bienvenida.html`: inicio
 
-* Portada con «Hola, <nombre>» y «Crear plan» (a `/cuenta/mis-planes.html?nuevo=1`), y debajo tiras horizontales de planes (`#tiras`): «Ver planes en mi ciudad» (con la ciudad del perfil debajo, Madrid por defecto), «Nuevos esta semana» y «Lo que hacen tus amigos». Cada una lleva «Ver más →» a `/experiencias/explorar.html?tira=<id>`.
+* Portada con «Hola, <nombre>» y «Crear plan» (a `/cuenta/mis-planes.html?nuevo=1`), y debajo tiras horizontales de planes (`#tiras`): «Ver planes en mi ciudad» (con la ciudad del perfil debajo, Madrid por defecto), «Nuevos esta semana» y «Lo que hacen tus amigos». Cada una lleva «Ver más →» a `/experiencias/explorar.html?tira=<id>`. La fila de tarjetas es un grupo enfocable con Tab (`tabindex="0"`, `role="group"`, nombrado por el título de la tira) para poder desplazarla con las flechas.
 * Los planes son de ejemplo (`js/shared/ejemplos.js`) y la página lo avisa; aún no hay endpoint de feed.
 
 Pruebas: `inicio.test.js`.
@@ -325,7 +325,7 @@ Pruebas: `usuario.test.js`, `estados.test.js`, `usuario.cabecera.test.js` y `sha
 ### `/experiencias/experiencia.html?id=`: una experiencia
 
 * Título, autor (enlace a su perfil), ciudad y descripción.
-* **Valorar:** el formulario solo aparece si no soy el autor y se rellena con mi valoración si ya la había hecho. La puntuación es obligatoria y se elige con cinco estrellas (`role="radiogroup"`; el valor va en el campo oculto `#val-puntuacion`); las valoraciones publicadas la muestran con estrellas rellenas (`.estrellas`, `aria-label="n de 5"`). `#contador-caracteres` cuenta hasta 1000. El botón «Guardar» pasa a «Actualizar valoración» cuando ya existe una.
+* **Valorar:** el formulario solo aparece si no soy el autor y se rellena con mi valoración si ya la había hecho. La puntuación es obligatoria y se elige con cinco estrellas (`role="radiogroup"`, con las flechas se mueve y elige entre ellas y solo la elegida entra en el orden de Tab; el valor va en el campo oculto `#val-puntuacion`); las valoraciones publicadas la muestran con estrellas rellenas (`.estrellas`, `aria-label="n de 5"`). `#contador-caracteres` cuenta hasta 1000. El botón «Guardar» pasa a «Actualizar valoración» cuando ya existe una.
 * **Valoraciones de amigos y seguidores** (CS-48) y **todas las valoraciones** (CS-63): dos listas de 10 en 10 con «Cargar más».
 * **«Útil» y «Reportar»:** solo funcionan en la pantalla y no guardan nada, hasta que se implementen CS-02 y CS-04. «Reportar» abre el `<dialog>` `#dialogo-reporte`.
 * Si cualquier petición responde 404, se borra lo que se mostraba y queda solo «Contenido no disponible».

@@ -304,6 +304,15 @@ for (let n = 1; n <= MAX_PUNTUACION; n++) {
   boton.setAttribute('aria-label', n === 1 ? '1 estrella' : `${n} estrellas`);
   boton.append(crearEstrella(false));
   boton.addEventListener('click', () => elegirPuntuacion(n));
+  // Como en un grupo de radio: las flechas eligen y mueven el foco, con vuelta circular
+  boton.addEventListener('keydown', (e) => {
+    const paso = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+    if (!paso) return;
+    e.preventDefault();
+    const destino = (n - 1 + paso + MAX_PUNTUACION) % MAX_PUNTUACION;
+    elegirPuntuacion(destino + 1);
+    botonesEstrella[destino].focus();
+  });
   botonesEstrella.push(boton);
 }
 grupoEstrellas.append(...botonesEstrella);
@@ -314,6 +323,8 @@ function elegirPuntuacion(valor) {
   botonesEstrella.forEach((boton, i) => {
     boton.classList.toggle('on', i < valor);
     boton.setAttribute('aria-checked', String(i + 1 === valor));
+    // Solo una estrella entra en el orden de Tab: la elegida o, sin elegir, la primera
+    boton.tabIndex = i + 1 === (valor || 1) ? 0 : -1;
   });
 }
 elegirPuntuacion(0);

@@ -74,7 +74,7 @@
       <form id="form-perfil">
         <div class="mb-3">
           <label for="nombreUsuario" class="form-label">Nombre de usuario</label>
-          <input type="text" class="form-control" id="nombreUsuario" required minlength="3" maxlength="30">
+          <input type="text" class="form-control" id="nombreUsuario" required minlength="3" maxlength="30" autocomplete="username">
         </div>
         <div class="mb-3">
           <label for="email" class="form-label">Email</label>
@@ -82,7 +82,7 @@
         </div>
         <div class="mb-3">
           <label for="ciudad" class="form-label">Ciudad</label>
-          <input type="text" class="form-control" id="ciudad" maxlength="191">
+          <input type="text" class="form-control" id="ciudad" maxlength="191" autocomplete="address-level2">
         </div>
         <div id="error-perfil" role="alert" class="alert alert-danger d-none"></div>
         <p id="estado-guardado" class="estado-guardado" role="status"></p>

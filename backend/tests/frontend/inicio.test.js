@@ -42,6 +42,17 @@ test('muestra tres tiras con tarjetas y un «Ver más» al explorador', async ()
   ]);
 });
 
+test('cada fila de tarjetas se puede enfocar y desplazar con teclado, con el título de su tira por nombre', async () => {
+  await abrir({ ...SESION, '/api/perfil': () => respuesta(200, { ciudad: 'Sevilla' }) });
+
+  for (const tira of document.querySelectorAll('.tira')) {
+    const fila = tira.querySelector('.tira-fila');
+    expect(fila.getAttribute('tabindex')).toBe('0');
+    expect(fila.getAttribute('role')).toBe('group');
+    expect(fila.getAttribute('aria-labelledby')).toBe(tira.querySelector('h2').id);
+  }
+});
+
 test('la tira de la ciudad lleva la ciudad del perfil debajo del título', async () => {
   await abrir({ ...SESION, '/api/perfil': () => respuesta(200, { ciudad: 'Sevilla' }) });
 

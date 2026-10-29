@@ -27,15 +27,15 @@
       <form id="form-registro">
         <div class="mb-3">
           <label for="nombreUsuario" class="form-label">Nombre de usuario</label>
-          <input type="text" class="form-control" id="nombreUsuario" required minlength="3" maxlength="30">
+          <input type="text" class="form-control" id="nombreUsuario" required minlength="3" maxlength="30" autocomplete="username">
         </div>
         <div class="mb-3">
           <label for="email" class="form-label">Email</label>
-          <input type="email" class="form-control" id="email" required>
+          <input type="email" class="form-control" id="email" required autocomplete="email">
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">Contraseña</label>
-          <input type="password" class="form-control" id="password" required minlength="8" maxlength="72" aria-describedby="requisitos-password">
+          <input type="password" class="form-control" id="password" required minlength="8" maxlength="72" autocomplete="new-password" aria-describedby="requisitos-password">
           <!-- CS-64: requisitos de la contraseña, marcados mientras se escribe (js/shared/password.js) -->
           <ul id="requisitos-password" class="list-unstyled small mt-2 mb-0"></ul>
         </div>

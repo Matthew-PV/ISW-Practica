@@ -41,6 +41,10 @@ function crearTira(tira) {
 
   const fila = document.createElement('div');
   fila.className = 'tira-fila';
+  // Con scroll horizontal y sin contenido enfocable, hay que poder llegar a ella con Tab para desplazarla con las flechas
+  fila.tabIndex = 0;
+  fila.setAttribute('role', 'group');
+  fila.setAttribute('aria-labelledby', titulo.id);
   tira.planes.forEach((plan, indice) => fila.append(crearTarjetaPlan(plan, tira.ciudad, indice)));
 
   seccion.append(cabecera, fila);

@@ -298,4 +298,15 @@ describe('campana de notificaciones', () => {
 
     expect($('details.menu-notificaciones').open).toBe(false);
   });
+
+  test('Escape cierra el desplegable y devuelve el foco al resumen', async () => {
+    await cargarCon(json([]));
+    const resumen = $('details.menu-notificaciones summary');
+    $('details.menu-notificaciones').open = true;
+
+    resumen.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+
+    expect($('details.menu-notificaciones').open).toBe(false);
+    expect(document.activeElement).toBe(resumen);
+  });
 });

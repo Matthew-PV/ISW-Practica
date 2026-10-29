@@ -171,6 +171,54 @@ describe('CS-63: el formulario de valoración', () => {
     expect(estrellas.map((e) => e.getAttribute('aria-checked'))).toEqual(['false', 'false', 'false', 'true', 'false']);
   });
 
+  describe('estrellas con teclado (grupo de radio)', () => {
+    const tecla = (estrella, key) => estrella.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+    const tabindex = (estrellas) => estrellas.map((e) => e.getAttribute('tabindex'));
+    const estrellasDe = () => [...document.querySelectorAll('#form-valoracion [role="radio"]')];
+
+    test('sin puntuación solo la primera estrella entra en el orden de Tab', async () => {
+      await abrir();
+
+      expect(tabindex(estrellasDe())).toEqual(['0', '-1', '-1', '-1', '-1']);
+    });
+
+    test('con puntuación solo la elegida entra en el orden de Tab', async () => {
+      await abrir();
+      const estrellas = estrellasDe();
+
+      estrellas[2].click();
+
+      expect(tabindex(estrellas)).toEqual(['-1', '-1', '0', '-1', '-1']);
+    });
+
+    test('las flechas eligen la estrella siguiente o anterior y llevan el foco a ella', async () => {
+      await abrir();
+      const estrellas = estrellasDe();
+      estrellas[1].click();
+
+      tecla(estrellas[1], 'ArrowRight');
+      expect($('#val-puntuacion').value).toBe('3');
+      expect(document.activeElement).toBe(estrellas[2]);
+
+      tecla(estrellas[2], 'ArrowLeft');
+      tecla(estrellas[1], 'ArrowUp');
+      expect($('#val-puntuacion').value).toBe('1');
+      tecla(estrellas[0], 'ArrowDown');
+      expect($('#val-puntuacion').value).toBe('2');
+    });
+
+    test('las flechas dan la vuelta entre la primera y la última', async () => {
+      await abrir();
+      const estrellas = estrellasDe();
+
+      tecla(estrellas[0], 'ArrowLeft');
+      expect($('#val-puntuacion').value).toBe('5');
+
+      tecla(estrellas[4], 'ArrowRight');
+      expect($('#val-puntuacion').value).toBe('1');
+    });
+  });
+
   test('la valoración propia ya guardada se ve en las estrellas', async () => {
     await abrir({ [`GET ${BASE}/valoracion`]: [200, { id: 50, puntuacion: 2, comentario: null }] });
 

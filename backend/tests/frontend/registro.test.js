@@ -202,17 +202,19 @@ describe('pantalla dividida (rediseño CS-65)', () => {
 });
 
 describe('requisitos de la contraseña (CS-64)', () => {
+  // Texto del requisito sin el símbolo ni el estado escrito
+  const texto = (li) => li.textContent.replace(/^\S+ /, '').replace(/ \((cumplido|pendiente)\)$/, '');
   // Requisitos que se ven cumplidos, en el orden de la lista
   const cumplidos = () => [...document.querySelectorAll('#requisitos-password li')]
     .filter((li) => li.dataset.cumple === 'true')
-    .map((li) => li.textContent.replace(/^\S+ /, ''));
+    .map(texto);
   const escribir = (campo, valor) => {
     $(campo).value = valor;
     $(campo).dispatchEvent(new Event('input'));
   };
 
   test('se muestran los cinco requisitos', () => {
-    expect([...document.querySelectorAll('#requisitos-password li')].map((li) => li.textContent.replace(/^\S+ /, ''))).toEqual([
+    expect([...document.querySelectorAll('#requisitos-password li')].map(texto)).toEqual([
       'entre 8 y 72 caracteres', 'al menos una mayúscula', 'al menos una minúscula', 'al menos un número', 'sin el nombre de usuario',
     ]);
   });
