@@ -159,7 +159,7 @@ describe('/cuenta/mis-planes.html', () => {
     await terminar();
 
     expect(oculto('#cargando')).toBe(true);
-    expect($('#error-lista').textContent).toBe('Error interno del servidor');
+    expect($('#error-lista').textContent).toContain('Error interno del servidor');
   });
 
   test('al crear la primera experiencia desaparece el mensaje de vacío', async () => {

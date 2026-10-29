@@ -2,7 +2,7 @@
 // («Mis experiencias», con las privadas) y a /social/usuario.html («Sus experiencias»): el backend solo
 // devuelve las que puede ver el usuario de la sesión.
 // Lo usan: js/perfil.js y js/usuario.js. Usa `api` de shared/api.js y `listaConCargarMas` y
-// `mostrarMensaje` de shared/pantalla.js, que se cargan antes.
+// `mostrarErrorConReintento` de shared/pantalla.js, que se cargan antes.
 // La página necesita #lista-experiencias, #sin-experiencias, #mas-experiencias y #error-experiencias.
 
 const cajaErrorExperiencias = document.getElementById('error-experiencias');
@@ -66,7 +66,7 @@ const listadoExperiencias = listaConCargarMas({
     return { elementos: experiencias, siguiente };
   },
   crear: crearTarjetaExperiencia,
-  alFallar: (err) => mostrarMensaje(cajaErrorExperiencias, err.message),
+  alFallar: (err, reintentar) => mostrarErrorConReintento(cajaErrorExperiencias, err.message, reintentar),
 });
 
 // Muestra el listado de `nombreUsuario`. La primera vez carga la primera página. Si el listado ya

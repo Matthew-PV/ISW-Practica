@@ -146,7 +146,7 @@ const listadoExperiencias = listaConCargarMas({
     return { elementos: experiencias, siguiente };
   },
   crear: crearTarjeta,
-  alFallar: (err) => mostrarMensaje(cajaErrorLista, err.message),
+  alFallar: (err, reintentar) => mostrarErrorConReintento(cajaErrorLista, err.message, reintentar),
 });
 
 // Carga las ciudades del formulario y la primera página de las experiencias del usuario.

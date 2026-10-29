@@ -103,7 +103,7 @@ test('si falla la carga se muestra el error', async () => {
   await abrirPerfilDeAna({ '/api/experiencias?autor=ana': [500, { error: 'Error interno del servidor' }] });
 
   expect(visible('#error-experiencias')).toBe(true);
-  expect($('#error-experiencias').textContent).toBe('Error interno del servidor');
+  expect($('#error-experiencias').textContent).toContain('Error interno del servidor');
 });
 
 describe('Mis experiencias (/cuenta/perfil.html)', () => {

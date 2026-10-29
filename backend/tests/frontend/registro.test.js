@@ -236,3 +236,54 @@ describe('requisitos de la contraseña (CS-64)', () => {
     expect(cumplidos()).toContain('sin el nombre de usuario');
   });
 });
+
+describe('validación junto al campo', () => {
+  const salir = (selector) => $(selector).dispatchEvent(new Event('blur'));
+  const mensajeDe = (selector) => {
+    const id = $(selector).getAttribute('aria-describedby') || '';
+    const caja = id.split(' ').map((i) => document.getElementById(i)).find((e) => e?.classList.contains('mensaje-campo'));
+    return caja && !caja.classList.contains('d-none') ? caja.textContent : null;
+  };
+
+  test('el formulario no usa la burbuja nativa del navegador', () => {
+    expect($('#form-registro').noValidate).toBe(true);
+  });
+
+  test('al salir de un campo vacío muestra el mensaje en español junto al campo y lo marca no válido', () => {
+    $('#nombreUsuario').value = '';
+    salir('#nombreUsuario');
+
+    expect(mensajeDe('#nombreUsuario')).toBe('Escribe un nombre de usuario.');
+    expect($('#nombreUsuario').getAttribute('aria-invalid')).toBe('true');
+  });
+
+  test('un email sin formato correcto se avisa al salir del campo', () => {
+    $('#email').value = 'ana@';
+    salir('#email');
+
+    expect(mensajeDe('#email')).toBe('Escribe un email válido, por ejemplo nombre@ejemplo.com.');
+  });
+
+  test('al corregir el campo el mensaje desaparece', () => {
+    $('#email').value = 'ana@';
+    salir('#email');
+    $('#email').value = 'ana@ejemplo.com';
+    salir('#email');
+
+    expect(mensajeDe('#email')).toBeNull();
+    expect($('#email').hasAttribute('aria-invalid')).toBe(false);
+  });
+
+  test('al enviar con errores no llama al servidor, muestra todos y lleva el foco al primero', async () => {
+    $('#nombreUsuario').value = '';
+    $('#email').value = '';
+    $('#form-registro').dispatchEvent(new Event('submit', { cancelable: true }));
+    await terminar();
+
+    expect(window.fetch).not.toHaveBeenCalled();
+    expect(mensajeDe('#nombreUsuario')).not.toBeNull();
+    expect(mensajeDe('#email')).not.toBeNull();
+    expect(document.activeElement).toBe($('#nombreUsuario'));
+    expect(errorVisible()).toBe('Revisa los campos marcados.');
+  });
+});

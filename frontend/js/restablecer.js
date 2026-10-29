@@ -23,7 +23,11 @@ function mostrarError(mensaje) {
 // Sin token en la dirección no hay nada que restablecer
 if (!token) {
   formulario.classList.add('d-none');
-  mostrarError('El enlace no es válido. Pide uno nuevo desde «¿Has olvidado tu contraseña?».');
+  const enlace = document.createElement('a');
+  enlace.href = '/acceso/recuperar.html';
+  enlace.textContent = 'Pide uno nuevo';
+  cajaError.replaceChildren('El enlace no es válido. ', enlace, '.');
+  cajaError.classList.remove('d-none');
 }
 
 formulario.addEventListener('submit', async (e) => {

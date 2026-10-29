@@ -75,6 +75,15 @@ describe('/acceso/restablecer.html', () => {
   const SCRIPTS = ['js/shared/api.js', 'js/shared/password.js', 'js/restablecer.js'];
   const abrirConToken = (rutas = {}) => abrir('/acceso/restablecer.html', SCRIPTS, rutas, '/acceso/restablecer.html?token=abc123');
 
+  test('sin token en la dirección, el aviso enlaza a pedir un enlace nuevo', async () => {
+    await abrir('/acceso/restablecer.html', SCRIPTS, {}, '/acceso/restablecer.html');
+
+    const aviso = $('#error-restablecer');
+    expect(aviso.classList.contains('d-none')).toBe(false);
+    expect(aviso.textContent).toContain('El enlace no es válido');
+    expect(aviso.querySelector('a').getAttribute('href')).toBe('/acceso/recuperar.html');
+  });
+
   test('marca los requisitos mientras se escribe la nueva contraseña', async () => {
     await abrirConToken();
 
@@ -123,7 +132,7 @@ describe('/acceso/restablecer.html', () => {
     await abrir('/acceso/restablecer.html', SCRIPTS, {}, '/acceso/restablecer.html');
 
     expect(visible('#form-restablecer')).toBe(false);
-    expect($('#error-restablecer').textContent).toBe('El enlace no es válido. Pide uno nuevo desde «¿Has olvidado tu contraseña?».');
+    expect($('#error-restablecer').textContent).toBe('El enlace no es válido. Pide uno nuevo.');
   });
 });
 

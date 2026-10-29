@@ -233,6 +233,14 @@ fieldset:disabled .btn {
   font-weight: 700;
 }
 
+/* ---------- Mensaje de error junto a un campo (validación al salir del campo) ---------- */
+
+.mensaje-campo {
+  margin: var(--espacio-4) 0 0;
+  font-size: 0.875rem;
+  color: var(--color-peligro);
+}
+
 /* ---------- Avisos: siempre con texto; los de error llevan role="alert" ---------- */
 
 .alert {

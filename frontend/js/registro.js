@@ -47,10 +47,46 @@ async function iniciarCaptcha() {
   }
 }
 
+// Mensaje de cada campo cuando está mal (vacío, o el email sin formato). Los demás requisitos del nombre
+// y de la contraseña los marca la lista de requisitos y los comprueba el servidor.
+const REGLAS_CAMPOS = {
+  nombreUsuario: { vacio: 'Escribe un nombre de usuario.' },
+  email: { vacio: 'Escribe tu email.', formato: 'Escribe un email válido, por ejemplo nombre@ejemplo.com.' },
+  password: { vacio: 'Escribe una contraseña.' },
+};
+
+// Comprueba un campo y pone o quita su mensaje junto a él. Devuelve true si está bien.
+function validarCampo(id) {
+  const campo = document.getElementById(id);
+  const mensaje = document.getElementById(`mensaje-${id}`);
+  const reglas = REGLAS_CAMPOS[id];
+  let texto = '';
+  if (campo.value.trim() === '') texto = reglas.vacio;
+  else if (reglas.formato && !campo.checkValidity()) texto = reglas.formato;
+
+  mensaje.textContent = texto;
+  mensaje.classList.toggle('d-none', !texto);
+  if (texto) campo.setAttribute('aria-invalid', 'true');
+  else campo.removeAttribute('aria-invalid');
+  return !texto;
+}
+
+// Se valida al salir de cada campo, no mientras se escribe
+for (const id of Object.keys(REGLAS_CAMPOS)) {
+  document.getElementById(id).addEventListener('blur', () => validarCampo(id));
+}
+
 // Al pulsar «Crear cuenta» se envían los datos y la respuesta del CAPTCHA al backend
 formulario.addEventListener('submit', async (e) => {
   // Evita que el navegador envíe el formulario por su cuenta y recargue la página
   e.preventDefault();
+  // Con campos mal no se llama al servidor: se marcan todos y el foco va al primero
+  const malos = Object.keys(REGLAS_CAMPOS).filter((id) => !validarCampo(id));
+  if (malos.length > 0) {
+    mostrarError('Revisa los campos marcados.');
+    document.getElementById(malos[0]).focus();
+    return;
+  }
   // Se oculta el error del intento anterior y se desactiva el botón para no enviar dos veces.
   // El botón muestra que el registro está en curso
   cajaError.classList.add('d-none');

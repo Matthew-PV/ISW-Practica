@@ -24,20 +24,23 @@
     <div class="pantalla-dividida-formulario">
       <h1 class="mb-4">Crear cuenta</h1>
 
-      <form id="form-registro">
+      <form id="form-registro" novalidate>
         <div class="mb-3">
           <label for="nombreUsuario" class="form-label">Nombre de usuario</label>
-          <input type="text" class="form-control" id="nombreUsuario" required minlength="3" maxlength="30" autocomplete="username">
+          <input type="text" class="form-control" id="nombreUsuario" required minlength="3" maxlength="30" autocomplete="username" aria-describedby="mensaje-nombreUsuario">
+          <p id="mensaje-nombreUsuario" class="mensaje-campo d-none"></p>
         </div>
         <div class="mb-3">
           <label for="email" class="form-label">Email</label>
-          <input type="email" class="form-control" id="email" required autocomplete="email">
+          <input type="email" class="form-control" id="email" required autocomplete="email" aria-describedby="mensaje-email">
+          <p id="mensaje-email" class="mensaje-campo d-none"></p>
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">Contraseña</label>
-          <input type="password" class="form-control" id="password" required minlength="8" maxlength="72" autocomplete="new-password" aria-describedby="requisitos-password">
+          <input type="password" class="form-control" id="password" required minlength="8" maxlength="72" autocomplete="new-password" aria-describedby="requisitos-password mensaje-password">
           <!-- CS-64: requisitos de la contraseña, marcados mientras se escribe (js/shared/password.js) -->
           <ul id="requisitos-password" class="list-unstyled small mt-2 mb-0"></ul>
+          <p id="mensaje-password" class="mensaje-campo d-none"></p>
         </div>
         <!-- CAPTCHA de Cloudflare Turnstile, lo muestra iniciarCaptcha() de js/registro.js -->
         <div id="captcha" class="mb-3"></div>

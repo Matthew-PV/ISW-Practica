@@ -9,6 +9,20 @@ function mostrarMensaje(caja, texto) {
   caja.classList.remove('d-none');
 }
 
+// Muestra un error de carga con un botón «Reintentar» que lo oculta y vuelve a lanzar `reintentar`.
+function mostrarErrorConReintento(caja, texto, reintentar) {
+  const boton = document.createElement('button');
+  boton.type = 'button';
+  boton.className = 'btn btn-sm btn-outline-danger ms-2';
+  boton.textContent = 'Reintentar';
+  boton.addEventListener('click', () => {
+    ocultarMensaje(caja);
+    reintentar();
+  });
+  caja.replaceChildren(`${texto} `, boton);
+  caja.classList.remove('d-none');
+}
+
 // Vuelve a ocultar una caja de aviso.
 function ocultarMensaje(caja) {
   caja.classList.add('d-none');
@@ -44,7 +58,7 @@ function crearEnlacePerfil(enlace, usuario, miUsuarioId) {
 //   `botonMas`: el botón «Cargar más».
 // - `pedir(cursor)`: pide una página (cursor null = la primera) y devuelve { elementos, siguiente }.
 // - `crear(elemento)`: crea la fila de un elemento.
-// - `alFallar(err)`: qué hacer si falla una petición.
+// - `alFallar(err, reintentar)`: qué hacer si falla una petición; `reintentar` la vuelve a pedir.
 // Cada fila guarda el id de su elemento en data-id-elemento, para no repetir ninguna aunque la
 // lista cambie entre dos páginas. Devuelve { cargar, reiniciar }: `cargar` pide la página
 // siguiente y `reiniciar` vacía la lista y vuelve a pedir la primera.
@@ -66,7 +80,7 @@ function listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar }) {
       vacio?.classList.toggle('d-none', lista.querySelector('[data-id-elemento]') !== null);
       botonMas.classList.toggle('d-none', siguiente === null);
     } catch (err) {
-      alFallar(err);
+      alFallar(err, cargar);
     }
   }
 
@@ -112,4 +126,4 @@ function crearBloqueCategoria(tipo) {
 // Funciones que usan los scripts de las páginas, que se cargan después de este. En el navegador
 // ya serían globales; se dejan en window de forma explícita para que también lo sean cuando las
 // pruebas cargan el archivo como módulo (para medir su cobertura).
-Object.assign(window, { mostrarMensaje, ocultarMensaje, mostrarCargando, ocultarCargando, irAlLogin, crearEnlacePerfil, listaConCargarMas, crearBloqueCategoria });
+Object.assign(window, { mostrarMensaje, mostrarErrorConReintento, ocultarMensaje, mostrarCargando, ocultarCargando, irAlLogin, crearEnlacePerfil, listaConCargarMas, crearBloqueCategoria });

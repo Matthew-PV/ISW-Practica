@@ -354,3 +354,29 @@ describe('enlaces desde otras pantallas', () => {
     expect(dialogo.showModal).not.toHaveBeenCalled();
   });
 });
+
+describe('error al cargar la lista con reintento', () => {
+  test('si falla la carga, el aviso ofrece «Reintentar» y al pulsarlo se vuelve a pedir y se muestra la lista', async () => {
+    const normal = window.fetch.getMockImplementation();
+    window.fetch.mockImplementation((ruta, ...resto) => (
+      ruta === '/api/experiencias?autor=ana' ? respuesta(500, { error: 'No se ha podido cargar' }) : normal(ruta, ...resto)
+    ));
+    cargarScripts(SCRIPTS);
+    await terminar();
+    await terminar();
+
+    const aviso = $('#error-lista');
+    expect(aviso.classList.contains('d-none')).toBe(false);
+    expect(aviso.textContent).toContain('No se ha podido cargar');
+    const reintentar = aviso.querySelector('button');
+    expect(reintentar.textContent).toBe('Reintentar');
+
+    window.fetch.mockImplementation(normal);
+    reintentar.click();
+    await terminar();
+    await terminar();
+
+    expect($('#error-lista').classList.contains('d-none')).toBe(true);
+    expect(document.querySelector('[data-id-elemento="10"]')).not.toBeNull();
+  });
+});
