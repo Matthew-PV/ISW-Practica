@@ -2,7 +2,7 @@
 
 /* Columna ancha: con los 400 px de los formularios la pantalla quedaba achatada en el centro */
 .contenedor-buscar {
-  max-width: 720px;
+  max-width: var(--ancho-lectura);
   min-height: 70vh;
 }
 

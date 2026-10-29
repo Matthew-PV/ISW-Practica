@@ -79,6 +79,11 @@
   --espacio-32: 32px;
   --espacio-48: 48px;
 
+  /* Anchos de contenido por tipo de pantalla */
+  --ancho-contenido: 960px;
+  --ancho-lectura: 720px;
+  --ancho-formulario: 400px;
+
   /* Radios */
   --radio-boton: 8px;
   --radio-tarjeta: 12px;

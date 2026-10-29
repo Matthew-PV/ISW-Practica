@@ -52,9 +52,9 @@ h3, .h3, h4, .h4, h5, .h5, h6, .h6 { font-size: 18px; font-weight: 700; }
 
 .small, small, .form-text { font-size: 14px; }
 
-/* Contenido centrado de 960 px como máximo, con 24 px de margen lateral */
+/* Contenido centrado de --ancho-contenido como máximo, con 24 px de margen lateral */
 .container {
   --bs-gutter-x: var(--espacio-48);
-  max-width: 960px;
+  max-width: var(--ancho-contenido);
 }
 }

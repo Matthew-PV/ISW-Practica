@@ -382,10 +382,9 @@ fieldset:disabled .btn {
 .cabecera-interior {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   gap: 0 var(--espacio-8);
   min-height: 64px;
-  max-width: 960px;
+  max-width: var(--ancho-contenido);
   margin: 0 auto;
   padding: 0 var(--espacio-24);
 }
@@ -404,7 +403,8 @@ fieldset:disabled .btn {
 
 .cabecera-busqueda {
   order: 3;
-  flex: 1 1 auto;
+  flex: 1 1 160px;
+  min-width: 160px;
   max-width: 280px;
   margin: 0 var(--espacio-4) 0 auto;
   display: flex;
@@ -523,7 +523,7 @@ body.pagina-buscar .menu-notificaciones {
 
 /* Aviso de error al cerrar sesión, justo debajo de la cabecera */
 .cabecera-aviso {
-  width: min(960px, calc(100% - 48px));
+  width: min(var(--ancho-contenido), calc(100% - 48px));
   margin: var(--espacio-16) auto 0;
 }
 
@@ -653,7 +653,7 @@ body.pagina-buscar .menu-notificaciones {
 
 .pantalla-dividida-formulario > * {
   width: 100%;
-  max-width: 400px;
+  max-width: var(--ancho-formulario);
 }
 
 /* ---------- Rejilla de experiencias: 4 columnas y alto uniforme ---------- */
@@ -891,12 +891,12 @@ body.pagina-buscar .menu-notificaciones {
 
 /* Columna estrecha para los formularios de acceso */
 .contenedor-formulario {
-  max-width: 400px;
+  max-width: var(--ancho-formulario);
 }
 
 /* Ajustes: más ancho, con la foto a un lado y los campos al otro */
 .contenedor-formulario.ajustes-panel {
-  max-width: 720px;
+  max-width: var(--ancho-lectura);
 }
 
 .ajustes-panel #panel-datos {
@@ -906,7 +906,7 @@ body.pagina-buscar .menu-notificaciones {
 }
 
 .ajustes-panel #form-password {
-  max-width: 400px;
+  max-width: var(--ancho-formulario);
 }
 
 /* Ajustes: la foto es un avatar grande clicable con el icono de cámara */
@@ -1169,6 +1169,7 @@ body.pagina-buscar .menu-notificaciones {
 /* Pantallas estrechas: el buscador baja a una segunda fila para que la barra se lea */
 @media (max-width: 767.98px) {
   .cabecera-interior {
+    flex-wrap: wrap;
     padding: 0 var(--espacio-16);
   }
 
