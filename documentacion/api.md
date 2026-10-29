@@ -288,7 +288,7 @@ Están montadas bajo `/api/experiencias/:id`. Todas comprueban antes que el usua
 `usuarioService.buscarUsuarios`.
 
 * **Parámetros:** `texto`, una parte del nombre de usuario.
-* **Responde:** 200 `[{ id, nombreUsuario, foto }]`, como mucho 20 y por orden alfabético, sin incluir al propio usuario.
+* **Responde:** 200 `[{ id, nombreUsuario, foto, ciudad, relacion }]`, como mucho 20 y por orden alfabético, sin incluir al propio usuario. `relacion` es la misma `{ amistad, amistadId, siguiendo }` del perfil público.
 * **Errores:** 400 «Escribe un nombre de usuario para buscar».
 
 ### `GET /api/usuarios/:nombreUsuario`

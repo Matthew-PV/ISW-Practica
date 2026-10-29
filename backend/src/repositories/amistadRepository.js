@@ -36,6 +36,14 @@ async function buscarEntreUsuarios(usuarioAId, usuarioBId) {
   return prisma.amistad.findUnique({ where: { parejaClave: claveDePareja(usuarioAId, usuarioBId) } });
 }
 
+// Las relaciones (pendientes o aceptadas) de un usuario con cada una de las personas indicadas,
+// en una sola consulta. Es la versión en bloque de buscarEntreUsuarios.
+async function listarEntreUsuarios(usuarioId, otrosIds) {
+  return prisma.amistad.findMany({
+    where: { parejaClave: { in: otrosIds.map((otroId) => claveDePareja(usuarioId, otroId)) } },
+  });
+}
+
 // Busca una solicitud o amistad por su identificador.
 async function buscarPorId(id) {
   return prisma.amistad.findUnique({ where: { id } });
@@ -105,6 +113,7 @@ async function listarAmigos(usuarioId, despuesDe, cantidad) {
 module.exports = {
   crear,
   buscarEntreUsuarios,
+  listarEntreUsuarios,
   buscarPorId,
   aceptar,
   borrar,

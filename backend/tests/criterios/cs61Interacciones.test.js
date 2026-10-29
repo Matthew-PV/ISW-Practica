@@ -45,7 +45,14 @@ beforeEach(() => {
   usuarioRepository.buscarPorNombre.mockImplementation(async (texto, usuarioExcluidoId) => usuarios
     .filter((u) => u.id !== usuarioExcluidoId && u.nombreUsuario.includes(texto))
     .slice(0, 20)
-    .map(({ id, nombreUsuario, foto }) => ({ id, nombreUsuario, foto })));
+    .map(({ id, nombreUsuario, foto, ciudad }) => ({ id, nombreUsuario, foto, ciudad })));
+
+  amistadRepository.listarEntreUsuarios.mockImplementation(async (usuarioId, otrosIds) => amistades
+    .filter((a) => (a.solicitanteId === usuarioId && otrosIds.includes(a.destinatarioId))
+      || (a.destinatarioId === usuarioId && otrosIds.includes(a.solicitanteId))));
+  seguimientoRepository.filtrarSeguidos.mockImplementation(async (seguidorId, ids) => seguimientos
+    .filter((s) => s.seguidorId === seguidorId && ids.includes(s.seguidoId))
+    .map((s) => s.seguidoId));
 
   amistadRepository.crear.mockImplementation(async (solicitanteId, destinatarioId) => {
     const amistad = { id: siguienteAmistadId++, solicitanteId, destinatarioId, estado: 'PENDIENTE' };
@@ -118,6 +125,20 @@ test('la búsqueda contiene el texto, excluye a quien busca, limita a 20 y no mu
   expect(respuesta.body).toHaveLength(20);
   expect(respuesta.body).not.toContainEqual(expect.objectContaining({ id: 1 }));
   expect(respuesta.body.every((usuario) => usuario.nombreUsuario.includes('ana') && usuario.email === undefined)).toBe(true);
+});
+
+test('la búsqueda indica la relación de quien busca con cada resultado y permite cancelar la solicitud enviada', async () => {
+  const ana = await agente(1);
+  const solicitud = await ana.post('/api/amistades').send({ destinatarioId: 2 });
+
+  const busqueda = await ana.get('/api/usuarios?texto=bea');
+  const fila = busqueda.body.find((usuario) => usuario.id === 2);
+  expect(fila.relacion).toEqual({ amistad: 'enviada', amistadId: solicitud.body.id, siguiendo: false });
+
+  const cancelada = await ana.delete(`/api/amistades/${solicitud.body.id}`);
+  expect(cancelada.status).toBe(204);
+  const despues = await ana.get('/api/usuarios?texto=bea');
+  expect(despues.body.find((usuario) => usuario.id === 2).relacion.amistad).toBe('ninguna');
 });
 
 test('la búsqueda sin texto responde 400 en lugar de devolver usuarios cualesquiera', async () => {

@@ -45,7 +45,7 @@ async function buscarPorNombre(texto, usuarioExcluidoId) {
       nombreUsuario: { contains: texto },
       id: { not: usuarioExcluidoId },
     },
-    select: USUARIO_PUBLICO,
+    select: CAMPOS_PERFIL_PUBLICO,
     orderBy: { nombreUsuario: 'asc' },
     take: 20,
   });

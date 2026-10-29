@@ -531,6 +531,7 @@ stateDiagram-v2
   SinRelacion --> PENDIENTE : A envía la solicitud, POST /api/amistades
   PENDIENTE --> ACEPTADA : B la acepta, PATCH aceptar true
   PENDIENTE --> SinRelacion : B la rechaza, PATCH aceptar false (se borra)
+  PENDIENTE --> SinRelacion : A la cancela, DELETE /api/amistades/:id (se borra)
   ACEPTADA --> SinRelacion : A o B la eliminan, DELETE /api/amistades/:id (se borra)
   SinRelacion : Sin relación (no hay fila)
   PENDIENTE : PENDIENTE, solo puede responder B

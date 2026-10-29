@@ -11,16 +11,47 @@ const seguimientoRepository = require('../repositories/seguimientoRepository');
 const { conFotoPorDefecto } = require('./shared/fotoPorDefecto');
 const { crearError } = require('../errores');
 
+// 'ninguna', 'enviada' (la envió `usuarioId`), 'recibida' o 'amigos' según la fila de Amistad.
+function estadoAmistad(amistad, usuarioId) {
+  if (amistad?.estado === 'ACEPTADA') {
+    return 'amigos';
+  }
+  if (amistad?.estado === 'PENDIENTE') {
+    return amistad.solicitanteId === usuarioId ? 'enviada' : 'recibida';
+  }
+  return 'ninguna';
+}
+
 // Busca usuarios por una parte de su nombre, sin los espacios de los extremos, y excluye
 // siempre a quien realiza la consulta. Sin texto responde 400: si no, la búsqueda devolvería
-// usuarios cualesquiera.
+// usuarios cualesquiera. Cada resultado lleva su ciudad y `relacion` (como en el perfil público),
+// calculada con dos consultas en bloque para todos los resultados.
 async function buscarUsuarios(usuarioId, texto) {
   const buscado = typeof texto === 'string' ? texto.trim() : '';
   if (buscado === '') {
     throw crearError('Escribe un nombre de usuario para buscar', 400);
   }
   const usuarios = await usuarioRepository.buscarPorNombre(buscado, usuarioId);
-  return usuarios.map(conFotoPorDefecto);
+  if (usuarios.length === 0) {
+    return [];
+  }
+
+  const ids = usuarios.map((usuario) => usuario.id);
+  const [amistades, seguidos] = await Promise.all([
+    amistadRepository.listarEntreUsuarios(usuarioId, ids),
+    seguimientoRepository.filtrarSeguidos(usuarioId, ids),
+  ]);
+  return usuarios.map((usuario) => {
+    const amistad = amistades.find((a) => a.solicitanteId === usuario.id || a.destinatarioId === usuario.id);
+    return {
+      ...conFotoPorDefecto(usuario),
+      relacion: {
+        amistad: estadoAmistad(amistad, usuarioId),
+        amistadId: amistad?.id ?? null,
+        siguiendo: seguidos.includes(usuario.id),
+      },
+    };
+  });
 }
 
 // Devuelve el perfil público de otro usuario (nunca su email), con sus contadores de amigos y
@@ -45,19 +76,12 @@ async function obtenerPerfilPublico(usuarioId, nombreUsuario) {
     seguimientoRepository.sigueA(usuarioId, perfil.id),
   ]);
 
-  let estadoAmistad = 'ninguna';
-  if (amistad?.estado === 'ACEPTADA') {
-    estadoAmistad = 'amigos';
-  } else if (amistad?.estado === 'PENDIENTE') {
-    estadoAmistad = amistad.solicitanteId === usuarioId ? 'enviada' : 'recibida';
-  }
-
   return {
     ...conFotoPorDefecto(perfil),
     amigos,
     seguidores,
     esPropio: perfil.id === usuarioId,
-    relacion: { amistad: estadoAmistad, amistadId: amistad?.id ?? null, siguiendo },
+    relacion: { amistad: estadoAmistad(amistad, usuarioId), amistadId: amistad?.id ?? null, siguiendo },
   };
 }
 
