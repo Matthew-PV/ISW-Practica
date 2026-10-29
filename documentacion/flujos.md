@@ -548,14 +548,14 @@ CS-62. Lo que devuelve `GET /api/usuarios/:nombreUsuario` en `relacion.amistad`,
 stateDiagram-v2
   [*] --> ninguna
   ninguna --> enviada : «Añadir amigo»
-  enviada --> ninguna : la otra persona la rechaza
+  enviada --> ninguna : la otra persona la rechaza o yo la cancelo («Cancelar solicitud»)
   enviada --> amigos : la otra persona la acepta
   ninguna --> recibida : la otra persona me envía una
   recibida --> amigos : «Aceptar»
   recibida --> ninguna : «Rechazar»
   amigos --> ninguna : «Eliminar amigo» (con confirmación)
   ninguna : ninguna, botón «Añadir amigo»
-  enviada : enviada, «Solicitud enviada» (desactivado)
+  enviada : enviada, «Cancelar solicitud»
   recibida : recibida, «Aceptar» y «Rechazar»
   amigos : amigos, «Eliminar amigo»
 ```

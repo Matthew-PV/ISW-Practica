@@ -9,6 +9,8 @@ const nombre = new URLSearchParams(window.location.search).get('nombre');
 const botonesAmistad = document.getElementById('botones-amistad');
 const botonSeguir = document.getElementById('boton-seguir');
 const cajaError = document.getElementById('error-usuario');
+const dialogoEliminar = document.getElementById('dialogo-eliminar-amigo');
+let eliminarConfirmado = null;
 
 // Crea un botón con su texto y lo añade a la zona indicada
 function crearBoton(zona, texto, clase, alPulsar) {
@@ -48,18 +50,25 @@ function mostrarBotonesAmistad(perfil) {
     crearBoton(botonesAmistad, 'Añadir amigo', 'btn-primary', () =>
       actuar('/amistades', { method: 'POST', body: JSON.stringify({ destinatarioId: perfil.id }) }));
   } else if (amistad === 'enviada') {
-    crearBoton(botonesAmistad, 'Solicitud enviada', 'btn-outline-secondary', () => {}).disabled = true;
+    crearBoton(botonesAmistad, 'Cancelar solicitud', 'btn-outline-secondary', () => actuar(ruta, { method: 'DELETE' }));
   } else if (amistad === 'recibida') {
     crearBoton(botonesAmistad, 'Aceptar', 'btn-primary', () => responder(true));
     crearBoton(botonesAmistad, 'Rechazar', 'btn-outline-danger', () => responder(false));
   } else if (amistad === 'amigos') {
     crearBoton(botonesAmistad, 'Eliminar amigo', 'btn-outline-danger', () => {
-      if (window.confirm(`¿Seguro que quieres eliminar a ${perfil.nombreUsuario} de tus amigos?`)) {
-        actuar(ruta, { method: 'DELETE' });
-      }
+      document.getElementById('texto-eliminar-amigo').textContent =
+        `${perfil.nombreUsuario} dejará de ser tu amigo. Podréis volver a enviaros una solicitud.`;
+      eliminarConfirmado = () => actuar(ruta, { method: 'DELETE' });
+      dialogoEliminar.showModal();
     });
   }
 }
+
+document.getElementById('cancelar-eliminar-amigo').addEventListener('click', () => dialogoEliminar.close());
+document.getElementById('confirmar-eliminar-amigo').addEventListener('click', () => {
+  dialogoEliminar.close();
+  eliminarConfirmado();
+});
 
 // Muestra «Seguir» o «Dejar de seguir» según si ya sigo a este usuario
 function mostrarBotonSeguir(perfil) {

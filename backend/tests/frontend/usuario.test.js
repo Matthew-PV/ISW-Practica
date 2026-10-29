@@ -86,11 +86,33 @@ describe('botón de amistad', () => {
     expect(textosBotones()).toEqual(['Añadir amigo']);
   });
 
-  test('con una solicitud enviada muestra «Solicitud enviada», desactivado', async () => {
+  test('con una solicitud enviada muestra «Cancelar solicitud», activo', async () => {
     await abrirPagina('ana', conRelacion('enviada', 10));
 
-    expect(textosBotones()).toEqual(['Solicitud enviada']);
-    expect(boton('Solicitud enviada').disabled).toBe(true);
+    expect(textosBotones()).toEqual(['Cancelar solicitud']);
+    expect(boton('Cancelar solicitud').disabled).toBe(false);
+  });
+
+  test('«Cancelar solicitud» borra la solicitud enviada y vuelve a «Añadir amigo»', async () => {
+    await abrirPagina('ana', conRelacion('enviada', 10), [
+      respuesta(204, null),
+      respuesta(200, conRelacion('ninguna')),
+    ]);
+
+    boton('Cancelar solicitud').click();
+    await terminar();
+
+    const [ruta, opciones] = window.fetch.mock.calls[2];
+    expect(ruta).toBe('/api/amistades/10');
+    expect(opciones.method).toBe('DELETE');
+    expect(textosBotones()).toEqual(['Añadir amigo']);
+  });
+
+  test('una nota explica en qué se diferencian ser amigos y seguir', async () => {
+    await abrirPagina('ana', conRelacion('ninguna'));
+
+    expect($('#ayuda-relacion').textContent).toMatch(/amigos/);
+    expect($('#ayuda-relacion').textContent).toMatch(/seguir/i);
   });
 
   test('con una solicitud recibida muestra «Aceptar» y «Rechazar»', async () => {
@@ -119,7 +141,7 @@ describe('botón de amistad', () => {
     expect(opciones.method).toBe('POST');
     expect(JSON.parse(opciones.body)).toEqual({ destinatarioId: 2 });
     expect(window.fetch.mock.calls[3][0]).toBe('/api/usuarios/ana');
-    expect(textosBotones()).toEqual(['Solicitud enviada']);
+    expect(textosBotones()).toEqual(['Cancelar solicitud']);
   });
 
   test('«Aceptar» acepta la solicitud, sube el contador y pasa a «Eliminar amigo»', async () => {
@@ -154,32 +176,54 @@ describe('botón de amistad', () => {
     expect(textosBotones()).toEqual(['Añadir amigo']);
   });
 
-  test('«Eliminar amigo» no hace nada si el usuario no confirma', async () => {
-    window.confirm = jest.fn().mockReturnValue(false);
+  // jsdom no implementa <dialog>: showModal y close se simulan
+  const dialogo = () => $('#dialogo-eliminar-amigo');
+  function simularDialogo() {
+    window.HTMLDialogElement.prototype.showModal = jest.fn(function abrir() { this.open = true; });
+    window.HTMLDialogElement.prototype.close = jest.fn(function cerrar() { this.open = false; });
+  }
+
+  test('«Eliminar amigo» abre un diálogo propio con el nombre, sin borrar todavía', async () => {
+    simularDialogo();
     await abrirPagina('ana', conRelacion('amigos', 10));
 
     boton('Eliminar amigo').click();
     await terminar();
 
-    expect(window.confirm).toHaveBeenCalled();
+    expect(dialogo().showModal).toHaveBeenCalled();
+    expect(dialogo().textContent).toContain('ana');
     // Solo las dos peticiones de la carga (perfil y experiencias): ninguna para borrar
+    expect(window.fetch).toHaveBeenCalledTimes(2);
+  });
+
+  test('«Cancelar» en el diálogo cierra sin borrar', async () => {
+    simularDialogo();
+    await abrirPagina('ana', conRelacion('amigos', 10));
+
+    boton('Eliminar amigo').click();
+    $('#cancelar-eliminar-amigo').click();
+    await terminar();
+
+    expect(dialogo().close).toHaveBeenCalled();
     expect(window.fetch).toHaveBeenCalledTimes(2);
     expect(textosBotones()).toEqual(['Eliminar amigo']);
   });
 
-  test('«Eliminar amigo» borra la amistad si el usuario confirma', async () => {
-    window.confirm = jest.fn().mockReturnValue(true);
+  test('«Eliminar» en el diálogo borra la amistad', async () => {
+    simularDialogo();
     await abrirPagina('ana', conRelacion('amigos', 10), [
       respuesta(204, null),
       respuesta(200, conRelacion('ninguna', null, { amigos: 2 })),
     ]);
 
     boton('Eliminar amigo').click();
+    $('#confirmar-eliminar-amigo').click();
     await terminar();
 
     const [ruta, opciones] = window.fetch.mock.calls[2];
     expect(ruta).toBe('/api/amistades/10');
     expect(opciones.method).toBe('DELETE');
+    expect(dialogo().close).toHaveBeenCalled();
     expect($('#amigos').textContent).toBe('2');
     expect(textosBotones()).toEqual(['Añadir amigo']);
   });

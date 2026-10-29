@@ -72,6 +72,7 @@
           <div id="botones-amistad" class="d-flex justify-content-center gap-2"></div>
           <div id="boton-seguir" class="d-flex justify-content-center"></div>
         </div>
+        <p id="ayuda-relacion" class="ayuda-relacion text-secondary small mb-0">Ser amigos es cosa de dos: tiene que aceptarlo y os deja ver los planes «solo amigos» del otro. Seguir no necesita aprobación: la persona a la que sigues verá tus valoraciones.</p>
         <div id="error-usuario" role="alert" class="alert alert-danger d-none"></div>
       </section>
 
@@ -87,6 +88,18 @@
       </section>
     </div>
   </main>
+
+  <!-- Confirmación de «Eliminar amigo» (js/usuario.js) -->
+  <dialog id="dialogo-eliminar-amigo" class="dialogo-experiencia" aria-labelledby="titulo-eliminar-amigo">
+    <div class="p-4">
+      <h2 id="titulo-eliminar-amigo" class="h5 mb-2">¿Eliminar de tus amigos?</h2>
+      <p id="texto-eliminar-amigo" class="mb-3"></p>
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" id="cancelar-eliminar-amigo" class="btn btn-outline-primary">Cancelar</button>
+        <button type="button" id="confirmar-eliminar-amigo" class="btn btn-danger">Eliminar</button>
+      </div>
+    </div>
+  </dialog>
 
   <script src="/js/shared/api.js"></script>
   <script src="/js/shared/pantalla.js"></script>
