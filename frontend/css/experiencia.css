@@ -1,16 +1,84 @@
-/* Página de una experiencia: una sola columna de 720 px como máximo */
+/* Página de una experiencia: contenido a la izquierda y ficha fija a la derecha */
 
-.columna-experiencia {
-  max-width: 720px;
-  margin: 0 auto;
+.detalle-rejilla {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: var(--espacio-32);
+  align-items: start;
 }
 
-/* Autor, ciudad y visibilidad en una línea */
-.metadatos-experiencia {
-  display: flex;
-  flex-wrap: wrap;
+.ficha-experiencia {
+  position: sticky;
+  top: var(--espacio-24);
+}
+
+/* Ficha: cada dato con su nombre encima */
+.ficha-datos {
+  display: grid;
+  gap: var(--espacio-12);
+  margin: 0;
+}
+
+.ficha-datos dt {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-texto-suave);
+}
+
+.ficha-datos dd {
+  margin: 0;
+}
+
+/* Resumen: la nota grande a la izquierda y las barras por estrellas a la derecha */
+.resumen-cifras {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--espacio-32);
   align-items: center;
-  gap: var(--espacio-8) var(--espacio-16);
+}
+
+.resumen-cifras[hidden] {
+  display: none;
+}
+
+.resumen-media {
+  margin: 0;
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.resumen-distribucion {
+  display: grid;
+  gap: var(--espacio-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.875rem;
+}
+
+.resumen-distribucion li {
+  display: grid;
+  grid-template-columns: 5.5em minmax(0, 1fr) 2em;
+  gap: var(--espacio-8);
+  align-items: center;
+}
+
+.resumen-distribucion li > :last-child {
+  text-align: end;
+}
+
+.resumen-barra {
+  height: 8px;
+  overflow: hidden;
+  background: var(--color-borde-suave);
+  border-radius: var(--radio-pildora);
+}
+
+.resumen-barra > span {
+  display: block;
+  height: 100%;
+  background: var(--color-primario);
 }
 
 /* Estrellas de puntuación: vacías con borde, rellenas en color primario */
@@ -76,8 +144,8 @@
   min-height: 112px;
 }
 
-/* Bloque de categoría de la cabecera: más alto que el de las tarjetas y con las cuatro esquinas redondeadas */
+/* Bloque de categoría de la ficha, con las cuatro esquinas redondeadas */
 .detalle-categoria .bloque-categoria {
-  height: 144px;
+  height: 96px;
   border-radius: var(--radio-tarjeta);
 }

@@ -52,67 +52,98 @@
     <!-- Contenedor de mensajes de error o carga (Objetivo 9) -->
     <div id="mensaje-estado" class="alert alert-info">Cargando experiencia...</div>
 
-    <!-- Contenido de la experiencia -->
-    <div id="contenido-experiencia" class="columna-experiencia d-none">
-      <p class="mb-3"><a href="/cuenta/bienvenida.html">← Volver</a></p>
-      <div id="detalle-categoria" class="detalle-categoria mb-3"></div>
-      <h1 id="detalle-titulo" class="mb-2"></h1>
-      <p class="metadatos-experiencia text-secondary mb-3">
-        <span>Por <a id="detalle-autor" class="fw-semibold"></a></span>
-        <span id="detalle-ciudad"></span>
-        <span id="detalle-visibilidad"></span>
-      </p>
+    <!-- Contenido de la experiencia: lo principal a la izquierda y la ficha a la derecha -->
+    <div id="contenido-experiencia" class="d-none">
+      <p class="mb-3"><a id="enlace-volver" href="/cuenta/bienvenida.html">← Volver</a></p>
+      <div class="detalle-rejilla">
+        <div class="detalle-principal">
+          <h1 id="detalle-titulo" class="mb-3"></h1>
+          <p id="detalle-descripcion" class="mb-4"></p>
 
-      <p id="detalle-descripcion" class="mb-4"></p>
+          <!-- CS-14: resumen de las valoraciones; oculto hasta que llega o si no se puede cargar -->
+          <section id="resumen-valoraciones" class="resumen-valoraciones tarjeta-panel mb-4" aria-labelledby="titulo-resumen" hidden>
+            <h2 id="titulo-resumen" class="h5 mb-3">Valoraciones</h2>
+            <p id="resumen-vacio" class="text-muted mb-0" hidden>Todavía sin valoraciones.</p>
+            <div id="resumen-cifras" class="resumen-cifras">
+              <div class="resumen-nota">
+                <p id="resumen-media" class="resumen-media"></p>
+                <div id="resumen-estrellas"></div>
+                <p class="text-secondary small mb-0"><span id="resumen-total"></span> · <span id="resumen-comentarios"></span></p>
+              </div>
+              <ul id="resumen-distribucion" class="resumen-distribucion" aria-label="Valoraciones por número de estrellas"></ul>
+            </div>
+          </section>
 
-      <!-- Solo el autor la ve: abre el formulario de edición de Mis planes -->
-      <p id="caja-editar" class="mb-4 d-none"><a id="boton-editar" class="btn btn-outline-primary" href="/cuenta/mis-planes.html">Editar plan</a></p>
+          <!-- Mi valoración, fija encima de las listas en cuanto existe -->
+          <section id="mi-valoracion" class="mi-valoracion tarjeta-panel mb-4" aria-labelledby="titulo-mi-valoracion" aria-live="polite" hidden>
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h2 id="titulo-mi-valoracion" class="h6 mb-0">Tu valoración</h2>
+              <a href="#caja-formulario-valoracion" class="small">Cambiar</a>
+            </div>
+            <div id="mi-valoracion-contenido"></div>
+          </section>
 
-      <!-- OBJETIVO 5: Formulario de valoración (compacto; el autor no lo ve) -->
-      <div id="caja-formulario-valoracion" class="mb-4 d-none">
-        <h2 class="h6 mb-2">Deja tu valoración</h2>
-        <form id="form-valoracion">
-          <div class="mb-2">
-            <span id="etiqueta-puntuacion" class="form-label d-block">Puntuación</span>
-            <input type="hidden" id="val-puntuacion">
-            <div class="estrellas-entrada" role="radiogroup" aria-labelledby="etiqueta-puntuacion"></div>
+          <!-- CS-48 y objetivo 4: valoraciones de amigos y seguidores, y todas -->
+          <div role="tablist" aria-label="Valoraciones" class="mb-3">
+            <button type="button" role="tab" id="pestana-amigos" aria-controls="panel-amigos">De amigos y seguidores</button>
+            <button type="button" role="tab" id="pestana-todas" aria-controls="panel-todas">Todas</button>
           </div>
 
-          <div class="mb-2">
-            <label for="val-comentario" class="form-label">Comentario (opcional)</label>
-            <textarea class="form-control campo-comentario" id="val-comentario" rows="1" maxlength="1000"></textarea>
-            <!-- Contador de caracteres -->
-            <div id="contador-caracteres" class="form-text text-end text-muted mt-1">0 / 1000</div>
+          <div role="tabpanel" id="panel-amigos" aria-labelledby="pestana-amigos">
+            <p id="sin-valoraciones-amigos" class="text-muted d-none">Ningún amigo o seguidor ha valorado esta experiencia.</p>
+            <div id="lista-valoraciones-amigos" class="d-flex flex-column gap-3 mb-3"></div>
+            <div class="text-center">
+              <button type="button" id="btn-mas-amigos" class="btn btn-outline-primary d-none">Cargar más</button>
+            </div>
           </div>
 
-          <div id="error-valoracion" role="alert" class="alert alert-danger d-none small p-2 mb-2"></div>
+          <div role="tabpanel" id="panel-todas" aria-labelledby="pestana-todas" hidden>
+            <!-- Mensaje si no hay valoraciones -->
+            <p id="sin-comentarios" class="text-muted d-none">Todavía no hay valoraciones</p>
+            <!-- Contenedor donde se insertarán los comentarios -->
+            <div id="lista-comentarios" class="d-flex flex-column gap-3 mb-3"></div>
+            <div class="text-center">
+              <button type="button" id="btn-cargar-mas" class="btn btn-outline-primary d-none">Cargar más</button>
+            </div>
+          </div>
 
-          <button type="submit" class="btn btn-primary" id="btn-guardar-valoracion">Guardar</button>
-        </form>
-      </div>
+          <!-- OBJETIVO 5: Formulario de valoración, después de leer las demás (el autor no lo ve) -->
+          <div id="caja-formulario-valoracion" class="tarjeta-panel mt-4 d-none">
+            <h2 class="h6 mb-2">Deja tu valoración</h2>
+            <form id="form-valoracion">
+              <div class="mb-2">
+                <span id="etiqueta-puntuacion" class="form-label d-block">Puntuación</span>
+                <input type="hidden" id="val-puntuacion">
+                <div class="estrellas-entrada" role="radiogroup" aria-labelledby="etiqueta-puntuacion"></div>
+              </div>
 
-      <!-- CS-48 y objetivo 4: valoraciones de amigos y seguidores, y todas -->
-      <div role="tablist" aria-label="Valoraciones" class="mb-3">
-        <button type="button" role="tab" id="pestana-amigos" aria-controls="panel-amigos">De amigos y seguidores</button>
-        <button type="button" role="tab" id="pestana-todas" aria-controls="panel-todas">Todas</button>
-      </div>
+              <div class="mb-2">
+                <label for="val-comentario" class="form-label">Comentario (opcional)</label>
+                <textarea class="form-control campo-comentario" id="val-comentario" rows="1" maxlength="1000"></textarea>
+                <!-- Contador de caracteres -->
+                <div id="contador-caracteres" class="form-text text-end text-muted mt-1">0 / 1000</div>
+              </div>
 
-      <div role="tabpanel" id="panel-amigos" aria-labelledby="pestana-amigos">
-        <p id="sin-valoraciones-amigos" class="text-muted d-none">Ningún amigo o seguidor ha valorado esta experiencia.</p>
-        <div id="lista-valoraciones-amigos" class="d-flex flex-column gap-3 mb-3"></div>
-        <div class="text-center">
-          <button type="button" id="btn-mas-amigos" class="btn btn-outline-primary d-none">Cargar más</button>
+              <div id="error-valoracion" role="alert" class="alert alert-danger d-none small p-2 mb-2"></div>
+
+              <button type="submit" class="btn btn-primary" id="btn-guardar-valoracion">Publicar valoración</button>
+            </form>
+          </div>
         </div>
-      </div>
 
-      <div role="tabpanel" id="panel-todas" aria-labelledby="pestana-todas" hidden>
-        <!-- Mensaje si no hay valoraciones -->
-        <p id="sin-comentarios" class="text-muted d-none">Todavía no hay valoraciones</p>
-        <!-- Contenedor donde se insertarán los comentarios -->
-        <div id="lista-comentarios" class="d-flex flex-column gap-3 mb-3"></div>
-        <div class="text-center">
-          <button type="button" id="btn-cargar-mas" class="btn btn-outline-primary d-none">Cargar más</button>
-        </div>
+        <!-- Ficha: quién, dónde, qué y cuándo, y las acciones del autor -->
+        <aside class="ficha-experiencia tarjeta-panel" aria-label="Ficha de la experiencia">
+          <div id="detalle-categoria" class="detalle-categoria mb-3"></div>
+          <dl class="ficha-datos">
+            <div><dt>Autor</dt><dd><a id="detalle-autor" class="fw-semibold"></a></dd></div>
+            <div><dt>Ciudad</dt><dd id="detalle-ciudad"></dd></div>
+            <div><dt>Categoría</dt><dd id="detalle-tipo"></dd></div>
+            <div id="fila-momento"><dt>Momento</dt><dd id="detalle-momento"></dd></div>
+            <div><dt>Visibilidad</dt><dd><span id="detalle-visibilidad"></span></dd></div>
+          </dl>
+          <!-- Solo el autor la ve: abre el formulario de edición de Mis planes -->
+          <p id="caja-editar" class="mt-3 mb-0 d-none"><a id="boton-editar" class="btn btn-outline-primary w-100" href="/cuenta/mis-planes.html">Editar plan</a></p>
+        </aside>
       </div>
     </div>
   </main>

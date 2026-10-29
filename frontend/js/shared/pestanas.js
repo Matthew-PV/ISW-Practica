@@ -1,5 +1,6 @@
 // Pestañas accesibles. Uso: `activarPestanas(lista)`, donde `lista` es el elemento con
-// role="tablist" cuyas pestañas (role="tab") llevan aria-controls hacia su panel.
+// role="tablist" cuyas pestañas (role="tab") llevan aria-controls hacia su panel. Devuelve
+// `{ seleccionar(pestana) }` para abrir otra pestaña desde el código.
 // Cada página que las usa carga este archivo antes de su propio script.
 
 function activarPestanas(lista) {
@@ -34,6 +35,7 @@ function activarPestanas(lista) {
   }
 
   seleccionar(pestanas[0], false);
+  return { seleccionar: (pestana) => seleccionar(pestana, false) };
 }
 
 window.activarPestanas = activarPestanas;

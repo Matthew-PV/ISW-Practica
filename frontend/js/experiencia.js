@@ -1,6 +1,8 @@
-// Página de una experiencia (/experiencias/experiencia.html?id=7): título, autor y ciudad, las valoraciones y
-// comentarios (CS-63), las de amigos y seguidores (CS-48) y el formulario para valorarla. Si la
-// experiencia no existe o no se puede ver, solo se muestra «Contenido no disponible» (CS-30).
+// Página de una experiencia (/experiencias/experiencia.html?id=7): título y descripción, el resumen de
+// sus valoraciones (CS-14), mi valoración, las valoraciones y comentarios (CS-63), las de amigos y
+// seguidores (CS-48), el formulario para valorarla y, al lado, la ficha (autor, ciudad, categoría,
+// momento y visibilidad). Si la experiencia no existe o no se puede ver, solo se muestra «Contenido no
+// disponible» (CS-30).
 // «Útil» y «Reportar» funcionan solo en la pantalla: no guardan nada hasta CS-02 y CS-04.
 // Usa `api` de shared/api.js y `listaConCargarMas`, `crearEnlacePerfil`, `mostrarMensaje`,
 // `ocultarMensaje`, `irAlLogin` y `crearBloqueCategoria` de shared/pantalla.js.
@@ -24,10 +26,28 @@ const tituloEl = document.getElementById('detalle-titulo');
 const autorEl = document.getElementById('detalle-autor');
 const ciudadEl = document.getElementById('detalle-ciudad');
 const visibilidadEl = document.getElementById('detalle-visibilidad');
+const tipoEl = document.getElementById('detalle-tipo');
+const momentoEl = document.getElementById('detalle-momento');
 const descEl = document.getElementById('detalle-descripcion');
 const cajaFormulario = document.getElementById('caja-formulario-valoracion');
 const listaComentarios = document.getElementById('lista-comentarios');
 const listaAmigos = document.getElementById('lista-valoraciones-amigos');
+const cajaResumen = document.getElementById('resumen-valoraciones');
+const cajaMiValoracion = document.getElementById('mi-valoracion');
+
+// «← Volver» lleva a la pantalla de PlanB desde la que se llegó (con su búsqueda); si no, a Inicio
+function rutaDeVuelta() {
+  try {
+    const origen = new URL(document.referrer);
+    if (origen.origin === window.location.origin && origen.pathname !== window.location.pathname) {
+      return origen.pathname + origen.search;
+    }
+  } catch {
+    // Sin referente (enlace directo o pestaña nueva)
+  }
+  return '/cuenta/bienvenida.html';
+}
+document.getElementById('enlace-volver').href = rutaDeVuelta();
 
 async function cargarPaginaExperiencia() {
   if (!experienciaId) {
@@ -62,6 +82,10 @@ async function cargarPaginaExperiencia() {
       visibilidadEl.textContent = etiqueta.texto;
     }
     descEl.textContent = experiencia.descripcion;
+    tipoEl.textContent = experiencia.tipo || 'Sin indicar';
+    momentoEl.textContent = experiencia.momentoAdecuado ?? '';
+    document.getElementById('fila-momento').hidden = !experiencia.momentoAdecuado;
+    cargarResumen();
 
     // El autor no puede valorar su propia experiencia: solo los demás ven el formulario
     const autorId = experiencia.autorId || (experiencia.autor && experiencia.autor.id);
@@ -73,8 +97,11 @@ async function cargarPaginaExperiencia() {
       document.getElementById('caja-editar').classList.remove('d-none');
     }
 
-    listadoAmigos.cargar();
-    await listadoComentarios.cargar();
+    await Promise.all([listadoAmigos.cargar(), listadoComentarios.cargar()]);
+    // Se abre la pestaña que tenga algo que leer: «Todas» si ningún amigo la ha valorado
+    if (!listaAmigos.querySelector('[data-id-elemento]') && listaComentarios.querySelector('[data-id-elemento]')) {
+      pestanas.seleccionar(document.getElementById('pestana-todas'));
+    }
   } catch (error) {
     if (!tratarErrorDeAcceso(error)) {
       mostrarError(error.message);
@@ -97,7 +124,12 @@ function mostrarNoDisponible() {
   autorEl.removeAttribute('href');
   ciudadEl.textContent = '';
   visibilidadEl.textContent = '';
+  tipoEl.textContent = '';
+  momentoEl.textContent = '';
   descEl.textContent = '';
+  cajaResumen.hidden = true;
+  cajaMiValoracion.hidden = true;
+  document.getElementById('mi-valoracion-contenido').replaceChildren();
   listaComentarios.replaceChildren();
   listaAmigos.replaceChildren();
   mostrarError('Contenido no disponible');
@@ -254,7 +286,69 @@ const listadoAmigos = listaConCargarMas({
 });
 
 // Pestañas «De amigos y seguidores» y «Todas»
-activarPestanas(document.querySelector('[role="tablist"]'));
+const pestanas = activarPestanas(document.querySelector('[role="tablist"]'));
+
+// --- CS-14: RESUMEN DE LAS VALORACIONES ---
+// Número con coma decimal: 4.3 → «4,3»
+const formatearNota = (nota) => nota.toLocaleString('es-ES');
+const enPlural = (n, singular, plural) => `${n} ${n === 1 ? singular : plural}`;
+
+// Pinta la media, el total, los comentarios y una barra por cada puntuación, de 5 a 1
+function pintarResumen({ media, total, distribucion, comentarios }) {
+  const hayValoraciones = total > 0;
+  document.getElementById('resumen-vacio').hidden = hayValoraciones;
+  document.getElementById('resumen-cifras').hidden = !hayValoraciones;
+  document.getElementById('resumen-media').textContent = hayValoraciones ? formatearNota(media) : '';
+  document.getElementById('resumen-estrellas').replaceChildren(
+    ...(hayValoraciones ? [crearEstrellas(media, formatearNota(media))] : [])
+  );
+  document.getElementById('resumen-total').textContent = enPlural(total, 'valoración', 'valoraciones');
+  document.getElementById('resumen-comentarios').textContent = enPlural(comentarios, 'comentario', 'comentarios');
+
+  const filas = [];
+  for (let estrellas = MAX_PUNTUACION; estrellas >= 1; estrellas--) {
+    const cantidad = distribucion[estrellas] ?? 0;
+    const fila = document.createElement('li');
+    fila.dataset.estrellas = estrellas;
+    const etiqueta = document.createElement('span');
+    etiqueta.textContent = enPlural(estrellas, 'estrella', 'estrellas');
+    const barra = document.createElement('span');
+    barra.className = 'resumen-barra';
+    barra.setAttribute('aria-hidden', 'true');
+    const relleno = document.createElement('span');
+    relleno.style.width = `${hayValoraciones ? (cantidad / total) * 100 : 0}%`;
+    barra.append(relleno);
+    const numero = document.createElement('span');
+    numero.textContent = cantidad;
+    fila.append(etiqueta, barra, numero);
+    filas.push(fila);
+  }
+  document.getElementById('resumen-distribucion').replaceChildren(...filas);
+  cajaResumen.hidden = false;
+}
+
+// Pide el resumen; si no llega, la sección se queda oculta y el resto de la página sigue igual
+async function cargarResumen() {
+  try {
+    pintarResumen(await api(`/experiencias/${experienciaId}/resumen`));
+  } catch (error) {
+    cajaResumen.hidden = true;
+    tratarErrorDeAcceso(error);
+  }
+}
+
+// Mi valoración, fija encima de las listas: estrellas y comentario
+function pintarMiValoracion(valoracion) {
+  const contenido = [crearEstrellas(valoracion.puntuacion)];
+  if (valoracion.comentario) {
+    const texto = document.createElement('p');
+    texto.className = 'mb-0 mt-2 text-break';
+    texto.textContent = valoracion.comentario;
+    contenido.push(texto);
+  }
+  document.getElementById('mi-valoracion-contenido').replaceChildren(...contenido);
+  cajaMiValoracion.hidden = false;
+}
 
 // --- ESTRELLAS ---
 const MAX_PUNTUACION = 5;
@@ -272,13 +366,14 @@ function crearEstrella(encendida) {
   return svg;
 }
 
-// Puntuación ya publicada: n estrellas rellenas de 5, con el valor como texto alternativo
-function crearEstrellas(puntuacion) {
+// Puntuación ya publicada o media: estrellas rellenas hasta la nota redondeada, con el valor
+// (`texto`, la propia nota si no se indica) como texto alternativo
+function crearEstrellas(puntuacion, texto = puntuacion) {
   const contenedor = document.createElement('span');
   contenedor.className = 'estrellas';
   contenedor.setAttribute('role', 'img');
-  contenedor.setAttribute('aria-label', `${puntuacion} de ${MAX_PUNTUACION}`);
-  for (let i = 1; i <= MAX_PUNTUACION; i++) contenedor.append(crearEstrella(i <= puntuacion));
+  contenedor.setAttribute('aria-label', `${texto} de ${MAX_PUNTUACION}`);
+  for (let i = 1; i <= MAX_PUNTUACION; i++) contenedor.append(crearEstrella(i <= Math.round(puntuacion)));
   return contenedor;
 }
 
@@ -351,6 +446,7 @@ async function cargarMiValoracion() {
       inputComentario.value = miValoracion.comentario ?? '';
       actualizarContador();
       btnGuardarValoracion.textContent = 'Actualizar valoración';
+      pintarMiValoracion(miValoracion);
     }
   } catch (error) {
     // Si falla por otra causa, el formulario se queda vacío y se puede valorar igualmente
@@ -381,17 +477,15 @@ formValoracion.addEventListener('submit', async (e) => {
   }
 
   try {
-    await api(`/experiencias/${experienciaId}/valoracion`, {
+    const guardada = await api(`/experiencias/${experienciaId}/valoracion`, {
       method: 'PUT',
       body: JSON.stringify(datos)
     });
 
-    await listadoComentarios.reiniciar();
-
-    btnGuardarValoracion.textContent = '¡Guardado!';
-    setTimeout(() => {
-      btnGuardarValoracion.textContent = 'Actualizar valoración';
-    }, 2000);
+    // Mi valoración se ve al momento; el resumen y la lista se vuelven a pedir con ella
+    pintarMiValoracion(guardada);
+    btnGuardarValoracion.textContent = 'Actualizar valoración';
+    await Promise.all([cargarResumen(), listadoComentarios.reiniciar()]);
   } catch (error) {
     // Lo escrito no se borra: se puede volver a intentar
     btnGuardarValoracion.textContent = textoGuardar;
