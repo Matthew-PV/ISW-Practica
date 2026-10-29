@@ -35,6 +35,8 @@ app.use(
         imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com'],
       },
     },
+    // El origen solo viaja entre páginas de PlanB («← Volver» de una experiencia); nunca a otros sitios
+    referrerPolicy: { policy: 'same-origin' },
   })
 );
 

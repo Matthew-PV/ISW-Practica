@@ -20,6 +20,11 @@ describe('cabeceras de seguridad', () => {
     expect(res.headers['x-content-type-options']).toBe('nosniff');
     expect(res.headers['x-powered-by']).toBeUndefined();
   });
+
+  test('el origen solo se comunica dentro de PlanB, para que «Volver» lleve a la pantalla anterior', async () => {
+    const res = await request(app).get('/experiencias/experiencia.html');
+    expect(res.headers['referrer-policy']).toBe('same-origin');
+  });
 });
 
 describe('páginas de entrada', () => {
