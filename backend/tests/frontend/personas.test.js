@@ -336,3 +336,98 @@ describe('Buscar (recuento anunciado)', () => {
     expect($('#resultados-experiencias').hasAttribute('aria-live')).toBe(false);
   });
 });
+
+// CS-61 (B3): cada fila de persona muestra su relación con quien busca y el botón que corresponde.
+// La fila deja de ser un solo enlace: el enlace al perfil y el botón son elementos distintos.
+describe('Buscar (relación y botón en la fila)', () => {
+  const persona = (id, nombre, relacion) => ({ id, nombreUsuario: nombre, foto: null, ciudad: 'Sevilla', relacion });
+  const sinRelacion = { amistad: 'ninguna', amistadId: null, siguiendo: false };
+
+  async function buscarPersonas(personas) {
+    window.fetch.mockImplementation((ruta) => (ruta.startsWith('/api/usuarios?')
+      ? respuesta(200, personas)
+      : respuesta(200, paginaDePlanes())));
+    buscar('a');
+    await terminar();
+  }
+
+  test('una persona sin relación ofrece «Añadir amigo», que envía la solicitud y pasa a «Cancelar solicitud»', async () => {
+    await buscarPersonas([persona(5, 'bea', sinRelacion)]);
+    window.fetch.mockImplementation(() => respuesta(201, { id: 77, estado: 'PENDIENTE' }));
+
+    const boton = $('#resultados .fila-resultado button');
+    expect(boton.textContent).toBe('Añadir amigo');
+    boton.click();
+    await terminar();
+
+    expect(window.fetch).toHaveBeenCalledWith('/api/amistades', expect.objectContaining({
+      method: 'POST', body: JSON.stringify({ destinatarioId: 5 }),
+    }));
+    const fila = $('#resultados .fila-resultado');
+    expect(fila.querySelector('button').textContent).toBe('Cancelar solicitud');
+    expect(fila.textContent).toContain('Solicitud enviada');
+  });
+
+  test('«Cancelar solicitud» borra la amistad pendiente y vuelve a «Añadir amigo»', async () => {
+    await buscarPersonas([persona(5, 'bea', { amistad: 'enviada', amistadId: 9, siguiendo: false })]);
+    window.fetch.mockImplementation(() => respuesta(200, { mensaje: 'ok' }));
+
+    const boton = $('#resultados .fila-resultado button');
+    expect(boton.textContent).toBe('Cancelar solicitud');
+    boton.click();
+    await terminar();
+
+    expect(window.fetch).toHaveBeenCalledWith('/api/amistades/9', expect.objectContaining({ method: 'DELETE' }));
+    expect($('#resultados .fila-resultado button').textContent).toBe('Añadir amigo');
+  });
+
+  test('una solicitud recibida se acepta desde la fila y la persona pasa a «Amigos»', async () => {
+    await buscarPersonas([persona(5, 'bea', { amistad: 'recibida', amistadId: 12, siguiendo: false })]);
+    window.fetch.mockImplementation(() => respuesta(200, { id: 12, estado: 'ACEPTADA' }));
+
+    const boton = $('#resultados .fila-resultado button');
+    expect(boton.textContent).toBe('Aceptar');
+    boton.click();
+    await terminar();
+
+    expect(window.fetch).toHaveBeenCalledWith('/api/amistades/12', expect.objectContaining({
+      method: 'PATCH', body: JSON.stringify({ aceptar: true }),
+    }));
+    const fila = $('#resultados .fila-resultado');
+    expect(fila.querySelector('button')).toBeNull();
+    expect(fila.textContent).toContain('Amigos');
+  });
+
+  test('un amigo no tiene botón y se indica; a quien sigues se le añade «Le sigues»', async () => {
+    await buscarPersonas([
+      persona(5, 'bea', { amistad: 'amigos', amistadId: 3, siguiendo: false }),
+      persona(6, 'raul', { amistad: 'ninguna', amistadId: null, siguiendo: true }),
+    ]);
+
+    const [amigo, seguido] = document.querySelectorAll('#resultados .fila-resultado');
+    expect(amigo.querySelector('button')).toBeNull();
+    expect(amigo.textContent).toContain('Amigos');
+    expect(seguido.textContent).toContain('Le sigues');
+    expect(seguido.querySelector('button').textContent).toBe('Añadir amigo');
+  });
+
+  test('si la acción falla se muestra el error en la fila y el botón queda activo', async () => {
+    await buscarPersonas([persona(5, 'bea', sinRelacion)]);
+    window.fetch.mockImplementation(() => respuesta(400, { error: 'Ya existe una solicitud' }));
+
+    $('#resultados .fila-resultado button').click();
+    await terminar();
+
+    const fila = $('#resultados .fila-resultado');
+    expect(fila.querySelector('[role="alert"]').textContent).toBe('Ya existe una solicitud');
+    expect(fila.querySelector('button').disabled).toBe(false);
+  });
+
+  test('el enlace al perfil sigue siendo solo la persona, sin el botón dentro', async () => {
+    await buscarPersonas([persona(5, 'bea', sinRelacion)]);
+
+    const enlace = $('#resultados .fila-resultado a');
+    expect(enlace.querySelector('button')).toBeNull();
+    expect(enlace.textContent).toContain('bea');
+  });
+});

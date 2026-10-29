@@ -23,11 +23,77 @@ activarPestanas(document.getElementById('pestanas-busqueda'));
 // Cuenta las búsquedas: si llega una respuesta de una búsqueda que ya no es la última, se descarta
 let ultimaBusqueda = 0;
 
-// Crea la fila de una persona: un enlace a su perfil público con foto, nombre y, si la hay, ciudad.
-// El nombre procede de otro usuario, por eso se asigna con textContent y nunca como HTML.
+// Texto de la relación con quien busca
+const ETIQUETAS_AMISTAD = { enviada: 'Solicitud enviada', recibida: 'Te ha enviado una solicitud', amigos: 'Amigos' };
+
+// Hace la petición de amistad de la fila y, si sale bien, la pinta con la relación nueva. `id` es el de la
+// amistad, que el servidor devuelve al crearla.
+async function actuarSobreAmistad(fila, usuario, boton, peticion, relacionNueva) {
+  boton.disabled = true;
+  fila.querySelector('[role="alert"]')?.remove();
+  try {
+    const { ruta, opciones } = peticion;
+    const respuesta = await api(ruta, opciones);
+    const amistadId = relacionNueva.amistad === 'enviada' ? respuesta.id : null;
+    pintarRelacion(fila, usuario, { ...usuario.relacion, ...relacionNueva, amistadId });
+  } catch (err) {
+    boton.disabled = false;
+    const error = document.createElement('p');
+    error.className = 'fila-resultado-error';
+    error.setAttribute('role', 'alert');
+    error.textContent = err.message;
+    fila.append(error);
+  }
+}
+
+// Pone en la fila la relación (texto) y el botón que corresponde: «Añadir amigo» si no hay amistad,
+// «Cancelar solicitud» si la envió quien busca y «Aceptar» si la recibió. Un amigo no lleva botón.
+function pintarRelacion(fila, usuario, relacion) {
+  usuario.relacion = relacion;
+  fila.querySelector('.fila-resultado-relacion')?.remove();
+  fila.querySelector('[role="alert"]')?.remove();
+
+  const zona = document.createElement('div');
+  zona.className = 'fila-resultado-relacion';
+  const etiquetas = [ETIQUETAS_AMISTAD[relacion.amistad], relacion.siguiendo ? 'Le sigues' : null].filter(Boolean);
+  if (etiquetas.length) {
+    const texto = document.createElement('span');
+    texto.className = 'fila-resultado-estado';
+    texto.textContent = etiquetas.join(' · ');
+    zona.append(texto);
+  }
+
+  const acciones = {
+    ninguna: ['Añadir amigo', 'btn-outline-primary',
+      { ruta: '/amistades', opciones: { method: 'POST', body: JSON.stringify({ destinatarioId: usuario.id }) } },
+      { amistad: 'enviada' }],
+    enviada: ['Cancelar solicitud', 'btn-outline-secondary',
+      { ruta: `/amistades/${relacion.amistadId}`, opciones: { method: 'DELETE' } },
+      { amistad: 'ninguna' }],
+    recibida: ['Aceptar', 'btn-primary',
+      { ruta: `/amistades/${relacion.amistadId}`, opciones: { method: 'PATCH', body: JSON.stringify({ aceptar: true }) } },
+      { amistad: 'amigos' }],
+  }[relacion.amistad];
+  if (acciones) {
+    const [textoBoton, clase, peticion, nueva] = acciones;
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = `btn btn-sm ${clase}`;
+    boton.textContent = textoBoton;
+    boton.addEventListener('click', () => actuarSobreAmistad(fila, usuario, boton, peticion, nueva));
+    zona.append(boton);
+  }
+  fila.append(zona);
+}
+
+// Crea la fila de una persona: un enlace a su perfil público con foto, nombre y, si la hay, ciudad, y a su
+// lado la relación con quien busca y el botón de amistad. El nombre procede de otro usuario, por eso se asigna
+// con textContent y nunca como HTML.
 function crearResultado(usuario) {
-  const fila = crearEnlacePerfil(document.createElement('a'), usuario);
+  const fila = document.createElement('div');
   fila.className = 'fila-resultado';
+  const enlace = crearEnlacePerfil(document.createElement('a'), usuario);
+  enlace.className = 'fila-resultado-persona';
 
   let foto;
   if (usuario.foto) {
@@ -51,7 +117,9 @@ function crearResultado(usuario) {
     cuerpo.append(ciudad);
   }
 
-  fila.replaceChildren(foto, cuerpo);
+  enlace.replaceChildren(foto, cuerpo);
+  fila.append(enlace);
+  if (usuario.relacion) pintarRelacion(fila, usuario, usuario.relacion);
   return fila;
 }
 
