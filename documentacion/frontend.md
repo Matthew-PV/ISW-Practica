@@ -3,7 +3,7 @@
 > Qué pantallas hay, cómo se pasa de una a otra, qué archivos usa cada una y qué llamadas hace a la API.
 > Documentos relacionados: [arquitectura](arquitectura.md), [flujos](flujos.md), [referencia de la API](api.md), [glosario](anexo/glosario.md) e [inventario de pantallas](inventario-pantallas.md) (estados y lagunas frente al diseño).
 
-El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilos de Bootstrap 5 (solo su CSS) complementados por `css/styles.css` y por el CSS propio de cada grupo de páginas. Está pensado para escritorio; la adaptación a pantallas pequeñas está aparcada. El mismo servidor Express sirve las páginas desde `frontend/` y la API desde `/api`, así que comparten origen y la cookie de sesión viaja sola en cada `fetch`.
+El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilos de Bootstrap 5 (solo su CSS, que carga `css/tokens.css` en una capa) complementados por `css/base.css`, `css/componentes.css` y por el CSS propio de cada grupo de páginas. Está pensado para escritorio; la adaptación a pantallas pequeñas está aparcada. El mismo servidor Express sirve las páginas desde `frontend/` y la API desde `/api`, así que comparten origen y la cookie de sesión viaja sola en cada `fetch`.
 
 ## Mapa de navegación
 
@@ -139,7 +139,7 @@ Las URL de detalle incluyen parámetros: `/social/usuario.html?nombre=...` ident
 
 ## Páginas, archivos y llamadas
 
-Cada página carga primero `js/shared/api.js`, después los módulos compartidos que necesita y por último su script. Todas cargan `css/styles.css`; la columna «CSS propio» es el segundo archivo de estilos.
+Cada página carga primero `js/shared/api.js`, después los módulos compartidos que necesita y por último su script. Todas cargan `css/tokens.css`, `css/base.css` y `css/componentes.css`; la columna «CSS propio» es el segundo archivo de estilos.
 
 | Página | Script | CSS propio | Módulos compartidos | Llamadas a la API | Historias |
 |---|---|---|---|---|---|
@@ -160,10 +160,10 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 
 ## Estilos
 
-* `css/styles.css` es el archivo común: define las variables `--color-*` (`--color-lienzo` es el fondo de la página y las tarjetas y paneles son blancos con borde; los colores solo se escriben en ese bloque; el resto de los CSS usa `var(--color-*)`) y los componentes compartidos: cabecera, botones, tarjetas, avisos y el enlace «Saltar al contenido».
+* Estilos comunes, en capas (`@layer sombras, bootstrap, tokens, base, componentes`, declaradas en `tokens.css`): `tokens.css` define las variables (`--color-*`, espaciado, radios, duraciones; `--color-lienzo` es el fondo de la página y las tarjetas y paneles son blancos con borde) e importa Bootstrap en la capa `bootstrap`; `base.css` lleva el fondo, el `body` y los encabezados; `componentes.css` los componentes compartidos: cabecera, botones, tarjetas, avisos y el enlace «Saltar al contenido». El CSS propio de cada página no lleva capa y por eso gana a todo lo anterior.
 * `landing.css`: la landing (`index.html`).
 * Tarjetas de experiencia: bloque de color con icono (`.bloque-categoria`, color según `data-categoria`). Estados vacíos: `.estado-vacio` con ilustración animada de `img/vacio-*.svg` (mancha de color, objeto con microanimación; decorativa y sin movimiento con `prefers-reduced-motion`).
-* `acceso.css`: la tarjeta de formulario de `iniciar-sesion`, `registro`, `recuperar` y `restablecer`. La columna de marca usa como fondo la escena animada `img/escena-acceso.svg` (puesta en `styles.css`).
+* `acceso.css`: la tarjeta de formulario de `iniciar-sesion`, `registro`, `recuperar` y `restablecer`. La columna de marca usa como fondo la escena animada `img/escena-acceso.svg` (puesta en `componentes.css`).
 * `experiencia.css`: el detalle de experiencia, con la experiencia y el formulario en una columna y las valoraciones en otra.
 * `perfil.css`: `/cuenta/perfil.html` y `/social/usuario.html`.
 * `buscar.css`: `/social/personas.html`.
@@ -353,7 +353,7 @@ Los módulos se cargan con `<script>` normales (no son módulos ES) y exponen su
 * **Ventanas con `<dialog>`.** La CSP no deja cargar el JavaScript de Bootstrap desde el CDN, así que los diálogos usan el elemento nativo `<dialog>` con `showModal()` y `close()`.
 * **La seguridad está en el backend.** Ocultar un botón (por ejemplo, el formulario de valorar en una experiencia propia) solo mejora la interfaz: el servidor comprueba siempre los permisos.
 * **Llamadas con `api`.** Ninguna página usa `fetch` directamente.
-* **Colores en variables.** Los colores solo se definen como `--color-*` en `css/styles.css`; los demás CSS las usan.
+* **Colores en variables.** Los colores solo se definen como variables en `css/tokens.css`; los demás CSS las usan.
 * **Escritorio.** El diseño se comprueba en escritorio.
 
 ## Pruebas del frontend

@@ -5,7 +5,7 @@
 // Usa `api` de shared/api.js y `listaConCargarMas`, `crearEnlacePerfil`, `mostrarMensaje`,
 // `ocultarMensaje`, `irAlLogin` y `crearBloqueCategoria` de shared/pantalla.js.
 
-// Etiqueta de visibilidad (clases de styles.css)
+// Etiqueta de visibilidad (clases de componentes.css)
 const ETIQUETAS_VISIBILIDAD = {
   PUBLICA: { clase: 'etiqueta-publica', texto: 'Pública' },
   AMIGOS: { clase: 'etiqueta-amigos', texto: 'Amigos' },

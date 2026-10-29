@@ -5,7 +5,7 @@
 
 ## Cómo se usa este documento
 
-- Aquí se recoge **qué se decide**, no cómo se implementa. Lo aprobado se traduce a variables CSS en `frontend/css/styles.css`.
+- Aquí se recoge **qué se decide**, no cómo se implementa. Lo aprobado se traduce a variables CSS en `frontend/css/tokens.css`.
 - Si una pantalla necesita algo que no figura aquí, se propone aquí primero y después se usa.
 - Todos los contrastes están **calculados** con la fórmula de luminancia relativa de WCAG, no estimados a ojo.
 - En el CSS no hay colores literales fuera de la declaración de las variables `--color-*`.

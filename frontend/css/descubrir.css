@@ -123,7 +123,7 @@
 }
 
 .filtro[aria-pressed="true"] {
-  color: #fff;
+  color: var(--color-blanco);
   background: var(--color-texto);
   border-color: var(--color-texto);
 }

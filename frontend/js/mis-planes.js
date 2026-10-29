@@ -34,7 +34,7 @@ function describirVisibilidad() {
 
 selectorVisibilidad.addEventListener('change', describirVisibilidad);
 
-// Etiqueta de cada visibilidad en la tarjeta (clases definidas en styles.css)
+// Etiqueta de cada visibilidad en la tarjeta (clases definidas en componentes.css)
 const ETIQUETAS_VISIBILIDAD = {
   PUBLICA: { clase: 'etiqueta-publica', texto: 'Pública' },
   AMIGOS: { clase: 'etiqueta-amigos', texto: 'Amigos' },

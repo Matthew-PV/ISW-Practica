@@ -10,7 +10,7 @@ const cajaErrorExperiencias = document.getElementById('error-experiencias');
 // Autor del listado: el nombre con el que se piden las páginas
 let autorExperiencias = null;
 
-// Etiqueta de cada visibilidad (clases definidas en styles.css); igual que en bienvenida.js
+// Etiqueta de cada visibilidad (clases definidas en componentes.css); igual que en bienvenida.js
 const ETIQUETAS_VISIBILIDAD = {
   PUBLICA: { clase: 'etiqueta-publica', texto: 'Pública' },
   AMIGOS: { clase: 'etiqueta-amigos', texto: 'Amigos' },

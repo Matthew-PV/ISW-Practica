@@ -1,153 +1,13 @@
-/* Estilos de PlanB sobre Bootstrap 5.3.3 (se carga antes por CDN). Los valores salen de documentacion/arte.md.
-   Los colores solo se escriben en este bloque; el resto del archivo usa var(--color-*). */
-
-:root {
-  /* Paleta «Verbena» (documentacion/arte.md) */
-  --color-fondo: #FFFFFF;
-  --color-lienzo: #FFFFFF;
-  --color-superficie: #F6F3F9;
-  --color-texto: #2A1E3F;
-  --color-texto-suave: #5E5470;
-  --color-primario: #FF5A36;
-  --color-primario-hover: #FF7A5C;
-  --color-acento: #C2410C;
-  --color-acento-hover: #9A3412;
-  --color-melocoton: #FFC7B3;
-  --color-crema: #FFF4E6;
-  --color-peligro: #B91C1C;
-  --color-exito: #15803D;
-  --color-foco: #1D4ED8;
-  --color-borde-campo: #7A6F8C;
-  --color-borde-suave: #E8E3EE;
-
-  /* Avisos (fondo y texto) */
-  --color-error-fondo: #FEE2E2;
-  --color-error-texto: #7F1D1D;
-  --color-exito-fondo: #DCFCE7;
-  --color-exito-texto: #14532D;
-  --color-aviso-fondo: #FEF3C7;
-  --color-aviso-texto: #78350F;
-  --color-info-fondo: #E0F2FE;
-  --color-info-texto: #0C4A6E;
-
-  /* Capa expresiva (landing y pantallas de acceso): tonos extra solo para formas decorativas, nunca para texto */
-  --expr-lila: #E4D7FA;
-  --expr-menta: #C6EBD6;
-  --expr-sol: #FFD66B;
-  --expr-cielo: #BFE3FF;
-
-  /* Velo detrás de los diálogos (no figura en arte.md) */
-  --color-velo: rgb(0 0 0 / 0.5);
-
-  /* Tripletas RGB que Bootstrap necesita para sus utilidades (text-secondary, enlaces...) */
-  --color-acento-rgb: 194, 65, 12;
-  --color-acento-hover-rgb: 154, 52, 18;
-  --color-texto-rgb: 42, 30, 63;
-  --color-texto-suave-rgb: 94, 84, 112;
-
-  /* Espaciado: escala de múltiplos de 4 px */
-  --espacio-4: 4px;
-  --espacio-8: 8px;
-  --espacio-12: 12px;
-  --espacio-16: 16px;
-  --espacio-24: 24px;
-  --espacio-32: 32px;
-  --espacio-48: 48px;
-
-  /* Radios */
-  --radio-boton: 8px;
-  --radio-tarjeta: 12px;
-  --radio-pildora: 999px;
-
-  /* Duraciones */
-  --duracion-corta: 120ms;
-  --duracion-fundido: 150ms;
-
-  /* Reasignación de las variables de Bootstrap */
-  --bs-primary: var(--color-primario);
-  --bs-primary-rgb: 255, 90, 54;
-  --bs-secondary-rgb: var(--color-texto-suave-rgb);
-  --bs-secondary-color: var(--color-texto-suave);
-  --bs-body-color: var(--color-texto);
-  --bs-body-color-rgb: var(--color-texto-rgb);
-  --bs-body-bg: var(--color-lienzo);
-  --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --bs-body-font-size: 1rem;
-  --bs-body-line-height: 1.5;
-  --bs-link-color: var(--color-acento);
-  --bs-link-color-rgb: var(--color-acento-rgb);
-  --bs-link-hover-color: var(--color-acento-hover);
-  --bs-link-hover-color-rgb: var(--color-acento-hover-rgb);
-  --bs-border-color: var(--color-borde-suave);
-  --bs-border-radius: var(--radio-boton);
-  --bs-border-radius-sm: var(--radio-boton);
-  --bs-border-radius-lg: var(--radio-tarjeta);
-  --bs-border-radius-xl: var(--radio-tarjeta);
-}
-
-/* ---------- Base ---------- */
-
-body {
-  background: var(--color-lienzo);
-  color: var(--color-texto);
-}
-
-/* Fondo: manchas de color suaves que derivan despacio y una trama de puntos que se desvanece hacia abajo.
-   Ambas capas son fijas: no se mueven al desplazar la página. */
-body::before {
-  content: "";
-  position: fixed;
-  inset: -8%;
-  z-index: -2;
-  pointer-events: none;
-  background:
-    radial-gradient(520px 420px at 8% 6%, rgb(255 199 179 / 0.6), transparent 70%),
-    radial-gradient(480px 420px at 94% 10%, rgb(228 215 250 / 0.7), transparent 70%),
-    radial-gradient(460px 380px at 50% 46%, rgb(255 214 107 / 0.18), transparent 70%),
-    radial-gradient(560px 460px at 72% 100%, rgb(198 235 214 / 0.55), transparent 70%),
-    radial-gradient(420px 360px at 4% 92%, rgb(191 227 255 / 0.45), transparent 70%),
-    var(--color-lienzo);
-  animation: deriva 28s ease-in-out infinite alternate;
-}
-
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background: radial-gradient(circle, rgb(var(--color-texto-rgb) / 0.2) 1px, transparent 1.5px) 0 0 / 26px 26px;
-  -webkit-mask-image: linear-gradient(to bottom, #000, transparent 70%);
-  mask-image: linear-gradient(to bottom, #000, transparent 70%);
-}
-
-@keyframes deriva {
-  from { transform: translate(0, 0) scale(1); }
-  to { transform: translate(2%, -2%) scale(1.06); }
-}
-
-/* La página entra con un pequeño ascenso */
-main {
-  animation: subir 320ms ease-out both;
-}
-
-/* Títulos: solo tres tamaños y negrita */
-h1, .h1 { font-size: 28px; font-weight: 700; }
-h2, .h2 { font-size: 22px; font-weight: 700; }
-h3, .h3, h4, .h4, h5, .h5, h6, .h6 { font-size: 18px; font-weight: 700; }
-
-.small, small, .form-text { font-size: 14px; }
-
-/* Contenido centrado de 960 px como máximo, con 24 px de margen lateral */
-.container {
-  --bs-gutter-x: var(--espacio-48);
-  max-width: 960px;
-}
+/* Componentes compartidos de PlanB: botones, campos, tarjetas, cabecera, avisos, diálogos y movimiento. Usa solo variables de tokens.css. */
 
 /* Sin sombras: la profundidad se consigue con borde y color de fondo */
-.shadow, .shadow-sm, .shadow-lg {
-  box-shadow: none !important;
+@layer sombras {
+  .shadow, .shadow-sm, .shadow-lg {
+    box-shadow: none !important;
+  }
 }
+
+@layer componentes {
 
 /* ---------- Anillo de foco: 2 px, separado 2 px, nunca se quita ---------- */
 
@@ -812,10 +672,10 @@ body.pagina-buscar .menu-notificaciones {
 }
 
 .bloque-categoria[data-categoria="gastronomia"] { background: var(--color-melocoton); }
-.bloque-categoria[data-categoria="cultura"] { background: #E3D9F2; }
-.bloque-categoria[data-categoria="naturaleza"] { background: #D4EFD9; }
+.bloque-categoria[data-categoria="cultura"] { background: var(--color-cultura); }
+.bloque-categoria[data-categoria="naturaleza"] { background: var(--color-naturaleza); }
 .bloque-categoria[data-categoria="noche"] { background: var(--color-texto); color: var(--color-melocoton); }
-.bloque-categoria[data-categoria="deporte"] { background: #D6E6FA; }
+.bloque-categoria[data-categoria="deporte"] { background: var(--color-deporte); }
 .bloque-categoria[data-categoria="rincones"] { background: var(--color-crema); }
 
 /* Tarjeta de experiencia (va sobre .card): descripción cortada a tres líneas */
@@ -1182,7 +1042,7 @@ body.pagina-buscar .menu-notificaciones {
   position: sticky;
   top: 0;
   z-index: 1020;
-  background: rgb(255 255 255 / 0.82);
+  background: rgb(var(--color-blanco-rgb) / 0.82);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
@@ -1219,7 +1079,7 @@ body.pagina-buscar .menu-notificaciones {
 
 .tarjeta-experiencia:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 24px -12px rgb(42 30 63 / 0.35);
+  box-shadow: 0 10px 24px -12px rgb(var(--color-texto-rgb-sp) / 0.35);
 }
 
 .tarjeta-nueva {
@@ -1274,7 +1134,7 @@ body.pagina-buscar .menu-notificaciones {
   font-size: 12px;
   font-weight: 700;
   line-height: 18px;
-  color: #fff;
+  color: var(--color-blanco);
   text-align: center;
   background: var(--color-acento);
   border-radius: var(--radio-pildora);
@@ -1406,4 +1266,5 @@ dialog[open]::backdrop {
 
 .menu-avatar {
   transition: box-shadow var(--duracion-corta);
+}
 }

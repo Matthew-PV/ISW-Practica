@@ -60,7 +60,7 @@
   padding-left: var(--espacio-16);
   background: transparent;
   border: 0;
-  border-radius: var(--radio-pildora);
+  border-radius: var(--radio-pildora) 0 0 var(--radio-pildora);
   box-shadow: none;
 }
 
@@ -71,5 +71,5 @@
 
 .formulario-busqueda .btn {
   padding: 0 var(--espacio-24);
-  border-radius: var(--radio-pildora);
+  border-radius: 0 var(--radio-pildora) var(--radio-pildora) 0;
 }

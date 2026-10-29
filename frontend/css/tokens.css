@@ -1,0 +1,112 @@
+/* Variables de PlanB (colores, espaciado, radios, duraciones) y su reasignación sobre Bootstrap 5.3.3.
+   Los valores salen de documentacion/arte.md. Los colores solo se escriben en este archivo; el resto usa var(--color-*).
+   Orden de carga: tokens.css (que importa Bootstrap), base.css, componentes.css y el CSS propio de cada página. */
+
+/* Orden de las capas: lo que va después gana a lo anterior, sin depender de la especificidad.
+   Los estilos de cada página (acceso.css, perfil.css...) van sin capa, así que ganan a todas. */
+/* «sombras» va primera: con !important gana la capa más temprana, y así vence a .shadow-sm de Bootstrap */
+@layer sombras, bootstrap, tokens, base, componentes;
+
+@import url("https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css") layer(bootstrap);
+
+@layer tokens {
+:root {
+  /* Paleta «Verbena» (documentacion/arte.md) */
+  --color-fondo: #FFFFFF;
+  --color-lienzo: #FFFFFF;
+  --color-superficie: #F6F3F9;
+  --color-texto: #2A1E3F;
+  --color-texto-suave: #5E5470;
+  --color-primario: #FF5A36;
+  --color-primario-hover: #FF7A5C;
+  --color-acento: #C2410C;
+  --color-acento-hover: #9A3412;
+  --color-melocoton: #FFC7B3;
+  --color-crema: #FFF4E6;
+  --color-peligro: #B91C1C;
+  --color-exito: #15803D;
+  --color-foco: #1D4ED8;
+  --color-borde-campo: #7A6F8C;
+  --color-borde-suave: #E8E3EE;
+
+  /* Avisos (fondo y texto) */
+  --color-error-fondo: #FEE2E2;
+  --color-error-texto: #7F1D1D;
+  --color-exito-fondo: #DCFCE7;
+  --color-exito-texto: #14532D;
+  --color-aviso-fondo: #FEF3C7;
+  --color-aviso-texto: #78350F;
+  --color-info-fondo: #E0F2FE;
+  --color-info-texto: #0C4A6E;
+
+  /* Capa expresiva (landing y pantallas de acceso): tonos extra solo para formas decorativas, nunca para texto */
+  --expr-lila: #E4D7FA;
+  --expr-menta: #C6EBD6;
+  --expr-sol: #FFD66B;
+  --expr-cielo: #BFE3FF;
+
+  /* Blanco, negro y categorías de las tarjetas */
+  --color-blanco: #FFFFFF;
+  --color-negro: #000000;
+  --color-cultura: #E3D9F2;
+  --color-naturaleza: #D4EFD9;
+  --color-deporte: #D6E6FA;
+
+  /* Velo detrás de los diálogos (no figura en arte.md) */
+  --color-velo: rgb(0 0 0 / 0.5);
+
+  /* Tripletas RGB que Bootstrap necesita para sus utilidades (text-secondary, enlaces...) */
+  --color-acento-rgb: 194, 65, 12;
+  --color-acento-hover-rgb: 154, 52, 18;
+  --color-texto-rgb: 42, 30, 63;
+  --color-texto-suave-rgb: 94, 84, 112;
+
+  /* Tripletas RGB (separadas por espacios) para los degradados con transparencia */
+  --color-blanco-rgb: 255 255 255;
+  --color-texto-rgb-sp: 42 30 63;
+  --color-melocoton-rgb: 255 199 179;
+  --expr-lila-rgb: 228 215 250;
+  --expr-sol-rgb: 255 214 107;
+  --expr-menta-rgb: 198 235 214;
+  --expr-cielo-rgb: 191 227 255;
+
+  /* Espaciado: escala de múltiplos de 4 px */
+  --espacio-4: 4px;
+  --espacio-8: 8px;
+  --espacio-12: 12px;
+  --espacio-16: 16px;
+  --espacio-24: 24px;
+  --espacio-32: 32px;
+  --espacio-48: 48px;
+
+  /* Radios */
+  --radio-boton: 8px;
+  --radio-tarjeta: 12px;
+  --radio-pildora: 999px;
+
+  /* Duraciones */
+  --duracion-corta: 120ms;
+  --duracion-fundido: 150ms;
+
+  /* Reasignación de las variables de Bootstrap */
+  --bs-primary: var(--color-primario);
+  --bs-primary-rgb: 255, 90, 54;
+  --bs-secondary-rgb: var(--color-texto-suave-rgb);
+  --bs-secondary-color: var(--color-texto-suave);
+  --bs-body-color: var(--color-texto);
+  --bs-body-color-rgb: var(--color-texto-rgb);
+  --bs-body-bg: var(--color-lienzo);
+  --bs-body-font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --bs-body-font-size: 1rem;
+  --bs-body-line-height: 1.5;
+  --bs-link-color: var(--color-acento);
+  --bs-link-color-rgb: var(--color-acento-rgb);
+  --bs-link-hover-color: var(--color-acento-hover);
+  --bs-link-hover-color-rgb: var(--color-acento-hover-rgb);
+  --bs-border-color: var(--color-borde-suave);
+  --bs-border-radius: var(--radio-boton);
+  --bs-border-radius-sm: var(--radio-boton);
+  --bs-border-radius-lg: var(--radio-tarjeta);
+  --bs-border-radius-xl: var(--radio-tarjeta);
+}
+}

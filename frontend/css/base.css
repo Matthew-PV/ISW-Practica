@@ -1,0 +1,60 @@
+/* Base de PlanB: fondo de página, títulos y contenedor. Usa solo variables de tokens.css. */
+
+@layer base {
+body {
+  background: var(--color-lienzo);
+  color: var(--color-texto);
+}
+
+/* Fondo: manchas de color suaves que derivan despacio y una trama de puntos que se desvanece hacia abajo.
+   Ambas capas son fijas: no se mueven al desplazar la página. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -8%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(520px 420px at 8% 6%, rgb(var(--color-melocoton-rgb) / 0.6), transparent 70%),
+    radial-gradient(480px 420px at 94% 10%, rgb(var(--expr-lila-rgb) / 0.7), transparent 70%),
+    radial-gradient(460px 380px at 50% 46%, rgb(var(--expr-sol-rgb) / 0.18), transparent 70%),
+    radial-gradient(560px 460px at 72% 100%, rgb(var(--expr-menta-rgb) / 0.55), transparent 70%),
+    radial-gradient(420px 360px at 4% 92%, rgb(var(--expr-cielo-rgb) / 0.45), transparent 70%),
+    var(--color-lienzo);
+  animation: deriva 28s ease-in-out infinite alternate;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(circle, rgb(var(--color-texto-rgb) / 0.2) 1px, transparent 1.5px) 0 0 / 26px 26px;
+  -webkit-mask-image: linear-gradient(to bottom, var(--color-negro), transparent 70%);
+  mask-image: linear-gradient(to bottom, var(--color-negro), transparent 70%);
+}
+
+@keyframes deriva {
+  from { transform: translate(0, 0) scale(1); }
+  to { transform: translate(2%, -2%) scale(1.06); }
+}
+
+/* La página entra con un pequeño ascenso */
+main {
+  animation: subir 320ms ease-out both;
+}
+
+/* Títulos: solo tres tamaños y negrita */
+h1, .h1 { font-size: 28px; font-weight: 700; }
+h2, .h2 { font-size: 22px; font-weight: 700; }
+h3, .h3, h4, .h4, h5, .h5, h6, .h6 { font-size: 18px; font-weight: 700; }
+
+.small, small, .form-text { font-size: 14px; }
+
+/* Contenido centrado de 960 px como máximo, con 24 px de margen lateral */
+.container {
+  --bs-gutter-x: var(--espacio-48);
+  max-width: 960px;
+}
+}

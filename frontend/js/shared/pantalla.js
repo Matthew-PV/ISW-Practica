@@ -87,7 +87,7 @@ function listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar }) {
 }
 
 // Categorías de las tarjetas de experiencia: palabras clave para reconocerlas en `tipo` (texto libre)
-// y trazo del icono (24x24, de línea). El color de cada una está en styles.css (.bloque-categoria).
+// y trazo del icono (24x24, de línea). El color de cada una está en componentes.css (.bloque-categoria).
 const CATEGORIAS = {
   gastronomia: { palabras: /tapa|comer|comid|restaur|bar\b|cafe|café|cena|brunch|gastro|vino|cocina/i, trazo: '<path d="M5 3v8a3 3 0 0 0 3 3v7M8 3v6M11 3v8a3 3 0 0 1-3 3M17 21V3c-2.5 1.5-3.5 5-3.5 8H17"/>' },
   cultura: { palabras: /museo|arte|arquitect|histori|teatro|cine|exposici|monument|cultur/i, trazo: '<path d="M3 21h18M5 21V10M19 21V10M9 21V10M15 21V10M3 10l9-6 9 6"/>' },
