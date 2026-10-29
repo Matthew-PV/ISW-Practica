@@ -71,7 +71,9 @@ if (avatar) {
 }
 
 // Campana: las solicitudes de amistad pendientes como notificaciones, con un contador. Cada una lleva a
-// la persona; «Ver amigos y solicitudes» lleva a /social/amigos.html, donde se aceptan o rechazan.
+// la persona y se puede aceptar o rechazar desde ahí; «Ver amigos y solicitudes» lleva a /social/amigos.html.
+// Cuando una solicitud se responde (aquí o en la página Amigos) se emite 'solicitud-respondida' con
+// { detail: { id } } y las dos partes se ponen al día.
 const menuNotificaciones = document.querySelector('details.menu-notificaciones');
 
 if (menuNotificaciones) {
@@ -90,10 +92,62 @@ if (menuNotificaciones) {
     }
   });
 
+  // El contador son las solicitudes que siguen pendientes (las ya respondidas pierden data-solicitud-id)
+  function actualizarContador() {
+    const pendientes = lista.querySelectorAll('[data-solicitud-id]').length;
+    contador.textContent = pendientes;
+    contador.classList.toggle('d-none', pendientes === 0);
+    sinNotificaciones.classList.toggle('d-none', lista.children.length !== 0);
+  }
+
+  // Sustituye la notificación por un mensaje de resultado (con enlace al perfil si se acepta) y le da el
+  // foco, que si no se perdería al desaparecer el botón pulsado.
+  function mostrarResultado(notificacion, solicitud, aceptada) {
+    delete notificacion.dataset.solicitudId;
+    const mensaje = document.createElement('p');
+    mensaje.className = 'notificacion-resultado';
+    mensaje.tabIndex = -1;
+    if (aceptada) {
+      const enlace = document.createElement('a');
+      enlace.href = `/social/usuario.html?nombre=${encodeURIComponent(solicitud.solicitante.nombreUsuario)}`;
+      enlace.textContent = 'Ver perfil';
+      mensaje.append(`Ahora sois amigos de ${solicitud.solicitante.nombreUsuario}. `, enlace);
+    } else {
+      mensaje.textContent = 'Solicitud rechazada.';
+    }
+    notificacion.replaceChildren(mensaje);
+    actualizarContador();
+    mensaje.focus();
+  }
+
+  async function responder(notificacion, solicitud, aceptar) {
+    const botones = notificacion.querySelectorAll('button');
+    botones.forEach((boton) => { boton.disabled = true; });
+    try {
+      await api(`/amistades/${solicitud.id}`, { method: 'PATCH', body: JSON.stringify({ aceptar }) });
+      mostrarResultado(notificacion, solicitud, aceptar);
+      document.dispatchEvent(new CustomEvent('solicitud-respondida', { detail: { id: solicitud.id } }));
+    } catch (err) {
+      botones.forEach((boton) => { boton.disabled = false; });
+      let error = notificacion.querySelector('.notificacion-error');
+      if (!error) {
+        error = document.createElement('p');
+        error.className = 'notificacion-error';
+        error.setAttribute('role', 'alert');
+        notificacion.append(error);
+      }
+      error.textContent = err.message;
+    }
+  }
+
   // Los textos de otras personas se ponen con textContent, nunca como HTML
   function crearNotificacion(solicitud) {
+    const notificacion = document.createElement('div');
+    notificacion.className = 'notificacion';
+    notificacion.dataset.solicitudId = solicitud.id;
+
     const enlace = document.createElement('a');
-    enlace.className = 'notificacion';
+    enlace.className = 'notificacion-persona';
     enlace.href = `/social/usuario.html?nombre=${encodeURIComponent(solicitud.solicitante.nombreUsuario)}`;
     const foto = document.createElement('img');
     foto.src = solicitud.solicitante.foto;
@@ -105,15 +159,35 @@ if (menuNotificaciones) {
     nombre.textContent = solicitud.solicitante.nombreUsuario;
     texto.append(nombre, ' quiere ser tu amigo');
     enlace.append(foto, texto);
-    return enlace;
+
+    const acciones = document.createElement('div');
+    acciones.className = 'notificacion-acciones';
+    for (const [textoBoton, clase, aceptar] of [
+      ['Aceptar', 'btn-primary', true],
+      ['Rechazar', 'btn-outline-secondary', false],
+    ]) {
+      const boton = document.createElement('button');
+      boton.type = 'button';
+      boton.className = `btn btn-sm ${clase}`;
+      boton.textContent = textoBoton;
+      boton.addEventListener('click', () => responder(notificacion, solicitud, aceptar));
+      acciones.append(boton);
+    }
+
+    notificacion.append(enlace, acciones);
+    return notificacion;
   }
+
+  // Otra parte de la página (la lista de Amigos) respondió una solicitud
+  document.addEventListener('solicitud-respondida', (e) => {
+    lista.querySelector(`[data-solicitud-id="${e.detail.id}"]`)?.remove();
+    actualizarContador();
+  });
 
   api('/amistades/solicitudes')
     .then((solicitudes) => {
       lista.replaceChildren(...solicitudes.map(crearNotificacion));
-      sinNotificaciones.classList.toggle('d-none', solicitudes.length !== 0);
-      contador.textContent = solicitudes.length;
-      contador.classList.toggle('d-none', solicitudes.length === 0);
+      actualizarContador();
     })
     .catch(() => {});
 }

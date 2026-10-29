@@ -277,6 +277,73 @@ describe('campana de notificaciones', () => {
     expect($('#sin-notificaciones').classList.contains('d-none')).toBe(true);
   });
 
+  // Respuesta a una solicitud desde la propia notificación (A2, A4)
+  const cargarYResponder = async (respuestaPatch) => {
+    cargar('bienvenida');
+    window.fetch = jest.fn().mockImplementation((ruta, opciones) => {
+      if (ruta === '/api/amistades/solicitudes') return json(SOLICITUDES)();
+      if (opciones?.method === 'PATCH') return respuestaPatch();
+      return json({})();
+    });
+    cargarScripts(['js/shared/api.js', 'js/shared/cabecera.js']);
+    await terminar();
+  };
+  const botonNotificacion = (texto) => [...document.querySelectorAll('#lista-notificaciones button')].find((b) => b.textContent === texto);
+
+  test('cada notificación tiene «Aceptar» y «Rechazar»', async () => {
+    await cargarCon(json(SOLICITUDES));
+
+    expect([...document.querySelectorAll('#lista-notificaciones button')].map((b) => b.textContent)).toEqual(['Aceptar', 'Rechazar']);
+  });
+
+  test('«Aceptar» responde la solicitud, confirma «Ahora sois amigos», baja el contador y da el foco al mensaje', async () => {
+    await cargarYResponder(json({ id: 3, estado: 'ACEPTADA' }));
+
+    botonNotificacion('Aceptar').click();
+    await terminar();
+
+    const [ruta, opciones] = window.fetch.mock.calls.find(([, o]) => o?.method === 'PATCH');
+    expect(ruta).toBe('/api/amistades/3');
+    expect(JSON.parse(opciones.body)).toEqual({ aceptar: true });
+    expect($('#lista-notificaciones').textContent).toContain('Ahora sois amigos de luis');
+    expect($('#lista-notificaciones a[href="/social/usuario.html?nombre=luis"]')).not.toBeNull();
+    expect($('#contador-notificaciones').classList.contains('d-none')).toBe(true);
+    expect(document.activeElement.textContent).toContain('Ahora sois amigos');
+  });
+
+  test('«Rechazar» responde la solicitud y avisa de que se ha rechazado', async () => {
+    await cargarYResponder(json(null));
+
+    botonNotificacion('Rechazar').click();
+    await terminar();
+
+    const [, opciones] = window.fetch.mock.calls.find(([, o]) => o?.method === 'PATCH');
+    expect(JSON.parse(opciones.body)).toEqual({ aceptar: false });
+    expect($('#lista-notificaciones').textContent).toContain('Solicitud rechazada');
+    expect($('#contador-notificaciones').classList.contains('d-none')).toBe(true);
+  });
+
+  test('si falla la respuesta muestra el error y deja volver a intentarlo', async () => {
+    await cargarYResponder(() => Promise.resolve({ ok: false, status: 400, json: async () => ({ error: 'La solicitud de amistad ya no está pendiente' }) }));
+
+    botonNotificacion('Aceptar').click();
+    await terminar();
+
+    expect($('#lista-notificaciones').textContent).toContain('La solicitud de amistad ya no está pendiente');
+    expect(botonNotificacion('Aceptar').disabled).toBe(false);
+    expect($('#contador-notificaciones').textContent).toBe('1');
+  });
+
+  test('si otra parte de la página responde la solicitud, la campana la quita y actualiza el contador', async () => {
+    await cargarCon(json(SOLICITUDES));
+
+    document.dispatchEvent(new CustomEvent('solicitud-respondida', { detail: { id: 3 } }));
+
+    expect($('#lista-notificaciones .notificacion')).toBeNull();
+    expect($('#contador-notificaciones').classList.contains('d-none')).toBe(true);
+    expect($('#sin-notificaciones').classList.contains('d-none')).toBe(false);
+  });
+
   test('sin solicitudes oculta el contador y avisa de que no hay nada', async () => {
     await cargarCon(json([]));
 
