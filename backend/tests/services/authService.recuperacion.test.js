@@ -33,13 +33,13 @@ test('si el envío falla, la petición no falla (se anota en la consola del serv
   consola.mockRestore();
 });
 
-test('el enlace lleva a /acceso/restablecer.html con un token aleatorio de 64 caracteres', async () => {
+test('el enlace lleva a /paginas/acceso/restablecer.html con un token aleatorio de 64 caracteres', async () => {
   emailRepository.enviar.mockResolvedValue();
 
   await solicitarRecuperacion({ email: '  Ana@Ejemplo.com ' });
 
   expect(usuarioRepository.buscarPorEmail).toHaveBeenCalledWith('ana@ejemplo.com');
-  expect(emailRepository.enviar.mock.calls[0][0].texto).toMatch(/\/acceso\/restablecer\.html\?token=[0-9a-f]{64}/);
+  expect(emailRepository.enviar.mock.calls[0][0].texto).toMatch(/\/paginas\/acceso\/restablecer\.html\?token=[0-9a-f]{64}/);
 });
 
 test('sin email responde 400', async () => {

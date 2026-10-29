@@ -290,11 +290,14 @@ ISW-Practica/
 │   ├── .env.example           # variables de entorno necesarias (sin valores reales)
 │   └── package.json           # dependencias, scripts de npm y configuración de Jest
 ├── frontend/
-│   ├── *.html                 # una página por pantalla
+│   ├── index.html             # portada (la ruta «/»)
+│   ├── paginas/               # solo HTML, una carpeta por área: acceso/, cuenta/, experiencias/, social/
+│   ├── js/                    # un archivo por página, en la carpeta de su área y con el nombre de su HTML
+│   │   └── shared/            # código común a varias páginas (api.js, pantalla.js...)
 │   ├── css/
-│   ├── img/
-│   └── js/                    # un archivo por página, con el mismo nombre que su HTML
-│       └── shared/            # código común a varias páginas (api.js, pantalla.js...)
+│   │   ├── nucleo/            # tokens, base y componentes, comunes a todas las páginas
+│   │   └── pantallas/         # estilos propios de una pantalla o grupo de pantallas
+│   └── img/
 ├── docker-compose.yml         # MySQL local solo para pruebas
 └── documentacion/
     ├── customer-stories/      # documentos de partida y copia obsoleta del libro de historias
@@ -307,7 +310,7 @@ Cada archivo lleva el nombre de su capa como sufijo, de modo que el nombre indic
 
 Las claves y contraseñas (conexión a MySQL, credenciales de Cloudinary, secreto de sesión, servidor de correo) se guardan en `backend/.env`, que **no se sube a git**. El archivo `backend/.env.example` indica qué variables hay que rellenar.
 
-El frontend no necesita instalación: Bootstrap se carga desde CDN y `js/shared/api.js` agrupa las llamadas a la API. Cada página carga primero `js/shared/api.js`, después los módulos compartidos que necesita y por último su propio archivo (`/cuenta/perfil.html` → `js/perfil.js`). El detalle de cada pantalla está en [frontend.md](frontend.md).
+El frontend no necesita instalación: Bootstrap se carga desde CDN y `js/shared/api.js` agrupa las llamadas a la API. Cada página carga primero `js/shared/api.js`, después los módulos compartidos que necesita y por último su propio archivo (`/paginas/cuenta/perfil.html` → `js/cuenta/perfil.js`). El detalle de cada pantalla está en [frontend.md](frontend.md).
 
 
 

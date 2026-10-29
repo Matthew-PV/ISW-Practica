@@ -28,16 +28,16 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
     ]);
 
     expect(enlaces).toEqual([
-      ['PlanB', '/cuenta/bienvenida.html'],
-      ['Inicio', '/cuenta/bienvenida.html'],
-      ['Explorar', '/experiencias/explorar.html'],
-      ['Mis planes', '/cuenta/mis-planes.html'],
-      ['Amigos', '/social/amigos.html'],
+      ['PlanB', '/paginas/cuenta/bienvenida.html'],
+      ['Inicio', '/paginas/cuenta/bienvenida.html'],
+      ['Explorar', '/paginas/experiencias/explorar.html'],
+      ['Mis planes', '/paginas/cuenta/mis-planes.html'],
+      ['Amigos', '/paginas/social/amigos.html'],
     ]);
   });
 
   test('tiene el buscador de personas', () => {
-    const formulario = $('header.cabecera form[role="search"][action="/social/personas.html"][method="get"]');
+    const formulario = $('header.cabecera form[role="search"][action="/paginas/social/personas.html"][method="get"]');
     expect(formulario).not.toBeNull();
 
     const campo = formulario.querySelector('input[type="search"][name="q"]');
@@ -54,10 +54,10 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
     expect(menu).not.toBeNull();
     expect(menu.querySelector('summary').textContent).toContain('Cuenta');
 
-    const perfil = menu.querySelector('a[href="/cuenta/perfil.html"]');
+    const perfil = menu.querySelector('a[href="/paginas/cuenta/perfil.html"]');
     expect(perfil.textContent.trim()).toBe('Mi perfil');
 
-    const ajustes = menu.querySelector('a[href="/cuenta/ajustes.html"]');
+    const ajustes = menu.querySelector('a[href="/paginas/cuenta/ajustes.html"]');
     expect(ajustes.textContent.trim()).toBe('Ajustes');
 
     const cerrar = menu.querySelector('button#cerrar-sesion[data-cerrar-sesion]');
@@ -87,7 +87,7 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
     expect(marcados.map((e) => e.textContent.trim())).toEqual(ACTUAL[pagina] ? [ACTUAL[pagina]] : []);
   });
 
-  test('solo /social/personas.html lleva la clase pagina-buscar en el body', () => {
+  test('solo /paginas/social/personas.html lleva la clase pagina-buscar en el body', () => {
     expect(document.body.classList.contains('pagina-buscar')).toBe(pagina === 'personas');
   });
 });
@@ -116,7 +116,7 @@ describe('comportamiento de js/shared/cabecera.js', () => {
     window.fetch = jest.fn();
     // Un `location` simple, para ver a qué dirección intenta ir sin que jsdom navegue
     Object.defineProperty(window, 'location', {
-      value: { search: '', href: 'http://localhost/cuenta/bienvenida.html' },
+      value: { search: '', href: 'http://localhost/paginas/cuenta/bienvenida.html' },
       configurable: true,
       writable: true,
     });
@@ -166,13 +166,13 @@ describe('comportamiento de js/shared/cabecera.js', () => {
     expect(cerrar().disabled).toBe(true);
   });
 
-  test('con éxito, se va a /acceso/iniciar-sesion.html', async () => {
+  test('con éxito, se va a /paginas/acceso/iniciar-sesion.html', async () => {
     window.fetch.mockReturnValue(respuesta204());
 
     cerrar().click();
     await terminar();
 
-    expect(window.location.href).toBe('/acceso/iniciar-sesion.html');
+    expect(window.location.href).toBe('/paginas/acceso/iniciar-sesion.html');
   });
 
   test('si falla, el botón se recupera y aparece un aviso', async () => {
@@ -186,7 +186,7 @@ describe('comportamiento de js/shared/cabecera.js', () => {
     const aviso = $('[role="alert"]');
     expect(aviso).not.toBeNull();
     expect(aviso.textContent).toContain('No se ha podido cerrar la sesión. Inténtalo de nuevo.');
-    expect(window.location.href).toBe('http://localhost/cuenta/bienvenida.html');
+    expect(window.location.href).toBe('http://localhost/paginas/cuenta/bienvenida.html');
   });
 
   test('pulsar fuera del menú de cuenta lo cierra', () => {
@@ -272,7 +272,7 @@ describe('campana de notificaciones', () => {
 
     expect($('#contador-notificaciones').textContent).toBe('1');
     expect($('#contador-notificaciones').classList.contains('d-none')).toBe(false);
-    expect($('#lista-notificaciones a').getAttribute('href')).toBe('/social/usuario.html?nombre=luis');
+    expect($('#lista-notificaciones a').getAttribute('href')).toBe('/paginas/social/usuario.html?nombre=luis');
     expect($('#lista-notificaciones').textContent).toContain('luis quiere ser tu amigo');
     expect($('#sin-notificaciones').classList.contains('d-none')).toBe(true);
   });
@@ -306,7 +306,7 @@ describe('campana de notificaciones', () => {
     expect(ruta).toBe('/api/amistades/3');
     expect(JSON.parse(opciones.body)).toEqual({ aceptar: true });
     expect($('#lista-notificaciones').textContent).toContain('Ahora sois amigos de luis');
-    expect($('#lista-notificaciones a[href="/social/usuario.html?nombre=luis"]')).not.toBeNull();
+    expect($('#lista-notificaciones a[href="/paginas/social/usuario.html?nombre=luis"]')).not.toBeNull();
     expect($('#contador-notificaciones').classList.contains('d-none')).toBe(true);
     expect(document.activeElement.textContent).toContain('Ahora sois amigos');
   });

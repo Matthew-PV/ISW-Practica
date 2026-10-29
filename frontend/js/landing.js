@@ -2,7 +2,7 @@
 // Usa `api` de shared/api.js.
 
 api('/auth/yo')
-  .then(() => window.location.replace('/cuenta/bienvenida.html'))
+  .then(() => window.location.replace('/paginas/cuenta/bienvenida.html'))
   .catch(() => {
     // Sin sesión (o el servidor no responde): la landing se queda tal cual
   });

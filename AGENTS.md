@@ -70,7 +70,7 @@ Convenciones de la API (detalle en `documentacion/api.md`):
 
 ## Frontend
 
-- Cada `frontend/x.html` tiene su comportamiento en `frontend/js/x.js`; lo compartido, en `frontend/js/shared/`. Carga primero `shared/api.js` y reutilízalo para llamar a la API.
+- Cada `frontend/paginas/<área>/x.html` tiene su comportamiento en `frontend/js/<área>/x.js`; lo compartido, en `frontend/js/shared/`. CSS: `css/nucleo/` (común) y `css/pantallas/` (propio de cada pantalla). Carga primero `shared/api.js` y reutilízalo para llamar a la API.
 - La CSP de Helmet prohíbe scripts en línea: sin `onclick` ni bloques `<script>` en el HTML.
 - Texto de usuarios con `textContent`, nunca como HTML.
 - Con `FormData`, no fijes `Content-Type`: lo añade el navegador.

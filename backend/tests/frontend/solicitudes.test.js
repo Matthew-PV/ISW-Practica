@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-// CS-61, objetivo 13: la página Amigos (/social/amigos.html): solicitudes recibidas arriba (con «Aceptar» y
+// CS-61, objetivo 13: la página Amigos (/paginas/social/amigos.html): solicitudes recibidas arriba (con «Aceptar» y
 // «Rechazar») y la lista de amigos debajo.
 const fs = require('node:fs');
 const path = require('node:path');
@@ -9,8 +9,8 @@ const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const HTML = leer('/social/amigos.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/solicitudes.js'];
+const HTML = leer('/paginas/social/amigos.html');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/social/solicitudes.js'];
 const SOLICITUDES = [{
   id: 10,
   solicitante: { id: 2, nombreUsuario: 'luis', foto: '/img/foto-por-defecto.svg' },
@@ -48,7 +48,7 @@ describe('solicitudes recibidas', () => {
 
   test('cada solicitud muestra la foto del solicitante y enlaza a su perfil', () => {
     const enlace = $('#solicitudes-recibidas a');
-    expect(enlace.getAttribute('href')).toBe('/social/usuario.html?nombre=luis');
+    expect(enlace.getAttribute('href')).toBe('/paginas/social/usuario.html?nombre=luis');
     expect(enlace.querySelector('img').getAttribute('src')).toBe('/img/foto-por-defecto.svg');
   });
 
@@ -66,7 +66,7 @@ describe('solicitudes recibidas', () => {
     expect(ruta).toBe('/api/amistades/10');
     expect(JSON.parse(opciones.body)).toEqual({ aceptar: true });
     expect($('#solicitudes-recibidas').textContent).toContain('Ahora sois amigos de luis');
-    expect($('#solicitudes-recibidas a[href="/social/usuario.html?nombre=luis"]')).not.toBeNull();
+    expect($('#solicitudes-recibidas a[href="/paginas/social/usuario.html?nombre=luis"]')).not.toBeNull();
     expect($('#solicitudes-recibidas button')).toBeNull();
     expect(document.activeElement.textContent).toContain('Ahora sois amigos');
     // Ya no queda ninguna pendiente
@@ -127,7 +127,7 @@ describe('lista de amigos', () => {
     expect(window.fetch.mock.calls.map(([r]) => r)).toContain('/api/perfil/amigos?limite=20');
     const enlace = $('#lista-amigos a');
     expect(enlace.textContent).toContain('marta');
-    expect(enlace.getAttribute('href')).toBe('/social/usuario.html?nombre=marta');
+    expect(enlace.getAttribute('href')).toBe('/paginas/social/usuario.html?nombre=marta');
     expect(enlace.querySelector('img')).not.toBeNull();
     expect($('#sin-amigos').classList.contains('d-none')).toBe(true);
   });

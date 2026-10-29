@@ -162,7 +162,7 @@ async function solicitarRecuperacion(datos) {
     caducaEn: new Date(Date.now() + MINUTOS_ENLACE * 60 * 1000),
   });
 
-  const enlace = `${process.env.URL_APP || 'http://localhost:3000'}/acceso/restablecer.html?token=${token}`;
+  const enlace = `${process.env.URL_APP || 'http://localhost:3000'}/paginas/acceso/restablecer.html?token=${token}`;
   // El envío no se espera: así la respuesta tarda lo mismo exista o no el email. Si falla, se
   // anota en la consola del servidor y la petición no falla.
   Promise.resolve()

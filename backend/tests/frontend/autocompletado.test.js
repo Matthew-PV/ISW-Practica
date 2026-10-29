@@ -6,13 +6,13 @@
 const { leer } = require('../helpers/pantalla');
 
 const CAMPOS = [
-  ['acceso/iniciar-sesion.html', '#email', 'username'],
-  ['acceso/iniciar-sesion.html', '#password', 'current-password'],
-  ['acceso/registro.html', '#nombreUsuario', 'username'],
-  ['acceso/registro.html', '#email', 'email'],
-  ['acceso/registro.html', '#password', 'new-password'],
-  ['cuenta/ajustes.html', '#nombreUsuario', 'username'],
-  ['cuenta/ajustes.html', '#ciudad', 'address-level2'],
+  ['paginas/acceso/iniciar-sesion.html', '#email', 'username'],
+  ['paginas/acceso/iniciar-sesion.html', '#password', 'current-password'],
+  ['paginas/acceso/registro.html', '#nombreUsuario', 'username'],
+  ['paginas/acceso/registro.html', '#email', 'email'],
+  ['paginas/acceso/registro.html', '#password', 'new-password'],
+  ['paginas/cuenta/ajustes.html', '#nombreUsuario', 'username'],
+  ['paginas/cuenta/ajustes.html', '#ciudad', 'address-level2'],
 ];
 
 test.each(CAMPOS)('%s %s declara autocomplete=%s', (pagina, selector, valor) => {

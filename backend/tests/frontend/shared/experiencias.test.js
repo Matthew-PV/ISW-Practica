@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 // CS-44 y CS-62 (objetivo 8): listado de las experiencias de un usuario en su perfil
-// («Sus experiencias» en /social/usuario.html) y en el mío («Mis experiencias» en /cuenta/perfil.html), con
+// («Sus experiencias» en /paginas/social/usuario.html) y en el mío («Mis experiencias» en /paginas/cuenta/perfil.html), con
 // «Cargar más». Se simula el servidor con un fetch que responde según la ruta pedida.
 const fs = require('node:fs');
 const path = require('node:path');
@@ -36,9 +36,9 @@ async function abrir(pagina, script, rutas, direccion) {
   await terminar();
 }
 
-const abrirPerfilDeAna = (rutas) => abrir('/social/usuario.html', 'js/usuario.js', {
+const abrirPerfilDeAna = (rutas) => abrir('/paginas/social/usuario.html', 'js/social/usuario.js', {
   '/api/usuarios/ana': [200, PERFIL_ANA], ...rutas,
-}, '/social/usuario.html?nombre=ana');
+}, '/paginas/social/usuario.html?nombre=ana');
 
 test('en el perfil de otra persona se ven sus experiencias, enlazadas a su página', async () => {
   await abrirPerfilDeAna({
@@ -46,7 +46,7 @@ test('en el perfil de otra persona se ven sus experiencias, enlazadas a su pági
   });
 
   const enlaces = $$('#lista-experiencias a');
-  expect(enlaces.map((enlace) => enlace.getAttribute('href'))).toEqual(['/experiencias/experiencia.html?id=7', '/experiencias/experiencia.html?id=3']);
+  expect(enlaces.map((enlace) => enlace.getAttribute('href'))).toEqual(['/paginas/experiencias/experiencia.html?id=7', '/paginas/experiencias/experiencia.html?id=3']);
   expect(enlaces[0].closest('.tarjeta-experiencia').textContent).toContain('Ruta de tapas');
   expect(enlaces[0].closest('.tarjeta-experiencia').textContent).toContain('Madrid');
   expect(visible('#mas-experiencias')).toBe(false);
@@ -63,7 +63,7 @@ test('cada experiencia es la misma tarjeta que en bienvenida: etiqueta de visibi
   expect(tarjeta.textContent).not.toContain('·');
   const ver = tarjeta.querySelector('a.btn.btn-outline-primary');
   expect(ver.textContent).toBe('Ver detalle');
-  expect(ver.getAttribute('href')).toBe('/experiencias/experiencia.html?id=7');
+  expect(ver.getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=7');
   expect(tarjeta.textContent).not.toContain('Editar');
   expect($('#lista-experiencias .list-group-item')).toBeNull();
 });
@@ -106,7 +106,7 @@ test('si falla la carga se muestra el error', async () => {
   expect($('#error-experiencias').textContent).toContain('Error interno del servidor');
 });
 
-describe('Mis experiencias (/cuenta/perfil.html)', () => {
+describe('Mis experiencias (/paginas/cuenta/perfil.html)', () => {
   const PERFIL_PROPIO = { id: 1, nombreUsuario: 'luis', email: 'luis@ejemplo.com', ciudad: null, foto: null };
   const RUTAS_PERFIL = {
     '/api/perfil': [200, PERFIL_PROPIO],
@@ -117,7 +117,7 @@ describe('Mis experiencias (/cuenta/perfil.html)', () => {
   };
 
   test('muestra mis experiencias, también las privadas', async () => {
-    await abrir('/cuenta/perfil.html', 'js/perfil.js', RUTAS_PERFIL, '/cuenta/perfil.html');
+    await abrir('/paginas/cuenta/perfil.html', 'js/cuenta/perfil.js', RUTAS_PERFIL, '/paginas/cuenta/perfil.html');
 
     expect($('#lista-experiencias .tarjeta-experiencia').textContent).toContain('Mi plan secreto');
     expect($('#lista-experiencias .tarjeta-experiencia').textContent).toContain('Privada');
@@ -130,13 +130,13 @@ test('al aceptar desde su perfil la solicitud de amistad, aparecen sus experienc
     'GET /api/usuarios/ana': [200, conSolicitud],
     'GET /api/experiencias?autor=ana': [200, { experiencias: [experiencia(3, 'Museos')], siguiente: null }],
   };
-  window.history.pushState({}, '', '/social/usuario.html?nombre=ana');
-  document.documentElement.innerHTML = leer('/social/usuario.html');
+  window.history.pushState({}, '', '/paginas/social/usuario.html?nombre=ana');
+  document.documentElement.innerHTML = leer('/paginas/social/usuario.html');
   window.fetch = jest.fn((ruta, opciones = {}) => {
     const [status, cuerpo] = servidor[`${opciones.method ?? 'GET'} ${ruta}`] ?? [404, { error: `Ruta no simulada: ${ruta}` }];
     return respuesta(status, cuerpo);
   });
-  cargarScripts([...COMUNES, 'js/usuario.js']);
+  cargarScripts([...COMUNES, 'js/social/usuario.js']);
   await terminar();
   expect($$('#lista-experiencias a')).toHaveLength(1);
 

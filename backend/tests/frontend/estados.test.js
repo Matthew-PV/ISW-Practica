@@ -37,9 +37,9 @@ describe('avisos de error: se anuncian a lectores de pantalla', () => {
   });
 });
 
-describe('/social/personas.html', () => {
+describe('/paginas/social/personas.html', () => {
   beforeEach(() => {
-    document.documentElement.innerHTML = leer('/social/personas.html');
+    document.documentElement.innerHTML = leer('/paginas/social/personas.html');
     // Sin más indicaciones, la búsqueda de planes no encuentra nada; cada prueba encola la respuesta de las personas
     window.fetch = jest.fn((ruta) => (ruta.startsWith('/api/experiencias?') ? respuesta(200, { experiencias: [], siguiente: null }) : undefined));
     cargarScripts(scriptsDe('personas'));
@@ -96,7 +96,7 @@ describe('/social/personas.html', () => {
   });
 });
 
-describe('/cuenta/mis-planes.html', () => {
+describe('/paginas/cuenta/mis-planes.html', () => {
   const EXPERIENCIA = {
     id: 10, titulo: 'Tarde cultural', descripcion: 'Museos', ciudadId: 1, ciudad: { id: 1, nombre: 'Madrid' },
     tipo: 'Cultural', momentoAdecuado: 'Tarde', visibilidad: 'PUBLICA',
@@ -104,7 +104,7 @@ describe('/cuenta/mis-planes.html', () => {
 
   // `rutas` dice qué responde el servidor a cada dirección; lo que no figure, un 404
   function arrancar(rutas) {
-    document.documentElement.innerHTML = leer('/cuenta/mis-planes.html');
+    document.documentElement.innerHTML = leer('/paginas/cuenta/mis-planes.html');
     for (const dialogo of document.querySelectorAll('dialog')) {
       dialogo.showModal = jest.fn();
       dialogo.close = jest.fn();
@@ -181,12 +181,12 @@ describe('/cuenta/mis-planes.html', () => {
   });
 });
 
-describe('/cuenta/perfil.html', () => {
+describe('/paginas/cuenta/perfil.html', () => {
   const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', foto: null, ciudad: null };
 
   // Solo /perfil se controla; el resto de peticiones de la página fallan sin afectar a esta prueba
   function arrancar(perfil) {
-    document.documentElement.innerHTML = leer('/cuenta/perfil.html');
+    document.documentElement.innerHTML = leer('/paginas/cuenta/perfil.html');
     window.fetch = jest.fn((ruta) => (ruta === '/api/perfil' ? perfil : respuesta(500, { error: 'otro' })));
     cargarScripts(scriptsDe('perfil'));
   }
@@ -207,15 +207,15 @@ describe('/cuenta/perfil.html', () => {
   });
 });
 
-describe('/social/usuario.html', () => {
+describe('/paginas/social/usuario.html', () => {
   const PERFIL = {
     id: 2, nombreUsuario: 'ana', foto: '/img/foto-por-defecto.svg', ciudad: null, amigos: 0, seguidores: 0,
     esPropio: false, relacion: { amistad: 'ninguna', amistadId: null, siguiendo: false },
   };
 
   function arrancar(perfil) {
-    window.history.pushState({}, '', '/social/usuario.html?nombre=ana');
-    document.documentElement.innerHTML = leer('/social/usuario.html');
+    window.history.pushState({}, '', '/paginas/social/usuario.html?nombre=ana');
+    document.documentElement.innerHTML = leer('/paginas/social/usuario.html');
     window.fetch = jest.fn((ruta) => (
       ruta === '/api/usuarios/ana' ? perfil : respuesta(200, { experiencias: [], siguiente: null })
     ));

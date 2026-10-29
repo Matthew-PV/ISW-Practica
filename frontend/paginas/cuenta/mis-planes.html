@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PlanB · Mis planes</title>
+  <link rel="icon" href="/img/logo-pin.svg" type="image/svg+xml">
+  <link href="/css/nucleo/tokens.css" rel="stylesheet">
+  <link href="/css/nucleo/base.css" rel="stylesheet">
+  <link href="/css/nucleo/componentes.css" rel="stylesheet">
+</head>
+<body>
+  <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
+  <header class="cabecera">
+    <div class="cabecera-interior">
+      <nav class="cabecera-nav" aria-label="Principal">
+        <a class="cabecera-marca" href="/paginas/cuenta/bienvenida.html"><img src="/img/logo.svg" alt="PlanB" width="112" height="32"></a>
+        <a class="cabecera-enlace" href="/paginas/cuenta/bienvenida.html">Inicio</a>
+        <a class="cabecera-enlace" href="/paginas/experiencias/explorar.html">Explorar</a>
+        <a class="cabecera-enlace" href="/paginas/cuenta/mis-planes.html" aria-current="page">Mis planes</a>
+        <a class="cabecera-enlace" href="/paginas/social/amigos.html">Amigos</a>
+      </nav>
+      <form class="cabecera-busqueda" role="search" action="/paginas/social/personas.html" method="get">
+        <input type="search" name="q" aria-label="Buscar planes y personas" placeholder="Planes y personas" autocomplete="off">
+        <button type="submit" class="btn btn-outline-primary">Buscar</button>
+      </form>
+      <details class="menu-notificaciones">
+        <summary aria-label="Notificaciones">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+          <span id="contador-notificaciones" class="contador-notificaciones d-none" aria-live="polite"></span>
+        </summary>
+        <div class="menu-notificaciones-lista">
+          <p class="menu-notificaciones-titulo">Notificaciones</p>
+          <div id="lista-notificaciones"></div>
+          <p id="sin-notificaciones" class="menu-notificaciones-vacio">No tienes notificaciones nuevas.</p>
+          <a class="menu-notificaciones-pie" href="/paginas/social/amigos.html">Ver amigos y solicitudes</a>
+        </div>
+      </details>
+      <details class="menu-cuenta">
+        <summary><img class="menu-avatar" src="/img/foto-por-defecto.svg" alt="" width="32" height="32">Cuenta</summary>
+        <div class="menu-cuenta-lista">
+          <a href="/paginas/cuenta/perfil.html">Mi perfil</a>
+          <a href="/paginas/cuenta/ajustes.html">Ajustes</a>
+          <button type="button" id="cerrar-sesion" data-cerrar-sesion>Cerrar sesión</button>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <main id="contenido" class="container py-4">
+    <h1 class="mb-1">Mis planes</h1>
+    <p class="text-secondary mb-4">Los planes que has publicado, con los privados y los de tus amigos.</p>
+    <p id="cargando" class="text-secondary" role="status">Cargando…</p>
+    <!-- Tras crear una experiencia, con enlace a su detalle -->
+    <p id="aviso-creada" class="alert alert-success d-none" role="status">Plan publicado. <a id="enlace-creada">Ver plan</a></p>
+    <div id="error-lista" role="alert" class="alert alert-danger d-none"></div>
+
+    <h2 class="visually-hidden">Tus planes</h2>
+    <div id="rejilla" class="rejilla-experiencias">
+      <div class="col" id="columna-nueva">
+        <button
+          type="button"
+          id="boton-nueva"
+          class="tarjeta-nueva"
+        >
+          <span class="tarjeta-nueva-signo" aria-hidden="true">+</span>
+          Nuevo plan
+        </button>
+      </div>
+    </div>
+    <div id="sin-experiencias" class="estado-vacio d-none"><img src="/img/vacio-planes.svg" alt="" width="240" height="180"><p>Todavía no has publicado planes.</p></div>
+    <!-- CS-44: las siguientes páginas de mis experiencias -->
+    <div class="text-center mt-3">
+      <button type="button" id="mas-experiencias" class="btn btn-outline-primary d-none">Cargar más</button>
+    </div>
+  </main>
+
+  <!-- Formulario para crear o editar una experiencia, con su vista previa al lado -->
+  <dialog id="dialogo-experiencia" class="dialogo-experiencia dialogo-ancho" aria-labelledby="titulo-dialogo">
+    <form id="form-experiencia" class="formulario-experiencia">
+      <div class="formulario-experiencia-campos">
+        <h2 id="titulo-dialogo" class="h5 mb-3">Nuevo plan</h2>
+
+        <div class="mb-3" data-campo="titulo">
+          <label for="titulo" class="form-label">Título</label>
+          <input type="text" class="form-control" id="titulo" maxlength="191" required>
+        </div>
+
+        <!-- CS-55: categorías de GET /api/experiencias/opciones -->
+        <fieldset class="mb-3" data-campo="tipo">
+          <legend class="form-label">Categoría</legend>
+          <div id="opciones-tipo" class="opciones-pastilla"></div>
+        </fieldset>
+
+        <div class="mb-3" data-campo="ciudad">
+          <label for="ciudad" class="form-label">Ciudad</label>
+          <input type="text" class="form-control" id="ciudad" list="lista-ciudades" autocomplete="off" required aria-describedby="mensaje-ciudad">
+          <datalist id="lista-ciudades"></datalist>
+          <p id="mensaje-ciudad" class="mensaje-campo d-none"></p>
+        </div>
+
+        <div class="mb-3" data-campo="descripcion">
+          <label for="descripcion" class="form-label">Descripción</label>
+          <textarea class="form-control" id="descripcion" rows="4" required aria-describedby="ayuda-descripcion contador-descripcion"></textarea>
+          <div class="d-flex justify-content-between gap-2 form-text">
+            <span id="ayuda-descripcion">Cuenta qué hacer, cuándo ir y algún consejo práctico.</span>
+            <span id="contador-descripcion">0 caracteres</span>
+          </div>
+        </div>
+
+        <!-- CS-56: momentos agrupados; se guarda uno o ninguno -->
+        <fieldset class="mb-3" data-campo="momentoAdecuado">
+          <legend class="form-label">Momento adecuado <span class="text-secondary">(opcional)</span></legend>
+          <div id="opciones-momento"></div>
+        </fieldset>
+
+        <!-- CS-22: quién verá la experiencia -->
+        <fieldset class="mb-3" data-campo="visibilidad">
+          <legend class="form-label">Quién la verá</legend>
+          <div class="opciones-visibilidad">
+            <label class="opcion-visibilidad">
+              <input type="radio" name="visibilidad" value="PUBLICA">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg>
+              <span><strong>Pública</strong><span class="opcion-visibilidad-texto">Cualquier usuario puede verla.</span></span>
+            </label>
+            <label class="opcion-visibilidad">
+              <input type="radio" name="visibilidad" value="AMIGOS">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14a6.5 6.5 0 0 1 3.5 6"/></svg>
+              <span><strong>Amigos</strong><span class="opcion-visibilidad-texto">Solo tus amigos (con la amistad aceptada) y tú.</span></span>
+            </label>
+            <label class="opcion-visibilidad">
+              <input type="radio" name="visibilidad" value="PRIVADA">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+              <span><strong>Privada</strong><span class="opcion-visibilidad-texto">Solo tú.</span></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div id="error-experiencia" role="alert" class="alert alert-danger d-none"></div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" id="boton-cancelar" class="btn btn-outline-primary">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Publicar plan</button>
+        </div>
+      </div>
+
+      <!-- Vista previa: la tarjeta tal como se verá en las listas -->
+      <aside class="formulario-experiencia-previa" aria-hidden="true">
+        <p class="small text-secondary mb-2">Vista previa</p>
+        <div id="vista-previa"></div>
+      </aside>
+    </form>
+  </dialog>
+
+  <!-- Aviso al cerrar el formulario con cambios sin guardar -->
+  <dialog id="dialogo-descartar" class="dialogo-experiencia" aria-labelledby="titulo-descartar">
+    <div class="p-4">
+      <h2 id="titulo-descartar" class="h5 mb-2">¿Descartar los cambios?</h2>
+      <p class="mb-3">Lo que has escrito no se ha guardado.</p>
+      <div class="d-flex justify-content-end gap-2">
+        <button type="button" id="seguir-editando" class="btn btn-outline-primary">Seguir editando</button>
+        <button type="button" id="confirmar-descartar" class="btn btn-primary">Descartar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="/js/shared/api.js"></script>
+  <script src="/js/shared/pantalla.js"></script>
+  <script src="/js/shared/cabecera.js"></script>
+  <script src="/js/cuenta/mis-planes.js"></script>
+  <script src="/js/shared/movimiento.js"></script>
+</body>
+</html>

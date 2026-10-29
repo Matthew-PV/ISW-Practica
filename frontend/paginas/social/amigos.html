@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PlanB · Amigos</title>
+  <link rel="icon" href="/img/logo-pin.svg" type="image/svg+xml">
+  <link href="/css/nucleo/tokens.css" rel="stylesheet">
+  <link href="/css/nucleo/base.css" rel="stylesheet">
+  <link href="/css/nucleo/componentes.css" rel="stylesheet">
+  <link href="/css/pantallas/perfil.css" rel="stylesheet">
+  </head>
+<body>
+  <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
+  <header class="cabecera">
+    <div class="cabecera-interior">
+      <nav class="cabecera-nav" aria-label="Principal">
+        <a class="cabecera-marca" href="/paginas/cuenta/bienvenida.html"><img src="/img/logo.svg" alt="PlanB" width="112" height="32"></a>
+        <a class="cabecera-enlace" href="/paginas/cuenta/bienvenida.html">Inicio</a>
+        <a class="cabecera-enlace" href="/paginas/experiencias/explorar.html">Explorar</a>
+        <a class="cabecera-enlace" href="/paginas/cuenta/mis-planes.html">Mis planes</a>
+        <a class="cabecera-enlace" href="/paginas/social/amigos.html" aria-current="page">Amigos</a>
+      </nav>
+      <form class="cabecera-busqueda" role="search" action="/paginas/social/personas.html" method="get">
+        <input type="search" name="q" aria-label="Buscar planes y personas" placeholder="Planes y personas" autocomplete="off">
+        <button type="submit" class="btn btn-outline-primary">Buscar</button>
+      </form>
+      <details class="menu-notificaciones">
+        <summary aria-label="Notificaciones">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>
+          <span id="contador-notificaciones" class="contador-notificaciones d-none" aria-live="polite"></span>
+        </summary>
+        <div class="menu-notificaciones-lista">
+          <p class="menu-notificaciones-titulo">Notificaciones</p>
+          <div id="lista-notificaciones"></div>
+          <p id="sin-notificaciones" class="menu-notificaciones-vacio">No tienes notificaciones nuevas.</p>
+          <a class="menu-notificaciones-pie" href="/paginas/social/amigos.html">Ver amigos y solicitudes</a>
+        </div>
+      </details>
+      <details class="menu-cuenta">
+        <summary><img class="menu-avatar" src="/img/foto-por-defecto.svg" alt="" width="32" height="32">Cuenta</summary>
+        <div class="menu-cuenta-lista">
+          <a href="/paginas/cuenta/perfil.html">Mi perfil</a>
+          <a href="/paginas/cuenta/ajustes.html">Ajustes</a>
+          <button type="button" id="cerrar-sesion" data-cerrar-sesion>Cerrar sesión</button>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <main id="contenido" class="container py-4">
+    <h1 class="mb-1">Amigos</h1>
+    <p class="text-secondary mb-4">Responde tus solicitudes, mira a tus amigos y <a href="/paginas/social/personas.html">busca a más personas</a>.</p>
+
+    <!-- Solicitudes de amistad pendientes. js/social/solicitudes.js las obtiene desde /api/amistades/solicitudes -->
+    <div id="error-solicitudes" class="alert alert-danger d-none" role="alert"></div>
+    <section aria-labelledby="titulo-solicitudes">
+      <h2 id="titulo-solicitudes" class="h5 mb-3">Solicitudes recibidas</h2>
+      <div id="sin-solicitudes" class="estado-vacio d-none"><img src="/img/vacio-solicitudes.svg" alt="" width="240" height="180"><p>No tienes solicitudes pendientes.</p></div>
+      <div id="solicitudes-recibidas" class="list-group"></div>
+    </section>
+
+    <!-- Mis amigos: js/social/solicitudes.js los obtiene desde /api/perfil/amigos -->
+    <section class="mt-5" aria-labelledby="titulo-amigos">
+      <h2 id="titulo-amigos" class="h5 mb-3">Tus amigos</h2>
+      <div id="error-amigos" class="alert alert-danger d-none" role="alert"></div>
+      <div id="sin-amigos" class="estado-vacio d-none"><img src="/img/vacio-personas.svg" alt="" width="240" height="180"><p>Aún no tienes amigos. <a href="/paginas/social/personas.html">Busca a alguien</a> y envíale una solicitud.</p></div>
+      <div id="lista-amigos" class="list-group"></div>
+      <div class="text-center mt-3">
+        <button type="button" id="mas-amigos" class="btn btn-outline-primary d-none">Cargar más amigos</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/shared/api.js"></script>
+  <script src="/js/shared/pantalla.js"></script>
+  <script src="/js/shared/cabecera.js"></script>
+  <script src="/js/social/solicitudes.js"></script>
+  <script src="/js/shared/movimiento.js"></script>
+</body>
+</html>

@@ -28,10 +28,10 @@ describe('landing', () => {
 
   test('enlaza a iniciar sesión y a crear cuenta', () => {
     expect(
-      document.querySelectorAll('a[href="/acceso/iniciar-sesion.html"]').length
+      document.querySelectorAll('a[href="/paginas/acceso/iniciar-sesion.html"]').length
     ).toBeGreaterThanOrEqual(1);
     expect(
-      document.querySelectorAll('a[href="/acceso/registro.html"]').length
+      document.querySelectorAll('a[href="/paginas/acceso/registro.html"]').length
     ).toBeGreaterThanOrEqual(1);
   });
 
@@ -118,7 +118,7 @@ describe('landing con sesión', () => {
     await abrir(200);
 
     expect(window.fetch).toHaveBeenCalledWith('/api/auth/yo', expect.anything());
-    expect(window.location.replace).toHaveBeenCalledWith('/cuenta/bienvenida.html');
+    expect(window.location.replace).toHaveBeenCalledWith('/paginas/cuenta/bienvenida.html');
   });
 
   test('sin sesión se queda en la landing', async () => {

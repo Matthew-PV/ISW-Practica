@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-// Página de una experiencia (frontend/experiencias/experiencia.html y js/experiencia.js): criterio de CS-63
+// Página de una experiencia (frontend/paginas/experiencias/experiencia.html y js/experiencias/experiencia.js): criterio de CS-63
 // (valoraciones y comentarios), sección de CS-48 (amigos y seguidores) y objetivo 9 de CS-30
 // («Contenido no disponible» sin datos). Navegador simulado con jsdom y servidor simulado con un
 // fetch que responde según el método y la ruta.
@@ -11,8 +11,8 @@ const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const HTML = leer('/experiencias/experiencia.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/experiencia.js'];
+const HTML = leer('/paginas/experiencias/experiencia.html');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/experiencias/experiencia.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -46,11 +46,11 @@ const SERVIDOR = {
   [`GET ${BASE}/resumen`]: [200, RESUMEN_VACIO],
 };
 
-// Abre /experiencias/experiencia.html?id=7 con el servidor simulado; `rutas` cambia o añade respuestas.
+// Abre /paginas/experiencias/experiencia.html?id=7 con el servidor simulado; `rutas` cambia o añade respuestas.
 // Una respuesta puede ser [status, cuerpo] o una función que la devuelve (para simular la red).
 async function abrir(rutas = {}) {
   const servidor = { ...SERVIDOR, ...rutas };
-  window.history.pushState({}, '', '/experiencias/experiencia.html?id=7');
+  window.history.pushState({}, '', '/paginas/experiencias/experiencia.html?id=7');
   document.documentElement.innerHTML = HTML;
   // jsdom no implementa del todo <dialog>
   const dialogo = document.getElementById('dialogo-reporte');
@@ -81,7 +81,7 @@ describe('CS-63: la experiencia y sus valoraciones', () => {
 
     expect($('#detalle-titulo').textContent).toBe('Ruta de tapas');
     expect($('#detalle-autor').textContent).toBe('bea');
-    expect($('#detalle-autor').getAttribute('href')).toBe('/social/usuario.html?nombre=bea');
+    expect($('#detalle-autor').getAttribute('href')).toBe('/paginas/social/usuario.html?nombre=bea');
     expect($('#detalle-ciudad').textContent).toBe('Sevilla');
     expect($('#detalle-descripcion').textContent).toBe('Por el centro');
   });
@@ -97,7 +97,7 @@ describe('CS-63: la experiencia y sus valoraciones', () => {
 
     const tarjeta = $('#lista-comentarios [data-valoracion-id="30"]');
     expect(tarjeta.querySelector('a').textContent).toBe('carlos');
-    expect(tarjeta.querySelector('a').getAttribute('href')).toBe('/social/usuario.html?nombre=carlos');
+    expect(tarjeta.querySelector('a').getAttribute('href')).toBe('/paginas/social/usuario.html?nombre=carlos');
     const estrellas = tarjeta.querySelector('.estrellas');
     expect(estrellas.getAttribute('role')).toBe('img');
     expect(estrellas.getAttribute('aria-label')).toBe('4 de 5');
@@ -299,7 +299,7 @@ describe('CS-63: el formulario de valoración', () => {
   test('el autor ve «Editar plan», que abre el formulario de Mis planes; los demás no', async () => {
     await abrir({ 'GET /api/auth/yo': [200, { id: 2, nombreUsuario: 'bea' }] });
     expect(visible('#caja-editar')).toBe(true);
-    expect($('#boton-editar').getAttribute('href')).toBe('/cuenta/mis-planes.html?editar=7');
+    expect($('#boton-editar').getAttribute('href')).toBe('/paginas/cuenta/mis-planes.html?editar=7');
 
     await abrir();
     expect(visible('#caja-editar')).toBe(false);
@@ -551,17 +551,17 @@ describe('Detalle del plan (D1-D6): CS-14, CS-02, CS-32', () => {
     afterEach(() => conReferente(''));
 
     test('si se llegó desde otra pantalla de PlanB, vuelve a ella con su búsqueda', async () => {
-      conReferente(`${window.location.origin}/social/personas.html?q=tapas`);
+      conReferente(`${window.location.origin}/paginas/social/personas.html?q=tapas`);
       await abrir();
 
-      expect($('#enlace-volver').getAttribute('href')).toBe('/social/personas.html?q=tapas');
+      expect($('#enlace-volver').getAttribute('href')).toBe('/paginas/social/personas.html?q=tapas');
     });
 
     test.each(['', 'https://otro-sitio.example/pagina'])('sin origen de PlanB (%p) vuelve a Inicio', async (url) => {
       conReferente(url);
       await abrir();
 
-      expect($('#enlace-volver').getAttribute('href')).toBe('/cuenta/bienvenida.html');
+      expect($('#enlace-volver').getAttribute('href')).toBe('/paginas/cuenta/bienvenida.html');
     });
   });
 });

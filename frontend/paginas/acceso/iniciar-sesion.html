@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PlanB · Iniciar sesión</title>
+  <link rel="icon" href="/img/logo-pin.svg" type="image/svg+xml">
+  <link href="/css/nucleo/tokens.css" rel="stylesheet">
+  <link href="/css/nucleo/base.css" rel="stylesheet">
+  <link href="/css/nucleo/componentes.css" rel="stylesheet">
+  <link href="/css/pantallas/acceso.css" rel="stylesheet">
+</head>
+<body>
+  <main id="contenido" class="pantalla-dividida">
+    <aside class="pantalla-dividida-marca">
+      <a href="/index.html"><img src="/img/logo.svg" alt="PlanB" width="140" height="40"></a>
+      <ul class="acceso-lineas">
+        <li>Comparte planes por tu ciudad</li>
+        <li>Descubre lo que hacen tus amigos</li>
+        <li>Confía en quienes conoces</li>
+      </ul>
+    </aside>
+
+    <div class="pantalla-dividida-formulario">
+      <h1 class="mb-4">Iniciar sesión</h1>
+
+      <form id="form-login">
+        <div class="mb-3">
+          <label for="email" class="form-label">Email</label>
+          <input type="email" class="form-control" id="email" required autocomplete="username">
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label">Contraseña</label>
+          <input type="password" class="form-control" id="password" required autocomplete="current-password">
+        </div>
+        <div id="error-login" role="alert" class="alert alert-danger d-none"></div>
+        <button type="submit" class="btn btn-primary w-100">Entrar</button>
+      </form>
+
+      <!-- CS-64: recuperar la contraseña por email -->
+      <p class="mt-3 text-center">
+        <a href="/paginas/acceso/recuperar.html">¿Has olvidado tu contraseña?</a>
+      </p>
+
+      <p class="mt-4 mb-2 text-center text-secondary">¿No tienes cuenta?</p>
+      <a href="/paginas/acceso/registro.html" class="btn btn-outline-primary w-100">Crear cuenta</a>
+    </div>
+  </main>
+
+  <script src="/js/shared/api.js"></script>
+  <script src="/js/acceso/iniciar-sesion.js"></script>
+  <script src="/js/shared/movimiento.js"></script>
+</body>
+</html>

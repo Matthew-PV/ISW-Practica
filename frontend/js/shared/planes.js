@@ -7,7 +7,7 @@
 function crearTarjetaPlan(plan, indice = 0) {
   const tarjeta = document.createElement('a');
   tarjeta.className = 'card tarjeta-experiencia tarjeta-plan';
-  tarjeta.href = `/experiencias/experiencia.html?id=${plan.id}`;
+  tarjeta.href = `/paginas/experiencias/experiencia.html?id=${plan.id}`;
   tarjeta.style.setProperty('--i', indice);
 
   const cuerpo = document.createElement('div');

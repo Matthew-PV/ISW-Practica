@@ -30,7 +30,7 @@ const JS = listar(path.join(FRONTEND, 'js'), '.js');
 
 test('existen la portada y la pantalla de inicio de sesión', () => {
   expect(fs.existsSync(path.join(FRONTEND, 'index.html'))).toBe(true);
-  expect(fs.existsSync(path.join(FRONTEND, 'acceso/iniciar-sesion.html'))).toBe(true);
+  expect(fs.existsSync(path.join(FRONTEND, 'paginas/acceso/iniciar-sesion.html'))).toBe(true);
 });
 
 test.each(HTMLS)('%s: todos sus enlaces, estilos, scripts e imágenes existen', (pagina) => {
@@ -48,7 +48,7 @@ test.each(JS.map((r) => path.relative(FRONTEND, r)))('%s: las direcciones .html 
   const texto = leer(js);
   // Cadenas literales asignadas a `location.href` o a `.href`
   const asignadas = [...texto.matchAll(/\.href\s*=\s*(['"`])([^'"`]*)\1/g)].map((m) => m[2]);
-  // Las plantillas con ${...} (/social/usuario.html?nombre=...) se comprueban por su archivo
+  // Las plantillas con ${...} (/paginas/social/usuario.html?nombre=...) se comprueban por su archivo
   const htmls = asignadas.filter((d) => /\.html/.test(d)).map((d) => d.replace(/\$\{[^}]*\}/g, ''));
 
   const rotas = htmls.filter((d) => !fs.existsSync(path.join(FRONTEND, archivoDe(d))));
@@ -62,9 +62,9 @@ test('ningún JavaScript asigna «/» a location.href', () => {
   expect(culpables.map((r) => path.relative(FRONTEND, r))).toEqual([]);
 });
 
-test('irAlLogin lleva a /acceso/iniciar-sesion.html (un 401 no debe acabar en la portada)', () => {
+test('irAlLogin lleva a /paginas/acceso/iniciar-sesion.html (un 401 no debe acabar en la portada)', () => {
   const texto = leer('js/shared/pantalla.js');
   const funcion = texto.match(/function irAlLogin\(\) \{([\s\S]*?)\n\}/)[1];
 
-  expect(funcion).toMatch(/href\s*=\s*'\/acceso\/iniciar-sesion\.html'/);
+  expect(funcion).toMatch(/href\s*=\s*'\/paginas\/acceso\/iniciar-sesion\.html'/);
 });

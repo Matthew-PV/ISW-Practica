@@ -2,11 +2,11 @@
  * @jest-environment jsdom
  */
 
-// Explorar (/experiencias/explorar.html): planes reales con filtros de categoría, momento, ciudad y amigos.
+// Explorar (/paginas/experiencias/explorar.html): planes reales con filtros de categoría, momento, ciudad y amigos.
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
-const HTML = leer('/experiencias/explorar.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/planes.js', 'js/explorar.js'];
+const HTML = leer('/paginas/experiencias/explorar.html');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/planes.js', 'js/experiencias/explorar.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -38,7 +38,7 @@ function servidor(planes = () => ({ experiencias: [plan(1), plan(2)], siguiente:
 const peticionesDePlanes = () => window.fetch.mock.calls.map(([ruta]) => ruta).filter((r) => r.startsWith('/api/experiencias?'));
 
 async function abrir(busqueda = '', fetchSimulado = servidor()) {
-  window.history.pushState({}, '', `/experiencias/explorar.html${busqueda}`);
+  window.history.pushState({}, '', `/paginas/experiencias/explorar.html${busqueda}`);
   document.documentElement.innerHTML = HTML;
   window.fetch = fetchSimulado;
   cargarScripts(SCRIPTS);
@@ -52,7 +52,7 @@ test('empieza con los planes reales, cada tarjeta enlaza a su detalle y «Todos�
 
   const tarjetas = [...document.querySelectorAll('#resultados .tarjeta-plan')];
   expect(tarjetas.map((t) => t.getAttribute('href'))).toEqual([
-    '/experiencias/experiencia.html?id=1', '/experiencias/experiencia.html?id=2',
+    '/paginas/experiencias/experiencia.html?id=1', '/paginas/experiencias/experiencia.html?id=2',
   ]);
   expect($('#filtros [aria-pressed="true"]').textContent).toBe('Todos');
   expect($('#total-planes').textContent).toBe('2 planes');
@@ -154,6 +154,6 @@ test('sin sesión vuelve al inicio de sesión', async () => {
   Object.defineProperty(window, 'location', { value: { search: '', href: '' }, configurable: true, writable: true });
   await abrir('', jest.fn(() => respuesta(401, { error: 'No autenticado' })));
 
-  expect(window.location.href).toBe('/acceso/iniciar-sesion.html');
+  expect(window.location.href).toBe('/paginas/acceso/iniciar-sesion.html');
   Object.defineProperty(window, 'location', { value: locationReal, configurable: true, writable: true });
 });

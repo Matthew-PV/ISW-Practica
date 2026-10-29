@@ -1,12 +1,12 @@
 /**
  * @jest-environment jsdom
  */
-// CS-66, T4.4: diseño de mi perfil (/cuenta/perfil.html y js/perfil.js) en jsdom: cabecera con contadores
+// CS-66, T4.4: diseño de mi perfil (/paginas/cuenta/perfil.html y js/cuenta/perfil.js) en jsdom: cabecera con contadores
 // y pestañas de experiencias, amigos y seguidores. Solicitudes y ajustes tienen su propia página.
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
-const HTML = leer('/cuenta/perfil.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/experiencias.js', 'js/perfil.js'];
+const HTML = leer('/paginas/cuenta/perfil.html');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/experiencias.js', 'js/cuenta/perfil.js'];
 const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', ciudad: null, foto: null };
 const EXPERIENCIA = (id) => ({ id, titulo: `Plan ${id}`, ciudad: { nombre: 'Madrid' }, visibilidad: 'PUBLICA' });
 
@@ -65,7 +65,7 @@ describe('cabecera del perfil', () => {
 
     const enlace = $('.cabecera-perfil a.btn');
     expect(enlace.textContent).toBe('Editar perfil');
-    expect(enlace.getAttribute('href')).toBe('/cuenta/ajustes.html');
+    expect(enlace.getAttribute('href')).toBe('/paginas/cuenta/ajustes.html');
   });
 
   test('el contador de experiencias cuenta las que se han cargado', async () => {
@@ -109,6 +109,6 @@ describe('experiencias', () => {
 
     const tarjeta = $('#lista-experiencias .tarjeta-experiencia');
     expect(tarjeta.querySelector('.etiqueta-amigos').textContent).toBe('Amigos');
-    expect(tarjeta.querySelector('a.btn-outline-primary').getAttribute('href')).toBe('/experiencias/experiencia.html?id=7');
+    expect(tarjeta.querySelector('a.btn-outline-primary').getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=7');
   });
 });

@@ -1,7 +1,7 @@
-// Listado de las experiencias de un usuario con «Cargar más» (CS-44). Es común a /cuenta/perfil.html
-// («Mis experiencias», con las privadas) y a /social/usuario.html («Sus experiencias»): el backend solo
+// Listado de las experiencias de un usuario con «Cargar más» (CS-44). Es común a /paginas/cuenta/perfil.html
+// («Mis experiencias», con las privadas) y a /paginas/social/usuario.html («Sus experiencias»): el backend solo
 // devuelve las que puede ver el usuario de la sesión.
-// Lo usan: js/perfil.js y js/usuario.js. Usa `api` de shared/api.js y `listaConCargarMas` y
+// Lo usan: js/cuenta/perfil.js y js/social/usuario.js. Usa `api` de shared/api.js y `listaConCargarMas` y
 // `mostrarErrorConReintento` de shared/pantalla.js, que se cargan antes.
 // La página necesita #lista-experiencias, #sin-experiencias, #mas-experiencias y #error-experiencias.
 
@@ -17,7 +17,7 @@ const ETIQUETAS_VISIBILIDAD = {
   PRIVADA: { clase: 'etiqueta-privada', texto: 'Privada' },
 };
 
-// Crea la tarjeta de una experiencia, la misma que se ve en /cuenta/bienvenida.html pero sin «Editar»:
+// Crea la tarjeta de una experiencia, la misma que se ve en /paginas/cuenta/bienvenida.html pero sin «Editar»:
 // desde aquí solo se consulta. Los textos se incorporan con textContent para que nunca se
 // interpreten como HTML.
 function crearTarjetaExperiencia(experiencia) {
@@ -46,7 +46,7 @@ function crearTarjetaExperiencia(experiencia) {
 
   const ver = document.createElement('a');
   ver.className = 'btn btn-outline-primary btn-sm mt-auto';
-  ver.href = `/experiencias/experiencia.html?id=${experiencia.id}`;
+  ver.href = `/paginas/experiencias/experiencia.html?id=${experiencia.id}`;
   ver.dataset.experienciaId = experiencia.id;
   ver.textContent = 'Ver detalle';
 

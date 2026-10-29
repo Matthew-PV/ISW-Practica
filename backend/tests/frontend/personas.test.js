@@ -8,8 +8,8 @@ const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const HTML = leer('/social/personas.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/planes.js', 'js/personas.js'];
+const HTML = leer('/paginas/social/personas.html');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/planes.js', 'js/social/personas.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -37,7 +37,7 @@ const paginaDePlanes = (experiencias = [], siguiente = null) => ({ experiencias,
 const sinPlanes = (ruta) => (ruta.startsWith('/api/experiencias?') ? respuesta(200, paginaDePlanes()) : undefined);
 
 beforeEach(() => {
-  window.history.pushState({}, '', '/social/personas.html');
+  window.history.pushState({}, '', '/paginas/social/personas.html');
   document.documentElement.innerHTML = HTML;
   window.fetch = jest.fn(sinPlanes);
   cargarScripts(SCRIPTS);
@@ -55,7 +55,7 @@ test('busca personas y cada resultado enlaza a su perfil público sin insertar H
   expect(window.fetch).toHaveBeenCalledWith('/api/usuarios?texto=ana', expect.any(Object));
   const enlaces = [...document.querySelectorAll('#resultados a')];
   expect(enlaces).toHaveLength(2);
-  expect(enlaces[0].getAttribute('href')).toBe('/social/usuario.html?nombre=ana%20mar%C3%ADa');
+  expect(enlaces[0].getAttribute('href')).toBe('/paginas/social/usuario.html?nombre=ana%20mar%C3%ADa');
   expect(enlaces[0].textContent).toBe('ana maría');
   expect(enlaces[1].textContent).toBe('<b>luis</b>');
   expect(enlaces[1].querySelector('b')).toBeNull();
@@ -127,8 +127,8 @@ describe('Buscar (diseño aplicado)', () => {
     expect($('#sin-resultados').textContent).toBe('No se han encontrado personas.');
   });
 
-  test('/social/personas.html?q=ana%20b%26c rellena el campo y busca con el texto escapado', async () => {
-    window.history.pushState({}, '', '/social/personas.html?q=ana%20b%26c');
+  test('/paginas/social/personas.html?q=ana%20b%26c rellena el campo y busca con el texto escapado', async () => {
+    window.history.pushState({}, '', '/paginas/social/personas.html?q=ana%20b%26c');
     document.documentElement.innerHTML = HTML;
     window.fetch.mockReturnValueOnce(respuesta(200, []));
     cargarScripts(SCRIPTS);
@@ -140,8 +140,8 @@ describe('Buscar (diseño aplicado)', () => {
     expect(window.fetch).toHaveBeenCalledWith('/api/experiencias?texto=ana+b%26c', expect.any(Object));
   });
 
-  test('/social/personas.html?q= vacío no busca y deja el texto de ayuda', async () => {
-    window.history.pushState({}, '', '/social/personas.html?q=');
+  test('/paginas/social/personas.html?q= vacío no busca y deja el texto de ayuda', async () => {
+    window.history.pushState({}, '', '/paginas/social/personas.html?q=');
     document.documentElement.innerHTML = HTML;
     cargarScripts(SCRIPTS);
     await terminar();
@@ -165,7 +165,7 @@ describe('Buscar (diseño aplicado)', () => {
     expect(document.querySelectorAll('#resultados .fila-resultado')).toHaveLength(1);
     const tarjetas = [...document.querySelectorAll('#resultados-experiencias .tarjeta-plan')];
     expect(tarjetas.map((t) => t.querySelector('h3').textContent)).toEqual(['Tarde en el Prado']);
-    expect(tarjetas[0].getAttribute('href')).toBe('/experiencias/experiencia.html?id=8');
+    expect(tarjetas[0].getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=8');
     expect([...document.querySelectorAll('[role="tab"]')].map((p) => p.textContent)).toEqual(['Planes (1)', 'Personas (1)']);
     expect($('#ayuda-experiencias').classList.contains('d-none')).toBe(true);
     expect($('#sin-experiencias').classList.contains('d-none')).toBe(true);
@@ -182,7 +182,7 @@ describe('Buscar (diseño aplicado)', () => {
     expect($('#pestana-experiencias').textContent).toBe('Planes (2+)');
     const enlace = $('#ver-todos-planes');
     expect(enlace.hidden).toBe(false);
-    expect(enlace.getAttribute('href')).toBe('/experiencias/explorar.html?texto=tapas%20%26%20vino');
+    expect(enlace.getAttribute('href')).toBe('/paginas/experiencias/explorar.html?texto=tapas%20%26%20vino');
   });
 
   test('si ningún plan coincide se muestra «No se han encontrado planes.»', async () => {

@@ -3,7 +3,7 @@
 > Qué pantallas hay, cómo se pasa de una a otra, qué archivos usa cada una y qué llamadas hace a la API.
 > Documentos relacionados: [arquitectura](arquitectura.md), [flujos](flujos.md), [referencia de la API](api.md), [glosario](anexo/glosario.md) e [inventario de pantallas](inventario-pantallas.md) (estados y lagunas frente al diseño).
 
-El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilos de Bootstrap 5 (solo su CSS, que carga `css/tokens.css` en una capa) complementados por `css/base.css`, `css/componentes.css` y por el CSS propio de cada grupo de páginas. Está pensado para escritorio; la adaptación a pantallas pequeñas está aparcada. El mismo servidor Express sirve las páginas desde `frontend/` y la API desde `/api`, así que comparten origen y la cookie de sesión viaja sola en cada `fetch`.
+El frontend son páginas HTML estáticas con JavaScript sin *framework* y estilos de Bootstrap 5 (solo su CSS, que carga `css/nucleo/tokens.css` en una capa) complementados por `css/nucleo/base.css`, `css/nucleo/componentes.css` y por el CSS propio de cada grupo de páginas. Está pensado para escritorio; la adaptación a pantallas pequeñas está aparcada. El mismo servidor Express sirve las páginas desde `frontend/` y la API desde `/api`, así que comparten origen y la cookie de sesión viaja sola en cada `fetch`.
 
 ## Mapa de navegación
 
@@ -19,35 +19,35 @@ El [sitemap de PlanB](sitemap.mmd) es la referencia del mapa de navegación, en 
 flowchart TB
     subgraph g_0["Público"]
         index["Landing<br/>index.html<br/>(implementada)"]
-        iniciar_sesion["Iniciar sesión<br/>/acceso/iniciar-sesion.html<br/>(implementada)"]
-        registro["Crear cuenta<br/>/acceso/registro.html<br/>(implementada)"]
-        recuperar["Recuperar contraseña<br/>/acceso/recuperar.html<br/>(implementada)"]
-        restablecer["Restablecer contraseña<br/>/acceso/restablecer.html<br/>(implementada)"]
+        iniciar_sesion["Iniciar sesión<br/>/paginas/acceso/iniciar-sesion.html<br/>(implementada)"]
+        registro["Crear cuenta<br/>/paginas/acceso/registro.html<br/>(implementada)"]
+        recuperar["Recuperar contraseña<br/>/paginas/acceso/recuperar.html<br/>(implementada)"]
+        restablecer["Restablecer contraseña<br/>/paginas/acceso/restablecer.html<br/>(implementada)"]
         ayuda["Ayuda<br/>ayuda.html<br/>(diseño futuro)"]
         terminos["Términos y privacidad<br/>terminos.html<br/>(diseño futuro)"]
         no_encontrada["Página no encontrada (404)<br/>no-encontrada.html<br/>(diseño futuro)"]
     end
     subgraph g_1["Inicio y descubrir"]
-        bienvenida["Inicio<br/>/cuenta/bienvenida.html<br/>(implementada)"]
+        bienvenida["Inicio<br/>/paginas/cuenta/bienvenida.html<br/>(implementada)"]
         explorar["Explorar<br/>explorar.html<br/>(implementada)"]
         ciudad["Ciudad<br/>ciudad.html?id=<br/>(diseño futuro)"]
-        personas["Resultados de búsqueda<br/>/social/personas.html<br/>(a reorganizar)"]
+        personas["Resultados de búsqueda<br/>/paginas/social/personas.html<br/>(a reorganizar)"]
     end
     subgraph g_2["Planes"]
-        experiencia["Detalle del plan<br/>/experiencias/experiencia.html?id=<br/>(implementada)"]
+        experiencia["Detalle del plan<br/>/paginas/experiencias/experiencia.html?id=<br/>(implementada)"]
         crear_plan["Crear plan<br/>crear-plan.html<br/>(a reorganizar)"]
         editar_plan["Editar plan<br/>editar-plan.html?id=<br/>(a reorganizar)"]
         guardados["Guardados<br/>guardados.html<br/>(diseño futuro)"]
         mis_planes["Mis planes<br/>mis-planes.html<br/>(implementada)"]
     end
     subgraph g_3["Personas y social"]
-        perfil["Mi perfil<br/>/cuenta/perfil.html<br/>(a reorganizar)"]
-        usuario["Perfil de otra persona<br/>/social/usuario.html?nombre=<br/>(implementada)"]
+        perfil["Mi perfil<br/>/paginas/cuenta/perfil.html<br/>(a reorganizar)"]
+        usuario["Perfil de otra persona<br/>/paginas/social/usuario.html?nombre=<br/>(implementada)"]
         amigos["Amigos<br/>amigos.html<br/>(implementada)"]
         seguidores["Seguidores y seguidos<br/>seguidores.html<br/>(diseño futuro)"]
     end
     subgraph g_4["Cuenta"]
-        ajustes["Ajustes<br/>/cuenta/ajustes.html<br/>(a reorganizar)"]
+        ajustes["Ajustes<br/>/paginas/cuenta/ajustes.html<br/>(a reorganizar)"]
     end
     subgraph g_5["Sistema"]
         notificaciones["Notificaciones<br/>notificaciones.html<br/>(diseño futuro)"]
@@ -129,34 +129,36 @@ flowchart TB
     bienvenida -->|"Sesión no válida (401)"| iniciar_sesion
 ```
 
-**Entrada:** `/` sirve `index.html`, la landing pública, con enlaces a `/acceso/iniciar-sesion.html` y `/acceso/registro.html`. Con la sesión ya iniciada, la landing lleva a `/cuenta/bienvenida.html` (`landing.js`); un inicio de sesión o un registro correctos también.
+**Entrada:** `/` sirve `index.html`, la landing pública, con enlaces a `/paginas/acceso/iniciar-sesion.html` y `/paginas/acceso/registro.html`. Con la sesión ya iniciada, la landing lleva a `/paginas/cuenta/bienvenida.html` (`landing.js`); un inicio de sesión o un registro correctos también.
 
 **Cabecera común:** las nueve páginas con sesión (`bienvenida`, `explorar`, `mis-planes`, `amigos`, `perfil`, `ajustes`, `personas`, `usuario` y `experiencia`) comparten `header.cabecera`: la marca PlanB, las pestañas «Inicio», «Explorar», «Mis planes» y «Amigos», un buscador, la campana de notificaciones y el menú de cuenta (ver «Cabecera común» más abajo).
 
-**Sesión no válida:** si una página con sesión recibe 401, `irAlLogin` (en `js/shared/pantalla.js`) lleva a `/acceso/iniciar-sesion.html`.
+**Sesión no válida:** si una página con sesión recibe 401, `irAlLogin` (en `js/shared/pantalla.js`) lleva a `/paginas/acceso/iniciar-sesion.html`.
 
-Las URL de detalle incluyen parámetros: `/social/usuario.html?nombre=...` identifica a la persona, `/experiencias/experiencia.html?id=...` la experiencia, `/social/personas.html?q=...` el texto a buscar y `/acceso/restablecer.html?token=...` recibe el código del enlace de recuperación. Un enlace a un usuario lleva a `/cuenta/perfil.html` si es el propio usuario y a `/social/usuario.html?nombre=...` si es otro: lo decide `crearEnlacePerfil`.
+Las URL de detalle incluyen parámetros: `/paginas/social/usuario.html?nombre=...` identifica a la persona, `/paginas/experiencias/experiencia.html?id=...` la experiencia, `/paginas/social/personas.html?q=...` el texto a buscar y `/paginas/acceso/restablecer.html?token=...` recibe el código del enlace de recuperación. Un enlace a un usuario lleva a `/paginas/cuenta/perfil.html` si es el propio usuario y a `/paginas/social/usuario.html?nombre=...` si es otro: lo decide `crearEnlacePerfil`.
 
 ## Páginas, archivos y llamadas
 
-Cada página carga primero `js/shared/api.js`, después los módulos compartidos que necesita y por último su script. Todas cargan `css/tokens.css`, `css/base.css` y `css/componentes.css`; la columna «CSS propio» es el segundo archivo de estilos.
+Los HTML están en `paginas/<área>/` (`acceso`, `cuenta`, `experiencias`, `social`; `index.html` queda en la raíz), su script en `js/<área>/` con el mismo nombre, y los estilos en `css/nucleo/` (comunes) y `css/pantallas/` (propios). En las tablas siguientes se omiten esas carpetas.
+
+Cada página carga primero `js/shared/api.js`, después los módulos compartidos que necesita y por último su script. Todas cargan `css/nucleo/tokens.css`, `css/nucleo/base.css` y `css/nucleo/componentes.css`; la columna «CSS propio» es el segundo archivo de estilos.
 
 | Página | Script | CSS propio | Módulos compartidos | Llamadas a la API | Historias |
 |---|---|---|---|---|---|
 | `index.html` | `landing.js` | `landing.css` | `api`, `movimiento` | `GET /auth/yo` | CS-66 |
-| `/acceso/iniciar-sesion.html` | `iniciar-sesion.js` | `acceso.css` | `api` | `POST /auth/login` | CS-59 |
-| `/acceso/registro.html` | `registro.js` | `acceso.css` | `api`, `password` y Turnstile | `GET /auth/captcha`, `POST /auth/registro` | CS-59, CS-64 |
-| `/acceso/recuperar.html` | `recuperar.js` | `acceso.css` | `api` | `POST /auth/recuperar` | CS-64 |
-| `/acceso/restablecer.html` | `restablecer.js` | `acceso.css` | `api`, `password` | `POST /auth/restablecer` | CS-64 |
-| `/cuenta/bienvenida.html` | `bienvenida.js` | `descubrir.css` | `api`, `pantalla`, `planes`, `cabecera` | `GET /auth/yo`, `GET /perfil`, `GET /ciudades`, `GET /experiencias` | CS-24, CS-25 |
-| `/experiencias/explorar.html` | `explorar.js` | `descubrir.css` | `api`, `pantalla`, `planes`, `cabecera` | `GET /auth/yo`, `GET /experiencias/opciones`, `GET /ciudades`, `GET /perfil`, `GET /experiencias` | CS-10, CS-27 |
-| `/cuenta/mis-planes.html` | `mis-planes.js` | ninguno | `api`, `pantalla`, `cabecera` | `GET /perfil`, `GET /ciudades`, `GET /experiencias/opciones`, `GET /experiencias?autor=`, `GET /experiencias/:id`, `POST /experiencias`, `PATCH /experiencias/:id` | CS-44, CS-49, CS-57, CS-22, CS-55, CS-56 |
-| `/cuenta/perfil.html` | `perfil.js` | `perfil.css` | `api`, `pantalla`, `pestanas`, `cabecera`, `experiencias` | `GET /perfil`, `GET /perfil/resumen`, `/perfil/amigos` y `/perfil/seguidores`, `GET /experiencias?autor=` | CS-45, CS-44 |
-| `/cuenta/ajustes.html` | `ajustes.js` | ninguno | `api`, `pantalla`, `pestanas`, `cabecera`, `password`, `movimiento` | `GET` y `PUT /perfil`, `GET /ciudades`, `PUT /perfil/foto`, `PUT /perfil/password` | CS-47, CS-64 |
-| `/social/amigos.html` | `solicitudes.js` | `perfil.css` | `api`, `pantalla`, `cabecera` | `GET /amistades/solicitudes`, `PATCH /amistades/:id`, `GET /perfil/amigos` | CS-61, CS-45 |
-| `/social/personas.html` | `personas.js` | `descubrir.css`, `buscar.css` | `api`, `pantalla`, `pestanas`, `planes`, `cabecera` | `GET /usuarios?texto=`, `GET /experiencias?texto=`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id` | CS-61, CS-10 |
-| `/social/usuario.html` | `usuario.js` | `perfil.css` | `api`, `pantalla`, `cabecera`, `experiencias` | `GET /usuarios/:nombre`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id`, `POST` y `DELETE /seguimientos`, `GET /experiencias?autor=` | CS-62, CS-61, CS-44 |
-| `/experiencias/experiencia.html` | `experiencia.js` | `experiencia.css` | `api`, `pestanas`, `pantalla`, `cabecera` | `GET /experiencias/:id`, `GET /auth/yo`, `GET /experiencias/:id/resumen`, `GET` y `PUT /experiencias/:id/valoracion`, `GET /experiencias/:id/valoraciones` y `/valoraciones/amigos` | CS-30, CS-63, CS-48, CS-01, CS-14 |
+| `/paginas/acceso/iniciar-sesion.html` | `iniciar-sesion.js` | `acceso.css` | `api` | `POST /auth/login` | CS-59 |
+| `/paginas/acceso/registro.html` | `registro.js` | `acceso.css` | `api`, `password` y Turnstile | `GET /auth/captcha`, `POST /auth/registro` | CS-59, CS-64 |
+| `/paginas/acceso/recuperar.html` | `recuperar.js` | `acceso.css` | `api` | `POST /auth/recuperar` | CS-64 |
+| `/paginas/acceso/restablecer.html` | `restablecer.js` | `acceso.css` | `api`, `password` | `POST /auth/restablecer` | CS-64 |
+| `/paginas/cuenta/bienvenida.html` | `bienvenida.js` | `descubrir.css` | `api`, `pantalla`, `planes`, `cabecera` | `GET /auth/yo`, `GET /perfil`, `GET /ciudades`, `GET /experiencias` | CS-24, CS-25 |
+| `/paginas/experiencias/explorar.html` | `explorar.js` | `descubrir.css` | `api`, `pantalla`, `planes`, `cabecera` | `GET /auth/yo`, `GET /experiencias/opciones`, `GET /ciudades`, `GET /perfil`, `GET /experiencias` | CS-10, CS-27 |
+| `/paginas/cuenta/mis-planes.html` | `mis-planes.js` | ninguno | `api`, `pantalla`, `cabecera` | `GET /perfil`, `GET /ciudades`, `GET /experiencias/opciones`, `GET /experiencias?autor=`, `GET /experiencias/:id`, `POST /experiencias`, `PATCH /experiencias/:id` | CS-44, CS-49, CS-57, CS-22, CS-55, CS-56 |
+| `/paginas/cuenta/perfil.html` | `perfil.js` | `perfil.css` | `api`, `pantalla`, `pestanas`, `cabecera`, `experiencias` | `GET /perfil`, `GET /perfil/resumen`, `/perfil/amigos` y `/perfil/seguidores`, `GET /experiencias?autor=` | CS-45, CS-44 |
+| `/paginas/cuenta/ajustes.html` | `ajustes.js` | ninguno | `api`, `pantalla`, `pestanas`, `cabecera`, `password`, `movimiento` | `GET` y `PUT /perfil`, `GET /ciudades`, `PUT /perfil/foto`, `PUT /perfil/password` | CS-47, CS-64 |
+| `/paginas/social/amigos.html` | `solicitudes.js` | `perfil.css` | `api`, `pantalla`, `cabecera` | `GET /amistades/solicitudes`, `PATCH /amistades/:id`, `GET /perfil/amigos` | CS-61, CS-45 |
+| `/paginas/social/personas.html` | `personas.js` | `descubrir.css`, `buscar.css` | `api`, `pantalla`, `pestanas`, `planes`, `cabecera` | `GET /usuarios?texto=`, `GET /experiencias?texto=`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id` | CS-61, CS-10 |
+| `/paginas/social/usuario.html` | `usuario.js` | `perfil.css` | `api`, `pantalla`, `cabecera`, `experiencias` | `GET /usuarios/:nombre`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id`, `POST` y `DELETE /seguimientos`, `GET /experiencias?autor=` | CS-62, CS-61, CS-44 |
+| `/paginas/experiencias/experiencia.html` | `experiencia.js` | `experiencia.css` | `api`, `pestanas`, `pantalla`, `cabecera` | `GET /experiencias/:id`, `GET /auth/yo`, `GET /experiencias/:id/resumen`, `GET` y `PUT /experiencias/:id/valoracion`, `GET /experiencias/:id/valoraciones` y `/valoraciones/amigos` | CS-30, CS-63, CS-48, CS-01, CS-14 |
 
 ## Estilos
 
@@ -166,16 +168,16 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 * Tarjetas de experiencia: bloque de color con icono (`.bloque-categoria`, color según `data-categoria`). Estados vacíos: `.estado-vacio` con ilustración animada de `img/vacio-*.svg` (mancha de color, objeto con microanimación; decorativa y sin movimiento con `prefers-reduced-motion`).
 * `acceso.css`: la tarjeta de formulario de `iniciar-sesion`, `registro`, `recuperar` y `restablecer`. La columna de marca usa como fondo la escena animada `img/escena-acceso.svg` (puesta en `componentes.css`).
 * `experiencia.css`: el detalle de experiencia, con la experiencia y el formulario en una columna y las valoraciones en otra.
-* `perfil.css`: `/cuenta/perfil.html` y `/social/usuario.html`.
-* `buscar.css`: `/social/personas.html`.
+* `perfil.css`: `/paginas/cuenta/perfil.html` y `/paginas/social/usuario.html`.
+* `buscar.css`: `/paginas/social/personas.html`.
 
 ## Estados de una pantalla
 
-Casi todas las pantallas con datos pasan por los mismos estados. Este es el de `/experiencias/experiencia.html`, el más completo; `/social/usuario.html` es igual, pero el aviso que muestra es «Usuario no encontrado».
+Casi todas las pantallas con datos pasan por los mismos estados. Este es el de `/paginas/experiencias/experiencia.html`, el más completo; `/paginas/social/usuario.html` es igual, pero el aviso que muestra es «Usuario no encontrado».
 
 ```mermaid
 stateDiagram-v2
-  [*] --> Cargando : abre /experiencias/experiencia.html?id=7
+  [*] --> Cargando : abre /paginas/experiencias/experiencia.html?id=7
   Cargando --> SinId : la URL no trae id
   Cargando --> AlLogin : 401
   Cargando --> NoDisponible : 404
@@ -185,7 +187,7 @@ stateDiagram-v2
   Mostrando --> NoDisponible : una petición posterior responde 404
   Mostrando --> AlLogin : una petición posterior responde 401
   SinId : «No se ha especificado ninguna experiencia.»
-  AlLogin : vuelve a /acceso/iniciar-sesion.html
+  AlLogin : vuelve a /paginas/acceso/iniciar-sesion.html
   NoDisponible : solo «Contenido no disponible», se borra lo que se mostraba
   Error : aviso rojo con el mensaje
   Mostrando : datos, listas y formulario
@@ -215,11 +217,11 @@ stateDiagram-v2
 Las nueve páginas con sesión llevan `header.cabecera`, con el mismo HTML en todas:
 
 * La marca PlanB y los enlaces «Inicio», «Explorar», «Mis planes» y «Amigos», dentro de un `nav` con `aria-label="Principal"`; en la página actual el enlace lleva `aria-current="page"`.
-* Un buscador de planes y personas (`form[role="search"]`, píldora con el botón relleno encajado) que envía a `/social/personas.html?q=`. No se envía si el texto está vacío.
-* La campana, un `<details class="menu-notificaciones">` con el contador `#contador-notificaciones`, la lista `#lista-notificaciones` (una por solicitud de amistad pendiente, de `GET /api/amistades/solicitudes`; el nombre lleva al perfil de quien la envía y «Aceptar» y «Rechazar» la responden ahí mismo, con mensaje de resultado, foco en él y contador actualizado), `#sin-notificaciones` y el enlace «Ver amigos y solicitudes» a `/social/amigos.html`. Se cierra con clic fuera o Escape.
+* Un buscador de planes y personas (`form[role="search"]`, píldora con el botón relleno encajado) que envía a `/paginas/social/personas.html?q=`. No se envía si el texto está vacío.
+* La campana, un `<details class="menu-notificaciones">` con el contador `#contador-notificaciones`, la lista `#lista-notificaciones` (una por solicitud de amistad pendiente, de `GET /api/amistades/solicitudes`; el nombre lleva al perfil de quien la envía y «Aceptar» y «Rechazar» la responden ahí mismo, con mensaje de resultado, foco en él y contador actualizado), `#sin-notificaciones` y el enlace «Ver amigos y solicitudes» a `/paginas/social/amigos.html`. Se cierra con clic fuera o Escape.
 * El menú de cuenta, un `<details class="menu-cuenta">` cuyo resumen lleva el avatar (`img.menu-avatar`, 32 px: la foto del usuario que `cabecera.js` pide a `/api/perfil`, o la foto por defecto) y que contiene «Mi perfil», «Ajustes» y el botón «Cerrar sesión» (`data-cerrar-sesion`). Se cierra al hacer clic fuera, al pulsar Escape (el foco vuelve al resumen) y al elegir una opción.
 
-`js/shared/cabecera.js` engancha esos comportamientos. «Cerrar sesión» llama a `POST /api/auth/logout` y va a `/acceso/iniciar-sesion.html`; mientras espera, el botón se desactiva y muestra «Cerrando sesión…», y si falla se restaura y aparece un aviso `role="alert"` bajo la cabecera.
+`js/shared/cabecera.js` engancha esos comportamientos. «Cerrar sesión» llama a `POST /api/auth/logout` y va a `/paginas/acceso/iniciar-sesion.html`; mientras espera, el botón se desactiva y muestra «Cerrando sesión…», y si falla se restaura y aparece un aviso `role="alert"` bajo la cabecera.
 
 Antes de la cabecera, cada una de estas páginas (y la landing) lleva el enlace «Saltar al contenido», que solo se ve al recibir el foco del teclado.
 
@@ -231,51 +233,51 @@ Página pública y estática: su único JavaScript es el botón de pausa del mov
 
 Pruebas: `landing.test.js`.
 
-### `/acceso/iniciar-sesion.html`: iniciar sesión
+### `/paginas/acceso/iniciar-sesion.html`: iniciar sesión
 
-Formulario de email y contraseña. Si el login es correcto va a `/cuenta/bienvenida.html`; si no, muestra el mensaje del servidor en `#error-login`. Enlaza a la recuperación de la contraseña y ofrece «Crear cuenta».
+Formulario de email y contraseña. Si el login es correcto va a `/paginas/cuenta/bienvenida.html`; si no, muestra el mensaje del servidor en `#error-login`. Enlaza a la recuperación de la contraseña y ofrece «Crear cuenta».
 
 Pruebas: `iniciar-sesion.test.js`.
 
-### `/acceso/registro.html`: crear una cuenta
+### `/paginas/acceso/registro.html`: crear una cuenta
 
 * Pide nombre de usuario, email y contraseña. Mientras se escribe la contraseña, `mostrarRequisitosPassword` marca cada requisito cumplido en `#requisitos-password`, también el de no contener el nombre; cada uno lleva el estado también como texto oculto («cumplido» o «pendiente»), no solo con el símbolo.
 * El formulario es `novalidate`: al salir de nombre, email o contraseña vacíos (o con email sin formato) aparece el mensaje en español en `#mensaje-<campo>` (`.mensaje-campo`) y el campo lleva `aria-invalid`. Al enviar con errores no se llama al servidor, se marcan todos, el foco va al primero y `#error-registro` dice «Revisa los campos marcados.».
 * El CAPTCHA de Cloudflare Turnstile se dibuja en `#captcha` cuando su script llama a `window.iniciarCaptcha`, con la clave pública de `GET /api/auth/captcha`.
-* Con el registro correcto, la sesión ya está abierta y va a `/cuenta/bienvenida.html`.
+* Con el registro correcto, la sesión ya está abierta y va a `/paginas/cuenta/bienvenida.html`.
 
 Pruebas: `registro.test.js`.
 
-### `/acceso/recuperar.html`: pedir el enlace
+### `/paginas/acceso/recuperar.html`: pedir el enlace
 
 Pide el email y siempre muestra el mismo mensaje de éxito, exista la cuenta o no: la página no lo sabe, y así nadie puede usarla para averiguarlo.
 
 Pruebas: `recuperacion.test.js`.
 
-### `/acceso/restablecer.html`: elegir una contraseña nueva
+### `/paginas/acceso/restablecer.html`: elegir una contraseña nueva
 
-* Lee el `token` de la URL. Sin token muestra el aviso, con un enlace «Pide uno nuevo» a `/acceso/recuperar.html`, y oculta el formulario.
+* Lee el `token` de la URL. Sin token muestra el aviso, con un enlace «Pide uno nuevo» a `/paginas/acceso/recuperar.html`, y oculta el formulario.
 * Pide la contraseña dos veces y comprueba en la pantalla que coinciden antes de enviarla. El requisito «sin el nombre de usuario» lo comprueba el servidor, porque la página no sabe de quién es el enlace.
-* Al terminar, muestra un enlace a `/acceso/iniciar-sesion.html`.
+* Al terminar, muestra un enlace a `/paginas/acceso/iniciar-sesion.html`.
 
 Pruebas: `recuperacion.test.js`.
 
-### `/cuenta/bienvenida.html`: inicio
+### `/paginas/cuenta/bienvenida.html`: inicio
 
-* Portada con «Hola, <nombre>» y «Crear plan» (a `/cuenta/mis-planes.html?nuevo=1`), y debajo tiras horizontales de planes (`#tiras`): «Ver experiencias en mi ciudad» (con la ciudad del perfil debajo), «Nuevas experiencias» y «Lo que hacen tus amigos». Cada una lleva «Ver más →» a `/experiencias/explorar.html?tira=<id>`. La fila de tarjetas es un grupo enfocable con Tab (`tabindex="0"`, `role="group"`, nombrado por el título de la tira) para poder desplazarla con las flechas.
+* Portada con «Hola, <nombre>» y «Crear plan» (a `/paginas/cuenta/mis-planes.html?nuevo=1`), y debajo tiras horizontales de planes (`#tiras`): «Ver experiencias en mi ciudad» (con la ciudad del perfil debajo), «Nuevas experiencias» y «Lo que hacen tus amigos». Cada una lleva «Ver más →» a `/paginas/experiencias/explorar.html?tira=<id>`. La fila de tarjetas es un grupo enfocable con Tab (`tabindex="0"`, `role="group"`, nombrado por el título de la tira) para poder desplazarla con las flechas.
 * Cada tira pide hasta 8 planes a `GET /api/experiencias`: la de la ciudad con `ciudadId` (la ciudad del perfil es texto libre y se busca por nombre en `GET /ciudades`, sin distinguir mayúsculas ni acentos), «Nuevas experiencias» sin filtros y la de amigos con `amigos=true`. Una tira sin planes, o sin ciudad en el catálogo, muestra un aviso (`.tira-vacia`); si una petición falla, las demás tiras siguen.
 * Cada tarjeta (`crearTarjetaPlan`, `js/shared/planes.js`) es un enlace al detalle del plan, con su ciudad real y su autor.
 
 Pruebas: `inicio.test.js`.
 
-### `/experiencias/explorar.html`: explorar
+### `/paginas/experiencias/explorar.html`: explorar
 
 * Planes reales de `GET /api/experiencias`, de 12 en 12 con «Cargar más» (`#mas-planes`). Filtros: categoría (botones con `aria-pressed`, de `GET /experiencias/opciones`), momento adecuado (`#filtro-momento`), ciudad (`#filtro-ciudad`) y «solo planes de mis amigos» (`#filtro-amigos`); cada cambio vuelve a pedir la primera página. `#total-planes` cuenta los cargados («o más» si hay otra página); `#sin-resultados` si no hay ninguno; `#error-planes` con «Reintentar» si falla.
 * `?tira=` pone el título de la tira de origen y deja puestos sus filtros (`ciudad`: la ciudad del perfil; `amigos`: solo amigos). `?texto=` filtra por texto (viene de «Ver todos los planes» en el buscador).
 
 Pruebas: `explorar.test.js`.
 
-### `/cuenta/mis-planes.html`: mis planes
+### `/paginas/cuenta/mis-planes.html`: mis planes
 
 * Muestra las experiencias del usuario en una rejilla, de 10 en 10, con «Cargar más» (`#mas-experiencias`). Mientras llegan los datos se ve «Cargando…» (`#cargando`) y, si no hay ninguna experiencia, `#sin-experiencias` dice «Todavía no has publicado experiencias.» junto a la tarjeta «+».
 * La primera tarjeta, «+», abre el `<dialog>` `#dialogo-experiencia` para crear una experiencia. «Editar» abre el mismo diálogo relleno con sus datos.
@@ -293,14 +295,14 @@ Pruebas: `explorar.test.js`.
 
 Pruebas: `mis-planes.test.js`, `mis-planes.formulario.test.js` y `estados.test.js`.
 
-### `/cuenta/perfil.html`: mi perfil
+### `/paginas/cuenta/perfil.html`: mi perfil
 
 * **Cabecera:** foto, nombre, ciudad (`#ciudad-perfil`), contadores de experiencias, amigos y seguidores, y el botón «Editar perfil», que lleva a los ajustes. Hasta que llegan los datos se ve «Cargando…» (`#cargando`).
 * **Pestañas** (`shared/pestanas.js`): *Experiencias* (con `mostrarExperienciasDe`, incluidas las privadas), *Amigos* y *Seguidores* (listas de 20 en 20 con «Cargar más»; cada nombre lleva a su perfil).
 
 Pruebas: `perfil.relaciones.test.js`, `perfil.cabecera.test.js`, `estados.test.js` y `shared/experiencias.test.js`.
 
-### `/cuenta/ajustes.html`: ajustes
+### `/paginas/cuenta/ajustes.html`: ajustes
 
 Dos pestañas (`shared/pestanas.js`); «Cerrar sesión» está solo en el menú de la cuenta:
 
@@ -309,13 +311,13 @@ Dos pestañas (`shared/pestanas.js`); «Cerrar sesión» está solo en el menú 
 
 Pruebas: `ajustes.test.js`, `ajustes.foto.test.js`, `ajustes.password.test.js` y `estados.test.js`.
 
-### `/social/amigos.html`: amigos y solicitudes
+### `/paginas/social/amigos.html`: amigos y solicitudes
 
 Arriba, las solicitudes recibidas, cada una con «Aceptar» y «Rechazar»; si no hay ninguna se ve «No tienes solicitudes pendientes.». Al responder, la fila pasa a un mensaje («Ahora sois amigos de X» con «Ver perfil», o «Solicitud rechazada») que recibe el foco. Debajo, «Tus amigos» (`#lista-amigos`, de `GET /api/perfil/amigos`, con «Cargar más») que se actualiza al aceptar. La campana y esta página se avisan con el evento `solicitud-respondida` (`detail.id`).
 
 Se llega desde la pestaña «Amigos» o desde la campana de la cabecera. Pruebas: `solicitudes.test.js` y `estados.test.js`.
 
-### `/social/personas.html`: buscar
+### `/paginas/social/personas.html`: buscar
 
 Un buscador de planes y personas con dos pestañas, «Planes» (la primera) y «Personas» (`shared/pestanas.js`), cuyos títulos llevan el número de resultados tras buscar («Planes (3)», «Planes (10+)» si hay otra página). Cada búsqueda llena las dos a la vez. Si la URL trae `?q=`, rellena el campo y busca al cargarse. Al terminar, `#recuento-busqueda` (`role="status"`, oculto) anuncia el total, por ejemplo «3 planes y 1 persona»; las listas de resultados no se anuncian enteras.
 
@@ -324,16 +326,16 @@ Un buscador de planes y personas con dos pestañas, «Planes» (la primera) y «
 
 Pruebas: `personas.test.js`, `pestanas.test.js` y `estados.test.js`.
 
-### `/social/usuario.html?nombre=`: perfil de otro usuario
+### `/paginas/social/usuario.html?nombre=`: perfil de otro usuario
 
-* Foto, nombre, ciudad y contadores de amigos y seguidores. Hasta que llega el perfil se ve «Cargando…» (`#cargando`) y no los datos de relleno. Si el usuario no existe, solo se muestra `#no-encontrado`; si es el propio usuario, va a `/cuenta/perfil.html`.
+* Foto, nombre, ciudad y contadores de amigos y seguidores. Hasta que llega el perfil se ve «Cargando…» (`#cargando`) y no los datos de relleno. Si el usuario no existe, solo se muestra `#no-encontrado`; si es el propio usuario, va a `/paginas/cuenta/perfil.html`.
 * En `#botones-amistad` aparecen los botones que corresponden a la relación (ver [E2](flujos.md#e2-la-relación-vista-desde-el-perfil-de-otro-usuario)). «Eliminar amigo» pide confirmación en un `<dialog>` (`#dialogo-eliminar-amigo`) y «Cancelar solicitud» borra la solicitud enviada.
 * `#boton-seguir` alterna entre «Seguir» y «Dejar de seguir».
 * Tras cada acción se vuelve a pedir el perfil, para que los contadores y botones sean los reales, y también «Sus planes», porque al cambiar la amistad cambian las que se pueden ver.
 
 Pruebas: `usuario.test.js`, `estados.test.js`, `usuario.cabecera.test.js` y `shared/experiencias.test.js`.
 
-### `/experiencias/experiencia.html?id=`: una experiencia
+### `/paginas/experiencias/experiencia.html?id=`: una experiencia
 
 * Dos columnas: a la izquierda título, descripción, resumen, «Tu valoración», las listas y el formulario, en ese orden; a la derecha la ficha (`aside.ficha-experiencia`, fija al desplazar): bloque de color de la categoría, autor (enlace a su perfil), ciudad, categoría, momento (oculto si no se indicó), visibilidad y, solo para el autor, «Editar plan».
 * **«← Volver»** (`#enlace-volver`) lleva a la pantalla de PlanB desde la que se llegó, con su búsqueda (`document.referrer`, que Helmet solo envía dentro del mismo origen); sin ella, a Inicio.
@@ -368,7 +370,7 @@ Los módulos se cargan con `<script>` normales (no son módulos ES) y exponen su
 * **Ventanas con `<dialog>`.** La CSP no deja cargar el JavaScript de Bootstrap desde el CDN, así que los diálogos usan el elemento nativo `<dialog>` con `showModal()` y `close()`.
 * **La seguridad está en el backend.** Ocultar un botón (por ejemplo, el formulario de valorar en una experiencia propia) solo mejora la interfaz: el servidor comprueba siempre los permisos.
 * **Llamadas con `api`.** Ninguna página usa `fetch` directamente.
-* **Colores en variables.** Los colores solo se definen como variables en `css/tokens.css`; los demás CSS las usan.
+* **Colores en variables.** Los colores solo se definen como variables en `css/nucleo/tokens.css`; los demás CSS las usan.
 * **Escritorio.** El diseño se comprueba en escritorio.
 
 ## Pruebas del frontend

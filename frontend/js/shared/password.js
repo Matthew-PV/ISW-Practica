@@ -1,5 +1,5 @@
-// Requisitos de la contraseña (CS-64), que se marcan mientras se escribe. Lo usan js/registro.js,
-// js/perfil.js (cambiar la contraseña) y js/restablecer.js. Son los mismos que comprueba el
+// Requisitos de la contraseña (CS-64), que se marcan mientras se escribe. Lo usan js/acceso/registro.js,
+// js/cuenta/perfil.js (cambiar la contraseña) y js/acceso/restablecer.js. Son los mismos que comprueba el
 // backend (backend/src/services/shared/password.js), que es quien decide: aquí solo se ayuda a
 // escribir una contraseña válida.
 

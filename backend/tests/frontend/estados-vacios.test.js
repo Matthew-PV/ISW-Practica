@@ -26,7 +26,7 @@ describe('ilustraciones de estados vacíos', () => {
   });
 
   test('.estado-vacio muestra la ilustración en grande', () => {
-    const css = leer('css/componentes.css');
+    const css = leer('css/nucleo/componentes.css');
     expect(css).toMatch(/\.estado-vacio img\s*\{[^}]*max-width:\s*(2[4-9]\d|3\d\d)px/);
   });
 });

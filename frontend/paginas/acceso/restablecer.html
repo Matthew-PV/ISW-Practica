@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PlanB · Nueva contraseña</title>
+  <link rel="icon" href="/img/logo-pin.svg" type="image/svg+xml">
+  <link href="/css/nucleo/tokens.css" rel="stylesheet">
+  <link href="/css/nucleo/base.css" rel="stylesheet">
+  <link href="/css/nucleo/componentes.css" rel="stylesheet">
+  <link href="/css/pantallas/acceso.css" rel="stylesheet">
+</head>
+<body>
+  <main id="contenido" class="pantalla-dividida">
+    <aside class="pantalla-dividida-marca">
+      <a href="/index.html"><img src="/img/logo.svg" alt="PlanB" width="140" height="40"></a>
+      <ul class="acceso-lineas">
+        <li>Comparte planes por tu ciudad</li>
+        <li>Descubre lo que hacen tus amigos</li>
+        <li>Confía en quienes conoces</li>
+      </ul>
+    </aside>
+
+    <div class="pantalla-dividida-formulario">
+      <h1 class="mb-4">Elige una contraseña nueva</h1>
+
+      <div id="error-restablecer" class="alert alert-danger d-none" role="alert"></div>
+      <div id="exito-restablecer" class="alert alert-success d-none"></div>
+
+      <!-- CS-64: se abre desde el enlace del email, /paginas/acceso/restablecer.html?token=... (js/acceso/restablecer.js) -->
+      <form id="form-restablecer">
+        <div class="mb-3">
+          <label for="password-nueva" class="form-label">Contraseña nueva</label>
+          <input type="password" class="form-control" id="password-nueva" required autocomplete="new-password" aria-describedby="requisitos-password">
+          <ul id="requisitos-password" class="list-unstyled small mt-2 mb-0"></ul>
+        </div>
+        <div class="mb-3">
+          <label for="password-repetida" class="form-label">Repite la contraseña nueva</label>
+          <input type="password" class="form-control" id="password-repetida" required autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Guardar contraseña</button>
+      </form>
+    </div>
+  </main>
+
+  <script src="/js/shared/api.js"></script>
+  <script src="/js/shared/password.js"></script>
+  <script src="/js/acceso/restablecer.js"></script>
+  <script src="/js/shared/movimiento.js"></script>
+</body>
+</html>

@@ -24,12 +24,12 @@ describe('escena de las pantallas de acceso', () => {
   });
 
   test('componentes.css pone la escena como fondo de la columna de marca', () => {
-    const css = leer('css/componentes.css');
+    const css = leer('css/nucleo/componentes.css');
     expect(css).toMatch(/\.pantalla-dividida-marca\s*\{[^}]*escena-acceso\.svg/);
   });
 
   test.each(PAGINAS)('%s usa la escena y ya no la ilustración pequeña', (pagina) => {
-    document.documentElement.innerHTML = leer(`acceso/${pagina}.html`);
+    document.documentElement.innerHTML = leer(`paginas/acceso/${pagina}.html`);
     expect(document.querySelector('.pantalla-dividida-marca')).not.toBeNull();
     expect(document.querySelector('.acceso-ilustracion')).toBeNull();
   });

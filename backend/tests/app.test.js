@@ -22,7 +22,7 @@ describe('cabeceras de seguridad', () => {
   });
 
   test('el origen solo se comunica dentro de PlanB, para que «Volver» lleve a la pantalla anterior', async () => {
-    const res = await request(app).get('/experiencias/experiencia.html');
+    const res = await request(app).get('/paginas/experiencias/experiencia.html');
     expect(res.headers['referrer-policy']).toBe('same-origin');
   });
 });
@@ -35,8 +35,8 @@ describe('páginas de entrada', () => {
     expect(res.text).toContain('<h1');
   });
 
-  test('GET /acceso/iniciar-sesion.html responde el formulario de inicio de sesión', async () => {
-    const res = await request(app).get('/acceso/iniciar-sesion.html');
+  test('GET /paginas/acceso/iniciar-sesion.html responde el formulario de inicio de sesión', async () => {
+    const res = await request(app).get('/paginas/acceso/iniciar-sesion.html');
 
     expect(res.status).toBe(200);
     expect(res.text).toContain('id="form-login"');

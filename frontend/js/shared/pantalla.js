@@ -1,6 +1,6 @@
 // Piezas comunes de las pantallas. Cada página que las usa carga este archivo después de
 // shared/api.js y antes de su propio script.
-// Lo usan: js/experiencia.js, js/perfil.js, js/personas.js, js/usuario.js, js/bienvenida.js, js/solicitudes.js y
+// Lo usan: js/experiencias/experiencia.js, js/cuenta/perfil.js, js/social/personas.js, js/social/usuario.js, js/cuenta/bienvenida.js, js/social/solicitudes.js y
 //          js/shared/experiencias.js.
 
 // Muestra un texto en una caja de aviso (error, éxito...) que estaba oculta con la clase d-none.
@@ -39,7 +39,7 @@ function ocultarCargando() {
 
 // Sin sesión no se puede usar la página: se vuelve al inicio de sesión.
 function irAlLogin() {
-  window.location.href = '/acceso/iniciar-sesion.html';
+  window.location.href = '/paginas/acceso/iniciar-sesion.html';
 }
 
 // Convierte `enlace` (un <a>) en el enlace al perfil de `usuario`: el mío lleva a «Mi perfil» y
@@ -48,8 +48,8 @@ function irAlLogin() {
 function crearEnlacePerfil(enlace, usuario, miUsuarioId) {
   enlace.textContent = usuario.nombreUsuario;
   enlace.href = usuario.id === miUsuarioId
-    ? '/cuenta/perfil.html'
-    : `/social/usuario.html?nombre=${encodeURIComponent(usuario.nombreUsuario)}`;
+    ? '/paginas/cuenta/perfil.html'
+    : `/paginas/social/usuario.html?nombre=${encodeURIComponent(usuario.nombreUsuario)}`;
   return enlace;
 }
 

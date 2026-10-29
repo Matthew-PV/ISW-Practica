@@ -15,7 +15,7 @@ async function cerrarSesion(evento) {
   boton.textContent = 'Cerrando sesión…';
   try {
     await api('/auth/logout', { method: 'POST' });
-    window.location.href = '/acceso/iniciar-sesion.html';
+    window.location.href = '/paginas/acceso/iniciar-sesion.html';
   } catch {
     boton.disabled = false;
     boton.removeAttribute('aria-busy');
@@ -71,7 +71,7 @@ if (avatar) {
 }
 
 // Campana: las solicitudes de amistad pendientes como notificaciones, con un contador. Cada una lleva a
-// la persona y se puede aceptar o rechazar desde ahí; «Ver amigos y solicitudes» lleva a /social/amigos.html.
+// la persona y se puede aceptar o rechazar desde ahí; «Ver amigos y solicitudes» lleva a /paginas/social/amigos.html.
 // Cuando una solicitud se responde (aquí o en la página Amigos) se emite 'solicitud-respondida' con
 // { detail: { id } } y las dos partes se ponen al día.
 const menuNotificaciones = document.querySelector('details.menu-notificaciones');
@@ -109,7 +109,7 @@ if (menuNotificaciones) {
     mensaje.tabIndex = -1;
     if (aceptada) {
       const enlace = document.createElement('a');
-      enlace.href = `/social/usuario.html?nombre=${encodeURIComponent(solicitud.solicitante.nombreUsuario)}`;
+      enlace.href = `/paginas/social/usuario.html?nombre=${encodeURIComponent(solicitud.solicitante.nombreUsuario)}`;
       enlace.textContent = 'Ver perfil';
       mensaje.append(`Ahora sois amigos de ${solicitud.solicitante.nombreUsuario}. `, enlace);
     } else {
@@ -148,7 +148,7 @@ if (menuNotificaciones) {
 
     const enlace = document.createElement('a');
     enlace.className = 'notificacion-persona';
-    enlace.href = `/social/usuario.html?nombre=${encodeURIComponent(solicitud.solicitante.nombreUsuario)}`;
+    enlace.href = `/paginas/social/usuario.html?nombre=${encodeURIComponent(solicitud.solicitante.nombreUsuario)}`;
     const foto = document.createElement('img');
     foto.src = solicitud.solicitante.foto;
     foto.alt = '';

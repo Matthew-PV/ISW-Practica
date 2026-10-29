@@ -1,12 +1,12 @@
 /**
  * @jest-environment jsdom
  */
-// CS-66, T4.4: diseño del perfil de otra persona (/social/usuario.html y js/usuario.js) en jsdom:
+// CS-66, T4.4: diseño del perfil de otra persona (/paginas/social/usuario.html y js/social/usuario.js) en jsdom:
 // cabecera centrada con contadores y una sola acción principal según la relación.
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
-const HTML = leer('/social/usuario.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/experiencias.js', 'js/usuario.js'];
+const HTML = leer('/paginas/social/usuario.html');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/experiencias.js', 'js/social/usuario.js'];
 const PERFIL = {
   id: 2, nombreUsuario: 'ana', foto: '/img/foto-por-defecto.svg', ciudad: 'Madrid',
   amigos: 3, seguidores: 5, esPropio: false, relacion: { amistad: 'ninguna', amistadId: null, siguiendo: false },
@@ -17,7 +17,7 @@ const $ = (selector) => document.querySelector(selector);
 const terminar = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 async function abrir(perfil = PERFIL) {
-  window.history.pushState({}, '', '/social/usuario.html?nombre=ana');
+  window.history.pushState({}, '', '/paginas/social/usuario.html?nombre=ana');
   document.documentElement.innerHTML = HTML;
   window.fetch = jest.fn((ruta) => (
     ruta === '/api/usuarios/ana' ? respuesta(200, perfil) : respuesta(200, { experiencias: [], siguiente: null })

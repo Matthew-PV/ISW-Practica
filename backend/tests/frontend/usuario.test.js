@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-// CS-62, objetivo 5: la pantalla del perfil de otro usuario (frontend/social/usuario.html y js/usuario.js)
+// CS-62, objetivo 5: la pantalla del perfil de otro usuario (frontend/paginas/social/usuario.html y js/social/usuario.js)
 // en un navegador simulado (jsdom). Se simula el servidor (fetch), así que no hace falta arrancar nada.
 const fs = require('node:fs');
 const path = require('node:path');
@@ -9,8 +9,8 @@ const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const HTML = leer('/social/usuario.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/experiencias.js', 'js/usuario.js'];
+const HTML = leer('/paginas/social/usuario.html');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/experiencias.js', 'js/social/usuario.js'];
 const FOTO = 'https://res.cloudinary.com/demo/image/upload/v1/planb/perfiles/usuario-2.png';
 const PERFIL = {
   id: 2, nombreUsuario: 'ana', foto: FOTO, ciudad: 'Madrid',
@@ -23,10 +23,10 @@ const $ = (selector) => document.querySelector(selector);
 // Deja que terminen las promesas pendientes (la llamada a fetch y lo que viene después)
 const terminar = () => new Promise((r) => setTimeout(r, 0));
 
-// Abre la página como si el navegador estuviera en /social/usuario.html?nombre=...
+// Abre la página como si el navegador estuviera en /paginas/social/usuario.html?nombre=...
 // `siguientes` son las respuestas que dará el servidor a las peticiones posteriores a la carga.
 async function abrirPagina(nombre, perfil = PERFIL, siguientes = []) {
-  window.history.pushState({}, '', `/social/usuario.html?nombre=${encodeURIComponent(nombre)}`);
+  window.history.pushState({}, '', `/paginas/social/usuario.html?nombre=${encodeURIComponent(nombre)}`);
   document.documentElement.innerHTML = HTML;
   window.fetch = jest.fn().mockReturnValueOnce(respuesta(200, perfil));
   // CS-44: al mostrarse el perfil, la página pide también sus experiencias (petición 2)
@@ -312,7 +312,7 @@ afterEach(() => {
 
 // Abre la página con un `location` simple, para ver a qué dirección intenta ir sin que jsdom navegue
 async function abrirVigilandoRedireccion(nombre, primeraRespuesta) {
-  window.history.pushState({}, '', `/social/usuario.html?nombre=${encodeURIComponent(nombre)}`);
+  window.history.pushState({}, '', `/paginas/social/usuario.html?nombre=${encodeURIComponent(nombre)}`);
   document.documentElement.innerHTML = HTML;
   Object.defineProperty(window, 'location', {
     value: { search: locationReal.search, href: locationReal.href },
@@ -343,15 +343,15 @@ describe('usuario inexistente y perfil propio', () => {
     expect(window.location.href).toBe(locationReal.href);
   });
 
-  test('si el perfil es el mío, se va a /cuenta/perfil.html', async () => {
+  test('si el perfil es el mío, se va a /paginas/cuenta/perfil.html', async () => {
     await abrirVigilandoRedireccion('ana', respuesta(200, { ...PERFIL, esPropio: true }));
 
-    expect(window.location.href).toBe('/cuenta/perfil.html');
+    expect(window.location.href).toBe('/paginas/cuenta/perfil.html');
   });
 
   test('sin sesión se sigue yendo al login', async () => {
     await abrirVigilandoRedireccion('ana', respuesta(401, { error: 'No hay sesión iniciada' }));
 
-    expect(window.location.href).toBe('/acceso/iniciar-sesion.html');
+    expect(window.location.href).toBe('/paginas/acceso/iniciar-sesion.html');
   });
 });

@@ -9,8 +9,8 @@
 
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
-const HTML = leer('cuenta/mis-planes.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/mis-planes.js'];
+const HTML = leer('paginas/cuenta/mis-planes.html');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/cuenta/mis-planes.js'];
 
 const PERFIL = { id: 1, nombreUsuario: 'ana', ciudad: 'Madrid' };
 const CIUDADES = [
@@ -50,7 +50,7 @@ let creada;
 
 // Carga la página con `busqueda` en la URL (?nuevo=1, ?editar=10...)
 async function abrir(busqueda = '') {
-  window.history.replaceState({}, '', `/cuenta/mis-planes.html${busqueda}`);
+  window.history.replaceState({}, '', `/paginas/cuenta/mis-planes.html${busqueda}`);
   document.documentElement.innerHTML = HTML;
   // jsdom no implementa <dialog>: se simula abrir y cerrar con el atributo open
   for (const dialogo of document.querySelectorAll('dialog')) {
@@ -234,7 +234,7 @@ describe('C8: editar desde el detalle', () => {
   // Sustituye location por un objeto simple para ver adónde va sin que jsdom navegue
   const vigilarNavegacion = () => {
     Object.defineProperty(window, 'location', {
-      value: { pathname: '/cuenta/mis-planes.html', search: '', href: 'http://localhost/cuenta/mis-planes.html' },
+      value: { pathname: '/paginas/cuenta/mis-planes.html', search: '', href: 'http://localhost/paginas/cuenta/mis-planes.html' },
       configurable: true, writable: true,
     });
   };
@@ -247,7 +247,7 @@ describe('C8: editar desde el detalle', () => {
     enviar();
     await terminar();
 
-    expect(window.location.href).toBe('/experiencias/experiencia.html?id=10');
+    expect(window.location.href).toBe('/paginas/experiencias/experiencia.html?id=10');
   });
 
   test('?editar= y cancelar sin cambios también vuelve al detalle', async () => {
@@ -255,7 +255,7 @@ describe('C8: editar desde el detalle', () => {
     vigilarNavegacion();
     $('#boton-cancelar').click();
 
-    expect(window.location.href).toBe('/experiencias/experiencia.html?id=10');
+    expect(window.location.href).toBe('/paginas/experiencias/experiencia.html?id=10');
   });
 
   test('?nuevo=1 abre el formulario y limpia la dirección para que recargar no lo reabra', async () => {
@@ -281,7 +281,7 @@ describe('C9: tras crear', () => {
     expect(aviso.classList.contains('d-none')).toBe(false);
     const enlace = aviso.querySelector('a');
     expect(enlace.textContent).toBe('Ver plan');
-    expect(enlace.getAttribute('href')).toBe('/experiencias/experiencia.html?id=99');
+    expect(enlace.getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=99');
     expect(document.activeElement).toBe(enlace);
     expect($('#cargando').textContent).not.toContain('Cargando');
   });

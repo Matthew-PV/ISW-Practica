@@ -2,11 +2,11 @@
  * @jest-environment jsdom
  */
 
-// Inicio (/cuenta/bienvenida.html): saludo y tiras de planes reales con «Ver más» hacia Explorar.
+// Inicio (/paginas/cuenta/bienvenida.html): saludo y tiras de planes reales con «Ver más» hacia Explorar.
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
-const HTML = leer('/cuenta/bienvenida.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/planes.js', 'js/bienvenida.js'];
+const HTML = leer('/paginas/cuenta/bienvenida.html');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/planes.js', 'js/cuenta/bienvenida.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -53,9 +53,9 @@ test('muestra tres tiras con planes reales y un «Ver más» al explorador', asy
   expect(tiras).toHaveLength(3);
   expect(tiras.map((t) => t.querySelectorAll('.tarjeta-plan').length)).toEqual([2, 1, 1]);
   expect(tiras.map((t) => t.querySelector('.tira-ver-mas').getAttribute('href'))).toEqual([
-    '/experiencias/explorar.html?tira=ciudad',
-    '/experiencias/explorar.html?tira=nuevos',
-    '/experiencias/explorar.html?tira=amigos',
+    '/paginas/experiencias/explorar.html?tira=ciudad',
+    '/paginas/experiencias/explorar.html?tira=nuevos',
+    '/paginas/experiencias/explorar.html?tira=amigos',
   ]);
 });
 
@@ -63,7 +63,7 @@ test('cada tarjeta abre el detalle de su plan y muestra su ciudad real', async (
   await abrir(rutasBase({ '/api/experiencias?limite=8': lista(plan(7, { ciudad: { id: 9, nombre: 'Viena', pais: 'Austria' } })) }));
 
   const tarjeta = document.querySelectorAll('.tira')[1].querySelector('.tarjeta-plan');
-  expect(tarjeta.getAttribute('href')).toBe('/experiencias/experiencia.html?id=7');
+  expect(tarjeta.getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=7');
   expect(tarjeta.textContent).toContain('Viena');
   expect(tarjeta.textContent).toContain('lucia');
   expect(document.body.textContent).not.toContain('Tapas por La Latina');
@@ -119,6 +119,6 @@ test('sin sesión vuelve al inicio de sesión', async () => {
   Object.defineProperty(window, 'location', { value: { search: '', href: '' }, configurable: true, writable: true });
   await abrir({ '/api/auth/yo': () => respuesta(401, { error: 'No autenticado' }) });
 
-  expect(window.location.href).toBe('/acceso/iniciar-sesion.html');
+  expect(window.location.href).toBe('/paginas/acceso/iniciar-sesion.html');
   Object.defineProperty(window, 'location', { value: locationReal, configurable: true, writable: true });
 });

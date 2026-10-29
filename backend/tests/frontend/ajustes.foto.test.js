@@ -1,7 +1,7 @@
 /**
  * @jest-environment jsdom
  */
-// CS-47: la foto en la pantalla de mi perfil (frontend/cuenta/ajustes.html y js/ajustes.js) en un
+// CS-47: la foto en la pantalla de mi perfil (frontend/paginas/cuenta/ajustes.html y js/cuenta/ajustes.js) en un
 // navegador simulado (jsdom). La foto se sube en cuanto se elige, sin pulsar ningún botón.
 // Se simula el servidor (fetch), así que no hace falta arrancar nada.
 const fs = require('node:fs');
@@ -10,8 +10,8 @@ const { cargarScripts } = require('../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const HTML = leer('/cuenta/ajustes.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/password.js', 'js/shared/movimiento.js', 'js/ajustes.js'];
+const HTML = leer('/paginas/cuenta/ajustes.html');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/password.js', 'js/shared/movimiento.js', 'js/cuenta/ajustes.js'];
 const FOTO_ANTERIOR = 'https://res.cloudinary.com/demo/image/upload/v1/planb/perfiles/usuario-1.png';
 const FOTO_NUEVA = 'https://res.cloudinary.com/demo/image/upload/v2/planb/perfiles/usuario-1.jpg';
 const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', foto: FOTO_ANTERIOR, ciudad: null };
@@ -31,7 +31,7 @@ function elegirFoto(archivo) {
 }
 
 beforeEach(async () => {
-  // Página nueva en cada prueba: el HTML de /cuenta/ajustes.html (sus <script> no se ejecutan así)
+  // Página nueva en cada prueba: el HTML de /paginas/cuenta/ajustes.html (sus <script> no se ejecutan así)
   // y después api.js y ajustes.js en el ámbito global, como los carga el navegador
   document.documentElement.innerHTML = HTML;
   window.fetch = jest.fn()
