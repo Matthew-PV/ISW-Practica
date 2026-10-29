@@ -47,27 +47,6 @@ vigilante.observe(botonMasExperiencias, { attributes: true, attributeFilter: ['c
 const cajaErrorRelaciones = document.getElementById('error-relaciones');
 const PERSONAS_POR_PAGINA = 20;
 
-// Crea la fila de una persona, que enlaza a su perfil (/social/usuario.html). El nombre se incorpora como
-// texto para que nunca se interprete como HTML aportado por otra persona.
-function crearPersona(persona) {
-  const fila = crearEnlacePerfil(document.createElement('a'), persona);
-  fila.className = 'list-group-item list-group-item-action d-flex align-items-center gap-3 fila-persona';
-  fila.dataset.usuarioId = persona.id;
-
-  const foto = document.createElement('img');
-  foto.src = persona.foto;
-  foto.alt = '';
-  foto.width = 48;
-  foto.height = 48;
-  foto.className = 'rounded-circle';
-
-  const nombre = document.createElement('span');
-  nombre.textContent = persona.nombreUsuario;
-
-  fila.replaceChildren(foto, nombre);
-  return fila;
-}
-
 const mostrarErrorRelaciones = (err) => mostrarMensaje(cajaErrorRelaciones, err.message);
 
 // Un listado con «Cargar más» de 'amigos' o 'seguidores' (ver shared/pantalla.js)
@@ -82,7 +61,7 @@ function crearListadoPersonas(tipo, idLista, idVacio, idBoton) {
       const { personas, siguiente } = await api(`/perfil/${tipo}?limite=${PERSONAS_POR_PAGINA}${despuesDe}`);
       return { elementos: personas, siguiente };
     },
-    crear: crearPersona,
+    crear: crearFilaPersona,
     alFallar: mostrarErrorRelaciones,
   });
 }

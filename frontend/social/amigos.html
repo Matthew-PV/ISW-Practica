@@ -50,7 +50,7 @@
 
   <main id="contenido" class="container py-4">
     <h1 class="mb-1">Amigos</h1>
-    <p class="text-secondary mb-4">Gestiona tus solicitudes y <a href="/social/personas.html">busca a más personas</a>.</p>
+    <p class="text-secondary mb-4">Responde tus solicitudes, mira a tus amigos y <a href="/social/personas.html">busca a más personas</a>.</p>
 
     <!-- Solicitudes de amistad pendientes. js/solicitudes.js las obtiene desde /api/amistades/solicitudes -->
     <div id="error-solicitudes" class="alert alert-danger d-none" role="alert"></div>
@@ -58,6 +58,17 @@
       <h2 id="titulo-solicitudes" class="h5 mb-3">Solicitudes recibidas</h2>
       <div id="sin-solicitudes" class="estado-vacio d-none"><img src="/img/vacio-solicitudes.svg" alt="" width="240" height="180"><p>No tienes solicitudes pendientes.</p></div>
       <div id="solicitudes-recibidas" class="list-group"></div>
+    </section>
+
+    <!-- Mis amigos: js/solicitudes.js los obtiene desde /api/perfil/amigos -->
+    <section class="mt-5" aria-labelledby="titulo-amigos">
+      <h2 id="titulo-amigos" class="h5 mb-3">Tus amigos</h2>
+      <div id="error-amigos" class="alert alert-danger d-none" role="alert"></div>
+      <div id="sin-amigos" class="estado-vacio d-none"><img src="/img/vacio-personas.svg" alt="" width="240" height="180"><p>Aún no tienes amigos. <a href="/social/personas.html">Busca a alguien</a> y envíale una solicitud.</p></div>
+      <div id="lista-amigos" class="list-group"></div>
+      <div class="text-center mt-3">
+        <button type="button" id="mas-amigos" class="btn btn-outline-primary d-none">Cargar más amigos</button>
+      </div>
     </section>
   </main>
 

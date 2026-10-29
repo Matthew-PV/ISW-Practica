@@ -1,6 +1,6 @@
 // Piezas comunes de las pantallas. Cada página que las usa carga este archivo después de
 // shared/api.js y antes de su propio script.
-// Lo usan: js/experiencia.js, js/perfil.js, js/personas.js, js/usuario.js, js/bienvenida.js y
+// Lo usan: js/experiencia.js, js/perfil.js, js/personas.js, js/usuario.js, js/bienvenida.js, js/solicitudes.js y
 //          js/shared/experiencias.js.
 
 // Muestra un texto en una caja de aviso (error, éxito...) que estaba oculta con la clase d-none.
@@ -100,6 +100,27 @@ function listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar }) {
   return { cargar, reiniciar };
 }
 
+// Fila de una persona (foto y nombre) que enlaza a su perfil. El nombre se incorpora como texto para que
+// nunca se interprete como HTML aportado por otra persona. La usan Mi perfil y Amigos.
+function crearFilaPersona(persona) {
+  const fila = crearEnlacePerfil(document.createElement('a'), persona);
+  fila.className = 'list-group-item list-group-item-action d-flex align-items-center gap-3 fila-persona';
+  fila.dataset.usuarioId = persona.id;
+
+  const foto = document.createElement('img');
+  foto.src = persona.foto;
+  foto.alt = '';
+  foto.width = 48;
+  foto.height = 48;
+  foto.className = 'rounded-circle';
+
+  const nombre = document.createElement('span');
+  nombre.textContent = persona.nombreUsuario;
+
+  fila.replaceChildren(foto, nombre);
+  return fila;
+}
+
 // Categorías de las tarjetas de experiencia: palabras clave para reconocerlas en `tipo` (texto libre)
 // y trazo del icono (24x24, de línea). El color de cada una está en componentes.css (.bloque-categoria).
 const CATEGORIAS = {
@@ -126,4 +147,4 @@ function crearBloqueCategoria(tipo) {
 // Funciones que usan los scripts de las páginas, que se cargan después de este. En el navegador
 // ya serían globales; se dejan en window de forma explícita para que también lo sean cuando las
 // pruebas cargan el archivo como módulo (para medir su cobertura).
-Object.assign(window, { mostrarMensaje, mostrarErrorConReintento, ocultarMensaje, mostrarCargando, ocultarCargando, irAlLogin, crearEnlacePerfil, listaConCargarMas, crearBloqueCategoria });
+Object.assign(window, { mostrarMensaje, mostrarErrorConReintento, ocultarMensaje, mostrarCargando, ocultarCargando, irAlLogin, crearEnlacePerfil, crearFilaPersona, listaConCargarMas, crearBloqueCategoria });
