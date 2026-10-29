@@ -29,7 +29,7 @@ flowchart TB
     end
     subgraph g_1["Inicio y descubrir"]
         bienvenida["Inicio<br/>/cuenta/bienvenida.html<br/>(implementada)"]
-        explorar["Explorar<br/>explorar.html<br/>(implementada, con ejemplos)"]
+        explorar["Explorar<br/>explorar.html<br/>(implementada)"]
         ciudad["Ciudad<br/>ciudad.html?id=<br/>(diseño futuro)"]
         personas["Resultados de búsqueda<br/>/social/personas.html<br/>(a reorganizar)"]
     end
@@ -148,13 +148,13 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 | `/acceso/registro.html` | `registro.js` | `acceso.css` | `api`, `password` y Turnstile | `GET /auth/captcha`, `POST /auth/registro` | CS-59, CS-64 |
 | `/acceso/recuperar.html` | `recuperar.js` | `acceso.css` | `api` | `POST /auth/recuperar` | CS-64 |
 | `/acceso/restablecer.html` | `restablecer.js` | `acceso.css` | `api`, `password` | `POST /auth/restablecer` | CS-64 |
-| `/cuenta/bienvenida.html` | `bienvenida.js` | `descubrir.css` | `api`, `pantalla`, `ejemplos`, `cabecera` | `GET /auth/yo`, `GET /perfil` | pendiente |
-| `/experiencias/explorar.html` | `explorar.js` | `descubrir.css` | `api`, `pantalla`, `ejemplos`, `cabecera` | ninguno (planes de ejemplo) | pendiente |
+| `/cuenta/bienvenida.html` | `bienvenida.js` | `descubrir.css` | `api`, `pantalla`, `planes`, `cabecera` | `GET /auth/yo`, `GET /perfil`, `GET /ciudades`, `GET /experiencias` | CS-24, CS-25 |
+| `/experiencias/explorar.html` | `explorar.js` | `descubrir.css` | `api`, `pantalla`, `planes`, `cabecera` | `GET /auth/yo`, `GET /experiencias/opciones`, `GET /ciudades`, `GET /perfil`, `GET /experiencias` | CS-10, CS-27 |
 | `/cuenta/mis-planes.html` | `mis-planes.js` | ninguno | `api`, `pantalla`, `cabecera` | `GET /perfil`, `GET /ciudades`, `GET /experiencias/opciones`, `GET /experiencias?autor=`, `GET /experiencias/:id`, `POST /experiencias`, `PATCH /experiencias/:id` | CS-44, CS-49, CS-57, CS-22, CS-55, CS-56 |
 | `/cuenta/perfil.html` | `perfil.js` | `perfil.css` | `api`, `pantalla`, `pestanas`, `cabecera`, `experiencias` | `GET /perfil`, `GET /perfil/resumen`, `/perfil/amigos` y `/perfil/seguidores`, `GET /experiencias?autor=` | CS-45, CS-44 |
 | `/cuenta/ajustes.html` | `ajustes.js` | ninguno | `api`, `pantalla`, `pestanas`, `cabecera`, `password` | `GET` y `PUT /perfil`, `PUT /perfil/foto`, `PUT /perfil/password` | CS-47, CS-64 |
 | `/social/amigos.html` | `solicitudes.js` | `perfil.css` | `api`, `pantalla`, `cabecera` | `GET /amistades/solicitudes`, `PATCH /amistades/:id` | CS-61 |
-| `/social/personas.html` | `personas.js` | `descubrir.css`, `buscar.css` | `api`, `pantalla`, `pestanas`, `ejemplos`, `cabecera` | `GET /usuarios?texto=` | CS-61 |
+| `/social/personas.html` | `personas.js` | `descubrir.css`, `buscar.css` | `api`, `pantalla`, `pestanas`, `planes`, `cabecera` | `GET /usuarios?texto=`, `GET /experiencias?texto=` | CS-61, CS-10 |
 | `/social/usuario.html` | `usuario.js` | `perfil.css` | `api`, `pantalla`, `cabecera`, `experiencias` | `GET /usuarios/:nombre`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id`, `POST` y `DELETE /seguimientos`, `GET /experiencias?autor=` | CS-62, CS-61, CS-44 |
 | `/experiencias/experiencia.html` | `experiencia.js` | `experiencia.css` | `api`, `pestanas`, `pantalla`, `cabecera` | `GET /experiencias/:id`, `GET /auth/yo`, `GET /experiencias/:id/resumen`, `GET` y `PUT /experiencias/:id/valoracion`, `GET /experiencias/:id/valoraciones` y `/valoraciones/amigos` | CS-30, CS-63, CS-48, CS-01, CS-14 |
 
@@ -262,14 +262,16 @@ Pruebas: `recuperacion.test.js`.
 
 ### `/cuenta/bienvenida.html`: inicio
 
-* Portada con «Hola, <nombre>» y «Crear plan» (a `/cuenta/mis-planes.html?nuevo=1`), y debajo tiras horizontales de planes (`#tiras`): «Ver planes en mi ciudad» (con la ciudad del perfil debajo, Madrid por defecto), «Nuevos esta semana» y «Lo que hacen tus amigos». Cada una lleva «Ver más →» a `/experiencias/explorar.html?tira=<id>`. La fila de tarjetas es un grupo enfocable con Tab (`tabindex="0"`, `role="group"`, nombrado por el título de la tira) para poder desplazarla con las flechas.
-* Los planes son de ejemplo (`js/shared/ejemplos.js`) y la página lo avisa; aún no hay endpoint de feed.
+* Portada con «Hola, <nombre>» y «Crear plan» (a `/cuenta/mis-planes.html?nuevo=1`), y debajo tiras horizontales de planes (`#tiras`): «Ver planes en mi ciudad» (con la ciudad del perfil debajo), «Nuevos planes» y «Lo que hacen tus amigos». Cada una lleva «Ver más →» a `/experiencias/explorar.html?tira=<id>`. La fila de tarjetas es un grupo enfocable con Tab (`tabindex="0"`, `role="group"`, nombrado por el título de la tira) para poder desplazarla con las flechas.
+* Cada tira pide hasta 8 planes a `GET /api/experiencias`: la de la ciudad con `ciudadId` (la ciudad del perfil es texto libre y se busca por nombre en `GET /ciudades`, sin distinguir mayúsculas ni acentos), «Nuevos planes» sin filtros y la de amigos con `amigos=true`. Una tira sin planes, o sin ciudad en el catálogo, muestra un aviso (`.tira-vacia`); si una petición falla, las demás tiras siguen.
+* Cada tarjeta (`crearTarjetaPlan`, `js/shared/planes.js`) es un enlace al detalle del plan, con su ciudad real y su autor.
 
 Pruebas: `inicio.test.js`.
 
 ### `/experiencias/explorar.html`: explorar
 
-* Filtros por categoría (botones con `aria-pressed`), contador `#total-planes` y rejilla `#resultados` con planes de ejemplo; `#sin-resultados` si una categoría no tiene. `?tira=` pone el título de la tira de origen.
+* Planes reales de `GET /api/experiencias`, de 12 en 12 con «Cargar más» (`#mas-planes`). Filtros: categoría (botones con `aria-pressed`, de `GET /experiencias/opciones`), momento adecuado (`#filtro-momento`), ciudad (`#filtro-ciudad`) y «solo planes de mis amigos» (`#filtro-amigos`); cada cambio vuelve a pedir la primera página. `#total-planes` cuenta los cargados («o más» si hay otra página); `#sin-resultados` si no hay ninguno; `#error-planes` con «Reintentar» si falla.
+* `?tira=` pone el título de la tira de origen y deja puestos sus filtros (`ciudad`: la ciudad del perfil; `amigos`: solo amigos). `?texto=` filtra por texto (viene de «Ver todos los planes» en el buscador).
 
 Pruebas: `explorar.test.js`.
 
@@ -315,10 +317,10 @@ Se llega desde la pestaña «Amigos» o desde la campana de la cabecera. Pruebas
 
 ### `/social/personas.html`: buscar
 
-Un buscador de planes y personas con dos pestañas, «Personas» y «Planes» (`shared/pestanas.js`). Cada búsqueda llena las dos a la vez. Si la URL trae `?q=`, rellena el campo y busca al cargarse. Al terminar, `#recuento-busqueda` (`role="status"`, oculto) anuncia el total, por ejemplo «1 persona y 3 planes»; las listas de resultados no se anuncian enteras.
+Un buscador de planes y personas con dos pestañas, «Planes» (la primera) y «Personas» (`shared/pestanas.js`), cuyos títulos llevan el número de resultados tras buscar («Planes (3)», «Planes (10+)» si hay otra página). Cada búsqueda llena las dos a la vez. Si la URL trae `?q=`, rellena el campo y busca al cargarse. Al terminar, `#recuento-busqueda` (`role="status"`, oculto) anuncia el total, por ejemplo «3 planes y 1 persona»; las listas de resultados no se anuncian enteras.
 
 * **Personas:** busca por parte del nombre (como mucho 20 resultados) con `GET /api/usuarios?texto=`. Cada resultado es un enlace a su perfil. Antes de buscar, `#ayuda-busqueda` explica qué escribir; mientras se busca se ve «Cargando…» (`#cargando`) y el botón pasa a «Buscando…».
-* **Planes:** `buscarExperiencias` filtra los planes de ejemplo (`shared/ejemplos.js`) por título, descripción, categoría, ciudad o autor y los pinta como tarjetas en `#resultados-experiencias`; sin coincidencias se ve «No se han encontrado planes.». La búsqueda real llegará con CS-24.
+* **Planes:** `GET /api/experiencias?texto=` (primera página de 10) pintada como tarjetas en `#resultados-experiencias`; sin coincidencias se ve «No se han encontrado planes.». Si hay otra página, `#ver-todos-planes` lleva a Explorar con el mismo texto.
 
 Pruebas: `personas.test.js`, `pestanas.test.js` y `estados.test.js`.
 

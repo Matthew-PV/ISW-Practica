@@ -61,8 +61,8 @@
     </form>
 
     <div role="tablist" aria-label="Tipo de resultado" id="pestanas-busqueda">
-      <button type="button" role="tab" id="pestana-personas" aria-controls="panel-personas" aria-selected="true">Personas</button>
-      <button type="button" role="tab" id="pestana-experiencias" aria-controls="panel-experiencias" aria-selected="false" tabindex="-1">Planes</button>
+      <button type="button" role="tab" id="pestana-experiencias" aria-controls="panel-experiencias" aria-selected="true">Planes</button>
+      <button type="button" role="tab" id="pestana-personas" aria-controls="panel-personas" aria-selected="false" tabindex="-1">Personas</button>
     </div>
 
     <!-- «Cargando…» y el aviso de error valen para cualquier pestaña (js/personas.js) -->
@@ -73,23 +73,24 @@
     </div>
 
     <!-- Antes de buscar se explica qué escribir -->
-    <div role="tabpanel" id="panel-personas" aria-labelledby="pestana-personas" class="pt-3">
-      <p id="ayuda-busqueda" class="text-secondary">Escribe parte de un nombre o de un plan.</p>
-      <div id="sin-resultados" class="estado-vacio d-none"><img src="/img/vacio-personas.svg" alt="" width="240" height="180"><p>No se han encontrado personas.</p></div>
-      <div id="resultados" class="lista-resultados"></div>
-    </div>
-
-    <div role="tabpanel" id="panel-experiencias" aria-labelledby="pestana-experiencias" class="pt-3" hidden>
-      <p id="ayuda-experiencias" class="text-secondary">Escribe para buscar planes. De momento se busca entre planes de ejemplo.</p>
+    <div role="tabpanel" id="panel-experiencias" aria-labelledby="pestana-experiencias" class="pt-3">
+      <p id="ayuda-experiencias" class="text-secondary">Escribe parte del título o de la descripción de un plan.</p>
       <div id="sin-experiencias" class="estado-vacio d-none"><img src="/img/vacio-planes.svg" alt="" width="240" height="180"><p>No se han encontrado planes.</p></div>
       <div id="resultados-experiencias" class="rejilla-planes rejilla-busqueda"></div>
+      <p class="mt-3 mb-0"><a id="ver-todos-planes" href="/experiencias/explorar.html" hidden>Ver todos los planes en Explorar</a></p>
+    </div>
+
+    <div role="tabpanel" id="panel-personas" aria-labelledby="pestana-personas" class="pt-3" hidden>
+      <p id="ayuda-busqueda" class="text-secondary">Escribe parte del nombre de usuario de una persona.</p>
+      <div id="sin-resultados" class="estado-vacio d-none"><img src="/img/vacio-personas.svg" alt="" width="240" height="180"><p>No se han encontrado personas.</p></div>
+      <div id="resultados" class="lista-resultados"></div>
     </div>
   </main>
 
   <script src="/js/shared/api.js"></script>
   <script src="/js/shared/pantalla.js"></script>
   <script src="/js/shared/pestanas.js"></script>
-  <script src="/js/shared/ejemplos.js"></script>
+  <script src="/js/shared/planes.js"></script>
   <script src="/js/shared/cabecera.js"></script>
   <script src="/js/personas.js"></script>
   <script src="/js/shared/movimiento.js"></script>

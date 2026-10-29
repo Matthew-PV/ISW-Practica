@@ -38,10 +38,6 @@
   50% { transform: translate(-14px, 12px); }
 }
 
-.nota-ejemplo {
-  margin-bottom: var(--espacio-24);
-}
-
 /* Tira: cabecera con «Ver más» y una fila que se desplaza en horizontal */
 .tira {
   margin-bottom: var(--espacio-32);
@@ -90,6 +86,15 @@
 }
 
 /* Las tarjetas entran una tras otra */
+a.tarjeta-plan {
+  color: inherit;
+  text-decoration: none;
+}
+
+.tira-vacia {
+  align-self: center;
+}
+
 .tarjeta-plan {
   animation: subir 360ms ease-out both;
   animation-delay: calc(var(--i, 0) * 50ms);
@@ -97,6 +102,14 @@
 }
 
 /* Explorar */
+.filtros-explorar-campos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espacio-16);
+  margin-bottom: var(--espacio-16);
+}
+
 .filtros-explorar {
   display: flex;
   flex-wrap: wrap;

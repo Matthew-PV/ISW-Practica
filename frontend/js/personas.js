@@ -1,5 +1,5 @@
 // Página de búsqueda (/social/personas.html). Cada resultado lleva al perfil público de esa persona en
-// /social/usuario.html. Usa `api` de shared/api.js, `PLANES_EJEMPLO` y `crearTarjetaPlan` de shared/ejemplos.js, `activarPestanas` de shared/pestanas.js y
+// /social/usuario.html. Usa `api` de shared/api.js, `crearTarjetaPlan` y `pedirPlanes` de shared/planes.js, `activarPestanas` de shared/pestanas.js y
 // `crearEnlacePerfil`, `mostrarMensaje`, `ocultarMensaje`, `mostrarCargando` y `ocultarCargando`
 // de shared/pantalla.js.
 
@@ -14,6 +14,9 @@ const ayudaExperiencias = document.getElementById('ayuda-experiencias');
 const sinExperiencias = document.getElementById('sin-experiencias');
 const resultadosExperiencias = document.getElementById('resultados-experiencias');
 const recuento = document.getElementById('recuento-busqueda');
+const pestanaPlanes = document.getElementById('pestana-experiencias');
+const pestanaPersonas = document.getElementById('pestana-personas');
+const verTodosPlanes = document.getElementById('ver-todos-planes');
 
 activarPestanas(document.getElementById('pestanas-busqueda'));
 
@@ -62,14 +65,6 @@ function animarEntrada(elementos) {
   }
 }
 
-// De momento los planes salen de los de ejemplo (shared/ejemplos.js); CS-24 los sustituirá por la llamada real
-function buscarExperiencias(texto) {
-  const buscado = texto.toLowerCase();
-  const coincidencias = PLANES_EJEMPLO.filter((plan) =>
-    [plan.titulo, plan.descripcion, plan.tipo, plan.ciudad, plan.autor].some((campo) => campo.toLowerCase().includes(buscado)));
-  return Promise.resolve(coincidencias);
-}
-
 // Busca a la vez personas y planes y reemplaza los resultados anteriores de las dos pestañas.
 async function buscar() {
   const numero = ++ultimaBusqueda;
@@ -85,21 +80,31 @@ async function buscar() {
   ocultarMensaje(sinExperiencias);
   ocultarMensaje(errorBusqueda);
   recuento.textContent = '';
+  verTodosPlanes.hidden = true;
+  pestanaPlanes.textContent = 'Planes';
+  pestanaPersonas.textContent = 'Personas';
   // Tras la primera búsqueda ya no hace falta explicar qué escribir; mientras llega la respuesta, «Cargando…»
   ocultarMensaje(ayudaBusqueda);
   ocultarMensaje(ayudaExperiencias);
   mostrarCargando();
 
   try {
-    const [usuarios, planes] = await Promise.all([
+    const [usuarios, { experiencias: planes, siguiente }] = await Promise.all([
       api(`/usuarios?texto=${encodeURIComponent(texto)}`),
-      buscarExperiencias(texto),
+      pedirPlanes({ texto }),
     ]);
     if (numero !== ultimaBusqueda) return;
 
+    // Si hay otra página de planes, el contador queda en «N+» y se enlaza a Explorar con el mismo texto
+    const hayMasPlanes = siguiente !== null;
+    pestanaPlanes.textContent = `Planes (${planes.length}${hayMasPlanes ? '+' : ''})`;
+    pestanaPersonas.textContent = `Personas (${usuarios.length})`;
+    verTodosPlanes.href = `/experiencias/explorar.html?texto=${encodeURIComponent(texto)}`;
+    verTodosPlanes.hidden = !hayMasPlanes;
+
     // Un único aviso (role=status) en lugar de anunciar las listas enteras
     const personas = `${usuarios.length} ${usuarios.length === 1 ? 'persona' : 'personas'}`;
-    recuento.textContent = `${personas} y ${planes.length} ${planes.length === 1 ? 'plan' : 'planes'}`;
+    recuento.textContent = `${planes.length}${hayMasPlanes ? ' o más' : ''} ${planes.length === 1 ? 'plan' : 'planes'} y ${personas}`;
 
     if (usuarios.length === 0) {
       sinResultados.classList.remove('d-none');
@@ -112,7 +117,7 @@ async function buscar() {
     if (planes.length === 0) {
       sinExperiencias.classList.remove('d-none');
     } else {
-      resultadosExperiencias.append(...planes.map((plan, indice) => crearTarjetaPlan(plan, plan.ciudad, indice)));
+      resultadosExperiencias.append(...planes.map((plan, indice) => crearTarjetaPlan(plan, indice)));
     }
   } catch (err) {
     if (numero === ultimaBusqueda) mostrarMensaje(errorBusqueda, err.message);

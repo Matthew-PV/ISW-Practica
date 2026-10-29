@@ -1,20 +1,29 @@
 // Inicio (/cuenta/bienvenida.html): saludo y tiras horizontales de planes para descubrir, cada una con
-// «Ver más» hacia el explorador. De momento los planes son de ejemplo (shared/ejemplos.js); cuando exista
-// el algoritmo bastará con cambiar de dónde sale cada lista.
-// Usa `api` de shared/api.js, `irAlLogin` de shared/pantalla.js y `PLANES_EJEMPLO` y `crearTarjetaPlan` de
-// shared/ejemplos.js.
+// «Ver más» hacia el explorador. Los planes son los reales de GET /api/experiencias.
+// Usa `api` de shared/api.js, `irAlLogin` de shared/pantalla.js y `crearTarjetaPlan`, `pedirPlanes` y
+// `buscarCiudadPorNombre` de shared/planes.js.
 
-// Cada tira: su título, su subtítulo y los planes que muestra. `ciudad` sustituye a la de los planes.
-function definirTiras(ciudad) {
+const PLANES_POR_TIRA = 8;
+
+// Cada tira: su título, su subtítulo, lo que se pide a la API para llenarla y qué decir si queda vacía.
+function definirTiras(ciudad, ciudadId) {
   return [
-    { id: 'ciudad', titulo: 'Ver planes en mi ciudad', subtitulo: ciudad, planes: PLANES_EJEMPLO.slice(0, 8), ciudad },
-    { id: 'nuevos', titulo: 'Nuevos esta semana', subtitulo: 'Lo último que ha publicado la gente', planes: PLANES_EJEMPLO.slice(4, 12) },
-    { id: 'amigos', titulo: 'Lo que hacen tus amigos', subtitulo: 'Planes de personas que conoces', planes: PLANES_EJEMPLO.slice(2, 10) },
+    {
+      id: 'ciudad', titulo: 'Ver planes en mi ciudad', subtitulo: ciudad ?? 'Indica tu ciudad en el perfil',
+      filtros: ciudadId === null ? null : { ciudadId },
+      vacio: ciudadId === null && ciudad ? 'Tu ciudad no está en el catálogo de PlanB.'
+        : ciudadId === null ? 'Indica tu ciudad en tu perfil para ver aquí sus planes.' : 'Aún no hay planes en tu ciudad.',
+    },
+    { id: 'nuevos', titulo: 'Nuevos planes', subtitulo: 'Lo último que ha publicado la gente', filtros: {}, vacio: 'Aún no hay planes publicados.' },
+    {
+      id: 'amigos', titulo: 'Lo que hacen tus amigos', subtitulo: 'Planes de personas que conoces', filtros: { amigos: true },
+      vacio: 'Tus amigos aún no han publicado planes.',
+    },
   ];
 }
 
-// Crea una tira con su cabecera, el enlace «Ver más» y la fila de tarjetas.
-function crearTira(tira) {
+// Crea una tira con su cabecera, el enlace «Ver más» y la fila de tarjetas (o su aviso si no hay planes).
+function crearTira(tira, planes) {
   const seccion = document.createElement('section');
   seccion.className = 'tira';
   seccion.setAttribute('aria-labelledby', `tira-${tira.id}`);
@@ -45,7 +54,13 @@ function crearTira(tira) {
   fila.tabIndex = 0;
   fila.setAttribute('role', 'group');
   fila.setAttribute('aria-labelledby', titulo.id);
-  tira.planes.forEach((plan, indice) => fila.append(crearTarjetaPlan(plan, tira.ciudad, indice)));
+  fila.append(...planes.map((plan, indice) => crearTarjetaPlan(plan, indice)));
+  if (planes.length === 0) {
+    const vacio = document.createElement('p');
+    vacio.className = 'tira-vacia text-secondary mb-0';
+    vacio.textContent = tira.vacio;
+    fila.append(vacio);
+  }
 
   seccion.append(cabecera, fila);
   return seccion;
@@ -62,16 +77,30 @@ async function mostrarInicio() {
   }
   document.getElementById('nombre-usuario').textContent = usuario.nombreUsuario;
 
-  // La ciudad del perfil es texto libre; si no hay o falla la petición, se usa Madrid
-  let ciudad = 'Madrid';
+  // La ciudad del perfil es texto libre: se busca en el catálogo para pedir sus planes. Si algo falla o no
+  // aparece, la tira de la ciudad se queda sin planes pero las demás siguen
+  let ciudad = null;
+  let ciudadId = null;
   try {
-    const perfil = await api('/perfil');
-    if (perfil?.ciudad) ciudad = perfil.ciudad;
+    ciudad = (await api('/perfil'))?.ciudad?.trim() || null;
+    if (ciudad) ciudadId = buscarCiudadPorNombre(ciudad, await api('/ciudades'));
   } catch {
-    // se queda la ciudad por defecto
+    // se queda sin ciudad
   }
 
-  document.getElementById('tiras').replaceChildren(...definirTiras(ciudad).map(crearTira));
+  // Una tira que falla no tumba a las demás
+  const tiras = await Promise.all(definirTiras(ciudad, ciudadId).map(async (tira) => {
+    let planes = [];
+    if (tira.filtros) {
+      try {
+        planes = (await pedirPlanes({ ...tira.filtros, limite: PLANES_POR_TIRA })).experiencias;
+      } catch {
+        // la tira muestra su aviso de vacío
+      }
+    }
+    return crearTira(tira, planes);
+  }));
+  document.getElementById('tiras').replaceChildren(...tiras);
 }
 
 mostrarInicio();

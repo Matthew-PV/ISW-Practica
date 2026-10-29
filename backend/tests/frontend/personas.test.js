@@ -9,7 +9,7 @@ const { cargarScripts } = require('../helpers/pantalla');
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('/social/personas.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/ejemplos.js', 'js/personas.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/planes.js', 'js/personas.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -27,10 +27,19 @@ function diferida() {
   return { promesa, resolver };
 }
 
+const plan = (id, extra = {}) => ({
+  id, titulo: `Plan ${id}`, descripcion: 'Descripción', tipo: 'Cultura', visibilidad: 'PUBLICA',
+  ciudad: { id: 3, nombre: 'Sevilla', pais: 'España' }, autor: { id: 2, nombreUsuario: 'lucia', foto: null }, ...extra,
+});
+const paginaDePlanes = (experiencias = [], siguiente = null) => ({ experiencias, siguiente });
+
+// Sin más indicaciones, la búsqueda de planes no encuentra nada; los tests de personas encolan solo su respuesta
+const sinPlanes = (ruta) => (ruta.startsWith('/api/experiencias?') ? respuesta(200, paginaDePlanes()) : undefined);
+
 beforeEach(() => {
   window.history.pushState({}, '', '/social/personas.html');
   document.documentElement.innerHTML = HTML;
-  window.fetch = jest.fn();
+  window.fetch = jest.fn(sinPlanes);
   cargarScripts(SCRIPTS);
 });
 
@@ -126,8 +135,9 @@ describe('Buscar (diseño aplicado)', () => {
     await terminar();
 
     expect($('#texto-busqueda').value).toBe('ana b&c');
-    expect(window.fetch).toHaveBeenCalledTimes(1);
+    expect(window.fetch).toHaveBeenCalledTimes(2);
     expect(window.fetch).toHaveBeenCalledWith('/api/usuarios?texto=ana%20b%26c', expect.any(Object));
+    expect(window.fetch).toHaveBeenCalledWith('/api/experiencias?texto=ana+b%26c', expect.any(Object));
   });
 
   test('/social/personas.html?q= vacío no busca y deja el texto de ayuda', async () => {
@@ -140,20 +150,39 @@ describe('Buscar (diseño aplicado)', () => {
     expect($('#ayuda-busqueda').classList.contains('d-none')).toBe(false);
   });
 
-  test('una búsqueda llena a la vez Personas y Planes (planes de ejemplo, sin llamar a la API de planes)', async () => {
-    window.fetch.mockReturnValueOnce(respuesta(200, [{ id: 2, nombreUsuario: 'museo_fan' }]));
+  test('una búsqueda llena a la vez Planes y Personas con los planes reales, que enlazan a su detalle', async () => {
+    window.fetch.mockImplementation((ruta) => (ruta.startsWith('/api/usuarios')
+      ? respuesta(200, [{ id: 2, nombreUsuario: 'museo_fan' }])
+      : respuesta(200, paginaDePlanes([plan(8, { titulo: 'Tarde en el Prado' })]))));
     const pestanas = [...document.querySelectorAll('[role="tab"]')];
-    expect(pestanas.map((p) => p.textContent)).toEqual(['Personas', 'Planes']);
+    expect(pestanas.map((p) => p.textContent)).toEqual(['Planes', 'Personas']);
+    expect(pestanas[0].getAttribute('aria-selected')).toBe('true');
 
     buscar('museo');
     await terminar();
 
-    expect(window.fetch).toHaveBeenCalledTimes(1);
+    expect(window.fetch).toHaveBeenCalledWith('/api/experiencias?texto=museo', expect.any(Object));
     expect(document.querySelectorAll('#resultados .fila-resultado')).toHaveLength(1);
-    const titulos = [...document.querySelectorAll('#resultados-experiencias .tarjeta-plan h3')].map((t) => t.textContent);
-    expect(titulos).toContain('Tarde en el Museo del Prado');
+    const tarjetas = [...document.querySelectorAll('#resultados-experiencias .tarjeta-plan')];
+    expect(tarjetas.map((t) => t.querySelector('h3').textContent)).toEqual(['Tarde en el Prado']);
+    expect(tarjetas[0].getAttribute('href')).toBe('/experiencias/experiencia.html?id=8');
+    expect([...document.querySelectorAll('[role="tab"]')].map((p) => p.textContent)).toEqual(['Planes (1)', 'Personas (1)']);
     expect($('#ayuda-experiencias').classList.contains('d-none')).toBe(true);
     expect($('#sin-experiencias').classList.contains('d-none')).toBe(true);
+  });
+
+  test('si hay más planes de los que caben en la página, el contador lo avisa y se enlaza a Explorar', async () => {
+    window.fetch.mockImplementation((ruta) => (ruta.startsWith('/api/usuarios')
+      ? respuesta(200, [])
+      : respuesta(200, paginaDePlanes([plan(2), plan(1)], 1))));
+
+    buscar('tapas & vino');
+    await terminar();
+
+    expect($('#pestana-experiencias').textContent).toBe('Planes (2+)');
+    const enlace = $('#ver-todos-planes');
+    expect(enlace.hidden).toBe(false);
+    expect(enlace.getAttribute('href')).toBe('/experiencias/explorar.html?texto=tapas%20%26%20vino');
   });
 
   test('si ningún plan coincide se muestra «No se han encontrado planes.»', async () => {
@@ -165,12 +194,18 @@ describe('Buscar (diseño aplicado)', () => {
     expect(document.querySelectorAll('#resultados-experiencias .tarjeta-plan')).toHaveLength(0);
     expect($('#sin-experiencias').classList.contains('d-none')).toBe(false);
     expect($('#sin-experiencias').textContent).toBe('No se han encontrado planes.');
+    expect($('#pestana-experiencias').textContent).toBe('Planes (0)');
+    expect($('#ver-todos-planes').hidden).toBe(true);
   });
 
   test('dos búsquedas seguidas: solo se pintan los resultados de la última', async () => {
     const primera = diferida();
     const segunda = diferida();
-    window.fetch.mockReturnValueOnce(primera.promesa).mockReturnValueOnce(segunda.promesa);
+    window.fetch.mockImplementation((ruta) => {
+      if (ruta === '/api/usuarios?texto=ana') return primera.promesa;
+      if (ruta === '/api/usuarios?texto=luis') return segunda.promesa;
+      return sinPlanes(ruta);
+    });
     const ok = (lista) => ({ ok: true, status: 200, json: async () => lista });
 
     buscar('ana');
@@ -240,7 +275,11 @@ describe('Buscar (menores de la revisión)', () => {
   test('el error de una búsqueda atrasada no se muestra ni toca el botón de la última', async () => {
     const primera = diferida();
     const segunda = diferida();
-    window.fetch.mockReturnValueOnce(primera.promesa).mockReturnValueOnce(segunda.promesa);
+    window.fetch.mockImplementation((ruta) => {
+      if (ruta === '/api/usuarios?texto=ana') return primera.promesa;
+      if (ruta === '/api/usuarios?texto=luis') return segunda.promesa;
+      return sinPlanes(ruta);
+    });
 
     buscar('ana');
     buscar('luis');
@@ -271,14 +310,16 @@ describe('Buscar (menores de la revisión)', () => {
 
 describe('Buscar (recuento anunciado)', () => {
   test('al terminar la búsqueda, un único aviso role="status" dice cuántas personas y planes hay', async () => {
-    window.fetch.mockReturnValueOnce(respuesta(200, [{ id: 2, nombreUsuario: 'museo_fan' }]));
+    window.fetch.mockImplementation((ruta) => (ruta.startsWith('/api/usuarios')
+      ? respuesta(200, [{ id: 2, nombreUsuario: 'museo_fan' }])
+      : respuesta(200, paginaDePlanes([plan(1)]))));
     expect($('#recuento-busqueda').getAttribute('role')).toBe('status');
     expect($('#recuento-busqueda').textContent).toBe('');
 
     buscar('museo');
     await terminar();
 
-    expect($('#recuento-busqueda').textContent).toBe('1 persona y 1 plan');
+    expect($('#recuento-busqueda').textContent).toBe('1 plan y 1 persona');
   });
 
   test('sin resultados el recuento dice 0 personas y 0 planes', async () => {
@@ -287,7 +328,7 @@ describe('Buscar (recuento anunciado)', () => {
     buscar('zzzz');
     await terminar();
 
-    expect($('#recuento-busqueda').textContent).toBe('0 personas y 0 planes');
+    expect($('#recuento-busqueda').textContent).toBe('0 planes y 0 personas');
   });
 
   test('las listas de resultados ya no se anuncian enteras (aria-live)', () => {

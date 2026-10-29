@@ -40,7 +40,8 @@ describe('avisos de error: se anuncian a lectores de pantalla', () => {
 describe('/social/personas.html', () => {
   beforeEach(() => {
     document.documentElement.innerHTML = leer('/social/personas.html');
-    window.fetch = jest.fn();
+    // Sin más indicaciones, la búsqueda de planes no encuentra nada; cada prueba encola la respuesta de las personas
+    window.fetch = jest.fn((ruta) => (ruta.startsWith('/api/experiencias?') ? respuesta(200, { experiencias: [], siguiente: null }) : undefined));
     cargarScripts(scriptsDe('personas'));
   });
 
@@ -50,8 +51,9 @@ describe('/social/personas.html', () => {
   };
 
   test('antes de buscar explica qué escribir y no muestra «Cargando…»', () => {
+    expect(oculto('#ayuda-experiencias')).toBe(false);
+    expect($('#ayuda-experiencias').textContent).toBe('Escribe parte del título o de la descripción de un plan.');
     expect(oculto('#ayuda-busqueda')).toBe(false);
-    expect($('#ayuda-busqueda').textContent).toBe('Escribe parte de un nombre o de un plan.');
     expect(oculto('#cargando')).toBe(true);
   });
 

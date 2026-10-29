@@ -51,18 +51,33 @@
   <main id="contenido" class="container py-4">
     <h1 class="mb-1" id="titulo-explorar">Explorar</h1>
     <p id="subtitulo-explorar" class="text-secondary mb-3">Planes de otras personas para inspirarte.</p>
-    <p class="nota-ejemplo small text-secondary">Vista previa con planes de ejemplo: los filtros ya funcionan, los datos reales llegarán después.</p>
 
     <div id="filtros" class="filtros-explorar" role="group" aria-label="Filtrar por categoría"></div>
+    <div class="filtros-explorar-campos">
+      <div>
+        <label for="filtro-momento" class="form-label small mb-1">Momento adecuado</label>
+        <select id="filtro-momento" class="form-select form-select-sm"><option value="">Cualquiera</option></select>
+      </div>
+      <div>
+        <label for="filtro-ciudad" class="form-label small mb-1">Ciudad</label>
+        <select id="filtro-ciudad" class="form-select form-select-sm"><option value="">Todas</option></select>
+      </div>
+      <div class="form-check">
+        <input id="filtro-amigos" type="checkbox" class="form-check-input">
+        <label for="filtro-amigos" class="form-check-label">Solo planes de mis amigos</label>
+      </div>
+    </div>
     <p id="total-planes" class="small text-secondary" role="status"></p>
+    <div id="error-planes" class="alert alert-danger d-none" role="alert"></div>
     <h2 class="visually-hidden">Planes</h2>
     <div id="resultados" class="rejilla-planes"></div>
-    <div id="sin-resultados" class="estado-vacio d-none"><img src="/img/vacio-planes.svg" alt="" width="240" height="180"><p>No hay planes en esta categoría.</p></div>
+    <div id="sin-resultados" class="estado-vacio d-none"><img src="/img/vacio-planes.svg" alt="" width="240" height="180"><p>No hay planes con estos filtros.</p></div>
+    <div class="text-center mt-4"><button type="button" id="mas-planes" class="btn btn-outline-primary d-none">Cargar más</button></div>
   </main>
 
   <script src="/js/shared/api.js"></script>
   <script src="/js/shared/pantalla.js"></script>
-  <script src="/js/shared/ejemplos.js"></script>
+  <script src="/js/shared/planes.js"></script>
   <script src="/js/shared/cabecera.js"></script>
   <script src="/js/explorar.js"></script>
   <script src="/js/shared/movimiento.js"></script>
