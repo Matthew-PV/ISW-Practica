@@ -78,8 +78,9 @@ describe('landing', () => {
     });
   });
 
-  test('no incluye scripts', () => {
-    expect(document.querySelectorAll('script')).toHaveLength(0);
+  test('solo incluye el script de pausa del movimiento', () => {
+    const scripts = [...document.querySelectorAll('script')].map((s) => s.getAttribute('src'));
+    expect(scripts).toEqual(['js/shared/movimiento.js']);
   });
 
   test('no incluye cifras inventadas', () => {

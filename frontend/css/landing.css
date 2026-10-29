@@ -345,6 +345,8 @@
   .landing-ruta-trazo { stroke-dashoffset: 0; }
   .landing-parada { stroke-width: 14px; }
 }
+:root[data-movimiento="pausado"] .landing-ruta-trazo { stroke-dashoffset: 0; }
+:root[data-movimiento="pausado"] .landing-parada { stroke-width: 14px; }
 
 /* ---------- Capa expresiva ampliada: formas libres, colores extra y dibujos ---------- */
 

@@ -575,7 +575,7 @@ body.pagina-buscar .menu-notificaciones {
 }
 
 .menu-cuenta[open] .menu-cuenta-lista {
-  animation: entrar var(--duracion-fundido);
+  animation: entrar var(--duracion-fundido) ease-out;
 }
 
 .menu-cuenta-lista a,
@@ -977,7 +977,7 @@ body.pagina-buscar .menu-notificaciones {
 
 /* Resultados que aparecen tras buscar */
 .entrando {
-  animation: entrar var(--duracion-fundido);
+  animation: entrar var(--duracion-fundido) ease-out;
 }
 
 /* Con movimiento reducido, los cambios son instantáneos */
@@ -986,6 +986,32 @@ body.pagina-buscar .menu-notificaciones {
     transition: none !important;
     animation: none !important;
   }
+}
+
+/* Pausa elegida con el botón de js/shared/movimiento.js (WCAG 2.2.2): sin animaciones, con las transiciones */
+:root[data-movimiento="pausado"] *,
+:root[data-movimiento="pausado"] *::before,
+:root[data-movimiento="pausado"] *::after {
+  animation: none !important;
+}
+
+.boton-movimiento {
+  position: fixed;
+  bottom: var(--espacio-16);
+  left: var(--espacio-16);
+  z-index: 10;
+  min-height: 32px;
+  padding: var(--espacio-4) var(--espacio-12);
+  font-size: 14px;
+  color: var(--color-texto-suave);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-campo);
+  border-radius: var(--radio-pildora);
+}
+
+.boton-movimiento:hover {
+  color: var(--color-texto);
+  background: var(--color-superficie);
 }
 
 /* Pantallas estrechas: el buscador baja a una segunda fila para que la barra se lea */
@@ -1128,7 +1154,7 @@ body.pagina-buscar .menu-notificaciones {
 }
 
 .menu-notificaciones summary:hover svg {
-  animation: campanada 600ms ease;
+  animation: campanada 400ms ease-out;
   transform-origin: 50% 0;
 }
 
@@ -1146,7 +1172,7 @@ body.pagina-buscar .menu-notificaciones {
   text-align: center;
   background: var(--color-acento);
   border-radius: var(--radio-pildora);
-  animation: latido 1.6s ease-in-out 2;
+  animation: latido 400ms ease-out 4;
 }
 
 .menu-notificaciones-lista {
