@@ -38,6 +38,7 @@
 | [`GET /api/perfil/seguidores`](#get-apiperfilseguidores) | sí | Mis seguidores | CS-45 |
 | [`PUT /api/perfil/password`](#put-apiperfilpassword) | sí | Cambiar mi contraseña | CS-64 |
 | [`GET /api/experiencias/opciones`](#get-apiexperienciasopciones) | no | Categorías y momentos permitidos | CS-55, CS-56 |
+| [`GET /api/experiencias`](#get-apiexperiencias) | sí | Buscar experiencias con filtros | CS-10 |
 | [`GET /api/experiencias?autor=`](#get-apiexperienciasautor) | sí | Experiencias de un autor | CS-44 |
 | [`GET /api/experiencias/:id`](#get-apiexperienciasid) | sí | Una experiencia | CS-30, CS-63 |
 | [`POST /api/experiencias`](#post-apiexperiencias) | sí | Crear una experiencia | CS-49, CS-22 |
@@ -46,6 +47,7 @@
 | [`PUT /api/experiencias/:id/valoracion`](#put-apiexperienciasidvaloracion) | sí | Valorar | CS-01 |
 | [`GET /api/experiencias/:id/valoraciones`](#get-apiexperienciasidvaloraciones) | sí | Todas las valoraciones | CS-63 |
 | [`GET /api/experiencias/:id/valoraciones/amigos`](#get-apiexperienciasidvaloracionesamigos) | sí | Las de amigos y seguidores | CS-48 |
+| [`GET /api/experiencias/:id/resumen`](#get-apiexperienciasidresumen) | sí | Resumen de las valoraciones | CS-14 |
 | [`GET /api/ciudades`](#get-apiciudades) | no | Catálogo de ciudades | CS-49 |
 | [`GET /api/usuarios?texto=`](#get-apiusuariostexto) | sí | Buscar personas | CS-61 |
 | [`GET /api/usuarios/:nombreUsuario`](#get-apiusuariosnombreusuario) | sí | Perfil de otro usuario | CS-62 |
@@ -186,6 +188,15 @@ Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, p
 
 * **Responde:** 200 `{ categorias, momentos }`: `categorias` es `["Gastronomía", "Cultura", "Naturaleza", "Noche", "Deporte", "Rincones"]` y `momentos`, `[{ grupo, valores }]` con «Franja del día», «Día de la semana» y «Estación».
 
+### `GET /api/experiencias`
+
+`experienciaService.buscar` · Páginas: sí, 10 por defecto.
+
+* **Parámetros:** todos opcionales; vacío equivale a no enviarlo. `texto` (en el título o la descripción, como mucho 191 caracteres), `ciudadId`, `categoria` y `momento` (valores de `GET /api/experiencias/opciones`), `amigos=true` (solo de amigos con la amistad aceptada) y `minimo` (media de valoraciones mínima, entero del 1 al 5; sin valoraciones no la alcanza).
+* **Responde:** 200 `{ experiencias, siguiente }`, de la más reciente a la más antigua, cada una con su ciudad y `autor: { id, nombreUsuario, foto }`. Solo las que puede ver el usuario de la sesión: las públicas, las suyas y las «solo amigos» de quienes son sus amigos.
+* **Errores 400:** «El texto de búsqueda no puede superar los 191 caracteres», «El texto de búsqueda debe ser un texto», «El identificador de la ciudad no es válido», «La categoría debe ser una de: ...», «El momento adecuado debe ser una de: ...», «El filtro de amigos debe ser true o false», «La valoración mínima debe ser un número entero del 1 al 5».
+* **Notas:** con `autor` en la URL responde el listado de CS-44 y se ignoran los filtros.
+
 ### `GET /api/experiencias?autor=`
 
 `experienciaService.listarDeAutor` · Páginas: sí, 10 por defecto.
@@ -255,6 +266,12 @@ Están montadas bajo `/api/experiencias/:id`. Todas comprueban antes que el usua
 `valoracionService.listarValoracionesRelacionadas` · Páginas: sí, 10 por defecto.
 
 * **Responde:** igual que la anterior, pero solo las de los amigos del usuario de la sesión (amistad aceptada) y las de quienes lo siguen.
+
+### `GET /api/experiencias/:id/resumen`
+
+`valoracionService.resumirValoraciones`.
+
+* **Responde:** 200 `{ media, total, distribucion, comentarios }`: `media` redondeada a un decimal (`null` sin valoraciones), `distribucion` cuántas hay de cada puntuación (`{ "1": 0, …, "5": 2 }`) y `comentarios` cuántas llevan comentario.
 
 ## Ciudades (`ciudadRoutes.js` → `ciudadService`)
 

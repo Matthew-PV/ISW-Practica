@@ -1,5 +1,5 @@
 // Reglas de las experiencias: crearlas (CS-49) con su visibilidad (CS-22), editarlas (CS-57),
-// leer una si se puede ver (CS-30) y listar las de un autor (CS-44).
+// leer una si se puede ver (CS-30), listar las de un autor (CS-44) y buscar con filtros (CS-10).
 // Capa: servicios (services).
 // Lo usa: routes/experienciaRoutes.js.
 // Usa: repositories/ciudadRepository.js (comprobar que la ciudad existe),
@@ -270,7 +270,49 @@ async function listarDeAutor(usuarioId, nombreUsuario, paginacion) {
   return { experiencias: elementos, siguiente };
 }
 
+// Lee un filtro numérico de la URL (llega como texto): null si falta o está vacío, el entero si
+// cumple `esValido` y, si no, error 400 con `mensaje`.
+function leerFiltroEntero(valor, esValido, mensaje) {
+  if (valor === undefined || valor === '') return null;
+  const numero = Number(valor);
+  if (!Number.isInteger(numero) || !esValido(numero)) throw crearError(mensaje, 400);
+  return numero;
+}
+
+// Lee el filtro «de mis amigos»: true solo con «true»; sin él o con «false», false.
+function leerSoloAmigos(valor) {
+  if (valor === undefined || valor === '' || valor === 'false') return false;
+  if (valor === 'true') return true;
+  throw crearError('El filtro de amigos debe ser true o false', 400);
+}
+
+// CS-10: busca entre las experiencias que puede ver el usuario de la sesión (las públicas, las
+// suyas y las «solo amigos» de sus amigos), de la más reciente a la más antigua y por páginas.
+// - `consulta`: la query de la URL { texto, ciudadId, categoria, momento, amigos, minimo,
+//   despuesDe, limite }; todos opcionales. Un filtro vacío no filtra.
+// Devuelve { experiencias, siguiente }, cada una con su ciudad y su autor. Error 400 si algún
+// filtro o la paginación no son válidos, antes de consultar la base de datos.
+async function buscar(usuarioId, consulta) {
+  const { despuesDe, limite } = leerPaginacion(consulta, EXPERIENCIAS_POR_PAGINA);
+  const filtros = {
+    texto: leerTextoCorto(consulta.texto, 'El texto de búsqueda', false),
+    ciudadId: leerFiltroEntero(consulta.ciudadId, (id) => id > 0 && id <= CIUDAD_ID_MAX, 'El identificador de la ciudad no es válido'),
+    categoria: leerOpcion(consulta.categoria, 'La categoría', CATEGORIAS),
+    momento: leerOpcion(consulta.momento, 'El momento adecuado', MOMENTOS_VALIDOS),
+    soloAmigos: leerSoloAmigos(consulta.amigos),
+    minimo: leerFiltroEntero(consulta.minimo, (n) => n >= 1 && n <= 5, 'La valoración mínima debe ser un número entero del 1 al 5'),
+  };
+
+  const filas = await experienciaRepository.buscar(usuarioId, filtros, despuesDe, limite + 1);
+  const { elementos, siguiente } = cortarPagina(filas, limite);
+  return {
+    experiencias: elementos.map((e) => (e.autor ? { ...e, autor: conFotoPorDefecto(e.autor) } : e)),
+    siguiente,
+  };
+}
+
 module.exports = {
+  buscar,
   listarOpciones,
   listarDeAutor,
   obtenerExperiencia,

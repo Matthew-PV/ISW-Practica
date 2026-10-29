@@ -1,6 +1,6 @@
 // Rutas de las valoraciones de una experiencia, bajo /api/experiencias/:id.
 // CS-01: crear o modificar mi valoración. CS-63: consultar la mía y todas.
-// CS-48: consultar las de amigos y seguidores.
+// CS-48: consultar las de amigos y seguidores. CS-14: su resumen.
 // Capa: rutas (routes).
 // Lo usa: routes/index.js.
 // Usa: services/valoracionService.js y middlewares/sesionMiddleware.js.
@@ -46,6 +46,12 @@ router.get('/valoraciones/amigos', async (req, res) => {
   res.json(await valoracionService.listarValoracionesRelacionadas(
     req.session.usuarioId, Number(req.params.id), { despuesDe, limite }
   ));
+});
+
+// GET /api/experiencias/:id/resumen → valoracionService.resumirValoraciones
+// { media, total, distribucion, comentarios } de todas sus valoraciones.
+router.get('/resumen', async (req, res) => {
+  res.json(await valoracionService.resumirValoraciones(req.session.usuarioId, Number(req.params.id)));
 });
 
 module.exports = router;

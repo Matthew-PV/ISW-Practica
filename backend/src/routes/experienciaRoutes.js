@@ -1,4 +1,4 @@
-// Rutas de las experiencias, bajo /api/experiencias: listar las de un autor (CS-44), leer
+// Rutas de las experiencias, bajo /api/experiencias: buscar (CS-10), listar las de un autor (CS-44), leer
 // una (CS-30), crear (CS-49), editar (CS-57) y las opciones del formulario (CS-55, CS-56).
 // Capa: rutas (routes).
 // Lo usa: routes/index.js.
@@ -14,8 +14,14 @@ const router = express.Router();
 // GET /api/experiencias?autor=ana&despuesDe=57&limite=10 → experienciaService.listarDeAutor
 // CS-44: las experiencias de un usuario
 // que puede ver el de la sesión, por páginas: { experiencias, siguiente }.
+// GET /api/experiencias?texto=&ciudadId=&categoria=&momento=&amigos=&minimo=&despuesDe=&limite=
+// → experienciaService.buscar. CS-10: sin `autor`, busca entre todas las que puede ver.
 router.get('/', requiereSesion, async (req, res) => {
   const { autor, despuesDe, limite } = req.query;
+  if (autor === undefined) {
+    res.json(await experienciaService.buscar(req.session.usuarioId, req.query));
+    return;
+  }
   res.json(await experienciaService.listarDeAutor(req.session.usuarioId, autor, { despuesDe, limite }));
 });
 

@@ -39,6 +39,6 @@ router.use('/ciudades', ciudadRoutes); // /api/ciudades: catálogo de ciudades
 router.use('/usuarios', usuarioRoutes); // /api/usuarios: búsqueda y perfil público de otro usuario
 router.use('/amistades', amistadRoutes); // /api/amistades: solicitudes y amistades
 router.use('/seguimientos', seguimientoRoutes); // /api/seguimientos: seguir y dejar de seguir
-router.use('/experiencias/:id', valoracionRoutes); // /api/experiencias/:id/valoracion y /valoraciones: valorar y consultar valoraciones
+router.use('/experiencias/:id', valoracionRoutes); // /api/experiencias/:id/valoracion, /valoraciones y /resumen: valorar y consultar valoraciones
 
 module.exports = router;

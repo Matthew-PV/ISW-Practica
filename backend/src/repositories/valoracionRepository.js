@@ -76,4 +76,17 @@ async function obtenerPorUsuarioYExperiencia(usuarioId, experienciaId) {
   });
 }
 
-module.exports = { guardar, listar, listarDeRelacionados, obtenerPorUsuarioYExperiencia };
+// CS-14: recuento de las valoraciones de una experiencia, sin traerlas:
+// { porPuntuacion: [{ puntuacion, cantidad }], comentarios } (solo las puntuaciones que aparecen).
+async function resumir(experienciaId) {
+  const [grupos, comentarios] = await Promise.all([
+    prisma.valoracion.groupBy({ by: ['puntuacion'], where: { experienciaId }, _count: { _all: true } }),
+    prisma.valoracion.count({ where: { experienciaId, comentario: { not: null } } }),
+  ]);
+  return {
+    porPuntuacion: grupos.map((grupo) => ({ puntuacion: grupo.puntuacion, cantidad: grupo._count._all })),
+    comentarios,
+  };
+}
+
+module.exports = { guardar, listar, listarDeRelacionados, obtenerPorUsuarioYExperiencia, resumir };

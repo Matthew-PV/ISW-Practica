@@ -1,0 +1,8 @@
+# Búsqueda de experiencias y resumen de valoraciones
+
+**Fecha:** 2026-10-29 · **Historia:** CS-10, CS-14 · **Decidió:** Claude dentro de la fase 3 del plan aprobado por Joaquín (pendiente de su revisión)
+
+- **Contexto:** Inicio, Explorar y el buscador pintan ejemplos fijos porque no había ruta para listar experiencias de otros, y el detalle no tiene media ni recuento. Joaquín eligió en la fase 1 la búsqueda con texto, ciudad, categoría, momento, «de mis amigos» y valoración mínima, y el resumen con media, recuento, distribución y comentarios.
+- **Decisión:** `GET /api/experiencias` sin `autor` busca entre todas las que el usuario puede ver, incluidas las suyas (un plan recién creado debe aparecer al descubrir). La visibilidad se aplica dentro de la misma consulta. `minimo` es un entero del 1 al 5 sobre la media, y una experiencia sin valoraciones no lo alcanza. `GET /api/experiencias/:id/resumen` calcula los números al momento con `groupBy`, con la media redondeada a un decimal.
+- **Alternativas:** una ruta aparte (`/experiencias/buscar`), que duplicaría el listado paginado; excluir las propias de la búsqueda (la fase 5 exige que aparezcan); `minimo` con decimales (no hay interfaz que lo pida); guardar la media en `Experiencia` (exige migración en la base compartida y mantenerla al valorar).
+- **Consecuencias:** sin migración. Con `minimo`, el repositorio pide antes los ids de todas las experiencias que alcanzan la media; con muchas experiencias valoradas convendría una consulta SQL propia o un agregado persistido. Los resultados de la búsqueda no traen la media: la fase 5 decidirá si las tarjetas la necesitan.

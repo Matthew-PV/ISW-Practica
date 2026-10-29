@@ -54,4 +54,52 @@ async function listarDeAutor(autorId, visibilidades, despuesDe, cantidad) {
   });
 }
 
-module.exports = { crear, buscarPorId, actualizar, listarDeAutor };
+// Condición de Prisma: el autor de la experiencia es amigo de `usuarioId` (amistad aceptada, la
+// enviara quien la enviara), como en valoracionRepository.listarDeRelacionados.
+const autorAmigoDe = (usuarioId) => ({
+  OR: [
+    { solicitudesEnviadas: { some: { destinatarioId: usuarioId, estado: 'ACEPTADA' } } },
+    { solicitudesRecibidas: { some: { solicitanteId: usuarioId, estado: 'ACEPTADA' } } },
+  ],
+});
+
+// CS-10: hasta `cantidad` experiencias que puede ver `usuarioId` y cumplen los `filtros`, de la más
+// reciente a la más antigua y anteriores al id `despuesDe` si se indica. Con su ciudad y los datos
+// públicos de su autor. La visibilidad es la de services/shared/visibilidad.js, pero dentro de la
+// propia consulta: las públicas, las suyas y las de amigos cuyo autor es su amigo.
+// - `filtros`: { texto, ciudadId, categoria, momento, soloAmigos, minimo }; null o false = sin filtro.
+//   `texto` se busca en el título y la descripción; `minimo` es la media mínima de valoraciones.
+async function buscar(usuarioId, { texto, ciudadId, categoria, momento, soloAmigos, minimo }, despuesDe, cantidad) {
+  const condiciones = [{
+    OR: [
+      { visibilidad: 'PUBLICA' },
+      { autorId: usuarioId },
+      { visibilidad: 'AMIGOS', autor: autorAmigoDe(usuarioId) },
+    ],
+  }];
+  if (texto !== null) {
+    condiciones.push({ OR: [{ titulo: { contains: texto } }, { descripcion: { contains: texto } }] });
+  }
+  if (ciudadId !== null) condiciones.push({ ciudadId });
+  if (categoria !== null) condiciones.push({ tipo: categoria });
+  if (momento !== null) condiciones.push({ momentoAdecuado: momento });
+  if (soloAmigos) condiciones.push({ autor: autorAmigoDe(usuarioId) });
+  if (minimo !== null) {
+    // Prisma no filtra por una media en el where: primero se piden las experiencias que la alcanzan
+    const conMedia = await prisma.valoracion.groupBy({
+      by: ['experienciaId'],
+      having: { puntuacion: { _avg: { gte: minimo } } },
+    });
+    condiciones.push({ id: { in: conMedia.map((fila) => fila.experienciaId) } });
+  }
+  if (despuesDe !== null) condiciones.push({ id: { lt: despuesDe } });
+
+  return prisma.experiencia.findMany({
+    where: { AND: condiciones },
+    orderBy: { id: 'desc' },
+    take: cantidad,
+    include: { ciudad: true, autor: { select: USUARIO_PUBLICO } },
+  });
+}
+
+module.exports = { crear, buscarPorId, actualizar, listarDeAutor, buscar };

@@ -101,7 +101,30 @@ async function listarValoracionesRelacionadas(usuarioId, experienciaId, paginaci
     (despuesDe, cantidad) => valoracionRepository.listarDeRelacionados(experienciaId, usuarioId, despuesDe, cantidad));
 }
 
+// CS-14: resumen de las valoraciones de la experiencia:
+// { media, total, distribucion: { 1: n, …, 5: n }, comentarios }. `media` va redondeada a un
+// decimal, o null si nadie la ha valorado. 404 «Contenido no disponible» si no puede verla.
+async function resumirValoraciones(usuarioId, experienciaId) {
+  await experienciaService.obtenerExperiencia(usuarioId, experienciaId);
+  const { porPuntuacion, comentarios } = await valoracionRepository.resumir(experienciaId);
+
+  const distribucion = {};
+  for (let puntuacion = PUNTUACION_MIN; puntuacion <= PUNTUACION_MAX; puntuacion++) {
+    distribucion[puntuacion] = 0;
+  }
+  let total = 0;
+  let suma = 0;
+  for (const { puntuacion, cantidad } of porPuntuacion) {
+    distribucion[puntuacion] = cantidad;
+    total += cantidad;
+    suma += puntuacion * cantidad;
+  }
+  const media = total === 0 ? null : Math.round((suma / total) * 10) / 10;
+  return { media, total, distribucion, comentarios };
+}
+
 module.exports = {
+  resumirValoraciones,
   valorarExperiencia,
   obtenerMiValoracion,
   listarValoraciones,
