@@ -64,7 +64,8 @@ async function responderSolicitud(usuarioId, solicitudId, aceptar) {
   return resultado;
 }
 
-// Elimina una amistad ya aceptada. Puede hacerlo cualquiera de sus dos participantes.
+// Elimina una amistad aceptada (cualquiera de sus dos participantes) o cancela una solicitud
+// pendiente (solo quien la envió).
 async function eliminarAmistad(usuarioId, amistadId) {
   leerId(amistadId, 'de la amistad');
 
@@ -72,8 +73,9 @@ async function eliminarAmistad(usuarioId, amistadId) {
   if (!amistad) {
     throw crearError('La amistad no existe', 404);
   }
-  if (amistad.estado !== 'ACEPTADA') {
-    throw crearError('La relación todavía no es una amistad', 400);
+  // Pendiente: solo la cancela quien la envió (quien la recibió la rechaza con responderSolicitud)
+  if (amistad.estado === 'PENDIENTE' && amistad.solicitanteId !== usuarioId) {
+    throw crearError('Solo puedes cancelar las solicitudes que has enviado', 403);
   }
   if (amistad.solicitanteId !== usuarioId && amistad.destinatarioId !== usuarioId) {
     throw crearError('No puedes eliminar una amistad de otra persona', 403);

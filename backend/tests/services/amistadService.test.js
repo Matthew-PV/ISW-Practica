@@ -91,6 +91,22 @@ test('un tercero no puede eliminar una amistad', async () => {
   expect(amistadRepository.borrar).not.toHaveBeenCalled();
 });
 
+// A5: el solicitante cancela su solicitud pendiente; el destinatario la rechaza con responderSolicitud
+test('el solicitante puede cancelar su solicitud pendiente', async () => {
+  amistadRepository.buscarPorId.mockResolvedValue({ id: 10, solicitanteId: 1, destinatarioId: 2, estado: 'PENDIENTE' });
+  amistadRepository.borrar.mockResolvedValue({ id: 10 });
+
+  await expect(eliminarAmistad(1, 10)).resolves.toEqual({ id: 10 });
+  expect(amistadRepository.borrar).toHaveBeenCalledWith(10);
+});
+
+test.each([[2, 'el destinatario'], [3, 'un tercero']])('%s no puede cancelar una solicitud pendiente ajena', async (usuarioId) => {
+  amistadRepository.buscarPorId.mockResolvedValue({ id: 10, solicitanteId: 1, destinatarioId: 2, estado: 'PENDIENTE' });
+
+  await expect(eliminarAmistad(usuarioId, 10)).rejects.toMatchObject({ status: 403 });
+  expect(amistadRepository.borrar).not.toHaveBeenCalled();
+});
+
 test.each([
   ['una amistad aceptada', { ...AMISTAD }, true],
   ['una solicitud pendiente', { ...SOLICITUD }, false],

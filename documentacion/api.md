@@ -332,8 +332,8 @@ Una amistad es `{ id, solicitanteId, destinatarioId, estado, parejaClave, fecha 
 
 `amistadService.eliminarAmistad`.
 
-* **Responde:** 204. La fila se borra, así que después se puede volver a enviar una solicitud.
-* **Errores:** 400 «La relación todavía no es una amistad»; 403 «No puedes eliminar una amistad de otra persona»; 404 «La amistad no existe».
+* **Responde:** 204. La fila se borra, así que después se puede volver a enviar una solicitud. Sirve para eliminar una amistad aceptada (cualquiera de los dos) y para cancelar una solicitud pendiente (solo quien la envió; quien la recibe la rechaza con `PATCH`).
+* **Errores:** 403 «Solo puedes cancelar las solicitudes que has enviado», «No puedes eliminar una amistad de otra persona»; 404 «La amistad no existe».
 
 ## Seguimientos (`seguimientoRoutes.js` → `seguimientoService`)
 
