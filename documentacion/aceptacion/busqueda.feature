@@ -1,71 +1,70 @@
 # language: es
+@bdd
 Característica: Búsqueda y filtrado de experiencias
   Como usuario de PlanB
   Quiero buscar experiencias y aplicar filtros
   Para descubrir planes que se adapten a mis intereses
 
   Escenario: Buscar experiencias por texto
-    Dado que Ana ha iniciado sesión
-    Y que existen experiencias públicas de distintas temáticas
-    Cuando Ana busca experiencias que contienen "museo"
-    Entonces aparecen las experiencias que contienen "museo" en su título o descripción
-    Y no aparecen las que no coinciden con la búsqueda
+    Dado que Ana ha iniciado sesión para buscar experiencias
+    Y que existen planes de prueba de distintas temáticas
+    Cuando Ana busca planes que mencionan un museo
+    Entonces aparecen los planes de museo esperados
+    Y no aparecen los planes que no coinciden con el texto
 
   Escenario: Filtrar experiencias por ciudad
-    Dado que Ana ha iniciado sesión
-    Y que existen experiencias públicas en Madrid y Barcelona
-    Cuando Ana filtra las experiencias por Madrid
-    Entonces aparecen únicamente las experiencias de Madrid
+    Dado que Ana ha iniciado sesión para buscar experiencias
+    Y que existen planes de prueba en Madrid y otra ciudad
+    Cuando Ana filtra los planes de prueba por Madrid
+    Entonces solo aparecen los planes de prueba de Madrid
 
   Escenario: Filtrar experiencias por categoría
-    Dado que existen experiencias públicas de las categorías Cultura y Naturaleza
-    Y que Ana ha iniciado sesión
-    Cuando Ana selecciona la categoría Cultura
-    Entonces aparecen las experiencias de Cultura
-    Y no aparecen las experiencias de Naturaleza
+    Dado que Ana ha iniciado sesión para buscar experiencias
+    Y que existen planes de Cultura y Naturaleza para buscar
+    Cuando Ana filtra los planes de prueba por Cultura
+    Entonces aparecen únicamente los planes de Cultura
 
   Escenario: Combinar varios filtros
-    Dado que Ana ha iniciado sesión
-    Y que existen experiencias públicas con diferentes ciudades y categorías
-    Cuando Ana filtra por Madrid y la categoría Gastronomía
-    Entonces solo aparecen experiencias que cumplen ambos filtros
+    Dado que Ana ha iniciado sesión para buscar experiencias
+    Y que existen planes con distintas ciudades y categorías
+    Cuando Ana filtra por Madrid y Gastronomía
+    Entonces aparecen únicamente los planes que cumplen ambos filtros
 
   Escenario: Buscar experiencias de amigos
-    Dado que Ana ha iniciado sesión
-    Y que Beatriz es amiga de Ana
-    Y que Carlos no tiene amistad con Ana
-    Y que ambos han publicado experiencias visibles para Ana
-    Cuando Ana activa el filtro de amigos
-    Entonces aparecen las experiencias de Beatriz
-    Y no aparecen las experiencias de Carlos
+    Dado que Ana ha iniciado sesión para buscar experiencias
+    Y que Beatriz es amiga de Ana para la búsqueda
+    Y que Carlos no es amigo de Ana para la búsqueda
+    Y que Beatriz y Carlos tienen planes públicos de prueba
+    Cuando Ana activa el filtro de experiencias de amigos
+    Entonces aparecen los planes de Beatriz
+    Y no aparecen los planes de Carlos
 
   Escenario: Respetar la visibilidad en los resultados
-    Dado que Ana ha iniciado sesión
-    Y que existen experiencias públicas y privadas de otros usuarios
-    Cuando Ana consulta las experiencias disponibles
-    Entonces aparecen las experiencias públicas
-    Y no aparecen las experiencias privadas ajenas
+    Dado que Ana ha iniciado sesión para buscar experiencias
+    Y que existen planes públicos y privados de prueba
+    Cuando Ana busca todas las experiencias de prueba
+    Entonces aparecen los planes públicos y los privados propios
+    Y no aparecen los planes privados ajenos
 
   Escenario: Paginar resultados sin duplicados
-    Dado que Ana ha iniciado sesión
-    Y que existen más experiencias visibles que el límite de una página
-    Cuando Ana consulta la primera página de resultados
-    Y solicita la siguiente utilizando el cursor recibido
-    Entonces obtiene las experiencias de la siguiente página
-    Y no se repite ninguna experiencia entre ambas páginas
+    Dado que Ana ha iniciado sesión para buscar experiencias
+    Y que existen cinco experiencias visibles de prueba
+    Cuando Ana carga todas las páginas de dos resultados
+    Entonces obtiene las cinco experiencias de prueba
+    Y no se repite ninguna experiencia entre páginas
 
   Escenario: Buscar sin obtener resultados
-    Dado que Ana ha iniciado sesión
-    Cuando busca experiencias con un texto que no coincide con ninguna
+    Dado que Ana ha iniciado sesión para buscar experiencias
+    Cuando Ana busca un texto sin coincidencias
     Entonces recibe una lista de experiencias vacía
-    Y no se produce ningún error
+    Y la búsqueda termina sin error
 
   Escenario: Rechazar un filtro no válido
-    Dado que Ana ha iniciado sesión
-    Cuando intenta filtrar por una categoría no permitida
-    Entonces recibe un error 400
+    Dado que Ana ha iniciado sesión para buscar experiencias
+    Cuando Ana intenta buscar con una categoría no permitida
+    Entonces la búsqueda devuelve un error 400
 
   Escenario: Buscar sin iniciar sesión
-    Dado que Ana no ha iniciado sesión
-    Cuando intenta buscar experiencias
-    Entonces recibe un error 401
+    Dado que Ana intenta buscar sin iniciar sesión
+    Cuando solicita el listado de experiencias sin sesión
+    Entonces la búsqueda devuelve un error 401
