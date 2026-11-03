@@ -23,7 +23,7 @@ test('la búsqueda excluye a quien busca, ordena por nombre, devuelve como mucho
   expect(encontrados.map((x) => x.id)).not.toContain(u.aa.id);
   const nombres = encontrados.map((x) => x.nombreUsuario);
   expect(nombres).toEqual([...nombres].sort());
-  expect(Object.keys(encontrados[0]).sort()).toEqual(['foto', 'id', 'nombreUsuario']);
+  expect(Object.keys(encontrados[0]).sort()).toEqual(['ciudad', 'foto', 'id', 'nombreUsuario']);
 });
 
 test('el perfil público se busca por nombre, sin email, y es null si no existe', async () => {
