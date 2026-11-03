@@ -1,21 +1,23 @@
-
 # language: es
 Característica: Gestión de perfiles de usuario
   Como usuario de PlanB
   Quiero consultar y modificar mi perfil
   Para mantener mis datos actualizados y conocer a otros usuarios
 
+  @bdd
   Escenario: Consultar mi propio perfil
     Dado que Ana ha iniciado sesión
     Cuando consulta su perfil
     Entonces aparecen su nombre, email, foto y ciudad
 
+  @bdd
   Escenario: Actualizar los datos de mi perfil
     Dado que Ana ha iniciado sesión
     Cuando modifica su nombre de usuario y su ciudad
     Entonces los cambios se guardan correctamente
     Y aparecen al volver a consultar su perfil
 
+  @bdd
   Escenario: Rechazar un nombre de usuario duplicado
     Dado que Ana ha iniciado sesión
     Y que Beatriz tiene un nombre de usuario registrado
@@ -23,6 +25,7 @@ Característica: Gestión de perfiles de usuario
     Entonces recibe un error 400
     Y conserva su nombre anterior
 
+  @bdd
   Escenario: Consultar el perfil de otro usuario
     Dado que Ana ha iniciado sesión
     Y que Beatriz tiene un perfil registrado
@@ -31,24 +34,27 @@ Característica: Gestión de perfiles de usuario
     Y puede consultar sus contadores de amigos y seguidores
     Pero no puede ver su email ni su contraseña
 
+  @bdd
   Escenario: Consultar un usuario inexistente
     Dado que Ana ha iniciado sesión
     Cuando consulta el perfil de un usuario inexistente
     Entonces recibe un error 404
 
+  @bdd
   Escenario: Consultar un perfil sin iniciar sesión
     Dado que Ana no ha iniciado sesión
     Cuando intenta consultar su perfil
     Entonces recibe un error 401
 
-
+  @bdd
   Escenario: Actualizar la foto de perfil correctamente
     Dado que Ana ha iniciado sesión
     Y que dispone de una imagen PNG válida
     Cuando Ana sube la imagen como foto de perfil
-    Entonces el servidor responde con estado 200
+    Entonces la subida de la foto responde con estado 200
     Y la nueva foto aparece al consultar su perfil
 
+  @bdd
   Escenario: Rechazar una foto con formato no permitido
     Dado que Ana ha iniciado sesión
     Y que dispone de un archivo GIF
@@ -56,6 +62,7 @@ Característica: Gestión de perfiles de usuario
     Entonces recibe un error 400
     Y conserva su foto anterior
 
+  @bdd
   Escenario: Rechazar una foto demasiado grande
     Dado que Ana ha iniciado sesión
     Y que dispone de una imagen que supera los 5 MB
@@ -63,6 +70,7 @@ Característica: Gestión de perfiles de usuario
     Entonces recibe un error 400
     Y conserva su foto anterior
 
+  @bdd
   Escenario: Impedir modificar la foto sin sesión
     Dado que Ana no ha iniciado sesión
     Cuando intenta subir una nueva foto de perfil

@@ -1,4 +1,3 @@
-
 # language: es
 Característica: Búsqueda y filtrado de experiencias
   Como usuario de PlanB

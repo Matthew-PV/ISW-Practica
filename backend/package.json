@@ -17,6 +17,7 @@
     "db:studio": "prisma studio",
     "db:seed": "node --env-file=.env prisma/seed.js",
     "db:seed-demo": "node --env-file=.env prisma/seed-demo.js",
+    "test:bdd": "node --env-file=.env.test node_modules/@cucumber/cucumber/bin/cucumber.js",
     "demo:preparar": "node --env-file=.env --env-file=.env.demo node_modules/prisma/build/index.js migrate deploy && node --env-file=.env --env-file=.env.demo prisma/seed.js && node --env-file=.env --env-file=.env.demo prisma/seed-demo.js"
   },
   "engines": {
@@ -35,6 +36,7 @@
     "nodemailer": "^10.0.16"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^13.3.0",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "prisma": "^6.16.0",

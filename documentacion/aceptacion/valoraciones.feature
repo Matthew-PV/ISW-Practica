@@ -1,4 +1,3 @@
-
 # language: es
 Característica: Valoraciones de experiencias
   Como usuario de PlanB

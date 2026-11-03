@@ -1,4 +1,3 @@
-
 # language: es
 Característica: Creación, edición y visibilidad de experiencias
   Como usuario de PlanB
