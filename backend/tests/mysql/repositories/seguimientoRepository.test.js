@@ -4,6 +4,9 @@ const seguimientoRepository = require('../../../src/repositories/seguimientoRepo
 
 let u;
 
+// Más margen para preparar los usuarios con MySQL real.
+jest.setTimeout(20000);
+
 beforeEach(async () => {
   u = await crearUsuarios(['ana', 'bea', 'carlos']);
 });
