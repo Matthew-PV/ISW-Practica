@@ -62,6 +62,11 @@ model Experiencia {
   ciudad          Ciudad       @relation(fields: [ciudadId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   tipo            String?
   momentoAdecuado String?
+
+  // CS-53: duración en minutos y tarifa en euros.
+duracionMinutos Int?
+tarifa          Decimal? @db.Decimal(10, 2)
+
   // Pública por defecto: las experiencias anteriores y las creadas sin elegirla siguen visibles.
   visibilidad     Visibilidad  @default(PUBLICA)
   // Solo nullable para conservar experiencias anteriores sin autor conocido.
