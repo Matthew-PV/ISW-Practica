@@ -1,3 +1,4 @@
+
 /**
  * @jest-environment jsdom
  */
@@ -15,14 +16,12 @@ const $ = (selector) => document.querySelector(selector);
 const oculto = (selector) => $(selector).classList.contains('d-none');
 const terminar = () => new Promise((resolve) => setTimeout(resolve, 0));
 
-// Una respuesta que se resuelve cuando la prueba lo decide, para ver qué se muestra «mientras tanto»
 function pendiente() {
   let resolver;
   const promesa = new Promise((resolve) => { resolver = resolve; });
   return { promesa, resolver };
 }
 
-// Scripts de una página, en el orden en que los carga su HTML
 const scriptsDe = (pagina) => [...leer(`${pagina}.html`).matchAll(/src="\/(js\/[^"]+)"/g)].map((m) => m[1]);
 
 describe('avisos de error: se anuncian a lectores de pantalla', () => {
@@ -40,7 +39,6 @@ describe('avisos de error: se anuncian a lectores de pantalla', () => {
 describe('/paginas/social/personas.html', () => {
   beforeEach(() => {
     document.documentElement.innerHTML = leer('/paginas/social/personas.html');
-    // Sin más indicaciones, la búsqueda de planes no encuentra nada; cada prueba encola la respuesta de las personas
     window.fetch = jest.fn((ruta) => (ruta.startsWith('/api/experiencias?') ? respuesta(200, { experiencias: [], siguiente: null }) : undefined));
     cargarScripts(scriptsDe('personas'));
   });
@@ -102,7 +100,6 @@ describe('/paginas/cuenta/mis-planes.html', () => {
     tipo: 'Cultural', momentoAdecuado: 'Tarde', visibilidad: 'PUBLICA',
   };
 
-  // `rutas` dice qué responde el servidor a cada dirección; lo que no figure, un 404
   function arrancar(rutas) {
     document.documentElement.innerHTML = leer('/paginas/cuenta/mis-planes.html');
     for (const dialogo of document.querySelectorAll('dialog')) {
@@ -143,7 +140,10 @@ describe('/paginas/cuenta/mis-planes.html', () => {
     await terminar();
 
     expect(oculto('#sin-experiencias')).toBe(false);
-    expect($('#sin-experiencias').textContent).toBe('Todavía no has publicado planes.');
+
+    // Se ignoran los espacios y saltos de línea usados para dar formato al HTML.
+    expect($('#sin-experiencias').textContent.trim()).toBe('Todavía no has publicado planes.');
+
     expect($('#boton-nueva')).not.toBeNull();
   });
 
@@ -184,7 +184,6 @@ describe('/paginas/cuenta/mis-planes.html', () => {
 describe('/paginas/cuenta/perfil.html', () => {
   const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', foto: null, ciudad: null };
 
-  // Solo /perfil se controla; el resto de peticiones de la página fallan sin afectar a esta prueba
   function arrancar(perfil) {
     document.documentElement.innerHTML = leer('/paginas/cuenta/perfil.html');
     window.fetch = jest.fn((ruta) => (ruta === '/api/perfil' ? perfil : respuesta(500, { error: 'otro' })));
