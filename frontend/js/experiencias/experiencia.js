@@ -1,25 +1,19 @@
-// Página de una experiencia (/paginas/experiencias/experiencia.html?id=7): título y descripción, el resumen de
-// sus valoraciones (CS-14), mi valoración, las valoraciones y comentarios (CS-63), las de amigos y
-// seguidores (CS-48), el formulario para valorarla y, al lado, la ficha (autor, ciudad, categoría,
-// momento y visibilidad). Si la experiencia no existe o no se puede ver, solo se muestra «Contenido no
-// disponible» (CS-30).
-// «Útil» y «Reportar» funcionan solo en la pantalla: no guardan nada hasta CS-02 y CS-04.
-// Usa `api` de shared/api.js y `listaConCargarMas`, `crearEnlacePerfil`, `mostrarMensaje`,
-// `ocultarMensaje`, `irAlLogin` y `crearBloqueCategoria` de shared/pantalla.js.
 
-// Etiqueta de visibilidad (clases de componentes.css)
+ // Página de una experiencia: título, descripción, valoraciones y ficha.
+ // CS-53: muestra duración en minutos y tarifa en euros.
+ // CS-30: si no existe o no es visible, muestra «Contenido no disponible».
+ // «Útil» y «Reportar» son simulaciones hasta CS-02 y CS-04.
+
 const ETIQUETAS_VISIBILIDAD = {
   PUBLICA: { clase: 'etiqueta-publica', texto: 'Pública' },
   AMIGOS: { clase: 'etiqueta-amigos', texto: 'Amigos' },
   PRIVADA: { clase: 'etiqueta-privada', texto: 'Privada' },
 };
 
-// Obtener parámetros de la URL
 const parametros = new URLSearchParams(window.location.search);
 const experienciaId = parametros.get('id');
 let miUsuarioId = null;
 
-// Elementos del DOM
 const mensajeEstado = document.getElementById('mensaje-estado');
 const contenidoExperiencia = document.getElementById('contenido-experiencia');
 const tituloEl = document.getElementById('detalle-titulo');
@@ -35,19 +29,48 @@ const listaAmigos = document.getElementById('lista-valoraciones-amigos');
 const cajaResumen = document.getElementById('resumen-valoraciones');
 const cajaMiValoracion = document.getElementById('mi-valoracion');
 
-// «← Volver» lleva a la pantalla de PlanB desde la que se llegó (con su búsqueda); si no, a Inicio
+// CS-53: elementos de duración y tarifa.
+const duracionEl = document.getElementById('detalle-duracion');
+const tarifaEl = document.getElementById('detalle-tarifa');
+const filaDuracion = document.getElementById('fila-duracion');
+const filaTarifa = document.getElementById('fila-tarifa');
+
+// «Volver» conserva la página anterior cuando pertenece a PlanB.
 function rutaDeVuelta() {
   try {
     const origen = new URL(document.referrer);
-    if (origen.origin === window.location.origin && origen.pathname !== window.location.pathname) {
+    if (origen.origin === window.location.origin &&
+        origen.pathname !== window.location.pathname) {
       return origen.pathname + origen.search;
     }
   } catch {
-    // Sin referente (enlace directo o pestaña nueva)
+    // Enlace directo sin página anterior.
   }
   return '/paginas/cuenta/bienvenida.html';
 }
+
 document.getElementById('enlace-volver').href = rutaDeVuelta();
+
+// CS-53: muestra los datos disponibles.
+// Las experiencias antiguas pueden tener ambos campos a null.
+function pintarDuracionTarifa(experiencia) {
+  const tieneDuracion = experiencia.duracionMinutos != null;
+  const tieneTarifa = experiencia.tarifa != null;
+
+  filaDuracion.hidden = !tieneDuracion;
+  filaTarifa.hidden = !tieneTarifa;
+
+  duracionEl.textContent = tieneDuracion
+    ? `${experiencia.duracionMinutos} min`
+    : '';
+
+  tarifaEl.textContent = tieneTarifa
+    ? Number(experiencia.tarifa).toLocaleString('es-ES', {
+        style: 'currency',
+        currency: 'EUR',
+      })
+    : '';
+}
 
 async function cargarPaginaExperiencia() {
   if (!experienciaId) {
@@ -56,10 +79,9 @@ async function cargarPaginaExperiencia() {
   }
 
   try {
-    // Pedimos la experiencia y nuestros propios datos de usuario a la vez
     const [experiencia, yo] = await Promise.all([
       api(`/experiencias/${experienciaId}`),
-      api('/auth/yo')
+      api('/auth/yo'),
     ]);
 
     miUsuarioId = yo.id;
@@ -68,39 +90,61 @@ async function cargarPaginaExperiencia() {
     contenidoExperiencia.classList.remove('d-none');
 
     tituloEl.textContent = experiencia.titulo;
-    document.getElementById('detalle-categoria').replaceChildren(crearBloqueCategoria(experiencia.tipo));
-    // Las experiencias antiguas pueden no tener autor
+    document.getElementById('detalle-categoria').replaceChildren(
+      crearBloqueCategoria(experiencia.tipo)
+    );
+
     if (experiencia.autor) {
       crearEnlacePerfil(autorEl, experiencia.autor, miUsuarioId);
     } else {
       autorEl.textContent = 'Usuario anónimo';
     }
-    ciudadEl.textContent = experiencia.ciudad?.nombre || 'Ciudad desconocida';
+
+    ciudadEl.textContent =
+      experiencia.ciudad?.nombre || 'Ciudad desconocida';
+
     const etiqueta = ETIQUETAS_VISIBILIDAD[experiencia.visibilidad];
     if (etiqueta) {
       visibilidadEl.className = etiqueta.clase;
       visibilidadEl.textContent = etiqueta.texto;
     }
+
     descEl.textContent = experiencia.descripcion;
     tipoEl.textContent = experiencia.tipo || 'Sin indicar';
     momentoEl.textContent = experiencia.momentoAdecuado ?? '';
-    document.getElementById('fila-momento').hidden = !experiencia.momentoAdecuado;
+
+    document.getElementById('fila-momento').hidden =
+      !experiencia.momentoAdecuado;
+
+    // CS-53: presentar duración y tarifa.
+    pintarDuracionTarifa(experiencia);
+
     cargarResumen();
 
-    // El autor no puede valorar su propia experiencia: solo los demás ven el formulario
-    const autorId = experiencia.autorId || (experiencia.autor && experiencia.autor.id);
+    const autorId = experiencia.autorId ||
+      (experiencia.autor && experiencia.autor.id);
+
     if (autorId !== yo.id) {
       cajaFormulario.classList.remove('d-none');
       cargarMiValoracion();
     } else {
-      document.getElementById('boton-editar').href = `/paginas/cuenta/mis-planes.html?editar=${experiencia.id}`;
+      document.getElementById('boton-editar').href =
+        `/paginas/cuenta/mis-planes.html?editar=${experiencia.id}`;
       document.getElementById('caja-editar').classList.remove('d-none');
     }
 
-    await Promise.all([listadoAmigos.cargar(), listadoComentarios.cargar()]);
-    // Se abre la pestaña que tenga algo que leer: «Todas» si ningún amigo la ha valorado
-    if (!listaAmigos.querySelector('[data-id-elemento]') && listaComentarios.querySelector('[data-id-elemento]')) {
-      pestanas.seleccionar(document.getElementById('pestana-todas'));
+    await Promise.all([
+      listadoAmigos.cargar(),
+      listadoComentarios.cargar(),
+    ]);
+
+    if (
+      !listaAmigos.querySelector('[data-id-elemento]') &&
+      listaComentarios.querySelector('[data-id-elemento]')
+    ) {
+      pestanas.seleccionar(
+        document.getElementById('pestana-todas')
+      );
     }
   } catch (error) {
     if (!tratarErrorDeAcceso(error)) {
@@ -116,8 +160,7 @@ function mostrarError(mensaje) {
   contenidoExperiencia.classList.add('d-none');
 }
 
-// CS-30: si la experiencia no existe o ya no se puede ver, se borra todo lo que se mostraba y
-// solo queda el aviso, sin ningún dato de la experiencia.
+// CS-30: no mostrar datos de una experiencia inaccesible.
 function mostrarNoDisponible() {
   tituloEl.textContent = '';
   autorEl.textContent = '';
@@ -127,16 +170,23 @@ function mostrarNoDisponible() {
   tipoEl.textContent = '';
   momentoEl.textContent = '';
   descEl.textContent = '';
+
+  // CS-53: ocultar también duración y tarifa.
+  duracionEl.textContent = '';
+  tarifaEl.textContent = '';
+  filaDuracion.hidden = true;
+  filaTarifa.hidden = true;
+
   cajaResumen.hidden = true;
   cajaMiValoracion.hidden = true;
-  document.getElementById('mi-valoracion-contenido').replaceChildren();
+  document.getElementById('mi-valoracion-contenido')
+    .replaceChildren();
   listaComentarios.replaceChildren();
   listaAmigos.replaceChildren();
+
   mostrarError('Contenido no disponible');
 }
 
-// Errores que no dependen de la sección: 404 (la experiencia no existe o ya no se puede ver) y
-// 401 (sin sesión: se vuelve al login). Devuelve true si el error era uno de ellos.
 function tratarErrorDeAcceso(error) {
   if (error.status === 404) {
     mostrarNoDisponible();
@@ -149,9 +199,7 @@ function tratarErrorDeAcceso(error) {
   return false;
 }
 
-// Crea la tarjeta común de una valoración: autor enlazado a su perfil, puntuación, texto y fecha,
-// todo con textContent para que un comentario con HTML se vea como texto.
-// Devuelve { tarjeta, cuerpo } para poder añadirle botones.
+// Tarjeta de una valoración.
 function crearTarjetaValoracion(valoracion) {
   const tarjeta = document.createElement('div');
   tarjeta.className = 'card shadow-sm';
@@ -163,17 +211,17 @@ function crearTarjetaValoracion(valoracion) {
   const cabecera = document.createElement('div');
   cabecera.className = 'd-flex justify-content-between mb-2';
 
-  // Autor enlazado a su perfil
-  const autorEnlace = crearEnlacePerfil(document.createElement('a'), valoracion.usuario, miUsuarioId);
+  const autorEnlace = crearEnlacePerfil(
+    document.createElement('a'),
+    valoracion.usuario,
+    miUsuarioId
+  );
   autorEnlace.className = 'text-decoration-none fw-bold';
 
-  // Puntuación, con estrellas
   const puntuacion = crearEstrellas(valoracion.puntuacion);
-
   cabecera.append(autorEnlace, puntuacion);
   cuerpo.appendChild(cabecera);
 
-  // Texto del comentario (si existe)
   if (valoracion.comentario) {
     const texto = document.createElement('p');
     texto.className = 'card-text mb-2 text-break';
@@ -181,17 +229,18 @@ function crearTarjetaValoracion(valoracion) {
     cuerpo.appendChild(texto);
   }
 
-  // Fecha
   const fechaElemento = document.createElement('small');
   fechaElemento.className = 'text-muted d-block mb-2';
-  fechaElemento.textContent = new Date(valoracion.creadaEn).toLocaleDateString('es-ES');
-  cuerpo.appendChild(fechaElemento);
+  fechaElemento.textContent = new Date(
+    valoracion.creadaEn
+  ).toLocaleDateString('es-ES');
 
+  cuerpo.appendChild(fechaElemento);
   tarjeta.appendChild(cuerpo);
+
   return { tarjeta, cuerpo };
 }
 
-// Alerta al final de una lista cuando no se ha podido cargar una página
 function avisarFalloDeCarga(lista, texto) {
   const alertaError = document.createElement('div');
   alertaError.className = 'alert alert-danger mt-3';
@@ -199,15 +248,15 @@ function avisarFalloDeCarga(lista, texto) {
   lista.appendChild(alertaError);
 }
 
-// Pide una página de valoraciones (todas o las de amigos) con el cursor de «Cargar más»
 async function pedirValoraciones(ruta, cursor) {
   const despuesDe = cursor === null ? '' : `?despuesDe=${cursor}`;
-  const { valoraciones, siguiente } = await api(`/experiencias/${experienciaId}${ruta}${despuesDe}`);
+  const { valoraciones, siguiente } = await api(
+    `/experiencias/${experienciaId}${ruta}${despuesDe}`
+  );
   return { elementos: valoraciones, siguiente };
 }
 
-// --- OBJETIVO 7: «Útil» (solo en la pantalla hasta CS-02) ---
-// Escribe el texto del botón con su contador
+// CS-02: botón Útil. Persistencia pendiente.
 function pintarUtil(boton, cantidad) {
   const contador = document.createElement('span');
   contador.className = 'badge text-bg-light ms-1';
@@ -215,48 +264,64 @@ function pintarUtil(boton, cantidad) {
   boton.replaceChildren('Útil ', contador);
 }
 
-// Crea la tarjeta de una valoración de la lista general, con «Útil» y «Reportar»
 function crearElementoComentario(valoracion) {
   const { tarjeta, cuerpo } = crearTarjetaValoracion(valoracion);
+
   const acciones = document.createElement('div');
   acciones.className = 'mt-2';
-  // En mi propio comentario no se puede marcar «Útil» ni reportar
+
   const esMio = valoracion.usuario?.id === miUsuarioId;
 
   const btnUtil = document.createElement('button');
   btnUtil.type = 'button';
   btnUtil.className = 'btn btn-sm btn-outline-success';
+
   let cantidadUtiles = valoracion.utiles || 0;
   let leDiUtil = valoracion.leDiUtil || false;
-  if (leDiUtil) btnUtil.classList.replace('btn-outline-success', 'btn-success');
+
+  if (leDiUtil) {
+    btnUtil.classList.replace(
+      'btn-outline-success',
+      'btn-success'
+    );
+  }
+
   pintarUtil(btnUtil, cantidadUtiles);
+
   if (esMio) {
     btnUtil.disabled = true;
     btnUtil.title = 'No puedes votar tu propio comentario';
   }
-  // Marcar o desmarcar suma o resta uno al contador
+
   btnUtil.addEventListener('click', () => {
     leDiUtil = !leDiUtil;
     cantidadUtiles += leDiUtil ? 1 : -1;
+
     btnUtil.classList.toggle('btn-success', leDiUtil);
     btnUtil.classList.toggle('btn-outline-success', !leDiUtil);
+
     pintarUtil(btnUtil, cantidadUtiles);
   });
 
-  // --- OBJETIVO 8: «Reportar» (solo en la pantalla hasta CS-04) ---
+  // CS-04: botón Reportar. Persistencia pendiente.
   const btnReportar = document.createElement('button');
   btnReportar.type = 'button';
   btnReportar.className = 'btn btn-sm btn-outline-danger ms-2';
   btnReportar.textContent = 'Reportar';
   btnReportar.disabled = esMio;
-  btnReportar.addEventListener('click', () => abrirReporte(valoracion));
+
+  btnReportar.addEventListener(
+    'click',
+    () => abrirReporte(valoracion)
+  );
 
   acciones.append(btnUtil, btnReportar);
   cuerpo.appendChild(acciones);
+
   return tarjeta;
 }
 
-// --- OBJETIVO 4: COMENTARIOS Y «CARGAR MÁS» ---
+// Lista general de comentarios.
 const listadoComentarios = listaConCargarMas({
   lista: listaComentarios,
   vacio: document.getElementById('sin-comentarios'),
@@ -265,232 +330,357 @@ const listadoComentarios = listaConCargarMas({
   crear: crearElementoComentario,
   alFallar: (error) => {
     if (!tratarErrorDeAcceso(error)) {
-      avisarFalloDeCarga(listaComentarios, 'Problema de conexión al cargar los comentarios. Inténtalo de nuevo.');
+      avisarFalloDeCarga(
+        listaComentarios,
+        'Problema de conexión al cargar los comentarios. Inténtalo de nuevo.'
+      );
     }
   },
 });
 
-// --- CS-48: VALORACIONES DE AMIGOS Y SEGUIDORES ---
-// Las de mis amigos (con la amistad aceptada) y de quienes me siguen, con su propio cursor
+// CS-48: valoraciones de amigos y seguidores.
 const listadoAmigos = listaConCargarMas({
   lista: listaAmigos,
   vacio: document.getElementById('sin-valoraciones-amigos'),
   botonMas: document.getElementById('btn-mas-amigos'),
   pedir: (cursor) => pedirValoraciones('/valoraciones/amigos', cursor),
-  crear: (valoracion) => crearTarjetaValoracion(valoracion).tarjeta,
+  crear: (valoracion) =>
+    crearTarjetaValoracion(valoracion).tarjeta,
   alFallar: (error) => {
     if (!tratarErrorDeAcceso(error)) {
-      avisarFalloDeCarga(listaAmigos, 'Problema de conexión al cargar las valoraciones de tus amigos. Inténtalo de nuevo.');
+      avisarFalloDeCarga(
+        listaAmigos,
+        'Problema de conexión al cargar las valoraciones de tus amigos. Inténtalo de nuevo.'
+      );
     }
   },
 });
 
-// Pestañas «De amigos y seguidores» y «Todas»
-const pestanas = activarPestanas(document.querySelector('[role="tablist"]'));
+const pestanas = activarPestanas(
+  document.querySelector('[role="tablist"]')
+);
 
-// --- CS-14: RESUMEN DE LAS VALORACIONES ---
-// Número con coma decimal: 4.3 → «4,3»
+// CS-14: resumen de valoraciones.
 const formatearNota = (nota) => nota.toLocaleString('es-ES');
-const enPlural = (n, singular, plural) => `${n} ${n === 1 ? singular : plural}`;
+const enPlural = (n, singular, plural) =>
+  `${n} ${n === 1 ? singular : plural}`;
 
-// Pinta la media, el total, los comentarios y una barra por cada puntuación, de 5 a 1
 function pintarResumen({ media, total, distribucion, comentarios }) {
   const hayValoraciones = total > 0;
-  document.getElementById('resumen-vacio').hidden = hayValoraciones;
-  document.getElementById('resumen-cifras').hidden = !hayValoraciones;
-  document.getElementById('resumen-media').textContent = hayValoraciones ? formatearNota(media) : '';
+
+  document.getElementById('resumen-vacio').hidden =
+    hayValoraciones;
+  document.getElementById('resumen-cifras').hidden =
+    !hayValoraciones;
+
+  document.getElementById('resumen-media').textContent =
+    hayValoraciones ? formatearNota(media) : '';
+
   document.getElementById('resumen-estrellas').replaceChildren(
-    ...(hayValoraciones ? [crearEstrellas(media, formatearNota(media))] : [])
+    ...(hayValoraciones
+      ? [crearEstrellas(media, formatearNota(media))]
+      : [])
   );
-  document.getElementById('resumen-total').textContent = enPlural(total, 'valoración', 'valoraciones');
-  document.getElementById('resumen-comentarios').textContent = enPlural(comentarios, 'comentario', 'comentarios');
+
+  document.getElementById('resumen-total').textContent =
+    enPlural(total, 'valoración', 'valoraciones');
+
+  document.getElementById('resumen-comentarios').textContent =
+    enPlural(comentarios, 'comentario', 'comentarios');
 
   const filas = [];
-  for (let estrellas = MAX_PUNTUACION; estrellas >= 1; estrellas--) {
+
+  for (
+    let estrellas = MAX_PUNTUACION;
+    estrellas >= 1;
+    estrellas--
+  ) {
     const cantidad = distribucion[estrellas] ?? 0;
+
     const fila = document.createElement('li');
     fila.dataset.estrellas = estrellas;
+
     const etiqueta = document.createElement('span');
-    etiqueta.textContent = enPlural(estrellas, 'estrella', 'estrellas');
+    etiqueta.textContent = enPlural(
+      estrellas,
+      'estrella',
+      'estrellas'
+    );
+
     const barra = document.createElement('span');
     barra.className = 'resumen-barra';
     barra.setAttribute('aria-hidden', 'true');
+
     const relleno = document.createElement('span');
-    relleno.style.width = `${hayValoraciones ? (cantidad / total) * 100 : 0}%`;
+    relleno.style.width = `${
+      hayValoraciones ? (cantidad / total) * 100 : 0
+    }%`;
+
     barra.append(relleno);
+
     const numero = document.createElement('span');
     numero.textContent = cantidad;
+
     fila.append(etiqueta, barra, numero);
     filas.push(fila);
   }
-  document.getElementById('resumen-distribucion').replaceChildren(...filas);
+
+  document.getElementById('resumen-distribucion')
+    .replaceChildren(...filas);
+
   cajaResumen.hidden = false;
 }
 
-// Pide el resumen; si no llega, la sección se queda oculta y el resto de la página sigue igual
 async function cargarResumen() {
   try {
-    pintarResumen(await api(`/experiencias/${experienciaId}/resumen`));
+    pintarResumen(
+      await api(`/experiencias/${experienciaId}/resumen`)
+    );
   } catch (error) {
     cajaResumen.hidden = true;
     tratarErrorDeAcceso(error);
   }
 }
 
-// Mi valoración, fija encima de las listas: estrellas y comentario
+// Mi valoración.
 function pintarMiValoracion(valoracion) {
   const contenido = [crearEstrellas(valoracion.puntuacion)];
+
   if (valoracion.comentario) {
     const texto = document.createElement('p');
     texto.className = 'mb-0 mt-2 text-break';
     texto.textContent = valoracion.comentario;
     contenido.push(texto);
   }
-  document.getElementById('mi-valoracion-contenido').replaceChildren(...contenido);
+
+  document.getElementById('mi-valoracion-contenido')
+    .replaceChildren(...contenido);
+
   cajaMiValoracion.hidden = false;
 }
 
-// --- ESTRELLAS ---
+// Estrellas.
 const MAX_PUNTUACION = 5;
 
-// Una estrella dibujada en SVG; `.on` la rellena
 function crearEstrella(encendida) {
   const ns = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(ns, 'svg');
+
   svg.setAttribute('viewBox', '-11 -11 22 22');
-  svg.setAttribute('class', encendida ? 'estrella on' : 'estrella');
+  svg.setAttribute(
+    'class',
+    encendida ? 'estrella on' : 'estrella'
+  );
   svg.setAttribute('aria-hidden', 'true');
+
   const forma = document.createElementNS(ns, 'path');
-  forma.setAttribute('d', 'M0-10L2.9-3.1 10-2.5 4.6 2 6.2 9 0 5.3-6.2 9-4.6 2-10-2.5-2.9-3.1Z');
+  forma.setAttribute(
+    'd',
+    'M0-10L2.9-3.1 10-2.5 4.6 2 6.2 9 0 5.3-6.2 9-4.6 2-10-2.5-2.9-3.1Z'
+  );
+
   svg.append(forma);
   return svg;
 }
 
-// Puntuación ya publicada o media: estrellas rellenas hasta la nota redondeada, con el valor
-// (`texto`, la propia nota si no se indica) como texto alternativo
 function crearEstrellas(puntuacion, texto = puntuacion) {
   const contenedor = document.createElement('span');
   contenedor.className = 'estrellas';
   contenedor.setAttribute('role', 'img');
-  contenedor.setAttribute('aria-label', `${texto} de ${MAX_PUNTUACION}`);
-  for (let i = 1; i <= MAX_PUNTUACION; i++) contenedor.append(crearEstrella(i <= Math.round(puntuacion)));
+  contenedor.setAttribute(
+    'aria-label',
+    `${texto} de ${MAX_PUNTUACION}`
+  );
+
+  for (let i = 1; i <= MAX_PUNTUACION; i++) {
+    contenedor.append(
+      crearEstrella(i <= Math.round(puntuacion))
+    );
+  }
+
   return contenedor;
 }
 
-// --- OBJETIVO 5 y 6: FORMULARIO, CONTADOR Y GUARDADO ---
+// CS-01: formulario para crear o actualizar valoraciones.
 const formValoracion = document.getElementById('form-valoracion');
 const inputPuntuacion = document.getElementById('val-puntuacion');
 const inputComentario = document.getElementById('val-comentario');
 const contadorCaracteres = document.getElementById('contador-caracteres');
 const errorValoracion = document.getElementById('error-valoracion');
-const btnGuardarValoracion = document.getElementById('btn-guardar-valoracion');
+const btnGuardarValoracion = document.getElementById(
+  'btn-guardar-valoracion'
+);
 
-const MAX_COMENTARIO = 1000; // El mismo máximo que comprueba el backend (CS-01)
+const MAX_COMENTARIO = 1000;
 
-// Selector de puntuación: cinco botones de estrella (radiogroup). El valor elegido se guarda en
-// el campo oculto #val-puntuacion
-const grupoEstrellas = formValoracion.querySelector('[role="radiogroup"]');
+const grupoEstrellas = formValoracion.querySelector(
+  '[role="radiogroup"]'
+);
 const botonesEstrella = [];
+
 for (let n = 1; n <= MAX_PUNTUACION; n++) {
   const boton = document.createElement('button');
   boton.type = 'button';
   boton.className = 'estrella-boton';
   boton.setAttribute('role', 'radio');
-  boton.setAttribute('aria-label', n === 1 ? '1 estrella' : `${n} estrellas`);
+  boton.setAttribute(
+    'aria-label',
+    n === 1 ? '1 estrella' : `${n} estrellas`
+  );
   boton.append(crearEstrella(false));
+
   boton.addEventListener('click', () => elegirPuntuacion(n));
-  // Como en un grupo de radio: las flechas eligen y mueven el foco, con vuelta circular
+
   boton.addEventListener('keydown', (e) => {
-    const paso = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[e.key];
+    const paso = {
+      ArrowRight: 1,
+      ArrowDown: 1,
+      ArrowLeft: -1,
+      ArrowUp: -1,
+    }[e.key];
+
     if (!paso) return;
+
     e.preventDefault();
-    const destino = (n - 1 + paso + MAX_PUNTUACION) % MAX_PUNTUACION;
+
+    const destino =
+      (n - 1 + paso + MAX_PUNTUACION) % MAX_PUNTUACION;
+
     elegirPuntuacion(destino + 1);
     botonesEstrella[destino].focus();
   });
+
   botonesEstrella.push(boton);
 }
+
 grupoEstrellas.append(...botonesEstrella);
 
-// Fija la puntuación y rellena las estrellas hasta ella
 function elegirPuntuacion(valor) {
   inputPuntuacion.value = valor;
+
   botonesEstrella.forEach((boton, i) => {
     boton.classList.toggle('on', i < valor);
-    boton.setAttribute('aria-checked', String(i + 1 === valor));
-    // Solo una estrella entra en el orden de Tab: la elegida o, sin elegir, la primera
-    boton.tabIndex = i + 1 === (valor || 1) ? 0 : -1;
+    boton.setAttribute(
+      'aria-checked',
+      String(i + 1 === valor)
+    );
+
+    boton.tabIndex =
+      i + 1 === (valor || 1) ? 0 : -1;
   });
 }
+
 elegirPuntuacion(0);
 
-// Actualiza el contador «n / 1000» y lo resalta al acercarse al máximo
 function actualizarContador() {
   const actual = inputComentario.value.length;
-  contadorCaracteres.textContent = `${actual} / ${MAX_COMENTARIO}`;
-  const cercaDelLimite = actual >= MAX_COMENTARIO - 20;
-  contadorCaracteres.classList.toggle('text-muted', !cercaDelLimite);
-  contadorCaracteres.classList.toggle('text-danger', cercaDelLimite);
-  contadorCaracteres.classList.toggle('fw-bold', cercaDelLimite);
+
+  contadorCaracteres.textContent =
+    `${actual} / ${MAX_COMENTARIO}`;
+
+  const cercaDelLimite =
+    actual >= MAX_COMENTARIO - 20;
+
+  contadorCaracteres.classList.toggle(
+    'text-muted',
+    !cercaDelLimite
+  );
+  contadorCaracteres.classList.toggle(
+    'text-danger',
+    cercaDelLimite
+  );
+  contadorCaracteres.classList.toggle(
+    'fw-bold',
+    cercaDelLimite
+  );
 }
 
-inputComentario.addEventListener('input', actualizarContador);
+inputComentario.addEventListener(
+  'input',
+  actualizarContador
+);
 
-// Si ya había valorado la experiencia, rellena el formulario con mi valoración (null si no)
 async function cargarMiValoracion() {
   try {
-    const miValoracion = await api(`/experiencias/${experienciaId}/valoracion`);
+    const miValoracion = await api(
+      `/experiencias/${experienciaId}/valoracion`
+    );
 
     if (miValoracion) {
       elegirPuntuacion(miValoracion.puntuacion);
-      inputComentario.value = miValoracion.comentario ?? '';
+      inputComentario.value =
+        miValoracion.comentario ?? '';
+
       actualizarContador();
-      btnGuardarValoracion.textContent = 'Actualizar valoración';
+
+      btnGuardarValoracion.textContent =
+        'Actualizar valoración';
+
       pintarMiValoracion(miValoracion);
     }
   } catch (error) {
-    // Si falla por otra causa, el formulario se queda vacío y se puede valorar igualmente
     tratarErrorDeAcceso(error);
   }
 }
 
-// Guardar o actualizar la valoración. El backend crea la mía o actualiza la que ya tenía.
 formValoracion.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  // Hace falta una puntuación entera del 1 al 5 (el campo oculto no lo valida el navegador)
   const valor = Number(inputPuntuacion.value);
-  if (inputPuntuacion.value === '' || !Number.isInteger(valor) || valor < 1 || valor > MAX_PUNTUACION) {
-    mostrarMensaje(errorValoracion, 'Elige una puntuación de 1 a 5 estrellas.');
+
+  if (
+    inputPuntuacion.value === '' ||
+    !Number.isInteger(valor) ||
+    valor < 1 ||
+    valor > MAX_PUNTUACION
+  ) {
+    mostrarMensaje(
+      errorValoracion,
+      'Elige una puntuación de 1 a 5 estrellas.'
+    );
     return;
   }
 
   ocultarMensaje(errorValoracion);
+
   const textoGuardar = btnGuardarValoracion.textContent;
   btnGuardarValoracion.disabled = true;
   btnGuardarValoracion.setAttribute('aria-busy', 'true');
   btnGuardarValoracion.textContent = 'Guardando…';
 
-  const datos = { puntuacion: Number(inputPuntuacion.value) };
+  const datos = {
+    puntuacion: Number(inputPuntuacion.value),
+  };
+
   if (inputComentario.value.trim() !== '') {
     datos.comentario = inputComentario.value.trim();
   }
 
   try {
-    const guardada = await api(`/experiencias/${experienciaId}/valoracion`, {
-      method: 'PUT',
-      body: JSON.stringify(datos)
-    });
+    const guardada = await api(
+      `/experiencias/${experienciaId}/valoracion`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(datos),
+      }
+    );
 
-    // Mi valoración se ve al momento; el resumen y la lista se vuelven a pedir con ella
     pintarMiValoracion(guardada);
-    btnGuardarValoracion.textContent = 'Actualizar valoración';
-    await Promise.all([cargarResumen(), listadoComentarios.reiniciar()]);
+    btnGuardarValoracion.textContent =
+      'Actualizar valoración';
+
+    await Promise.all([
+      cargarResumen(),
+      listadoComentarios.reiniciar(),
+    ]);
   } catch (error) {
-    // Lo escrito no se borra: se puede volver a intentar
     btnGuardarValoracion.textContent = textoGuardar;
+
     if (!tratarErrorDeAcceso(error)) {
-      mostrarMensaje(errorValoracion, error.message || 'Error al guardar la valoración');
+      mostrarMensaje(
+        errorValoracion,
+        error.message || 'Error al guardar la valoración'
+      );
     }
   } finally {
     btnGuardarValoracion.disabled = false;
@@ -498,49 +688,55 @@ formValoracion.addEventListener('submit', async (e) => {
   }
 });
 
-// --- OBJETIVO 8: VENTANA DE REPORTE (solo en la pantalla hasta CS-04) ---
+// CS-04: diálogo de reporte (simulado).
 const dialogoReporte = document.getElementById('dialogo-reporte');
 const formReporte = document.getElementById('form-reporte');
 const mensajeReporte = document.getElementById('mensaje-reporte');
 const btnEnviarReporte = document.getElementById('btn-enviar-reporte');
 
-// Si el comentario de la ventana abierta ya estaba reportado
 let comentarioYaReportado = false;
 
-// Abre la ventana para reportar una valoración, con el formulario vacío
 function abrirReporte(valoracion) {
   comentarioYaReportado = valoracion.yaReportado || false;
+
   formReporte.reset();
   mensajeReporte.className = 'alert d-none small';
   btnEnviarReporte.disabled = false;
   btnEnviarReporte.classList.remove('d-none');
+
   dialogoReporte.showModal();
 }
 
-// La «X» y «Cancelar» cierran la ventana (Esc también, por ser un <dialog>)
-for (const boton of dialogoReporte.querySelectorAll('[data-cerrar-reporte]')) {
-  boton.addEventListener('click', () => dialogoReporte.close());
+for (const boton of dialogoReporte.querySelectorAll(
+  '[data-cerrar-reporte]'
+)) {
+  boton.addEventListener(
+    'click',
+    () => dialogoReporte.close()
+  );
 }
 
 formReporte.addEventListener('submit', async (e) => {
   e.preventDefault();
   btnEnviarReporte.disabled = true;
 
-  // Simula el tiempo de respuesta del servidor que tendrá CS-04
   await new Promise((resolve) => setTimeout(resolve, 500));
 
   if (comentarioYaReportado) {
     mensajeReporte.className = 'alert alert-warning small';
-    mensajeReporte.textContent = 'Ya habías reportado este comentario anteriormente.';
+    mensajeReporte.textContent =
+      'Ya habías reportado este comentario anteriormente.';
   } else {
     mensajeReporte.className = 'alert alert-success small';
-    mensajeReporte.textContent = 'Comentario reportado correctamente. Gracias por avisarnos.';
+    mensajeReporte.textContent =
+      'Comentario reportado correctamente. Gracias por avisarnos.';
+
     comentarioYaReportado = true;
     btnEnviarReporte.classList.add('d-none');
-    // La ventana se cierra sola a los 2 segundos
+
     setTimeout(() => dialogoReporte.close(), 2000);
   }
 });
 
-// Iniciar
+// Iniciar la página.
 cargarPaginaExperiencia();

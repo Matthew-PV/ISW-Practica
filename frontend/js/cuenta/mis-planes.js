@@ -1,9 +1,11 @@
-// Mis planes (/paginas/cuenta/mis-planes.html): muestra las experiencias del usuario con sesión
-// por páginas (CS-44) y permite crearlas (CS-49) y editarlas (CS-57), con su visibilidad (CS-22),
-// su categoría (CS-55) y su momento adecuado (CS-56) elegidos de la lista del backend.
-// «Ver detalle» enlaza a la página de cada experiencia (/paginas/experiencias/experiencia.html, CS-63).
-// Usa `api` de shared/api.js y `listaConCargarMas`, `mostrarMensaje`, `ocultarMensaje`, `ocultarCargando` e
-// `irAlLogin` de shared/pantalla.js.
+
+ // Mis planes (/paginas/cuenta/mis-planes.html): muestra las experiencias del usuario con sesión
+ // por páginas (CS-44) y permite crearlas (CS-49) y editarlas (CS-57), con su visibilidad (CS-22),
+ // su categoría (CS-55) y su momento adecuado (CS-56) elegidos de la lista del backend.
+ // CS-53: duración en minutos y tarifa en euros.
+ // «Ver detalle» enlaza a la página de cada experiencia (/paginas/experiencias/experiencia.html, CS-63).
+ // Usa `api` de shared/api.js y `listaConCargarMas`, `mostrarMensaje`, `ocultarMensaje`, `ocultarCargando` e
+ // `irAlLogin` de shared/pantalla.js.
 
 const rejilla = document.getElementById('rejilla');
 const columnaNueva = document.getElementById('columna-nueva');
@@ -19,6 +21,10 @@ const campoCiudad = document.getElementById('ciudad');
 const errorCiudad = document.getElementById('mensaje-ciudad');
 const descripcion = document.getElementById('descripcion');
 const vistaPrevia = document.getElementById('vista-previa');
+
+// CS-53: nuevos campos del formulario
+const campoDuracion = document.getElementById('duracion-minutos');
+const campoTarifa = document.getElementById('tarifa');
 
 // Etiqueta de cada visibilidad en la tarjeta (clases definidas en componentes.css)
 const ETIQUETAS_VISIBILIDAD = {
@@ -47,6 +53,26 @@ function buscarCiudad(texto) {
   return ciudades.find((ciudad) => textoCiudad(ciudad).toLowerCase() === buscado || ciudad.nombre.toLowerCase() === buscado);
 }
 
+// CS-53: muestra duración y tarifa cuando estén disponibles.
+function datosDuracionTarifa(experiencia) {
+  const datos = [];
+
+  if (experiencia.duracionMinutos != null) {
+    datos.push(`${experiencia.duracionMinutos} min`);
+  }
+
+  if (experiencia.tarifa != null) {
+    datos.push(
+      Number(experiencia.tarifa).toLocaleString('es-ES', {
+        style: 'currency',
+        currency: 'EUR',
+      })
+    );
+  }
+
+  return datos;
+}
+
 // Crea la columna con la tarjeta de una experiencia. La estructura es fija; los textos se ponen
 // después con textContent para que el contenido de usuario nunca se ejecute como HTML.
 function crearTarjeta(experiencia) {
@@ -72,8 +98,14 @@ function crearTarjeta(experiencia) {
 
   columna.querySelector('.card').prepend(crearBloqueCategoria(experiencia.tipo));
   columna.querySelector('.card-title').textContent = experiencia.titulo;
-  columna.querySelector('.card-subtitle').textContent =
-    [experiencia.ciudad?.nombre, experiencia.tipo].filter(Boolean).join(' · ');
+
+  // CS-53: los datos nuevos también aparecen en la tarjeta y en la vista previa.
+  columna.querySelector('.card-subtitle').textContent = [
+    experiencia.ciudad?.nombre,
+    experiencia.tipo,
+    ...datosDuracionTarifa(experiencia),
+  ].filter(Boolean).join(' · ');
+
   const etiqueta = columna.querySelector('.etiqueta-visibilidad');
   etiqueta.className = ETIQUETAS_VISIBILIDAD[experiencia.visibilidad].clase;
   etiqueta.textContent = ETIQUETAS_VISIBILIDAD[experiencia.visibilidad].texto;
@@ -144,6 +176,13 @@ function leerFormulario() {
     ciudad: campoCiudad.value,
     tipo: marcado('tipo'),
     momentoAdecuado: marcado('momentoAdecuado'),
+
+    // CS-53: duración entera y tarifa decimal. Vacío significa sin especificar.
+    duracionMinutos: campoDuracion?.value
+      ? Number(campoDuracion.value)
+      : null,
+    tarifa: campoTarifa?.value || null,
+
     visibilidad: marcado('visibilidad'),
   };
 }
@@ -165,6 +204,8 @@ function actualizarPrevia() {
     descripcion: datos.descripcion || 'La descripción aparecerá aquí.',
     ciudad: buscarCiudad(datos.ciudad),
     tipo: datos.tipo,
+    duracionMinutos: datos.duracionMinutos,
+    tarifa: datos.tarifa,
     visibilidad: datos.visibilidad || 'PUBLICA',
   });
   tarjeta.querySelector('.d-grid').remove();
@@ -185,6 +226,15 @@ function abrirFormulario(experiencia) {
 
   document.getElementById('titulo').value = experiencia?.titulo ?? '';
   descripcion.value = experiencia?.descripcion ?? '';
+
+  // CS-53: recuperar los valores guardados al editar.
+  if (campoDuracion) {
+    campoDuracion.value = experiencia?.duracionMinutos ?? '';
+  }
+  if (campoTarifa) {
+    campoTarifa.value = experiencia?.tarifa ?? '';
+  }
+
   const ciudad = experiencia ? ciudades.find((c) => c.id === experiencia.ciudadId) : ciudadPerfil;
   campoCiudad.value = ciudad ? textoCiudad(ciudad) : '';
   // Un valor antiguo fuera de la lista queda sin marcar
