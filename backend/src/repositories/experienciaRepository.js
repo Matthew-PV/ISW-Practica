@@ -8,13 +8,34 @@ const { USUARIO_PUBLICO } = require('./shared/camposPublicos');
 // Guarda una experiencia nueva y la devuelve junto con los datos de su ciudad.
 // Se nombran los campos uno a uno para que nunca se guarde nada que no esté en esta lista.
 // Si la ciudad o el autor no existen, Prisma lanza un error con código P2003.
-async function crear({ titulo, descripcion, ciudadId, tipo, momentoAdecuado, visibilidad, autorId }) {
+
+async function crear({
+  titulo,
+  descripcion,
+  ciudadId,
+  tipo,
+  momentoAdecuado,
+  duracionMinutos,
+  tarifa,
+  visibilidad,
+  autorId,
+}) {
   return prisma.experiencia.create({
-    data: { titulo, descripcion, ciudadId, tipo, momentoAdecuado, visibilidad, autorId },
-    // include: añade a la respuesta la ciudad completa, no solo su id
+    data: {
+      titulo,
+      descripcion,
+      ciudadId,
+      tipo,
+      momentoAdecuado,
+      duracionMinutos,
+      tarifa,
+      visibilidad,
+      autorId,
+    },
     include: { ciudad: true },
   });
 }
+
 
 // Busca una experiencia por su id, con su ciudad y los datos públicos de su autor
 // (nunca su email ni el hash de su contraseña, que llegarían a la respuesta de la API).

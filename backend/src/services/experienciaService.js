@@ -28,6 +28,52 @@ const CIUDAD_ID_MAX = 2147483647; // Mayor entero positivo de una columna Int.
 const VISIBILIDADES_VALIDAS = new Set(['PRIVADA', 'AMIGOS', 'PUBLICA']);
 const MOMENTOS_VALIDOS = MOMENTOS.flatMap((grupo) => grupo.valores);
 
+
+const DURACION_MAX = 2147483647;
+
+// CS-53: duración opcional en minutos.
+// Si se indica, debe ser un entero positivo.
+function leerDuracion(valor) {
+  if (valor === null || valor === '') return null;
+
+  if (!Number.isInteger(valor) ||
+      valor <= 0 ||
+      valor > DURACION_MAX) {
+    throw crearError(
+      'La duración debe ser un número entero positivo de minutos',
+      400
+    );
+  }
+
+  return valor;
+}
+
+// CS-53: tarifa opcional en euros.
+// Acepta números o cadenas, con hasta dos decimales.
+// Se devuelve como cadena para conservar la precisión decimal.
+function leerTarifa(valor) {
+  if (valor === null) return null;
+
+  if (typeof valor !== 'string' && typeof valor !== 'number') {
+    throw crearError('La tarifa debe ser un importe válido', 400);
+  }
+
+  const texto = String(valor).trim().replace(',', '.');
+
+  if (texto === '') return null;
+
+  // DECIMAL(10,2): hasta 8 cifras enteras y 2 decimales.
+  if (!/^(?:0|[1-9]\d{0,7})(?:\.\d{1,2})?$/.test(texto)) {
+    throw crearError(
+      'La tarifa debe ser un importe no negativo con hasta dos decimales',
+      400
+    );
+  }
+
+  return texto;
+}
+
+
 // Devuelve el texto limpio; si falta o está vacío, null cuando es opcional o error 400 cuando es obligatorio.
 // - `valor`: lo que llega en la petición (puede ser cualquier cosa).
 // - `nombre`: cómo se llama el campo en el mensaje de error («El título»...).
@@ -138,10 +184,23 @@ function comprobarObjeto(datos) {
 async function validarCreacion(datos) {
   comprobarObjeto(datos);
   const experiencia = {};
-  for (const [campo, leer] of Object.entries(LECTORES)) {
-    experiencia[campo] = leer(datos[campo]);
-  }
-  experiencia.ciudadId = await leerCiudadId(datos.ciudadId);
+
+for (const [campo, leer] of Object.entries(LECTORES)) {
+  experiencia[campo] = leer(datos[campo]);
+}
+
+// CS-53: los nuevos campos son opcionales.
+// Si no llegan, Prisma los dejará a null.
+if (datos.duracionMinutos !== undefined) {
+  experiencia.duracionMinutos = leerDuracion(datos.duracionMinutos);
+}
+
+if (datos.tarifa !== undefined) {
+  experiencia.tarifa = leerTarifa(datos.tarifa);
+}
+
+experiencia.ciudadId = await leerCiudadId(datos.ciudadId);
+
   return experiencia;
 }
 
@@ -156,6 +215,16 @@ async function validarEdicion(datos) {
       cambios[campo] = leer(datos[campo]);
     }
   }
+
+  
+if (datos.duracionMinutos !== undefined) {
+  cambios.duracionMinutos = leerDuracion(datos.duracionMinutos);
+}
+
+if (datos.tarifa !== undefined) {
+  cambios.tarifa = leerTarifa(datos.tarifa);
+}
+
   if (datos.ciudadId !== undefined) {
     cambios.ciudadId = await leerCiudadId(datos.ciudadId);
   }
