@@ -7,6 +7,7 @@
 // modifica la tabla Valoracion.
 const prisma = require('./shared/prisma');
 const { USUARIO_PUBLICO } = require('./shared/camposPublicos');
+const { esAmigoDe } = require('./shared/condicionesAmistad');
 
 // Crea la valoración o, si el usuario ya había valorado esa experiencia, sustituye su
 // puntuación y comentario. Devuelve { valoracion, creada }.
@@ -61,8 +62,7 @@ async function listarDeRelacionados(experienciaId, usuarioId, despuesDe, cantida
     experienciaId,
     usuario: {
       OR: [
-        { solicitudesEnviadas: { some: { destinatarioId: usuarioId, estado: 'ACEPTADA' } } },
-        { solicitudesRecibidas: { some: { solicitanteId: usuarioId, estado: 'ACEPTADA' } } },
+        ...esAmigoDe(usuarioId),
         { seguimientosRealizados: { some: { seguidoId: usuarioId } } },
       ],
     },

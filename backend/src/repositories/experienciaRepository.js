@@ -4,6 +4,7 @@
 // Usa: repositories/shared/prisma.js (la conexión con MySQL) y repositories/shared/camposPublicos.js.
 const prisma = require('./shared/prisma');
 const { USUARIO_PUBLICO } = require('./shared/camposPublicos');
+const { esAmigoDe } = require('./shared/condicionesAmistad');
 
 // Guarda una experiencia nueva y la devuelve junto con los datos de su ciudad.
 // Se nombran los campos uno a uno para que nunca se guarde nada que no esté en esta lista.
@@ -75,14 +76,8 @@ async function listarDeAutor(autorId, visibilidades, despuesDe, cantidad) {
   });
 }
 
-// Condición de Prisma: el autor de la experiencia es amigo de `usuarioId` (amistad aceptada, la
-// enviara quien la enviara), como en valoracionRepository.listarDeRelacionados.
-const autorAmigoDe = (usuarioId) => ({
-  OR: [
-    { solicitudesEnviadas: { some: { destinatarioId: usuarioId, estado: 'ACEPTADA' } } },
-    { solicitudesRecibidas: { some: { solicitanteId: usuarioId, estado: 'ACEPTADA' } } },
-  ],
-});
+// Condición de Prisma: el autor de la experiencia es amigo de `usuarioId`.
+const autorAmigoDe = (usuarioId) => ({ OR: esAmigoDe(usuarioId) });
 
 // CS-10: hasta `cantidad` experiencias que puede ver `usuarioId` y cumplen los `filtros`, de la más
 // reciente a la más antigua y anteriores al id `despuesDe` si se indica. Con su ciudad y los datos

@@ -41,3 +41,11 @@ test('si no se puede contactar con Cloudflare → false', async () => {
 
   expect(await captchaService.verificar('token')).toBe(false);
 });
+
+test('la llamada a Cloudflare lleva un plazo máximo para no dejar el registro colgado', async () => {
+  const fetch = cloudflareResponde({ success: true });
+
+  await captchaService.verificar('token');
+
+  expect(fetch.mock.calls[0][1].signal).toBeInstanceOf(AbortSignal);
+});

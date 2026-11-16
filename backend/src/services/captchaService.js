@@ -28,11 +28,12 @@ async function verificar(token, ip) {
         response: token,
         remoteip: ip ?? '',
       }),
+      signal: AbortSignal.timeout(5000), // sin respuesta en 5 s, no se deja pasar
     });
     const datos = await res.json();
     return datos.success === true;
   } catch {
-    // Sin red, Cloudflare caído o respuesta que no es JSON
+    // Sin red, Cloudflare caído, sin respuesta a tiempo o respuesta que no es JSON
     return false;
   }
 }
