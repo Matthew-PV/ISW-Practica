@@ -1,80 +1,175 @@
+
 # CS-37 — Compartir una experiencia mediante un enlace
 
 ## Objetivo
 
-Permitir copiar el enlace de una experiencia y compartirlo con
-otras personas, respetando los permisos de acceso existentes.
+Permitir copiar el enlace de una experiencia para compartirlo
+con otras personas, manteniendo los permisos de acceso existentes.
 
-## Diseño
+## Implementación
 
-- El botón «Copiar enlace» aparecerá en el detalle del plan.
-- Se utilizará la URL absoluta de la experiencia.
-- La copia se realizará mediante la API Clipboard del navegador.
-- Se mostrará una confirmación o un mensaje de error.
-- No será necesario modificar Prisma ni crear endpoints nuevos.
-- Los permisos seguirán comprobándose en el backend.
+La funcionalidad se incorpora a la página de detalle de experiencia.
 
-## Casos de prueba
+Archivos utilizados:
 
-### Prueba 1 — Botón disponible
+- `frontend/paginas/experiencias/experiencia.html`
+- `frontend/js/experiencias/compartir-enlace.js`
+- `backend/tests/frontend/cs37CompartirEnlace.test.js`
 
-Dado que un usuario puede consultar una experiencia,
-cuando abre su detalle,
-entonces encuentra el botón «Copiar enlace».
+El sistema:
 
-### Prueba 2 — Copia correcta
+1. Muestra un botón «Copiar enlace» en la ficha del plan.
+2. Construye una URL absoluta con el identificador de la experiencia.
+3. Utiliza la API Clipboard del navegador para copiarla.
+4. Muestra una confirmación cuando la operación funciona.
+5. Muestra un error si el navegador no permite copiar.
 
-Dado que el usuario está consultando una experiencia,
-cuando pulsa «Copiar enlace»,
-entonces se copia su dirección completa al portapapeles
-y se muestra una confirmación.
+No se han añadido tablas, migraciones ni endpoints nuevos.
 
-### Prueba 3 — Fallo al copiar
+La visibilidad sigue controlándose desde el backend mediante
+el sistema de permisos existente en PlanB.
 
-Dado que el navegador no permite acceder al portapapeles,
-cuando el usuario pulsa «Copiar enlace»,
-entonces se muestra un mensaje de error
-y no se indica que la copia se haya realizado.
+## Criterios de aceptación
 
-### Prueba 4 — Experiencia pública
+### Caso 1 — Botón disponible
 
-Dado que un usuario recibe el enlace de una experiencia pública,
-cuando abre el enlace con una sesión válida,
-entonces puede consultar la experiencia.
+Al abrir una experiencia visible, aparece el botón
+«Copiar enlace».
 
-### Prueba 5 — Experiencia privada
+### Caso 2 — Copia correcta
 
-Dado que un usuario recibe el enlace de una experiencia privada ajena,
-cuando intenta abrirla,
-entonces no puede consultar sus datos.
+Al pulsar el botón, la URL completa se copia al
+portapapeles y aparece un mensaje de confirmación.
 
-### Prueba 6 — Experiencia para amigos
+### Caso 3 — Error del portapapeles
 
-Dado que una experiencia está limitada a amigos,
-cuando una persona sin esa relación abre el enlace,
-entonces el acceso se rechaza.
+Si el navegador rechaza la copia, aparece un mensaje
+de error sin indicar que la operación haya tenido éxito.
 
-### Prueba 7 — Usuario sin sesión
+### Caso 4 — Experiencia pública
 
-Dado que una persona no ha iniciado sesión,
-cuando abre un enlace compartido,
-entonces se le solicita iniciar sesión.
+Un usuario autenticado puede abrir una experiencia pública
+mediante su enlace.
 
-## Estrategia de validación
+### Caso 5 — Experiencia privada
 
-Se utilizará Jest con jsdom para probar el botón, la copia
-del enlace y los mensajes de confirmación y error.
+Un usuario no puede acceder a una experiencia privada
+ajena aunque conozca su URL.
 
-Se aprovecharán las pruebas existentes de visibilidad
-y acceso para comprobar que compartir una URL no permite
-eludir las restricciones del backend.
+### Caso 6 — Experiencia para amigos
 
-Las pruebas automatizadas nuevas se implementarán durante
-el objetivo 2, comenzando por comprobar que fallan antes
-de desarrollar la funcionalidad.
+Solo el autor y los usuarios con amistad aceptada
+pueden consultar una experiencia con visibilidad AMIGOS.
 
-## Criterio de finalización
+### Caso 7 — Usuario sin sesión
 
-La funcionalidad estará completa cuando se pueda copiar
-un enlace válido, se informe correctamente del resultado
-y se mantengan las restricciones de visibilidad existentes.
+Si una persona abre un enlace sin iniciar sesión,
+la aplicación la redirige a la pantalla de acceso.
+
+## Pruebas realizadas
+
+### 1. Pruebas Jest de CS-37
+
+Archivo:
+
+`backend/tests/frontend/cs37CompartirEnlace.test.js`
+
+Comando:
+
+```powershell
+npm.cmd test -- --runInBand tests/frontend/cs37CompartirEnlace.test.js
+```
+
+Resultado:
+
+- 3 pruebas ejecutadas.
+- 3 pruebas superadas.
+- 0 pruebas fallidas.
+
+Se comprobó el ciclo TDD:
+
+- ROJO: las tres pruebas fallaron porque no existían
+  el botón y el JavaScript de copia.
+- VERDE: las tres pruebas pasaron después de implementar
+  la funcionalidad.
+
+### 2. Pruebas BDD de permisos
+
+Se reutilizaron los escenarios existentes de Cucumber
+en `documentacion/aceptacion/experiencias.feature`.
+
+Escenarios ejecutados:
+
+1. Consultar una experiencia pública.
+2. Proteger una experiencia privada.
+3. Consultar una experiencia solo para amigos.
+4. Impedir el acceso con una amistad pendiente.
+5. Revocar acceso al cambiar la visibilidad.
+
+Resultado:
+
+- 5 escenarios ejecutados.
+- 5 escenarios superados.
+- 0 escenarios fallidos.
+
+Las pruebas se ejecutaron utilizando MySQL local de
+pruebas en el puerto 3308.
+
+### 3. Regresión Jest
+
+Comando:
+
+```powershell
+npm.cmd test -- --runInBand
+```
+
+Resultado:
+
+- Regresión general superada.
+- No se detectaron fallos en la batería ejecutada.
+
+### 4. Validación manual en navegador
+
+Se verificó que:
+
+- El botón aparece en el detalle de una experiencia.
+- Al pulsarlo, se muestra «¡Enlace copiado!».
+- La URL copiada abre la experiencia correspondiente.
+- Al abrir el enlace en una ventana de incógnito,
+  sin sesión iniciada, se solicita iniciar sesión.
+
+Todas estas comprobaciones fueron satisfactorias.
+
+## Consideraciones de seguridad
+
+Compartir una dirección no modifica la visibilidad
+de una experiencia.
+
+El backend sigue comprobando la sesión y los permisos
+en `GET /api/experiencias/:id`.
+
+Una experiencia no autorizada devuelve un error 404,
+sin revelar su contenido.
+
+La funcionalidad no crea enlaces especiales ni
+concede permisos adicionales.
+
+## Limitaciones
+
+Los enlaces generados en `localhost` funcionan únicamente
+en el ordenador donde se ejecuta PlanB.
+
+Cuando la aplicación esté desplegada en un dominio público,
+los enlaces utilizarán automáticamente ese dominio.
+
+## Resultado final
+
+La funcionalidad de CS-37 se ha implementado y validado.
+
+- Objetivo 1: análisis y diseño completados.
+- Objetivo 2: implementación y pruebas Jest completadas.
+- Objetivo 3: permisos, regresión y validación manual completados.
+
+Estado: FINALIZADA.
+
+Fecha de validación: 16/11/2026.
