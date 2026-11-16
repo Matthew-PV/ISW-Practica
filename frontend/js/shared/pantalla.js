@@ -1,6 +1,6 @@
 // Piezas comunes de las pantallas. Cada página que las usa carga este archivo después de
 // shared/api.js y antes de su propio script.
-// Lo usan: js/experiencias/experiencia.js, js/cuenta/perfil.js, js/social/personas.js, js/social/usuario.js, js/cuenta/bienvenida.js, js/social/solicitudes.js y
+// Lo usan: js/experiencias/experiencia.js, js/cuenta/perfil.js, js/social/personas.js, js/social/usuario.js, js/cuenta/bienvenida.js, js/social/amigos.js y
 //          js/shared/experiencias.js.
 
 // Muestra un texto en una caja de aviso (error, éxito...) que estaba oculta con la clase d-none.

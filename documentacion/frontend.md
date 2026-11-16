@@ -145,7 +145,7 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 
 | Página | Script | CSS propio | Módulos compartidos | Llamadas a la API | Historias |
 |---|---|---|---|---|---|
-| `index.html` | `landing.js` | `landing.css` | `api`, `movimiento` | `GET /auth/yo` | CS-66 |
+| `index.html` | `landing/landing.js` | `landing.css` | `api`, `movimiento` | `GET /auth/yo` | CS-66 |
 | `/paginas/acceso/iniciar-sesion.html` | `iniciar-sesion.js` | `acceso.css` | `api` | `POST /auth/login` | CS-59 |
 | `/paginas/acceso/registro.html` | `registro.js` | `acceso.css` | `api`, `password` y Turnstile | `GET /auth/captcha`, `POST /auth/registro` | CS-59, CS-64 |
 | `/paginas/acceso/recuperar.html` | `recuperar.js` | `acceso.css` | `api` | `POST /auth/recuperar` | CS-64 |
@@ -155,7 +155,7 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 | `/paginas/cuenta/mis-planes.html` | `mis-planes.js` | ninguno | `api`, `pantalla`, `cabecera` | `GET /perfil`, `GET /ciudades`, `GET /experiencias/opciones`, `GET /experiencias?autor=`, `GET /experiencias/:id`, `POST /experiencias`, `PATCH /experiencias/:id` | CS-44, CS-49, CS-57, CS-22, CS-55, CS-56 |
 | `/paginas/cuenta/perfil.html` | `perfil.js` | `perfil.css` | `api`, `pantalla`, `pestanas`, `cabecera`, `experiencias` | `GET /perfil`, `GET /perfil/resumen`, `/perfil/amigos` y `/perfil/seguidores`, `GET /experiencias?autor=` | CS-45, CS-44 |
 | `/paginas/cuenta/ajustes.html` | `ajustes.js` | ninguno | `api`, `pantalla`, `pestanas`, `cabecera`, `password`, `movimiento` | `GET` y `PUT /perfil`, `GET /ciudades`, `PUT /perfil/foto`, `PUT /perfil/password` | CS-47, CS-64 |
-| `/paginas/social/amigos.html` | `solicitudes.js` | `perfil.css` | `api`, `pantalla`, `cabecera` | `GET /amistades/solicitudes`, `PATCH /amistades/:id`, `GET /perfil/amigos` | CS-61, CS-45 |
+| `/paginas/social/amigos.html` | `social/amigos.js` | `perfil.css` | `api`, `pantalla`, `cabecera` | `GET /amistades/solicitudes`, `PATCH /amistades/:id`, `GET /perfil/amigos` | CS-61, CS-45 |
 | `/paginas/social/personas.html` | `personas.js` | `descubrir.css`, `buscar.css` | `api`, `pantalla`, `pestanas`, `planes`, `cabecera` | `GET /usuarios?texto=`, `GET /experiencias?texto=`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id` | CS-61, CS-10 |
 | `/paginas/social/usuario.html` | `usuario.js` | `perfil.css` | `api`, `pantalla`, `cabecera`, `experiencias` | `GET /usuarios/:nombre`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id`, `POST` y `DELETE /seguimientos`, `GET /experiencias?autor=` | CS-62, CS-61, CS-44 |
 | `/paginas/experiencias/experiencia.html` | `experiencia.js` | `experiencia.css` | `api`, `pestanas`, `pantalla`, `cabecera` | `GET /experiencias/:id`, `GET /auth/yo`, `GET /experiencias/:id/resumen`, `GET` y `PUT /experiencias/:id/valoracion`, `GET /experiencias/:id/valoraciones` y `/valoraciones/amigos` | CS-30, CS-63, CS-48, CS-01, CS-14 |
@@ -315,7 +315,7 @@ Pruebas: `ajustes.test.js`, `ajustes.foto.test.js`, `ajustes.password.test.js` y
 
 Arriba, las solicitudes recibidas, cada una con «Aceptar» y «Rechazar»; si no hay ninguna se ve «No tienes solicitudes pendientes.». Al responder, la fila pasa a un mensaje («Ahora sois amigos de X» con «Ver perfil», o «Solicitud rechazada») que recibe el foco. Debajo, «Tus amigos» (`#lista-amigos`, de `GET /api/perfil/amigos`, con «Cargar más») que se actualiza al aceptar. La campana y esta página se avisan con el evento `solicitud-respondida` (`detail.id`).
 
-Se llega desde la pestaña «Amigos» o desde la campana de la cabecera. Pruebas: `solicitudes.test.js` y `estados.test.js`.
+Se llega desde la pestaña «Amigos» o desde la campana de la cabecera. Pruebas: `amigos.test.js` y `estados.test.js`.
 
 ### `/paginas/social/personas.html`: buscar
 

@@ -10,7 +10,7 @@ const { cargarScripts } = require('../helpers/pantalla');
 const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
 const HTML = leer('/paginas/social/amigos.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/social/solicitudes.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/social/amigos.js'];
 const SOLICITUDES = [{
   id: 10,
   solicitante: { id: 2, nombreUsuario: 'luis', foto: '/img/foto-por-defecto.svg' },

@@ -80,7 +80,7 @@ describe('landing', () => {
 
   test('solo incluye los scripts de la sesión y de la pausa del movimiento', () => {
     const scripts = [...document.querySelectorAll('script')].map((s) => s.getAttribute('src'));
-    expect(scripts).toEqual(['js/shared/api.js', 'js/landing.js', 'js/shared/movimiento.js']);
+    expect(scripts).toEqual(['js/shared/api.js', 'js/landing/landing.js', 'js/shared/movimiento.js']);
   });
 
   test('no incluye cifras inventadas', () => {
@@ -108,7 +108,7 @@ describe('landing con sesión', () => {
   async function abrir(estado) {
     Object.defineProperty(window, 'location', { value: { href: '', replace: jest.fn() }, configurable: true, writable: true });
     window.fetch = jest.fn(() => Promise.resolve({ ok: estado < 400, status: estado, json: async () => ({ id: 1 }) }));
-    cargarScripts(['js/shared/api.js', 'js/landing.js']);
+    cargarScripts(['js/shared/api.js', 'js/landing/landing.js']);
     await terminar();
   }
 
@@ -128,6 +128,6 @@ describe('landing con sesión', () => {
   });
 
   test('la landing carga api.js y landing.js', () => {
-    expect(leer('index.html')).toMatch(/js\/shared\/api\.js[\s\S]*js\/landing\.js/);
+    expect(leer('index.html')).toMatch(/js\/shared\/api\.js[\s\S]*js\/landing\/landing\.js/);
   });
 });
