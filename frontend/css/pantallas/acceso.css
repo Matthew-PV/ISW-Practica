@@ -1,3 +1,43 @@
+/* ---------- Pantalla dividida de acceso ---------- */
+
+.pantalla-dividida {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+.pantalla-dividida-marca {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--espacio-24);
+  padding: var(--espacio-48);
+  font-size: 18px;
+  color: var(--color-texto);
+  background: var(--color-crema) url("/img/escena-acceso.svg") center / cover no-repeat;
+}
+
+.pantalla-dividida-marca a:first-child {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--color-texto);
+  text-decoration: none;
+}
+
+.pantalla-dividida-formulario {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--espacio-48);
+  background: var(--color-fondo);
+}
+
+.pantalla-dividida-formulario > * {
+  width: 100%;
+  max-width: var(--ancho-formulario);
+}
+
 /* Pantallas de acceso (iniciar sesión, registro, recuperar y restablecer): lo que añaden a
    la pantalla dividida de componentes.css. */
 

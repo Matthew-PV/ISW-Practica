@@ -1,3 +1,55 @@
+/* ---------- Cabecera de perfil con contadores ---------- */
+
+.cabecera-perfil {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-24);
+  padding: var(--espacio-48) var(--espacio-24) var(--espacio-24);
+  /* Banda crema arriba, como la portada de un perfil */
+  background: linear-gradient(var(--color-crema) 0 72px, var(--color-fondo) 72px);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-tarjeta);
+}
+
+.cabecera-perfil img {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border: 4px solid var(--color-fondo);
+  border-radius: 50%;
+}
+
+.cabecera-perfil-accion {
+  align-self: flex-end;
+  margin-left: auto;
+}
+
+/* Perfil de otra persona: la misma cabecera, centrada */
+.cabecera-perfil-otra {
+  flex-direction: column;
+  text-align: center;
+}
+
+.cabecera-perfil-contadores {
+  display: flex;
+  gap: var(--espacio-24);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contador-numero {
+  display: block;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.contador-rotulo {
+  display: block;
+  font-size: 14px;
+  color: var(--color-texto-suave);
+}
+
 /* Estilos comunes de perfil.html y usuario.html (se cargan después de componentes.css).
    Solo variables --color-* y --espacio-*. */
 

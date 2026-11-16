@@ -23,8 +23,8 @@ describe('escena de las pantallas de acceso', () => {
     expect(svg).toMatch(/prefers-reduced-motion:\s*reduce/);
   });
 
-  test('componentes.css pone la escena como fondo de la columna de marca', () => {
-    const css = leer('css/nucleo/componentes.css');
+  test('acceso.css pone la escena como fondo de la columna de marca', () => {
+    const css = leer('css/pantallas/acceso.css');
     expect(css).toMatch(/\.pantalla-dividida-marca\s*\{[^}]*escena-acceso\.svg/);
   });
 

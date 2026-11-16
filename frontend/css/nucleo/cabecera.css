@@ -1,0 +1,440 @@
+/* Cabecera común de PlanB: barra, buscador, menús, campana y versión estrecha. Va después de componentes.css. */
+
+/* ---------- Cabecera común (contrato en .superpowers/plan/contrato-cabecera.md) ---------- */
+
+.saltar-contenido {
+  position: absolute;
+  top: -100px;
+  left: var(--espacio-8);
+  z-index: 2000;
+  padding: var(--espacio-12) var(--espacio-16);
+  color: var(--color-acento);
+  background: var(--color-fondo);
+  border-radius: var(--radio-boton);
+}
+
+.saltar-contenido:focus {
+  top: var(--espacio-8);
+}
+
+.cabecera {
+  background: var(--color-fondo);
+  color: var(--color-texto);
+  border-bottom: 1px solid var(--color-borde-suave);
+}
+
+.cabecera-interior {
+  display: flex;
+  align-items: center;
+  gap: 0 var(--espacio-8);
+  min-height: 64px;
+  max-width: var(--ancho-contenido);
+  margin: 0 auto;
+  padding: 0 var(--espacio-24);
+}
+
+/* El nav no genera caja: sus enlaces se ordenan junto al buscador y al menú */
+.cabecera-nav {
+  display: contents;
+}
+
+.cabecera-marca {
+  order: 1;
+  margin-right: var(--espacio-8);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cabecera-busqueda {
+  order: 3;
+  flex: 1 1 160px;
+  min-width: 160px;
+  max-width: 280px;
+  margin: 0 var(--espacio-4) 0 auto;
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding: 4px;
+  background: var(--color-superficie);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-pildora);
+  transition: border-color var(--duracion-corta), background-color var(--duracion-corta);
+}
+
+.cabecera-busqueda input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  padding: 0 var(--espacio-12) 0 var(--espacio-16);
+  color: var(--color-texto);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radio-pildora);
+}
+
+.cabecera-busqueda input::placeholder {
+  color: var(--color-texto-suave);
+  opacity: 1;
+}
+
+/* El anillo del campo lo muestra la píldora entera */
+.cabecera-busqueda input:focus-visible {
+  outline: 0;
+}
+
+.cabecera-busqueda:has(input:focus-visible) {
+  outline: 2px solid var(--color-foco);
+  outline-offset: 2px;
+  background: var(--color-fondo);
+}
+
+.cabecera-busqueda:hover {
+  border-color: var(--color-borde-campo);
+}
+
+/* El botón va relleno y encajado en la píldora, sin borde propio */
+.cabecera-busqueda .btn {
+  flex: none;
+  height: 100%;
+  min-height: 0;
+  padding: 0 var(--espacio-16);
+  color: var(--color-fondo);
+  font-weight: 600;
+  background: var(--color-acento);
+  border: 0;
+  border-radius: var(--radio-pildora);
+}
+
+.cabecera-busqueda .btn:hover {
+  background: var(--color-acento-hover);
+}
+
+.cabecera-marca,
+.cabecera-enlace {
+  color: var(--color-texto);
+  text-decoration: none;
+}
+
+.cabecera-marca:hover,
+.cabecera-enlace:hover,
+.menu-cuenta summary:hover {
+  color: var(--color-texto);
+  text-decoration: underline;
+}
+
+.cabecera-marca:active,
+.cabecera-enlace:active {
+  font-weight: 700;
+}
+
+.cabecera-marca,
+.cabecera-enlace,
+.menu-cuenta summary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.cabecera-enlace {
+  order: 2;
+  padding: 0 var(--espacio-8);
+  border-bottom: 3px solid transparent;
+}
+
+/* Sección activa: negrita y línea gruesa debajo, además de aria-current */
+.cabecera-enlace[aria-current="page"] {
+  font-weight: 700;
+  border-bottom-color: var(--color-primario);
+}
+
+/* La página de búsqueda lleva su propio campo */
+body.pagina-buscar .cabecera-busqueda {
+  display: none;
+}
+
+/* Sin buscador, la campana y «Cuenta» siguen a la derecha */
+body.pagina-buscar .menu-notificaciones {
+  margin-left: auto;
+}
+
+/* Botones de la barra sin sesión (landing) */
+.cabecera-acciones {
+  order: 3;
+  display: flex;
+  gap: var(--espacio-8);
+  margin-left: auto;
+}
+
+/* Aviso de error al cerrar sesión, justo debajo de la cabecera */
+.cabecera-aviso {
+  width: min(var(--ancho-contenido), calc(100% - 48px));
+  margin: var(--espacio-16) auto 0;
+}
+
+/* Menú de cuenta */
+.menu-cuenta {
+  order: 5;
+  position: relative;
+}
+
+.menu-cuenta summary {
+  gap: var(--espacio-8);
+  list-style: none;
+  cursor: pointer;
+}
+
+.menu-cuenta summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Flecha hecha con bordes, del color del texto */
+.menu-cuenta summary::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  margin-left: var(--espacio-4);
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+
+.menu-avatar {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  background: var(--color-superficie);
+  border-radius: 50%;
+}
+
+.menu-cuenta-lista {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  width: 200px;
+  padding: var(--espacio-4);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-tarjeta);
+}
+
+.menu-cuenta[open] .menu-cuenta-lista {
+  animation: entrar var(--duracion-fundido) ease-out;
+}
+
+.menu-cuenta-lista a,
+.menu-cuenta-lista button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 var(--espacio-12);
+  font: inherit;
+  text-align: left;
+  color: var(--color-texto);
+  text-decoration: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: var(--radio-boton);
+  cursor: pointer;
+  transition: background-color var(--duracion-corta);
+}
+
+.menu-cuenta-lista a:hover,
+.menu-cuenta-lista button:hover {
+  background: var(--color-superficie);
+}
+
+.menu-cuenta-lista a[aria-current="page"] {
+  font-weight: 700;
+  border-bottom-color: var(--color-primario);
+}
+
+.menu-cuenta-lista button:disabled {
+  color: var(--color-texto-suave);
+  cursor: default;
+}
+
+.menu-cuenta-lista button[aria-busy="true"] {
+  cursor: progress;
+}
+
+/* Pantallas estrechas: el buscador baja a una segunda fila para que la barra se lea */
+@media (max-width: 767.98px) {
+  .cabecera-interior {
+    flex-wrap: wrap;
+    padding: 0 var(--espacio-16);
+  }
+
+  .cabecera-marca {
+    margin-right: auto;
+  }
+
+  .cabecera-busqueda {
+    order: 5;
+    flex: 1 0 100%;
+    max-width: none;
+    height: 44px;
+    margin: 0 0 var(--espacio-8);
+  }
+
+  body.pagina-buscar .cabecera-marca + .cabecera-enlace {
+    margin-left: 0;
+  }
+}
+
+/* La cabecera se queda arriba, translúcida */
+.cabecera {
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+  background: rgb(var(--color-blanco-rgb) / 0.82);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.cabecera-enlace {
+  transition: color var(--duracion-corta), border-color var(--duracion-corta), background-color var(--duracion-corta);
+}
+
+.cabecera-enlace:hover {
+  text-decoration: none;
+  border-bottom-color: var(--color-melocoton);
+}
+
+.cabecera-enlace[aria-current="page"]:hover {
+  border-bottom-color: var(--color-primario);
+}
+
+/* Campana de notificaciones */
+.menu-notificaciones {
+  order: 4;
+  position: relative;
+}
+
+.menu-notificaciones summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  list-style: none;
+  color: var(--color-texto);
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color var(--duracion-corta);
+}
+
+.menu-notificaciones summary::-webkit-details-marker {
+  display: none;
+}
+
+.menu-notificaciones summary:hover {
+  background: var(--color-superficie);
+}
+
+.menu-notificaciones summary:hover svg {
+  animation: campanada 400ms ease-out;
+  transform-origin: 50% 0;
+}
+
+.contador-notificaciones {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+  color: var(--color-blanco);
+  text-align: center;
+  background: var(--color-acento);
+  border-radius: var(--radio-pildora);
+  animation: latido 400ms ease-out 4;
+}
+
+.menu-notificaciones-lista {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  width: 320px;
+  padding: var(--espacio-8);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-tarjeta);
+}
+
+.menu-notificaciones[open] .menu-notificaciones-lista {
+  animation: subir 160ms ease-out;
+}
+
+.menu-notificaciones-titulo {
+  margin: 0;
+  padding: var(--espacio-8) var(--espacio-12);
+  font-weight: 700;
+}
+
+.menu-notificaciones-vacio {
+  margin: 0;
+  padding: var(--espacio-12);
+  color: var(--color-texto-suave);
+}
+
+.notificacion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-8);
+  min-height: 48px;
+  padding: var(--espacio-8) var(--espacio-12);
+  color: var(--color-texto);
+  border-radius: var(--radio-boton);
+  transition: background-color var(--duracion-corta);
+}
+
+.notificacion-persona {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-12);
+  color: inherit;
+  text-decoration: none;
+}
+
+.notificacion-acciones {
+  display: flex;
+  gap: var(--espacio-8);
+  padding-left: calc(32px + var(--espacio-12));
+}
+
+.notificacion-resultado,
+.notificacion-error {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.notificacion-error {
+  color: var(--color-peligro);
+}
+
+.notificacion:hover {
+  background: var(--color-superficie);
+}
+
+.notificacion img {
+  flex: none;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.menu-notificaciones-pie {
+  display: block;
+  margin-top: var(--espacio-4);
+  padding: var(--espacio-12);
+  font-weight: 700;
+  text-align: center;
+  border-top: 1px solid var(--color-borde-suave);
+}
