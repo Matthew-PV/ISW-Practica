@@ -35,7 +35,7 @@ PlanB es una **aplicación web** organizada en capas: un único backend con ruta
 | Backend | Node.js + Express (sesiones con express-session guardadas en MySQL, contraseñas con bcrypt, cabeceras de seguridad con helmet, límite de intentos con express-rate-limit) |
 | Protección contra bots | CAPTCHA Cloudflare Turnstile en el registro |
 | Persistencia | Prisma |
-| Base de datos | MySQL online compartida (Aiven); MySQL en Docker solo para las pruebas |
+| Base de datos | MySQL online compartida (TiDB Cloud Starter); MySQL en Docker solo para las pruebas |
 | Imágenes | Cloudinary |
 | Correo | Nodemailer por SMTP (sin configurar, el email se escribe en la consola) |
 | Pruebas | Jest + Supertest (API) y jsdom (pantallas) |
@@ -49,12 +49,11 @@ Requiere Git, Node.js 22+ y, solo para las pruebas con MySQL real, Docker. Cómo
 ```bash
 cd backend
 cp .env.example .env          # rellenar DATABASE_URL y CLOUDINARY_URL (pídelos al equipo); cambiar SESSION_SECRET
-# guardar el certificado de Aiven (también te lo da el equipo) como backend/prisma/aiven-ca.pem
 npm install
 npm run dev                   # http://localhost:3000
 ```
 
-**Hay una única base de datos de desarrollo: la online compartida (Aiven).** Sin la contraseña y el certificado que te da el equipo, la aplicación no arranca. Para trabajar sin ella (sin internet o con la red caída) existe el modo demo: `docker compose up -d`, `npm run demo:preparar` (una vez) y `npm run dev:demo` desde `backend/` usan la base local `planb_demo` con los datos `demo_*` y sin fotos. Las migraciones y los datos que cambies los ve todo el equipo: no ejecutes `db:migrate` sin acordarlo. Para dar de alta usuarios, experiencias, valoraciones y amistades de ejemplo (`demo_*@planb.local`, contraseña `Demo1234`, fotos en Cloudinary) existe `npm run db:seed-demo`; es repetible y solo toca a los usuarios `demo_*`.
+**Hay una única base de datos de desarrollo: la online compartida (TiDB Cloud Starter).** Sin la `DATABASE_URL` que te da el equipo, la aplicación no arranca. Para trabajar sin ella (sin internet o con la red caída) existe el modo demo: `docker compose up -d`, `npm run demo:preparar` (una vez) y `npm run dev:demo` desde `backend/` usan la base local `planb_demo` con los datos `demo_*` y sin fotos. Las migraciones y los datos que cambies los ve todo el equipo: no ejecutes `db:migrate` sin acordarlo. Para dar de alta usuarios, experiencias, valoraciones y amistades de ejemplo (`demo_*@planb.local`, contraseña `Demo1234`, fotos en Cloudinary) existe `npm run db:seed-demo`; es repetible y solo toca a los usuarios `demo_*`.
 
 Pruebas, desde `backend/`:
 

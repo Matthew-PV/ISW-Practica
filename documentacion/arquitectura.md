@@ -49,7 +49,7 @@ flowchart LR
     estaticos["Archivos del frontend"]
     apiRest["API REST /api<br/>(Helmet, sesiones,<br/>límites de peticiones)"]
   end
-  mysql[("MySQL online (Aiven)<br/>datos y sesiones")]
+  mysql[("MySQL online (TiDB Cloud)<br/>datos y sesiones")]
   cloudinary["Cloudinary<br/>fotos de perfil"]
   turnstile["Cloudflare Turnstile<br/>CAPTCHA del registro"]
   smtp["Servidor de correo SMTP<br/>(sin configurar: consola)"]
@@ -202,7 +202,7 @@ flowchart LR
 
 ### 3. Herramientas
 
-Todo el proyecto está escrito en **JavaScript**. Backend: Node.js, Express, Prisma sobre MySQL, `express-session` con `bcrypt`, `helmet`, `express-rate-limit`, Cloudinary (fotos), Nodemailer (correo) y Cloudflare Turnstile (captcha). Frontend: HTML, CSS y JavaScript sin framework, con Bootstrap. Pruebas: Jest, Supertest y jsdom. La base de datos es un MySQL online compartido (Aiven); Docker solo levanta un MySQL local para las pruebas.
+Todo el proyecto está escrito en **JavaScript**. Backend: Node.js, Express, Prisma sobre MySQL, `express-session` con `bcrypt`, `helmet`, `express-rate-limit`, Cloudinary (fotos), Nodemailer (correo) y Cloudflare Turnstile (captcha). Frontend: HTML, CSS y JavaScript sin framework, con Bootstrap. Pruebas: Jest, Supertest y jsdom. La base de datos es un MySQL online compartido (TiDB Cloud Starter, compatible con MySQL); Docker solo levanta un MySQL local para las pruebas.
 
 Qué hace cada herramienta: [anexo/herramientas-e-instalacion.md](anexo/herramientas-e-instalacion.md).
 
@@ -324,7 +324,7 @@ Requisitos: Git y Node.js (sección 7), y la contraseña y el certificado de la 
 
 Puesta en marcha en local, desde la raíz del repositorio:
 
-1. `cd backend` y copiar `.env.example` a `.env`. Rellenar `DATABASE_URL` (base online Aiven, la pide cada integrante al equipo), `CLOUDINARY_URL` y, cuando haga falta, `SMTP_URL`; cambiar `SESSION_SECRET`. El certificado de Aiven se guarda como `backend/prisma/aiven-ca.pem` (ignorado por Git).
+1. `cd backend` y copiar `.env.example` a `.env`. Rellenar `DATABASE_URL` (base online TiDB Cloud, la pide cada integrante al equipo), `CLOUDINARY_URL` y, cuando haga falta, `SMTP_URL`; cambiar `SESSION_SECRET`.
 2. `npm install` instala las dependencias.
 3. La base online ya tiene las tablas y el catálogo de ciudades. Quien cambie `prisma/schema.prisma` genera la migración con `npm run db:migrate:nueva` (contra la base local de demo, con Docker levantado), la sube al repositorio y las aplica a la online con `npm run db:migrate`, que afecta a todo el equipo. `npm run db:seed-demo` carga o repone los datos de demostración (usuarios `demo_*@planb.local`, contraseña `Demo1234`, con fotos en Cloudinary); solo toca a los `demo_*`.
 4. `npm run dev` arranca el servidor en http://localhost:3000, que sirve la API y la web, y se reinicia solo al guardar cambios.
