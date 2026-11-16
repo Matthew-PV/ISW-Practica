@@ -33,7 +33,7 @@ async function cargarPerfil() {
     mostrarPerfil(await api('/perfil'));
   } catch {
     // Sin sesión (o el servidor no responde): se vuelve al login
-    window.location.href = '/paginas/acceso/iniciar-sesion.html';
+    irAlLogin();
   } finally {
     ocultarCargando();
   }

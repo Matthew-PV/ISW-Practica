@@ -64,10 +64,14 @@ function crearEnlacePerfil(enlace, usuario, miUsuarioId) {
 // siguiente y `reiniciar` vacía la lista y vuelve a pedir la primera.
 function listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar }) {
   let siguiente = null;
+  // Se cuenta cada reinicio: la respuesta de una petición anterior a él se descarta
+  let generacion = 0;
 
   async function cargar() {
+    const miGeneracion = generacion;
     try {
       const pagina = await pedir(siguiente);
+      if (miGeneracion !== generacion) return;
       for (const elemento of pagina.elementos) {
         if (!lista.querySelector(`[data-id-elemento="${elemento.id}"]`)) {
           const fila = crear(elemento);
@@ -80,11 +84,12 @@ function listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar }) {
       vacio?.classList.toggle('d-none', lista.querySelector('[data-id-elemento]') !== null);
       botonMas.classList.toggle('d-none', siguiente === null);
     } catch (err) {
-      alFallar(err, cargar);
+      if (miGeneracion === generacion) alFallar(err, cargar);
     }
   }
 
   function reiniciar() {
+    generacion++;
     siguiente = null;
     lista.replaceChildren();
     return cargar();

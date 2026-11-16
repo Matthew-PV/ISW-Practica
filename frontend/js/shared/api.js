@@ -8,8 +8,13 @@
 // cuyo mensaje ya se puede enseñar al usuario tal cual. Si el servidor respondió con un error,
 // el Error lleva además su código HTTP en `status` (por ejemplo, 404), para que la página pueda
 // distinguir los casos sin depender del texto del mensaje.
+const PLAZO_MS = 30000;
+
 async function api(ruta, opciones = {}) {
   let res;
+  // Plazo máximo para que un servidor que no responde no deje la pantalla esperando siempre
+  const plazo = new AbortController();
+  const temporizador = setTimeout(() => plazo.abort(), PLAZO_MS);
   try {
     // La ruta es relativa (mismo servidor que sirve la página), así que el navegador envía
     // sola la cookie de sesión y no hace falta gestionarla aquí.
@@ -18,11 +23,14 @@ async function api(ruta, opciones = {}) {
       // el navegador, con el separador del formulario multipart. Las opciones de quien llama
       // van después y pueden cambiarlo
       headers: opciones.body instanceof FormData ? {} : { 'Content-Type': 'application/json' },
+      signal: plazo.signal,
       ...opciones,
     });
   } catch {
     // fetch solo falla así si no llega al servidor (caído o sin red); su mensaje es en inglés
     throw new Error('No se ha podido conectar con el servidor. Inténtalo de nuevo.');
+  } finally {
+    clearTimeout(temporizador);
   }
   // Se lee el cuerpo como JSON; si viene vacío o no es JSON, se queda en null en vez de fallar
   const datos = await res.json().catch(() => null);
