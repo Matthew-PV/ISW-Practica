@@ -6,6 +6,7 @@
 // Usa: services/valoracionService.js y middlewares/sesionMiddleware.js.
 const express = require('express');
 const valoracionService = require('../services/valoracionService');
+const { idDeUrl } = require('../services/shared/identificadores');
 const { requiereSesion } = require('../middlewares/sesionMiddleware');
 
 // mergeParams: permite leer el :id de la experiencia, que está en la ruta de montaje (index.js).
@@ -16,7 +17,7 @@ router.use(requiereSesion);
 // GET /api/experiencias/:id/valoracion → valoracionService.obtenerMiValoracion
 // Mi valoración de la experiencia, o null si todavía no la he valorado.
 router.get('/valoracion', async (req, res) => {
-  res.json(await valoracionService.obtenerMiValoracion(req.session.usuarioId, Number(req.params.id)));
+  res.json(await valoracionService.obtenerMiValoracion(req.session.usuarioId, idDeUrl(req.params.id)));
 });
 
 // PUT /api/experiencias/:id/valoracion → valoracionService.valorarExperiencia
@@ -24,7 +25,7 @@ router.get('/valoracion', async (req, res) => {
 router.put('/valoracion', async (req, res) => {
   const { valoracion, creada } = await valoracionService.valorarExperiencia(
     req.session.usuarioId,
-    Number(req.params.id),
+    idDeUrl(req.params.id),
     req.body
   );
   res.status(creada ? 201 : 200).json(valoracion);
@@ -35,7 +36,7 @@ router.put('/valoracion', async (req, res) => {
 router.get('/valoraciones', async (req, res) => {
   const { despuesDe, limite } = req.query;
   res.json(await valoracionService.listarValoraciones(
-    req.session.usuarioId, Number(req.params.id), { despuesDe, limite }
+    req.session.usuarioId, idDeUrl(req.params.id), { despuesDe, limite }
   ));
 });
 
@@ -44,14 +45,14 @@ router.get('/valoraciones', async (req, res) => {
 router.get('/valoraciones/amigos', async (req, res) => {
   const { despuesDe, limite } = req.query;
   res.json(await valoracionService.listarValoracionesRelacionadas(
-    req.session.usuarioId, Number(req.params.id), { despuesDe, limite }
+    req.session.usuarioId, idDeUrl(req.params.id), { despuesDe, limite }
   ));
 });
 
 // GET /api/experiencias/:id/resumen → valoracionService.resumirValoraciones
 // { media, total, distribucion, comentarios } de todas sus valoraciones.
 router.get('/resumen', async (req, res) => {
-  res.json(await valoracionService.resumirValoraciones(req.session.usuarioId, Number(req.params.id)));
+  res.json(await valoracionService.resumirValoraciones(req.session.usuarioId, idDeUrl(req.params.id)));
 });
 
 module.exports = router;

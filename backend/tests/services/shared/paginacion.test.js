@@ -17,7 +17,7 @@ describe('leerPaginacion', () => {
 
   test.each([
     ['limite', '0'], ['limite', '51'], ['limite', 'x'], ['limite', '1.5'],
-    ['despuesDe', '0'], ['despuesDe', '-1'], ['despuesDe', 'x'], ['despuesDe', ''],
+    ['despuesDe', '0'], ['despuesDe', '-1'], ['despuesDe', 'x'],
   ])('rechaza %s=%p con 400', (parametro, valor) => {
     expect(() => leerPaginacion({ [parametro]: valor }, 10)).toThrow(
       expect.objectContaining({ status: 400, message: 'La paginación no es válida' })
@@ -39,4 +39,8 @@ describe('cortarPagina', () => {
   test.each([[3], [10], [0]])('con %i filas y límite 10 no hay página siguiente', (cantidad) => {
     expect(cortarPagina(filas(20, cantidad), 10)).toEqual({ elementos: filas(20, cantidad), siguiente: null });
   });
+});
+
+test('despuesDe y limite vacíos (?despuesDe=&limite=) cuentan como ausentes', () => {
+  expect(leerPaginacion({ despuesDe: '', limite: '' }, 10)).toEqual({ despuesDe: null, limite: 10 });
 });

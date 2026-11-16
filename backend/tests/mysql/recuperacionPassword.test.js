@@ -63,6 +63,16 @@ test('en la base de datos solo se guarda el hash del enlace, que caduca a los 30
   expect(minutos).toBeLessThan(30.1);
 });
 
+test('pedir un enlace nuevo anula los anteriores: solo sirve el último', async () => {
+  await pedirEnlace(usuario.email);
+  const primero = tokenEnviado();
+  await pedirEnlace(usuario.email);
+  const segundo = tokenEnviado();
+
+  expect((await restablecer(primero, 'Nueva12345')).status).toBe(400);
+  expect((await restablecer(segundo, 'Nueva12345')).status).toBe(200);
+});
+
 test('el enlace funciona una sola vez: después el login funciona con la nueva y falla con la antigua', async () => {
   await pedirEnlace(usuario.email);
   const token = tokenEnviado();

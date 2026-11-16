@@ -187,6 +187,10 @@ async function validarCreacion(datos) {
 // solo aquellos que se quieran cambiar.
 async function validarEdicion(datos) {
   comprobarObjeto(datos);
+  // Al crear, sin visibilidad es PUBLICA; al editar, null no puede publicar una experiencia sin avisar
+  if (datos.visibilidad === null) {
+    throw crearError('La visibilidad debe ser una de: PRIVADA, AMIGOS o PUBLICA', 400);
+  }
   const cambios = {};
   for (const [campo, leer] of Object.entries(LECTORES)) {
     if (datos[campo] !== undefined) {

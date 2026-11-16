@@ -7,9 +7,13 @@
 // datos llegan validados desde el servicio.
 const prisma = require('./shared/prisma');
 
-// Guarda un enlace nuevo: `{ usuarioId, tokenHash, caducaEn }`.
+// Guarda un enlace nuevo: `{ usuarioId, tokenHash, caducaEn }`. Los enlaces anteriores de ese
+// usuario que seguían sin usar dejan de valer: solo sirve el último que se pidió.
 async function crear({ usuarioId, tokenHash, caducaEn }) {
-  return prisma.tokenRecuperacion.create({ data: { usuarioId, tokenHash, caducaEn } });
+  return prisma.$transaction([
+    prisma.tokenRecuperacion.updateMany({ where: { usuarioId, usadoEn: null }, data: { usadoEn: new Date() } }),
+    prisma.tokenRecuperacion.create({ data: { usuarioId, tokenHash, caducaEn } }),
+  ]).then(([, nuevo]) => nuevo);
 }
 
 // Devuelve el enlace si existe, no se ha usado y no ha caducado en el momento `ahora`, con el id

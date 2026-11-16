@@ -36,6 +36,15 @@ test('aceptar pasa la solicitud a ACEPTADA y borrar la elimina', async () => {
   expect(await amistadRepository.buscarPorId(solicitud.id)).toBeNull();
 });
 
+test('aceptar y borrar con estado no tocan una amistad que ya no está en ese estado', async () => {
+  const solicitud = await amistadRepository.crear(u.ana.id, u.bea.id);
+  await amistadRepository.aceptar(solicitud.id);
+
+  expect(await amistadRepository.aceptar(solicitud.id)).toBeNull();
+  expect(await amistadRepository.borrar(solicitud.id, 'PENDIENTE')).toBeNull();
+  expect((await amistadRepository.buscarPorId(solicitud.id)).estado).toBe('ACEPTADA');
+});
+
 test('las solicitudes recibidas: solo las pendientes, de la más reciente a la más antigua y sin el email del solicitante', async () => {
   await amistadRepository.crear(u.bea.id, u.ana.id);
   await amistadRepository.crear(u.carlos.id, u.ana.id);

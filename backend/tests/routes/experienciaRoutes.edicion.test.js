@@ -53,8 +53,9 @@ async function agenteConSesion() {
 }
 
 describe('Objetivo 6 - un usuario que no es el autor no puede editar', () => {
-  test('la experiencia de otro usuario responde 403 y no cambia nada', async () => {
+  test('la experiencia pública de otro usuario responde 403 y no cambia nada', async () => {
     guardada.autorId = 2;
+    guardada.visibilidad = 'PUBLICA';
     const antes = { ...guardada };
     const agente = await agenteConSesion();
 
@@ -66,8 +67,31 @@ describe('Objetivo 6 - un usuario que no es el autor no puede editar', () => {
     expect(guardada).toEqual(antes);
   });
 
+  test('la experiencia privada de otro usuario responde 404 como si no existiera, sin revelar que existe', async () => {
+    guardada.autorId = 2;
+    guardada.visibilidad = 'PRIVADA';
+    const agente = await agenteConSesion();
+
+    const res = await agente.patch('/api/experiencias/10').send({ titulo: 'Título ajeno' });
+
+    expect(res.status).toBe(404);
+    expect(res.body.error).toBe('Contenido no disponible');
+    expect(experienciaRepository.actualizar).not.toHaveBeenCalled();
+  });
+
+  test('visibilidad null al editar → 400 y no se hace pública', async () => {
+    guardada.visibilidad = 'PRIVADA';
+    const agente = await agenteConSesion();
+
+    const res = await agente.patch('/api/experiencias/10').send({ visibilidad: null });
+
+    expect(res.status).toBe(400);
+    expect(experienciaRepository.actualizar).not.toHaveBeenCalled();
+  });
+
   test('una experiencia antigua sin autor tampoco se puede editar', async () => {
     guardada.autorId = null;
+    guardada.visibilidad = 'PUBLICA';
     const agente = await agenteConSesion();
 
     const res = await agente.patch('/api/experiencias/10').send({ titulo: 'Nuevo' });
@@ -82,6 +106,18 @@ describe('Objetivo 6 - un usuario que no es el autor no puede editar', () => {
     expect(res.status).toBe(401);
     expect(experienciaRepository.buscarPorId).not.toHaveBeenCalled();
     expect(experienciaRepository.actualizar).not.toHaveBeenCalled();
+  });
+});
+
+describe('Concurrencia al editar', () => {
+  test('si la ciudad desaparece entre la validación y el guardado → 400, no 500', async () => {
+    experienciaRepository.actualizar.mockRejectedValue(Object.assign(new Error('fk'), { code: 'P2003' }));
+    const agente = await agenteConSesion();
+
+    const res = await agente.patch('/api/experiencias/10').send({ ciudadId: 2 });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('La ciudad seleccionada ya no está disponible');
   });
 });
 

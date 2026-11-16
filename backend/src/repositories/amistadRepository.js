@@ -53,14 +53,16 @@ async function buscarPorId(id) {
 // (otra petición la borró entre la comprobación del servicio y este cambio).
 async function aceptar(id) {
   return nullSi('P2025', () => prisma.amistad.update({
-    where: { id },
+    // Solo si sigue pendiente: otra petición pudo haberla resuelto antes
+    where: { id, estado: 'PENDIENTE' },
     data: { estado: 'ACEPTADA' },
   }));
 }
 
-// Elimina una solicitud rechazada o una amistad aceptada. Devuelve null si ya no existe.
-async function borrar(id) {
-  return nullSi('P2025', () => prisma.amistad.delete({ where: { id } }));
+// Elimina una solicitud rechazada o una amistad aceptada. Con `estado`, solo si sigue en ese estado.
+// Devuelve null si ya no existe (o ya no está en ese estado).
+async function borrar(id, estado) {
+  return nullSi('P2025', () => prisma.amistad.delete({ where: estado ? { id, estado } : { id } }));
 }
 
 // Devuelve las solicitudes pendientes que debe revisar un usuario, de la más

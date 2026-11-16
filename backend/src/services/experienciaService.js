@@ -41,17 +41,11 @@ async function crearExperiencia(usuarioId, datos) {
 }
 
 // Edita una experiencia existente.
-// Comprueba que el usuario exista, que la experiencia exista
-// y que pertenezca al usuario que intenta modificarla.
+// Comprueba que la experiencia exista y sea visible para el usuario y que sea suya.
 async function editarExperiencia(usuarioId, experienciaId, datos) {
 
-  leerId(experienciaId, 'de la experiencia');
-
-  const experiencia = await experienciaRepository.buscarPorId(experienciaId);
-
-  if (!experiencia) {
-    throw crearError('La experiencia no existe', 404);
-  }
+  // Si no existe o no la puede ver, 404 igual que al consultarla; si la ve pero no es suya, 403
+  const experiencia = await obtenerExperiencia(usuarioId, experienciaId);
 
   if (experiencia.autorId !== usuarioId) {
     throw crearError('No puedes editar una experiencia de otro usuario', 403);
@@ -68,6 +62,10 @@ async function editarExperiencia(usuarioId, experienciaId, datos) {
     // La experiencia podría haberse eliminado entre la búsqueda y la actualización.
     if (err.code === 'P2025') {
       throw crearError('La experiencia ya no existe', 404);
+    }
+    // P2003: la ciudad nueva desapareció entre la validación y el guardado
+    if (err.code === 'P2003') {
+      throw crearError('La ciudad seleccionada ya no está disponible', 400);
     }
 
     throw err;

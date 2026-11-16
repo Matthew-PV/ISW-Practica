@@ -13,10 +13,10 @@
 | Sesión | Se guarda en MySQL; el navegador solo tiene una cookie `HttpOnly` con su identificador. Las rutas marcadas con **Sesión: sí** pasan antes por `requiereSesion`, que responde 401 «No hay sesión iniciada» si no hay sesión o si su usuario ya no existe. |
 | Quién soy | El usuario que hace algo sale siempre de la sesión, nunca del cuerpo ni de la URL. Por eso no hay rutas del tipo «editar el perfil del usuario 7». |
 | Errores | Todas las respuestas de error son `{ "error": "mensaje en español" }`. Un JSON roto o demasiado grande da 400 «La petición no es válida»; una ruta `/api` que no existe, 404 «Recurso no encontrado»; un fallo inesperado, 500 «Error interno del servidor», sin detalles. |
-| Identificadores | Un id de la URL o del cuerpo debe ser un entero entre 1 y 2147483647; si no, 400 «El identificador ... no es válido». |
+| Identificadores | Un id de la URL o del cuerpo debe ser un entero entre 1 y 2147483647 (en la URL, escrito solo con dígitos, sin ceros a la izquierda); si no, 400 «El identificador ... no es válido». |
 | Datos públicos | Cuando una respuesta incluye a otro usuario, solo lleva `{ id, nombreUsuario, foto }`, nunca su email. Si no tiene foto, `foto` es la imagen por defecto. |
 | Contenido no disponible | Una experiencia que no existe y una que el usuario no puede ver responden igual: 404 «Contenido no disponible». Así no se revela que existe. |
-| Listas por páginas | Las rutas marcadas con **Páginas: sí** admiten `?limite=` (de 1 a 50) y `?despuesDe=` (el cursor). Devuelven la lista y `siguiente`: el valor que hay que pasar en `despuesDe` para pedir la página siguiente, o `null` si no hay más. Sin `despuesDe` empiezan por el principio. Un valor no válido da 400 «La paginación no es válida». Ver [F9](flujos.md#f9-listas-con-cargar-más). |
+| Listas por páginas | Las rutas marcadas con **Páginas: sí** admiten `?limite=` (de 1 a 50) y `?despuesDe=` (el cursor). Devuelven la lista y `siguiente`: el valor que hay que pasar en `despuesDe` para pedir la página siguiente, o `null` si no hay más. Sin `despuesDe` (o con él vacío) empiezan por el principio. Un valor no válido da 400 «La paginación no es válida». Ver [F9](flujos.md#f9-listas-con-cargar-más). |
 | Límites de intentos | Al pasarlos, la ruta responde 429 durante el resto de la ventana. Cuentan por IP. |
 
 ## Índice
@@ -111,7 +111,7 @@ Sin servicio · Sesión: no.
 
 * **Cuerpo:** `{ email }`.
 * **Responde:** siempre 200 `{ mensaje: "Si el email está registrado, te hemos enviado un enlace para restablecer la contraseña." }`, exista o no la cuenta.
-* **Efecto:** si el email es de una cuenta, guarda el hash de un token nuevo que caduca en 30 minutos y envía el enlace `URL_APP/paginas/acceso/restablecer.html?token=...`. Sin `SMTP_URL`, el email se escribe en la consola del servidor.
+* **Efecto:** si el email es de una cuenta, guarda el hash de un token nuevo que caduca en 30 minutos (los anteriores sin usar dejan de valer) y envía el enlace `URL_APP/paginas/acceso/restablecer.html?token=...`. Sin `SMTP_URL`, el email se escribe en la consola del servidor.
 * **Errores:** 400 «Faltan datos obligatorios». Ver [F11](flujos.md#f11-recuperar-y-restablecer-la-contraseña).
 
 ### `POST /api/auth/restablecer`
@@ -216,7 +216,7 @@ Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, p
 
 `experienciaService.crearExperiencia`.
 
-* **Cuerpo:** `{ titulo, descripcion, ciudadId, tipo?, momentoAdecuado?, visibilidad? }`. `ciudadId` debe ser un número, no un texto; `visibilidad` es PUBLICA si no llega. Otros campos, como `autorId`, se ignoran.
+* **Cuerpo:** `{ titulo, descripcion, ciudadId, tipo?, momentoAdecuado?, visibilidad? }`. `ciudadId` debe ser un número, no un texto; `visibilidad` es PUBLICA si no llega (al editar, `null` da 400). Otros campos, como `autorId`, se ignoran.
 * **Responde:** 201 con la experiencia creada y su ciudad. El autor es el usuario de la sesión.
 * **Errores 400:**
   * «Los datos de la experiencia deben ser un objeto».
@@ -234,7 +234,7 @@ Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, p
 
 * **Cuerpo:** los mismos campos que al crearla; solo cambian los que llegan, con las mismas reglas.
 * **Responde:** 200 con la experiencia actualizada.
-* **Errores:** los 400 de la creación y «Debes indicar al menos un campo para modificar»; 403 «No puedes editar una experiencia de otro usuario»; 404 «La experiencia no existe» o «La experiencia ya no existe» (se borró mientras tanto).
+* **Errores:** los 400 de la creación y «Debes indicar al menos un campo para modificar»; 403 «No puedes editar una experiencia de otro usuario» (solo si la ve); 404 «Contenido no disponible» si no existe o no la puede ver, o «La experiencia ya no existe» (se borró mientras tanto).
 * **Notas:** a diferencia de la lectura, la edición distingue entre «no existe» y «no es tuya». La pantalla solo ofrece «Editar» en las experiencias propias.
 
 ## Valoraciones (`valoracionRoutes.js` → `valoracionService`)
@@ -326,7 +326,7 @@ Una amistad es `{ id, solicitanteId, destinatarioId, estado, parejaClave, fecha 
 
 * **Cuerpo:** `{ aceptar: true }` o `{ aceptar: false }`.
 * **Responde:** 200 con la amistad ya ACEPTADA, o con la solicitud borrada si se rechaza.
-* **Errores:** 400 «Indica si aceptas la solicitud con true o false», «La solicitud de amistad ya no está pendiente»; 403 «Solo puedes responder tus solicitudes de amistad»; 404 «La solicitud de amistad no existe».
+* **Errores:** 400 «Indica si aceptas la solicitud con true o false», «La solicitud de amistad ya no está pendiente»; 404 «La solicitud de amistad no existe» (también si no eres su destinatario).
 
 ### `DELETE /api/amistades/:id`
 

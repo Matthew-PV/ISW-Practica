@@ -7,6 +7,7 @@
 // Los errores de las rutas async los recoge el manejador de errores de app.js (Express 5).
 const express = require('express');
 const experienciaService = require('../services/experienciaService');
+const { idDeUrl } = require('../services/shared/identificadores');
 const { requiereSesion } = require('../middlewares/sesionMiddleware');
 
 const router = express.Router();
@@ -35,7 +36,7 @@ router.get('/opciones', (req, res) => {
 // GET /api/experiencias/:id → experienciaService.obtenerExperiencia
 // Una experiencia concreta si el usuario de la sesión puede verla.
 router.get('/:id', requiereSesion, async (req, res) => {
-  const experienciaId = Number(req.params.id);
+  const experienciaId = idDeUrl(req.params.id);
   const experiencia = await experienciaService.obtenerExperiencia(
     req.session.usuarioId,
     experienciaId
@@ -57,7 +58,7 @@ router.post('/', requiereSesion, async (req, res) => {
 // Edita una experiencia existente.
 // Solo puede editarla su propio autor.
 router.patch('/:id', requiereSesion, async (req, res) => {
-  const experienciaId = Number(req.params.id);
+  const experienciaId = idDeUrl(req.params.id);
 
   const experiencia = await experienciaService.editarExperiencia(
     req.session.usuarioId,

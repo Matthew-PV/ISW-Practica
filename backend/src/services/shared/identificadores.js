@@ -1,6 +1,6 @@
 // Lectura de los identificadores (ids de MySQL) que llegan en la URL o en el cuerpo de una petición.
 // Capa: servicios (services/shared).
-// Lo usan: services/amistadService.js, services/seguimientoService.js,
+// Lo usan: las rutas (idDeUrl), services/amistadService.js, services/seguimientoService.js,
 //          services/experienciaService.js y services/valoracionService.js.
 // Usa: errores.js.
 //
@@ -20,4 +20,10 @@ function leerId(valor, descripcion) {
   return valor;
 }
 
-module.exports = { leerId };
+// Convierte un id de la URL (texto) en número. Solo vale la forma canónica (dígitos sin ceros a la
+// izquierda, signos, espacios ni notación científica); si no, devuelve NaN y leerId responde 400.
+function idDeUrl(texto) {
+  return /^[1-9]\d*$/.test(texto) ? Number(texto) : NaN;
+}
+
+module.exports = { leerId, idDeUrl };

@@ -177,7 +177,7 @@ test('solo el destinatario puede aceptar o rechazar una solicitud', async () => 
   const beatriz = await agente(2);
   const solicitud = (await ana.post('/api/amistades').send({ destinatarioId: 2 })).body;
 
-  expect((await ana.patch(`/api/amistades/${solicitud.id}`).send({ aceptar: true })).status).toBe(403);
+  expect((await ana.patch(`/api/amistades/${solicitud.id}`).send({ aceptar: true })).status).toBe(404);
   expect((await beatriz.patch(`/api/amistades/${solicitud.id}`).send({ aceptar: true })).body.estado).toBe('ACEPTADA');
 });
 

@@ -50,3 +50,14 @@ test.each(RUTAS_PROTEGIDAS)('con la sesión de un usuario que ya no existe, %s %
   expect(res.status).toBe(401);
   expect(res.body).toEqual({ error: 'No hay sesión iniciada' });
 });
+
+test('si el usuario de la sesión ya no existe, la sesión se destruye: aunque reaparezca un usuario con ese id, sigue sin sesión', async () => {
+  const agente = request.agent(app);
+  await agente.post('/api/auth/login').send({ email: usuario.email, password: 'Secreta123' });
+  usuarioRepository.buscarPorId.mockResolvedValue(null);
+  expect((await agente.get('/api/auth/yo')).status).toBe(401);
+
+  usuarioRepository.buscarPorId.mockResolvedValue(usuario); // otro usuario reutiliza el id
+
+  expect((await agente.get('/api/auth/yo')).status).toBe(401);
+});

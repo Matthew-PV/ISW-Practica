@@ -19,9 +19,14 @@ async function requiereSesion(req, res, next) {
   if (!req.session.usuarioId) {
     return res.status(401).json({ error: 'No hay sesión iniciada' });
   }
-  // Si el usuario ya no existe, lanza el error 401 y app.js lo responde (Express 5 recoge los
-  // errores de los middlewares async)
-  await authService.obtenerUsuario(req.session.usuarioId);
+  // Si el usuario ya no existe, se destruye la sesión (que no sirva si otro usuario reutiliza el id)
+  // y se lanza el error 401, que app.js responde (Express 5 recoge los errores de los middlewares async)
+  try {
+    await authService.obtenerUsuario(req.session.usuarioId);
+  } catch (err) {
+    if (err.status === 401) await new Promise((resolver) => req.session.destroy(resolver));
+    throw err;
+  }
   next();
 }
 

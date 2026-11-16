@@ -4,6 +4,7 @@
 // Usa: services/amistadService.js y middlewares/sesionMiddleware.js.
 const express = require('express');
 const amistadService = require('../services/amistadService');
+const { idDeUrl } = require('../services/shared/identificadores');
 const { requiereSesion } = require('../middlewares/sesionMiddleware');
 
 const router = express.Router();
@@ -29,7 +30,7 @@ router.get('/solicitudes', async (req, res) => {
 router.patch('/:id', async (req, res) => {
   const amistad = await amistadService.responderSolicitud(
     req.session.usuarioId,
-    Number(req.params.id),
+    idDeUrl(req.params.id),
     req.body?.aceptar
   );
   res.json(amistad);
@@ -38,7 +39,7 @@ router.patch('/:id', async (req, res) => {
 // DELETE /api/amistades/:id → amistadService.eliminarAmistad
 // Elimina una amistad aceptada.
 router.delete('/:id', async (req, res) => {
-  await amistadService.eliminarAmistad(req.session.usuarioId, Number(req.params.id));
+  await amistadService.eliminarAmistad(req.session.usuarioId, idDeUrl(req.params.id));
   res.status(204).send();
 });
 

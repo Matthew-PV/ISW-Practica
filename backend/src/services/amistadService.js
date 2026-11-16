@@ -44,20 +44,18 @@ async function responderSolicitud(usuarioId, solicitudId, aceptar) {
   }
 
   const solicitud = await amistadRepository.buscarPorId(solicitudId);
-  if (!solicitud) {
+  // Quien no es el destinatario no debe poder averiguar si existe ni en qué estado está
+  if (!solicitud || solicitud.destinatarioId !== usuarioId) {
     throw crearError('La solicitud de amistad no existe', 404);
   }
   if (solicitud.estado !== 'PENDIENTE') {
     throw crearError('La solicitud de amistad ya no está pendiente', 400);
   }
-  if (solicitud.destinatarioId !== usuarioId) {
-    throw crearError('Solo puedes responder tus solicitudes de amistad', 403);
-  }
 
   // null: otra petición la borró mientras tanto
   const resultado = aceptar
     ? await amistadRepository.aceptar(solicitudId)
-    : await amistadRepository.borrar(solicitudId);
+    : await amistadRepository.borrar(solicitudId, 'PENDIENTE');
   if (!resultado) {
     throw crearError('La solicitud de amistad no existe', 404);
   }

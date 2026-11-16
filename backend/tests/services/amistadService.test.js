@@ -58,15 +58,22 @@ test('el destinatario puede rechazar una solicitud pendiente', async () => {
   amistadRepository.borrar.mockResolvedValue(SOLICITUD);
 
   await expect(responderSolicitud(2, 10, false)).resolves.toEqual(SOLICITUD);
-  expect(amistadRepository.borrar).toHaveBeenCalledWith(10);
+  // Solo borra si sigue pendiente: si la aceptaron entre medias, no destruye la amistad
+  expect(amistadRepository.borrar).toHaveBeenCalledWith(10, 'PENDIENTE');
 });
 
-test('nadie salvo el destinatario puede responder una solicitud', async () => {
+test('quien no es el destinatario recibe 404, como si la solicitud no existiera', async () => {
   amistadRepository.buscarPorId.mockResolvedValue(SOLICITUD);
 
-  await expect(responderSolicitud(1, 10, true)).rejects.toMatchObject({ status: 403 });
+  await expect(responderSolicitud(1, 10, true)).rejects.toMatchObject({ status: 404 });
   expect(amistadRepository.aceptar).not.toHaveBeenCalled();
   expect(amistadRepository.borrar).not.toHaveBeenCalled();
+});
+
+test('un tercero no averigua el estado de una amistad ajena: 404 aunque ya esté aceptada', async () => {
+  amistadRepository.buscarPorId.mockResolvedValue(AMISTAD);
+
+  await expect(responderSolicitud(3, 10, true)).rejects.toMatchObject({ status: 404 });
 });
 
 test('no permite responder una relación que ya no está pendiente', async () => {

@@ -4,6 +4,7 @@
 // Usa: services/seguimientoService.js y middlewares/sesionMiddleware.js.
 const express = require('express');
 const seguimientoService = require('../services/seguimientoService');
+const { idDeUrl } = require('../services/shared/identificadores');
 const { requiereSesion } = require('../middlewares/sesionMiddleware');
 
 const router = express.Router();
@@ -20,7 +21,7 @@ router.post('/', async (req, res) => {
 // DELETE /api/seguimientos/:seguidoId → seguimientoService.dejarDeSeguir
 // Deja de seguir a un usuario.
 router.delete('/:seguidoId', async (req, res) => {
-  await seguimientoService.dejarDeSeguir(req.session.usuarioId, Number(req.params.seguidoId));
+  await seguimientoService.dejarDeSeguir(req.session.usuarioId, idDeUrl(req.params.seguidoId));
   res.status(204).send();
 });
 

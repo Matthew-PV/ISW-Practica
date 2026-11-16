@@ -14,10 +14,10 @@ const ID_MAX = 2147483647; // Mayor entero positivo de una columna Int de MySQL.
 
 // Lee `despuesDe` y `limite` de la query de la URL (llegan como texto) y los devuelve como
 // números: { despuesDe, limite }. `despuesDe` es opcional (null = desde el principio) y `limite`
-// va de 1 a LIMITE_MAX, con `porDefecto` si no se indica. Si no son válidos, error 400.
+// va de 1 a LIMITE_MAX, con `porDefecto` si no se indica. Un valor vacío (`?limite=`) cuenta como no indicado. Si no son válidos, error 400.
 function leerPaginacion({ despuesDe, limite } = {}, porDefecto) {
-  const cursor = despuesDe === undefined ? null : Number(despuesDe);
-  const cantidad = limite === undefined ? porDefecto : Number(limite);
+  const cursor = despuesDe === undefined || despuesDe === '' ? null : Number(despuesDe);
+  const cantidad = limite === undefined || limite === '' ? porDefecto : Number(limite);
 
   const cursorValido = cursor === null || (Number.isInteger(cursor) && cursor > 0 && cursor <= ID_MAX);
   const cantidadValida = Number.isInteger(cantidad) && cantidad >= 1 && cantidad <= LIMITE_MAX;
