@@ -88,13 +88,13 @@ test.each([1, 2])('cualquiera de los participantes puede eliminar una amistad', 
   amistadRepository.borrar.mockResolvedValue(AMISTAD);
 
   await expect(eliminarAmistad(usuarioId, 10)).resolves.toEqual(AMISTAD);
-  expect(amistadRepository.borrar).toHaveBeenCalledWith(10);
+  expect(amistadRepository.borrar).toHaveBeenCalledWith(10, AMISTAD.estado);
 });
 
-test('un tercero no puede eliminar una amistad', async () => {
+test('un tercero recibe 404, como si la amistad no existiera', async () => {
   amistadRepository.buscarPorId.mockResolvedValue(AMISTAD);
 
-  await expect(eliminarAmistad(3, 10)).rejects.toMatchObject({ status: 403 });
+  await expect(eliminarAmistad(3, 10)).rejects.toMatchObject({ status: 404, message: 'La amistad no existe' });
   expect(amistadRepository.borrar).not.toHaveBeenCalled();
 });
 
@@ -104,13 +104,14 @@ test('el solicitante puede cancelar su solicitud pendiente', async () => {
   amistadRepository.borrar.mockResolvedValue({ id: 10 });
 
   await expect(eliminarAmistad(1, 10)).resolves.toEqual({ id: 10 });
-  expect(amistadRepository.borrar).toHaveBeenCalledWith(10);
+  expect(amistadRepository.borrar).toHaveBeenCalledWith(10, 'PENDIENTE');
 });
 
-test.each([[2, 'el destinatario'], [3, 'un tercero']])('%s no puede cancelar una solicitud pendiente ajena', async (usuarioId) => {
+test('el destinatario no puede cancelar una solicitud pendiente (403); un tercero recibe 404', async () => {
   amistadRepository.buscarPorId.mockResolvedValue({ id: 10, solicitanteId: 1, destinatarioId: 2, estado: 'PENDIENTE' });
 
-  await expect(eliminarAmistad(usuarioId, 10)).rejects.toMatchObject({ status: 403 });
+  await expect(eliminarAmistad(2, 10)).rejects.toMatchObject({ status: 403 });
+  await expect(eliminarAmistad(3, 10)).rejects.toMatchObject({ status: 404 });
   expect(amistadRepository.borrar).not.toHaveBeenCalled();
 });
 

@@ -49,3 +49,23 @@ test('api: si quien llama pasa su propia señal, se respeta', async () => {
 
   expect(fetch.mock.calls[0][1].signal).toBe(control.signal);
 });
+
+test('api: el plazo también cubre la lectura del cuerpo', async () => {
+  jest.useFakeTimers();
+  try {
+    // Cabeceras recibidas, pero el cuerpo no llega nunca salvo que la petición se aborte
+    global.fetch = jest.fn((url, { signal }) => Promise.resolve({
+      ok: true,
+      status: 200,
+      json: () => new Promise((_, rechazar) => signal.addEventListener('abort', () => rechazar(new Error('abortada')))),
+    }));
+
+    const llamada = window.api('/auth/yo');
+    const resultado = expect(llamada).rejects.toThrow();
+    await jest.advanceTimersByTimeAsync(30000);
+
+    await resultado;
+  } finally {
+    jest.useRealTimers();
+  }
+});

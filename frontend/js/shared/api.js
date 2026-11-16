@@ -28,12 +28,16 @@ async function api(ruta, opciones = {}) {
     });
   } catch {
     // fetch solo falla así si no llega al servidor (caído o sin red); su mensaje es en inglés
-    throw new Error('No se ha podido conectar con el servidor. Inténtalo de nuevo.');
-  } finally {
     clearTimeout(temporizador);
+    throw new Error('No se ha podido conectar con el servidor. Inténtalo de nuevo.');
   }
-  // Se lee el cuerpo como JSON; si viene vacío o no es JSON, se queda en null en vez de fallar
+  // Se lee el cuerpo como JSON; si viene vacío, no es JSON o el plazo vence a medias, se queda
+  // en null en vez de fallar. El plazo cubre también esta lectura
   const datos = await res.json().catch(() => null);
+  clearTimeout(temporizador);
+  if (plazo.signal.aborted) {
+    throw new Error('El servidor ha tardado demasiado en responder. Inténtalo de nuevo.');
+  }
   // Códigos 4xx/5xx: el backend manda { error: 'mensaje' }; si no lo trae, se usa el código
   if (!res.ok) {
     const error = new Error(datos?.error || `Error ${res.status}`);

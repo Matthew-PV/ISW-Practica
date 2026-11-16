@@ -71,16 +71,17 @@ async function eliminarAmistad(usuarioId, amistadId) {
   if (!amistad) {
     throw crearError('La amistad no existe', 404);
   }
+  // Un tercero recibe lo mismo que si no existiera, para no revelar que el id existe
+  if (amistad.solicitanteId !== usuarioId && amistad.destinatarioId !== usuarioId) {
+    throw crearError('La amistad no existe', 404);
+  }
   // Pendiente: solo la cancela quien la envió (quien la recibió la rechaza con responderSolicitud)
   if (amistad.estado === 'PENDIENTE' && amistad.solicitanteId !== usuarioId) {
     throw crearError('Solo puedes cancelar las solicitudes que has enviado', 403);
   }
-  if (amistad.solicitanteId !== usuarioId && amistad.destinatarioId !== usuarioId) {
-    throw crearError('No puedes eliminar una amistad de otra persona', 403);
-  }
 
-  // null: otra petición la borró mientras tanto
-  const borrada = await amistadRepository.borrar(amistadId);
+  // Con el estado leído: si otra petición la cambió o la borró mientras tanto, da null
+  const borrada = await amistadRepository.borrar(amistadId, amistad.estado);
   if (!borrada) {
     throw crearError('La amistad no existe', 404);
   }
