@@ -180,7 +180,7 @@ Todas exigen sesión y trabajan sobre el usuario de la sesión.
 
 ## Experiencias (`experienciaRoutes.js` → `experienciaService`)
 
-Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, pais, codigoPais }, tipo, momentoAdecuado, visibilidad, autorId }`. `tipo` (la categoría) y `momentoAdecuado` pueden ser `null` o uno de los valores de `GET /api/experiencias/opciones`; `visibilidad` es `PRIVADA`, `AMIGOS` o `PUBLICA`.
+Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, pais, codigoPais }, tipo, momentoAdecuado, duracionMinutos, tarifa, visibilidad, autorId }`. `duracionMinutos` (entero positivo) y `tarifa` (texto decimal en euros, p. ej. `"12.50"`) pueden ser `null`; `tipo` (la categoría) y `momentoAdecuado` pueden ser `null` o uno de los valores de `GET /api/experiencias/opciones`; `visibilidad` es `PRIVADA`, `AMIGOS` o `PUBLICA`.
 
 ### `GET /api/experiencias/opciones`
 
@@ -216,7 +216,7 @@ Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, p
 
 `experienciaService.crearExperiencia`.
 
-* **Cuerpo:** `{ titulo, descripcion, ciudadId, tipo?, momentoAdecuado?, visibilidad? }`. `ciudadId` debe ser un número, no un texto; `visibilidad` es PUBLICA si no llega (al editar, `null` da 400). Otros campos, como `autorId`, se ignoran.
+* **Cuerpo:** `{ titulo, descripcion, ciudadId, tipo?, momentoAdecuado?, duracionMinutos?, tarifa?, visibilidad? }`. `ciudadId` debe ser un número, no un texto; `duracionMinutos` es un entero positivo y `tarifa` un importe no negativo con hasta dos decimales (número o texto, admite coma), vacío = sin especificar; `visibilidad` es PUBLICA si no llega (al editar, `null` da 400). Otros campos, como `autorId`, se ignoran.
 * **Responde:** 201 con la experiencia creada y su ciudad. El autor es el usuario de la sesión.
 * **Errores 400:**
   * «Los datos de la experiencia deben ser un objeto».

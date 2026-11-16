@@ -78,7 +78,7 @@ Convenciones de la API (detalle en `documentacion/api.md`):
 
 ## Datos, configuración y seguridad
 
-- Ningún secreto, contraseña, cookie de sesión ni `.env` en Git, documentación, pruebas o respuestas. `backend/.env.example` solo lleva nombres y valores de ejemplo seguros; actualízalo si se añade una variable. La base de desarrollo es la online compartida (Aiven): su contraseña y su certificado se piden al equipo y nunca se escriben en el repositorio ni en las respuestas. Las pruebas con MySQL usan solo `.env.test` (Docker local).
+- Ningún secreto, contraseña, cookie de sesión ni `.env` en Git, documentación, pruebas o respuestas. `backend/.env.example` solo lleva nombres y valores de ejemplo seguros; actualízalo si se añade una variable. La base de desarrollo es la online compartida (TiDB Cloud): su `DATABASE_URL` se pide al equipo y nunca se escriben en el repositorio ni en las respuestas. Las pruebas con MySQL usan solo `.env.test` (Docker local).
 - Todo cambio de `backend/prisma/schema.prisma` que altere la base de datos incluye su migración.
 - `Usuario.ciudad` es texto libre del perfil; el modelo `Ciudad` es el catálogo estructurado de las experiencias. No los confundas.
 - Conserva sesiones, validaciones y permisos de autor. El frontend puede ocultar acciones, pero la autorización se comprueba siempre en el backend.

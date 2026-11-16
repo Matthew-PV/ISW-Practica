@@ -141,7 +141,7 @@ Las URL de detalle incluyen parámetros: `/paginas/social/usuario.html?nombre=..
 
 Los HTML están en `paginas/<área>/` (`acceso`, `cuenta`, `experiencias`, `social`; `index.html` queda en la raíz), su script en `js/<área>/` con el mismo nombre, y los estilos en `css/nucleo/` (comunes) y `css/pantallas/` (propios). En las tablas siguientes se omiten esas carpetas.
 
-Cada página carga primero `js/shared/api.js`, después los módulos compartidos que necesita y por último su script. Todas cargan `css/nucleo/tokens.css`, `css/nucleo/base.css` y `css/nucleo/componentes.css`; la columna «CSS propio» es el segundo archivo de estilos.
+Cada página carga primero `js/shared/api.js`, después los módulos compartidos que necesita y por último su script. Todas cargan `css/nucleo/tokens.css`, `base.css`, `componentes.css`, `cabecera.css` y `animaciones.css` (todos en `css/nucleo/`); la columna «CSS propio» es el segundo archivo de estilos.
 
 | Página | Script | CSS propio | Módulos compartidos | Llamadas a la API | Historias |
 |---|---|---|---|---|---|
@@ -162,13 +162,14 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 
 ## Estilos
 
-* Estilos comunes, en capas (`@layer sombras, bootstrap, tokens, base, componentes`, declaradas en `tokens.css`): `tokens.css` define las variables (`--color-*`, espaciado, anchos de contenido `--ancho-contenido` 960 px, `--ancho-lectura` 720 px y `--ancho-formulario` 400 px, radios, duraciones; `--color-lienzo` es el fondo de la página y las tarjetas y paneles son blancos con borde) e importa Bootstrap en la capa `bootstrap`; `base.css` lleva el fondo, el `body` y los encabezados; `componentes.css` los componentes compartidos: cabecera (en una sola línea, con el buscador flexible entre 160 y 280 px), botones, tarjetas, avisos y el enlace «Saltar al contenido». El CSS propio de cada página no lleva capa y por eso gana a todo lo anterior.
+* Estilos comunes, en capas (`@layer sombras, bootstrap, tokens, base, componentes`, declaradas en `tokens.css`): `tokens.css` define las variables (`--color-*`, espaciado, anchos de contenido `--ancho-contenido` 960 px, `--ancho-lectura` 720 px y `--ancho-formulario` 400 px, radios, duraciones; `--color-lienzo` es el fondo de la página y las tarjetas y paneles son blancos con borde) e importa Bootstrap en la capa `bootstrap`; `base.css` lleva el fondo, el `body` y los encabezados; `componentes.css` los componentes compartidos (botones, tarjetas, avisos, el enlace «Saltar al contenido»); `cabecera.css` la cabecera (en una sola línea, con el buscador flexible entre 160 y 280 px, pegajosa y con la campana); `animaciones.css` los *keyframes* y las transiciones de botones y tarjetas. El CSS propio de cada página no lleva capa y por eso gana a todo lo anterior.
 * Movimiento: las entradas duran entre 100 y 400 ms con `ease-out` y animan solo `transform` y `opacity`. Las animaciones que no terminan (fondo, ilustraciones, landing) se detienen solas a los 5 s poniendo `data-movimiento="pausado"` en `<html>`; en Ajustes se puede dejarlas pausadas o fijas. Con `prefers-reduced-motion` la página arranca ya pausada.
 * `landing.css`: la landing (`index.html`).
 * Tarjetas de experiencia: bloque de color con icono (`.bloque-categoria`, color según `data-categoria`). Estados vacíos: `.estado-vacio` con ilustración animada de `img/vacio-*.svg` (mancha de color, objeto con microanimación; decorativa y sin movimiento con `prefers-reduced-motion`).
-* `acceso.css`: la tarjeta de formulario de `iniciar-sesion`, `registro`, `recuperar` y `restablecer`. La columna de marca usa como fondo la escena animada `img/escena-acceso.svg` (puesta en `componentes.css`).
+* `acceso.css`: la tarjeta de formulario de `iniciar-sesion`, `registro`, `recuperar` y `restablecer`. La columna de marca usa como fondo la escena animada `img/escena-acceso.svg` (puesta en `acceso.css`).
 * `experiencia.css`: el detalle de experiencia, con la experiencia y el formulario en una columna y las valoraciones en otra.
 * `perfil.css`: `/paginas/cuenta/perfil.html` y `/paginas/social/usuario.html`.
+* `ajustes.css`: `/paginas/cuenta/ajustes.html`. `formulario-plan.css`: el formulario de `/paginas/cuenta/mis-planes.html`.
 * `buscar.css`: `/paginas/social/personas.html`.
 
 ## Estados de una pantalla
@@ -287,6 +288,7 @@ Pruebas: `explorar.test.js`.
   * Ciudad: campo de texto con `<datalist>` (`#lista-ciudades`) que sugiere primero la ciudad del perfil (`GET /api/perfil`, si coincide con una del catálogo), después las de mis experiencias y luego el resto. Al crear se propone la del perfil. Si lo escrito no es una ciudad del catálogo, `#mensaje-ciudad` dice «Elige una ciudad de la lista.» y no se envía nada.
   * Descripción, con una pista de qué contar y un contador de caracteres (`#contador-descripcion`).
   * Momento adecuado (opcional): «Sin indicar» y pastillas agrupadas por franja del día, día de la semana y estación.
+  * Duración en minutos y tarifa en euros (CS-53, opcionales; `#duracion-minutos`, `#tarifa`): vacío = sin especificar.
   * Quién la verá: tres tarjetas de radio (Pública, Amigos, Privada) con icono y quién la verá; Pública por defecto.
 * El botón dice «Publicar plan» al crear y «Guardar cambios» al editar.
 * Cancelar o Esc con cambios sin guardar abren `#dialogo-descartar` («Seguir editando» o «Descartar»); sin cambios, cierran.
@@ -337,7 +339,7 @@ Pruebas: `usuario.test.js`, `estados.test.js`, `usuario.cabecera.test.js` y `sha
 
 ### `/paginas/experiencias/experiencia.html?id=`: una experiencia
 
-* Dos columnas: a la izquierda título, descripción, resumen, «Tu valoración», las listas y el formulario, en ese orden; a la derecha la ficha (`aside.ficha-experiencia`, fija al desplazar): bloque de color de la categoría, autor (enlace a su perfil), ciudad, categoría, momento (oculto si no se indicó), visibilidad y, solo para el autor, «Editar plan».
+* Dos columnas: a la izquierda título, descripción, resumen, «Tu valoración», las listas y el formulario, en ese orden; a la derecha la ficha (`aside.ficha-experiencia`, fija al desplazar): bloque de color de la categoría, autor (enlace a su perfil), ciudad, categoría, momento (oculto si no se indicó), duración y tarifa (CS-53, ocultas si no se indicaron), visibilidad y, solo para el autor, «Editar plan».
 * **«← Volver»** (`#enlace-volver`) lleva a la pantalla de PlanB desde la que se llegó, con su búsqueda (`document.referrer`, que Helmet solo envía dentro del mismo origen); sin ella, a Inicio.
 * **Resumen** (CS-14, `#resumen-valoraciones`): media con coma decimal y en estrellas, número de valoraciones y de comentarios, y una barra por puntuación de 5 a 1. Sin valoraciones dice «Todavía sin valoraciones.»; si no se puede cargar, se oculta y el resto de la página sigue igual.
 * **Tu valoración** (`#mi-valoracion`): si ya la había valorado, mis estrellas y mi comentario encima de las listas, con un enlace «Cambiar» al formulario. Al publicar se actualizan al momento, junto con el resumen y la lista «Todas».

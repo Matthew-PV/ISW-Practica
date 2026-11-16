@@ -4,24 +4,7 @@ PlanB es una red social web, pensada para escritorio, para compartir y descubrir
 
 ## Estado del proyecto
 
-Historias de usuario implementadas:
-
-| Historia | Qué permite |
-|---|---|
-| CS-59 · Crear una cuenta | Registro con CAPTCHA, inicio y cierre de sesión |
-| CS-64 · Contraseña segura | Requisitos de la contraseña, cambiarla desde el perfil y recuperarla por email |
-| CS-47 · Crear mi perfil | Ver y editar el perfil propio, con su foto |
-| CS-49 · Creación de experiencias | Crear experiencias con su ciudad del catálogo |
-| CS-57 · Edición de experiencia | Editar las experiencias propias |
-| CS-22 · Visibilidad experiencias | Privada, de amigos o pública, con su descripción en el formulario |
-| CS-30 · Control de acceso | Solo se ve una experiencia si su visibilidad lo permite; si no, «Contenido no disponible» |
-| CS-44 · Mis experiencias publicadas | Las experiencias de un usuario en su perfil, por páginas |
-| CS-61 · Amistades y seguidores | Buscar personas, solicitudes de amistad y seguir |
-| CS-45 · Mi número de amigos y seguidores | Contadores y listas en «Mi perfil» |
-| CS-62 · Perfil de otro usuario | Su perfil público, la relación con él y sus experiencias |
-| CS-01 · Valorar una experiencia | Puntuación del 1 al 5 y comentario opcional |
-| CS-63 · Pantalla de valoraciones | La página de una experiencia con sus valoraciones |
-| CS-48 · Valoraciones de amigos y seguidores | Sección propia en la página de la experiencia |
+Qué está hecho y qué falta lo recoge el libro de historias (sección «Historias de usuario»); las pantallas y rutas implementadas, [`frontend.md`](documentacion/frontend.md) y [`api.md`](documentacion/api.md).
 
 Pendiente: la pestaña «Experiencias» de la búsqueda aún no devuelve resultados (CS-24). «Útil» y «Reportar» en las valoraciones funcionan solo en la pantalla, sin guardar nada, hasta que se implementen CS-02 y CS-04. El estado de cada tarea se lleva en el libro de historias (ver [Historias de usuario](#historias-de-usuario)).
 
@@ -95,10 +78,7 @@ La copia de `documentacion/customer-stories/Customer_Stories_PlanB.xlsx` está o
 
 ## Estructura del repositorio
 
-* `backend/` — servidor Node.js + Express: API REST, lógica de negocio, persistencia con Prisma y pruebas.
-* `frontend/` — páginas HTML, CSS y JavaScript con Bootstrap.
-* `docker-compose.yml` — MySQL local, solo para las pruebas con MySQL real.
-* `documentacion/` — documentación del proyecto, documentos de partida de las historias de usuario y copia obsoleta del libro (`customer-stories/`) y los scripts del libro online (`office-scripts/`).
+Ver [`arquitectura.md`](documentacion/arquitectura.md#6-estructura-del-repositorio).
 
 ## Licencia
 

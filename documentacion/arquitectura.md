@@ -280,9 +280,9 @@ ISW-Practica/
 │   │   ├── routes/            # URLs de la API → llaman a su servicio (xRoutes.js)
 │   │   ├── middlewares/       # sesión, límites de peticiones y recepción de la foto (xMiddleware.js)
 │   │   ├── services/          # lógica de negocio (xService.js)
-│   │   │   └── shared/        # reglas comunes: visibilidad, paginación, contraseña, ids...
+│   │   │   └── shared/        # reglas comunes: visibilidad, paginación, contraseña, ids, datos de experiencia...
 │   │   ├── repositories/      # acceso a datos: MySQL con Prisma, Cloudinary y correo (xRepository.js)
-│   │   │   └── shared/        # conexión con MySQL, almacén de sesiones y campos públicos
+│   │   │   └── shared/        # conexión con MySQL, almacén de sesiones y campos públicos y condición de amistad
 │   │   ├── errores.js         # crearError: errores con código HTTP, común a todas las capas
 │   │   ├── app.js             # configuración de Express
 │   │   └── server.js          # arranque del servidor

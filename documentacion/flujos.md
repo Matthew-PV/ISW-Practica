@@ -157,7 +157,7 @@ sequenceDiagram
   participant S as experienciaService
   participant CR as ciudadRepository
   participant ER as experienciaRepository
-  U->>P: rellena el formulario: categoría, ciudad, momento y visibilidad
+  U->>P: rellena el formulario: categoría, ciudad, momento, duración, tarifa y visibilidad
   Note over P: la ciudad escrita debe ser del catálogo; si no, error junto al campo y no se envía
   alt experiencia nueva
     P->>R: POST /api/experiencias
@@ -189,7 +189,7 @@ sequenceDiagram
   end
 ```
 
-Qué protege: el autor sale siempre de la sesión y nunca del cuerpo de la petición, la visibilidad solo admite PRIVADA, AMIGOS o PUBLICA (PUBLICA si no se indica), y la categoría y el momento adecuado solo valores de `services/shared/opcionesExperiencia.js`.
+Qué protege: el autor sale siempre de la sesión y nunca del cuerpo de la petición, la visibilidad solo admite PRIVADA, AMIGOS o PUBLICA (PUBLICA si no se indica), la duración un entero positivo y la tarifa un importe con hasta dos decimales (ambas opcionales), y la categoría y el momento adecuado solo valores de `services/shared/opcionesExperiencia.js`.
 
 ### F5. Abrir una experiencia
 
