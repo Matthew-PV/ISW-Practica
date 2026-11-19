@@ -2,6 +2,19 @@
 
 Identificador habitual: JOR / jorjonudo.
 
+## 2026-11-05 — CS-53: duración y tarifa de las experiencias
+
+- **Historia u objetivo:** CS-53, objetivos 1 a 6. Incorporar duración en minutos y tarifa en euros a las experiencias de PlanB, manteniendo la compatibilidad con experiencias antiguas.
+- **Agente/herramienta:** ChatGPT, con Visual Studio Code, PowerShell, Docker Desktop y GitHub Desktop.
+- **Prompt inicial:** No se conserva aquí una cita literal verificable. **Resumen de la solicitud (no literal):** completar CS-53 por objetivos, adaptar Prisma, backend y frontend, y comprobar los criterios mediante pruebas automáticas.
+- **Correcciones relevantes:** Se pidió proporcionar archivos completos para sustituirlos en VS Code, en lugar de fragmentos o scripts de modificación. También se solicitó separar los commits por objetivo: «ah vale, pues los separamos, olvida lo que te dije». Durante las pruebas se corrigió una comparación de importes decimales en Cucumber y se ajustaron expectativas de pruebas del frontend existentes.
+- **Qué aceptó, cambió o rechazó la persona:** Jorge revisó y aplicó los cambios, ejecutó las pruebas específicas y generales y organizó los commits por objetivo. Se mantuvieron los campos opcionales para no romper experiencias existentes.
+- **Resultado:** Se añadieron `duracionMinutos Int?` y `tarifa Decimal? @db.Decimal(10,2)` en Prisma, sus validaciones y persistencia en backend y los controles de creación, edición y visualización en frontend. Se añadieron 16 pruebas Jest específicas y 9 escenarios BDD de Cucumber, todos superados, y se ejecutó la regresión general de ambas herramientas.
+- **TDD:** No se siguió un ciclo rojo-verde estricto en todos los objetivos; parte de las pruebas se incorporó tras la implementación. No se presenta como observado ningún fallo inicial que no quedara registrado.
+- **Tiempo empleado:** aproximadamente 180 minutos en total, repartidos entre seis objetivos; estimación retrospectiva, no cronometraje exacto.
+- **Decisión:** `documentacion/decisiones/2026-11-05-cs53-duracion-tarifa.md`.
+- **Commits:** `c70f6ea` (objetivo 2, datos), `4b3793e` (objetivo 3, backend), `78f0fcc` (objetivo 4, frontend), `35da358` (objetivo 5, pruebas) y `dd38921` (objetivo 6, documentación). El objetivo 1 fue de análisis y no necesitó commit de código.
+
 ## 2026-10-06 — CS-48: valoraciones de amigos y seguidores en una experiencia
 
 - **Historia u objetivo:** CS-48, objetivos 1 a 10. Criterio principal: en el detalle de una experiencia visible para el usuario, mostrar en una sección propia las valoraciones de sus amigos o seguidores, excluir las de personas no relacionadas, respetar la visibilidad, paginar y reflejar nuevas valoraciones al recargar.

@@ -41,3 +41,6 @@ cookies.txt
 .~lock.*#
 
 backend/reports/
+
+# Informes generados por las pruebas
+backend/reports/
