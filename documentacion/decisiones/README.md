@@ -22,3 +22,4 @@ Una por archivo, con la plantilla de [plantilla.md](plantilla.md). Orden cronol�
 - 2026-10-29 · [«Plan» y «experiencia» en la interfaz](2026-10-29-vocabulario-plan-y-experiencia.md)
 - 2026-11-26 · [Presupuesto y duración en la búsqueda son máximos](2026-11-26-filtros-presupuesto-y-duracion.md)
 - 2026-11-26 · [Caché del navegador para archivos estáticos y catálogos](2026-11-26-cache-del-navegador.md)
+- 2026-11-26 · [«Plan» en toda la interfaz](2026-11-26-plan-en-toda-la-interfaz.md)

@@ -168,9 +168,9 @@ sequenceDiagram
     R->>S: editarExperiencia(usuarioId, 7, datos)
     S->>ER: buscarPorId(7)
     alt no existe
-      S-->>P: 404 «La experiencia no existe»
+      S-->>P: 404 «El plan no existe»
     else es de otro usuario
-      S-->>P: 403 «No puedes editar una experiencia de otro usuario»
+      S-->>P: 403 «No puedes editar un plan de otro usuario»
     end
     Note over S: validarEdicion: solo los campos que llegan, con los mismos lectores
   end
@@ -261,7 +261,7 @@ sequenceDiagram
     alt no existe o no la puede ver
       ES-->>P: 404 «Contenido no disponible»
     else es su propia experiencia
-      S-->>P: 403 «No puedes valorar tu propia experiencia»
+      S-->>P: 403 «No puedes valorar tu propio plan»
     else puede valorarla
       S->>VR: guardar(datos)
       VR->>BD: INSERT

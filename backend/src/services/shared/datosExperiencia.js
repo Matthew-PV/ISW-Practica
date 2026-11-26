@@ -161,7 +161,7 @@ const CAMPOS_SOLO_SI_LLEGAN = ['duracionMinutos', 'tarifa'];
 // Error 400 si los datos no son un objeto (por ejemplo, una lista o un texto).
 function comprobarObjeto(datos) {
   if (!datos || typeof datos !== 'object' || Array.isArray(datos)) {
-    throw crearError('Los datos de la experiencia deben ser un objeto', 400);
+    throw crearError('Los datos del plan deben ser un objeto', 400);
   }
 }
 

@@ -122,11 +122,11 @@ describe('CS-63: la experiencia y sus valoraciones', () => {
     expect(visible('#btn-cargar-mas')).toBe(false);
   });
 
-  test('sin valoraciones se indica «Todavía no hay valoraciones»', async () => {
+  test('sin valoraciones se indica «Todavía no hay valoraciones.»', async () => {
     await abrir({ [`GET ${BASE}/valoraciones`]: [200, pagina([])] });
 
     expect(visible('#sin-comentarios')).toBe(true);
-    expect($('#sin-comentarios').textContent).toBe('Todavía no hay valoraciones');
+    expect($('#sin-comentarios').textContent).toBe('Todavía no hay valoraciones.');
   });
 
   test('un comentario con HTML se muestra como texto', async () => {

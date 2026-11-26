@@ -48,7 +48,7 @@ async function editarExperiencia(usuarioId, experienciaId, datos) {
   const experiencia = await obtenerExperiencia(usuarioId, experienciaId);
 
   if (experiencia.autorId !== usuarioId) {
-    throw crearError('No puedes editar una experiencia de otro usuario', 403);
+    throw crearError('No puedes editar un plan de otro usuario', 403);
   }
 
   const cambiosValidados = await validarEdicion(datos);
@@ -61,7 +61,7 @@ async function editarExperiencia(usuarioId, experienciaId, datos) {
   } catch (err) {
     // La experiencia podría haberse eliminado entre la búsqueda y la actualización.
     if (err.code === 'P2025') {
-      throw crearError('La experiencia ya no existe', 404);
+      throw crearError('El plan ya no existe', 404);
     }
     // P2003: la ciudad nueva desapareció entre la validación y el guardado
     if (err.code === 'P2003') {
@@ -77,7 +77,7 @@ async function editarExperiencia(usuarioId, experienciaId, datos) {
 // devuelve errores explícitos sin filtrar la causa final.
 async function obtenerExperiencia(usuarioId, experienciaId) {
 
-  leerId(experienciaId, 'de la experiencia');
+  leerId(experienciaId, 'del plan');
 
   const experiencia = await experienciaRepository.buscarPorId(experienciaId);
 

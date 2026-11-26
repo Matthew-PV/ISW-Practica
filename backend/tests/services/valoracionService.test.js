@@ -364,7 +364,7 @@ describe('quién puede valorar', () => {
       )
     ).rejects.toMatchObject({
       status: 403,
-      message: 'No puedes valorar tu propia experiencia',
+      message: 'No puedes valorar tu propio plan',
     });
 
     expect(

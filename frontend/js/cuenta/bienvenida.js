@@ -5,19 +5,23 @@
 
 const PLANES_POR_TIRA = 8;
 
+// Siguiente paso que ofrece una tira sin planes: [texto, dirección]
+const CREAR_PLAN = ['Crear un plan', '/paginas/cuenta/mis-planes.html?nuevo=1'];
+
 // Cada tira: su título, su subtítulo, lo que se pide a la API para llenarla y qué decir si queda vacía.
 function definirTiras(ciudad, ciudadId) {
   return [
     {
-      id: 'ciudad', titulo: 'Ver experiencias en mi ciudad', subtitulo: ciudad ?? 'Indica tu ciudad en el perfil',
+      id: 'ciudad', titulo: 'Planes en mi ciudad', subtitulo: ciudad ?? 'Indica tu ciudad en el perfil',
       filtros: ciudadId === null ? null : { ciudadId },
       vacio: ciudadId === null && ciudad ? 'Tu ciudad no está en el catálogo de PlanB.'
-        : ciudadId === null ? 'Indica tu ciudad en tu perfil para ver aquí sus experiencias.' : 'Aún no hay experiencias en tu ciudad.',
+        : ciudadId === null ? 'Indica tu ciudad en tu perfil para ver aquí sus planes.' : 'Todavía no hay planes en tu ciudad.',
+      accion: ciudadId === null ? ['Ir a Ajustes', '/paginas/cuenta/ajustes.html'] : CREAR_PLAN,
     },
-    { id: 'nuevos', titulo: 'Nuevas experiencias', subtitulo: 'Lo último que ha publicado la gente', filtros: {}, vacio: 'Aún no hay experiencias publicadas.' },
+    { id: 'nuevos', titulo: 'Planes nuevos', subtitulo: 'Lo último que ha publicado la gente', filtros: {}, vacio: 'Todavía no hay planes publicados.', accion: CREAR_PLAN },
     {
-      id: 'amigos', titulo: 'Lo que hacen tus amigos', subtitulo: 'Experiencias de personas que conoces', filtros: { amigos: true },
-      vacio: 'Tus amigos aún no han publicado experiencias.',
+      id: 'amigos', titulo: 'Lo que hacen tus amigos', subtitulo: 'Planes de personas que conoces', filtros: { amigos: true },
+      vacio: 'Tus amigos todavía no han publicado planes.', accion: ['Buscar personas', '/paginas/experiencias/explorar.html?pestana=pestana-personas'],
     },
   ];
 }
@@ -61,10 +65,15 @@ function crearTira(tira) {
 }
 
 // Texto que ocupa el sitio de las tarjetas: la tira está vacía o no se ha podido cargar.
-function crearAvisoTira(texto) {
+function crearAvisoTira(texto, accion) {
   const aviso = document.createElement('p');
   aviso.className = 'tira-vacia text-secondary mb-0';
   aviso.textContent = texto;
+  if (accion) {
+    const enlace = document.createElement('a');
+    [enlace.textContent, enlace.href] = accion;
+    aviso.append(' ', enlace);
+  }
   return aviso;
 }
 
@@ -76,7 +85,9 @@ async function llenarTira(seccion, tira) {
     const planes = tira.filtros ? (await pedirPlanes({ ...tira.filtros, limite: PLANES_POR_TIRA })).experiencias : [];
     fila.replaceChildren(...(planes.length
       ? planes.map((plan, indice) => crearTarjetaPlan(plan, { indice }))
-      : [crearAvisoTira(tira.vacio)]));
+      : [crearAvisoTira(tira.vacio, tira.accion)]));
+    // Sin planes no hay más que ver
+    seccion.querySelector('.tira-ver-mas').hidden = !planes.length;
   } catch {
     pintarFalloTira(fila, () => llenarTira(seccion, tira));
   }

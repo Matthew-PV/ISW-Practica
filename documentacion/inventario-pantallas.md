@@ -58,11 +58,11 @@ Los cuatro estados que pide la tarjeta, más los propios de cada pantalla.
 | `registro` | — | — | ✔ validación, duplicado y CAPTCHA no disponible | — | ✔ «Creando cuenta…» mientras se envía; requisitos de la contraseña marcados al escribir |
 | `recuperar` | — | — | ✔ aviso de error | — | ✔ éxito, con el mismo mensaje exista o no la cuenta |
 | `restablecer` | — | — | ✔ aviso de error | — | ✔ sin token en la dirección (aviso y formulario oculto); contraseñas que no coinciden; éxito con enlace al inicio de sesión |
-| `mis-planes` | ✔ «Cargando…» | ✔ «Todavía no has publicado experiencias.», junto a la tarjeta «+» | ✔ error de la lista y error del diálogo | — | Diálogo de crear o editar abierto; «Cargar más» |
+| `mis-planes` | ✔ «Cargando…» | ✔ «Todavía no has publicado planes.», junto a la tarjeta «+» | ✔ error de la lista y error del diálogo | — | Diálogo de crear o editar abierto; «Cargar más» |
 | `perfil` | ✔ «Cargando…» | ✔ cuatro: sin experiencias, sin solicitudes, sin amigos y sin seguidores | ✔ seis avisos (foto, datos, contraseña, experiencias, solicitudes y relaciones) | — | ✔ «Subiendo foto…»; avisos de éxito en foto, datos y contraseña; «Cargar más» |
-| `personas` | ✔ «Cargando…» mientras busca | ✔ «No se han encontrado personas.»; en la pestaña Experiencias, vacío por diseño (CS-24): «Todavía no hay experiencias que mostrar» | ✔ aviso de error | — | ✔ antes de buscar: «Escribe parte de un nombre.» (Personas) o «Escribe para buscar experiencias.» (Experiencias); «Buscando…» mientras se envía |
-| `usuario` | ✔ «Cargando…», sin datos de relleno hasta que llega el perfil | ✔ «No hay experiencias que puedas ver.» | ✔ error de la acción y error de la lista | ✔ **«Usuario no encontrado»** | Si es el propio usuario, va a `/paginas/cuenta/perfil.html`; cuatro versiones del botón de amistad; «Seguir» o «Dejar de seguir» |
-| `experiencia` | ✔ «Cargando experiencia…» | ✔ sin valoraciones de amigos y sin comentarios | ✔ aviso en la valoración y errores de carga | ✔ **«Contenido no disponible»** (404) | Sin identificador en la dirección; sin sesión (401); el autor no ve el formulario; reporte; «Útil» y «Reportar» no guardan nada todavía |
+| `personas` | ✔ «Cargando…» mientras busca | ✔ «No se han encontrado personas.»; en la pestaña Experiencias, vacío por diseño (CS-24): «Todavía no hay planes que mostrar» | ✔ aviso de error | — | ✔ antes de buscar: «Escribe parte de un nombre.» (Personas) o «Escribe para buscar planes.» (Experiencias); «Buscando…» mientras se envía |
+| `usuario` | ✔ «Cargando…», sin datos de relleno hasta que llega el perfil | ✔ «No hay planes que puedas ver.» | ✔ error de la acción y error de la lista | ✔ **«Usuario no encontrado»** | Si es el propio usuario, va a `/paginas/cuenta/perfil.html`; cuatro versiones del botón de amistad; «Seguir» o «Dejar de seguir» |
+| `experiencia` | ✔ «Cargando plan…» | ✔ sin valoraciones de amigos y sin comentarios | ✔ aviso en la valoración y errores de carga | ✔ **«Contenido no disponible»** (404) | Sin identificador en la dirección; sin sesión (401); el autor no ve el formulario; reporte; «Útil» y «Reportar» no guardan nada todavía |
 
 **En todas las pantallas con sesión,** un 401 devuelve a `/paginas/acceso/iniciar-sesion.html`. **Todos los avisos de error llevan `role="alert"`**, y una prueba lo comprueba en las páginas con avisos.
 
@@ -132,7 +132,7 @@ Estados que la tarjeta pide y que **no existían** al revisar el código el 26/1
 | # | Laguna | Dónde | Qué hace el diseño | Estado |
 |---|---|---|---|---|
 | 1 | **No había estado «Cargando»**: mientras llegaban los datos la pantalla quedaba vacía | `bienvenida`, `perfil`, `personas`, `usuario` (solo `experiencia` lo tenía) | Un texto «Cargando…» igual en todas, en `#cargando` | ✔ Cubierta (26/10/2026) |
-| 2 | **La bienvenida sin experiencias no explicaba nada**: solo se veía la tarjeta «+» | `bienvenida` | «Todavía no has publicado experiencias.» | ✔ Cubierta (26/10/2026) |
+| 2 | **La bienvenida sin experiencias no explicaba nada**: solo se veía la tarjeta «+» | `bienvenida` | «Todavía no has publicado planes.» | ✔ Cubierta (26/10/2026) |
 | 3 | **`personas` antes de buscar no tenía texto de ayuda** | `personas` | «Escribe parte de un nombre.» | ✔ Cubierta (26/10/2026) |
 | 4 | **Ocho avisos de error no se anunciaban a lectores de pantalla**, en seis pantallas | `iniciar-sesion` (antes `index`), `registro`, `bienvenida` (2), `perfil` (2), `usuario` y `experiencia` | `role="alert"` en todos los avisos de error | ✔ Cubierta (26/10/2026), con una prueba que revisa las páginas |
 | 5 | «Útil» y «Reportar» **no guardan nada** | `experiencia` | Reservarles su sitio sin que parezca que funcionan | ⏳ Pendiente: depende de CS-02 y CS-04, que son de otras historias |

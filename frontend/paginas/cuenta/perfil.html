@@ -62,7 +62,7 @@
         <h1 id="nombre-perfil" class="mb-1"></h1>
         <p id="ciudad-perfil" class="text-secondary mb-3"></p>
         <ul class="cabecera-perfil-contadores">
-          <li><span id="total-experiencias" class="contador-numero">–</span> <span class="contador-rotulo">experiencias</span></li>
+          <li><span id="total-experiencias" class="contador-numero">–</span> <span class="contador-rotulo">planes</span></li>
           <li><span id="total-amigos" class="contador-numero">–</span> <span class="contador-rotulo">amigos</span></li>
           <li><span id="total-seguidores" class="contador-numero">–</span> <span class="contador-rotulo">seguidores</span></li>
         </ul>
@@ -81,18 +81,18 @@
     <!-- CS-44: mis experiencias, también las privadas; las pinta js/shared/experiencias.js -->
     <div role="tabpanel" id="panel-experiencias" aria-labelledby="pestana-experiencias" class="pt-4">
       <div id="error-experiencias" class="alert alert-danger d-none" role="alert"></div>
-      <div id="sin-experiencias" class="estado-vacio d-none"><img src="/img/vacio-planes.svg" alt="" width="240" height="180"><p>Todavía no has publicado planes.</p></div>
+      <div id="sin-experiencias" class="estado-vacio d-none"><img src="/img/vacio-planes.svg" alt="" width="240" height="180"><p>Todavía no has publicado planes. <a href="/paginas/cuenta/mis-planes.html?nuevo=1">Crea el primero</a>.</p></div>
       <h2 class="visually-hidden">Planes</h2>
       <div id="lista-experiencias" class="rejilla-experiencias"></div>
       <div class="text-center mt-3">
-        <button type="button" id="mas-experiencias" class="btn btn-outline-primary d-none">Cargar más experiencias</button>
+        <button type="button" id="mas-experiencias" class="btn btn-outline-primary d-none">Cargar más planes</button>
       </div>
     </div>
 
     <!-- Amigos y seguidores (CS-45). js/cuenta/perfil.js los obtiene desde /api/perfil/resumen,
          /api/perfil/amigos y /api/perfil/seguidores. -->
     <div role="tabpanel" id="panel-amigos" aria-labelledby="pestana-amigos" class="pt-4" hidden>
-      <div id="sin-amigos" class="estado-vacio d-none"><img src="/img/vacio-personas.svg" alt="" width="240" height="180"><p>Todavía no tienes amigos.</p></div>
+      <div id="sin-amigos" class="estado-vacio d-none"><img src="/img/vacio-personas.svg" alt="" width="240" height="180"><p>Todavía no tienes amigos. <a href="/paginas/experiencias/explorar.html?pestana=pestana-personas">Busca personas</a>.</p></div>
       <div id="lista-amigos" class="list-group"></div>
       <button type="button" id="mas-amigos" class="btn btn-outline-primary mt-2 d-none">Cargar más amigos</button>
     </div>

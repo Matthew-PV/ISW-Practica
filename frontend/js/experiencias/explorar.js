@@ -8,9 +8,9 @@
 const PLANES_POR_PAGINA = 12;
 
 const TITULOS_TIRA = {
-  ciudad: ['Experiencias en mi ciudad', 'Lo que se hace cerca de ti.'],
-  nuevos: ['Nuevas experiencias', 'Lo último que ha publicado la gente.'],
-  amigos: ['Lo que hacen tus amigos', 'Experiencias de personas que conoces.'],
+  ciudad: ['Planes en mi ciudad', 'Lo que se hace cerca de ti.'],
+  nuevos: ['Planes nuevos', 'Lo último que ha publicado la gente.'],
+  amigos: ['Lo que hacen tus amigos', 'Planes de personas que conoces.'],
 };
 
 const filtros = document.getElementById('filtros');

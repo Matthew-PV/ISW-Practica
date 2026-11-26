@@ -272,7 +272,7 @@ Reglas normativas, iguales en todas las pantallas. Nada se anima más que esto, 
 | Interacción | Regla |
 |---|---|
 | **Acción con espera** | Al enviarse, el botón pasa a su texto en gerundio («Buscando…», «Cerrando sesión…», «Guardando…», «Entrando…») y queda desactivado con `[aria-busy="true"]`; al terminar recupera su texto y se activa. Si falla, aviso con `role="alert"` |
-| **Buscar** | Al enviar, desaparece el texto de ayuda («Escribe parte de un nombre.» o «Escribe para buscar experiencias.»), se vacían los resultados anteriores, aparece «Cargando…» y, al llegar la respuesta, los resultados entran con un **fundido de 150 ms**. Sin resultados: «No se han encontrado personas.» (o el texto de «Experiencias»). El campo conserva lo escrito |
+| **Buscar** | Al enviar, desaparece el texto de ayuda («Escribe parte de un nombre.» o «Escribe para buscar planes.»), se vacían los resultados anteriores, aparece «Cargando…» y, al llegar la respuesta, los resultados entran con un **fundido de 150 ms**. Sin resultados: «No se han encontrado personas.» (o el texto de «Planes»). El campo conserva lo escrito |
 | **Pestañas** | `role="tab"`, `aria-selected` y paneles `role="tabpanel"`. Al cambiar, la activa se marca con línea gruesa y negrita y el panel anterior se oculta. Se mueven con las flechas izquierda y derecha (de la última a la primera y al revés). El texto de ayuda de cada panel es independiente |
 | **Menú de cuenta** | Se abre con un **fundido de 150 ms**; se cierra al pulsar fuera, con Escape o al elegir una opción, y el foco vuelve al botón |
 | **Botones y enlaces** | Cambio de ratón, pulsado y foco con una **transición de 120 ms** |
@@ -301,8 +301,11 @@ Solo en `index.html`, en CSS y sin scripts. Nunca se anima lo que se lee o se pu
 - Castellano, frases cortas y primera letra en mayúscula, sin punto final en botones.
 - Los avisos de error dicen qué pasó y qué hacer. Los textos de ayuda terminan en punto.
 - Verbo primero en los botones: «Guardar cambios», «Añadir amigo», «Buscar».
-- «Tú», no «usted»: «Tus experiencias», «¿Has olvidado tu contraseña?».
+- «Tú», no «usted»: «Tus planes», «¿Has olvidado tu contraseña?».
 - Acciones con espera en gerundio: «Buscando…», «Guardando…».
+- Lo que se publica, se busca y se gestiona se llama «plan» en toda la interfaz y en los mensajes del servidor.
+- Un estado vacío ofrece el siguiente paso con un enlace; los que van dentro de otro contenido son una línea de texto, sin ilustración.
+- Botones: relleno para la acción principal (rojo `.btn-danger` si destruye), contorno para el resto.
 
 
 ## Estado de la aplicación

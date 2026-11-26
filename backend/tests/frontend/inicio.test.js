@@ -141,3 +141,11 @@ test('una tira que falla no dice que está vacía y se puede reintentar', async 
   tira.querySelector('button').click();
   expect(window.fetch.mock.calls.map(([ruta]) => ruta)).toContain('/api/experiencias?limite=8');
 });
+
+test('una tira vacía ofrece el siguiente paso y no muestra «Ver más»', async () => {
+  await abrir(rutasBase({ '/api/experiencias?amigos=true&limite=8': lista() }));
+
+  const tira = document.querySelectorAll('.tira')[2];
+  expect(tira.querySelector('.tira-ver-mas').hidden).toBe(true);
+  expect(tira.querySelector('a[href="/paginas/experiencias/explorar.html?pestana=pestana-personas"]').textContent).toBe('Buscar personas');
+});

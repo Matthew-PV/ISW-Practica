@@ -360,7 +360,7 @@ Then(
     assert.equal(this.valRespuesta.status, 403);
     assert.equal(
       this.valRespuesta.body.error,
-      'No puedes valorar tu propia experiencia'
+      'No puedes valorar tu propio plan'
     );
   }
 );

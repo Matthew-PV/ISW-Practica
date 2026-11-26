@@ -62,7 +62,7 @@ describe('Objetivo 6 - un usuario que no es el autor no puede editar', () => {
     const res = await agente.patch('/api/experiencias/10').send({ titulo: 'Título ajeno' });
 
     expect(res.status).toBe(403);
-    expect(res.body.error).toBe('No puedes editar una experiencia de otro usuario');
+    expect(res.body.error).toBe('No puedes editar un plan de otro usuario');
     expect(experienciaRepository.actualizar).not.toHaveBeenCalled();
     expect(guardada).toEqual(antes);
   });

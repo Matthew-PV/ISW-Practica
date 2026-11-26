@@ -297,7 +297,7 @@ describe('peticiones rechazadas: no se guarda nada', () => {
 
     expect(res.status).toBe(403);
     expect(res.body.error).toBe(
-      'No puedes valorar tu propia experiencia'
+      'No puedes valorar tu propio plan'
     );
 
     expect(valoraciones.size).toBe(0);

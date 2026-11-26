@@ -37,10 +37,11 @@ describe('E2: vocabulario de la interfaz', () => {
     expect(texto('paginas/cuenta/perfil.html')).not.toMatch(/Experiencias/);
   });
 
-  test('Explorar habla de experiencias para descubrir', () => {
+  test('Explorar también habla de planes', () => {
     const explorar = texto('paginas/experiencias/explorar.html');
-    expect(explorar).toContain('Experiencias de otras personas para inspirarte.');
-    expect(explorar).toContain('Solo experiencias de mis amigos');
-    expect(explorar).toContain('No hay experiencias con estos filtros.');
+    expect(explorar).toContain('Planes de otras personas para inspirarte.');
+    expect(explorar).toContain('Solo planes de mis amigos');
+    expect(explorar).toContain('No hay planes con estos filtros.');
+    expect(explorar).not.toMatch(/xperiencia/);
   });
 });

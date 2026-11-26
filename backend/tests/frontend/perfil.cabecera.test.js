@@ -71,7 +71,7 @@ describe('cabecera del perfil', () => {
   test('el contador de experiencias cuenta las que se han cargado', async () => {
     await abrir();
 
-    expect($('.cabecera-perfil').textContent.replace(/\s+/g, ' ')).toContain('2 experiencias');
+    expect($('.cabecera-perfil').textContent.replace(/\s+/g, ' ')).toContain('2 planes');
   });
 
   test('las experiencias van en una rejilla', async () => {

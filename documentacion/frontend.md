@@ -187,7 +187,7 @@ stateDiagram-v2
   Mostrando --> Mostrando : «Cargar más», guardar la valoración
   Mostrando --> NoDisponible : una petición posterior responde 404
   Mostrando --> AlLogin : una petición posterior responde 401
-  SinId : «No se ha especificado ninguna experiencia.»
+  SinId : «No se ha especificado ningún plan.»
   AlLogin : vuelve a /paginas/acceso/iniciar-sesion.html
   NoDisponible : solo «Contenido no disponible», se borra lo que se mostraba
   Error : aviso rojo con el mensaje
@@ -266,8 +266,8 @@ Pruebas: `recuperacion.test.js`.
 
 ### `/paginas/cuenta/bienvenida.html`: inicio
 
-* Portada con «Hola, <nombre>» y «Crear plan» (a `/paginas/cuenta/mis-planes.html?nuevo=1`), y debajo tiras horizontales de planes (`#tiras`): «Ver experiencias en mi ciudad» (con la ciudad del perfil debajo), «Nuevas experiencias» y «Lo que hacen tus amigos». Cada una lleva «Ver más →» a `/paginas/experiencias/explorar.html?tira=<id>`. La fila de tarjetas es un grupo enfocable con Tab (`tabindex="0"`, `role="group"`, nombrado por el título de la tira) para poder desplazarla con las flechas.
-* Cada tira pide hasta 8 planes a `GET /api/experiencias`: la de la ciudad con `ciudadId` (la ciudad del perfil es texto libre y se busca por nombre en `GET /ciudades`, sin distinguir mayúsculas ni acentos), «Nuevas experiencias» sin filtros y la de amigos con `amigos=true`. Los encabezados se pintan al abrir, con huecos de carga, y cada tira se rellena cuando llega lo suyo. Una tira sin planes, o sin ciudad en el catálogo, muestra un aviso (`.tira-vacia`); si su petición falla, lo dice con «Reintentar» y las demás siguen.
+* Portada con «Hola, <nombre>» y «Crear plan» (a `/paginas/cuenta/mis-planes.html?nuevo=1`), y debajo tiras horizontales de planes (`#tiras`): «Planes en mi ciudad» (con la ciudad del perfil debajo), «Planes nuevos» y «Lo que hacen tus amigos». Cada una lleva «Ver más →» a `/paginas/experiencias/explorar.html?tira=<id>`. La fila de tarjetas es un grupo enfocable con Tab (`tabindex="0"`, `role="group"`, nombrado por el título de la tira) para poder desplazarla con las flechas.
+* Cada tira pide hasta 8 planes a `GET /api/experiencias`: la de la ciudad con `ciudadId` (la ciudad del perfil es texto libre y se busca por nombre en `GET /ciudades`, sin distinguir mayúsculas ni acentos), «Planes nuevos» sin filtros y la de amigos con `amigos=true`. Los encabezados se pintan al abrir, con huecos de carga, y cada tira se rellena cuando llega lo suyo. Una tira sin planes, o sin ciudad en el catálogo, muestra un aviso (`.tira-vacia`); si su petición falla, lo dice con «Reintentar» y las demás siguen.
 * Las tarjetas son las comunes de los planes (`crearTarjetaPlan`, `js/shared/planes.js`): se pulsan enteras, porque el enlace del título las cubre, y muestran ciudad, categoría, duración, tarifa, descripción y autor. En «Mis planes» y en los perfiles llevan además la etiqueta de visibilidad, y en «Mis planes», «Editar».
 
 Pruebas: `inicio.test.js`.
@@ -283,7 +283,7 @@ Pruebas: `explorar.test.js`, `personas.test.js` y `pestanas.test.js`.
 
 ### `/paginas/cuenta/mis-planes.html`: mis planes
 
-* Muestra las experiencias del usuario en una rejilla, de 10 en 10, con «Cargar más» (`#mas-experiencias`). Mientras llegan los datos se ve «Cargando…» (`#cargando`) y, si no hay ninguna experiencia, `#sin-experiencias` dice «Todavía no has publicado experiencias.» junto a la tarjeta «+».
+* Muestra las experiencias del usuario en una rejilla, de 10 en 10, con «Cargar más» (`#mas-experiencias`). Mientras llegan los datos se ve «Cargando…» (`#cargando`) y, si no hay ninguna experiencia, `#sin-experiencias` dice «Todavía no has publicado planes.» junto a la tarjeta «+».
 * La primera tarjeta, «+», abre el `<dialog>` `#dialogo-experiencia` para crear una experiencia. «Editar» abre el mismo diálogo relleno con sus datos.
 * El diálogo tiene dos columnas: los campos a la izquierda y, a la derecha, `#vista-previa` con la tarjeta tal como quedará (la misma, sin enlace ni «Editar»), que cambia al escribir. Campos, en orden:
   * Título.

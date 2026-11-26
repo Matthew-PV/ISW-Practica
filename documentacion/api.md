@@ -220,7 +220,7 @@ Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, p
 * **Cuerpo:** `{ titulo, descripcion, ciudadId, tipo?, momentoAdecuado?, duracionMinutos?, tarifa?, visibilidad? }`. `ciudadId` debe ser un número, no un texto; `duracionMinutos` es un entero positivo y `tarifa` un importe no negativo con hasta dos decimales (número o texto, admite coma), vacío = sin especificar; `visibilidad` es PUBLICA si no llega (al editar, `null` da 400). Otros campos, como `autorId`, se ignoran.
 * **Responde:** 201 con la experiencia creada y su ciudad. El autor es el usuario de la sesión.
 * **Errores 400:**
-  * «Los datos de la experiencia deben ser un objeto».
+  * «Los datos del plan deben ser un objeto».
   * «El título es obligatorio», «La descripción es obligatoria», «... debe ser un texto».
   * «El título no puede superar los 191 caracteres».
   * «La categoría debe ser una de: ...», «El momento adecuado debe ser una de: ...» (se comparan tal cual, con mayúsculas y tildes).
@@ -235,7 +235,7 @@ Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, p
 
 * **Cuerpo:** los mismos campos que al crearla; solo cambian los que llegan, con las mismas reglas.
 * **Responde:** 200 con la experiencia actualizada.
-* **Errores:** los 400 de la creación y «Debes indicar al menos un campo para modificar»; 403 «No puedes editar una experiencia de otro usuario» (solo si la ve); 404 «Contenido no disponible» si no existe o no la puede ver, o «La experiencia ya no existe» (se borró mientras tanto).
+* **Errores:** los 400 de la creación y «Debes indicar al menos un campo para modificar»; 403 «No puedes editar un plan de otro usuario» (solo si la ve); 404 «Contenido no disponible» si no existe o no la puede ver, o «El plan ya no existe» (se borró mientras tanto).
 * **Notas:** a diferencia de la lectura, la edición distingue entre «no existe» y «no es tuya». La pantalla solo ofrece «Editar» en las experiencias propias.
 
 ## Valoraciones (`valoracionRoutes.js` → `valoracionService`)
@@ -254,7 +254,7 @@ Están montadas bajo `/api/experiencias/:id`. Todas comprueban antes que el usua
 
 * **Cuerpo:** `{ puntuacion, comentario? }`. `puntuacion` es un entero del 1 al 5; `comentario`, como mucho 1000 caracteres (se guarda sin espacios exteriores; vacío equivale a `null`).
 * **Responde:** 201 si la crea y 200 si actualiza la que ya tenía. Cada usuario tiene como mucho una valoración por experiencia.
-* **Errores:** 400 «La puntuación debe ser un número entero del 1 al 5», «El comentario debe ser un texto», «El comentario no puede superar los 1000 caracteres»; 403 «No puedes valorar tu propia experiencia». Ver [F6](flujos.md#f6-valorar).
+* **Errores:** 400 «La puntuación debe ser un número entero del 1 al 5», «El comentario debe ser un texto», «El comentario no puede superar los 1000 caracteres»; 403 «No puedes valorar tu propio plan». Ver [F6](flujos.md#f6-valorar).
 
 ### `GET /api/experiencias/:id/valoraciones`
 

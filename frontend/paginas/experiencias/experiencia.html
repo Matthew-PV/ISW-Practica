@@ -56,7 +56,7 @@
 
   <main id="contenido" class="container py-4">
     <!-- Contenedor de mensajes de error o carga -->
-    <div id="mensaje-estado" class="alert alert-info">Cargando experiencia...</div>
+    <div id="mensaje-estado" class="alert alert-info">Cargando plan…</div>
 
     <!-- Contenido de la experiencia -->
     <div id="contenido-experiencia" class="d-none">
@@ -80,7 +80,7 @@
           <!-- CS-14: resumen de las valoraciones -->
           <section id="resumen-valoraciones" class="resumen-valoraciones tarjeta-panel mb-4" aria-labelledby="titulo-resumen" hidden>
             <h2 id="titulo-resumen" class="h5 mb-3">Valoraciones</h2>
-            <p id="resumen-vacio" class="text-muted mb-0" hidden>Todavía sin valoraciones.</p>
+            <p id="resumen-vacio" class="text-secondary mb-0" hidden>Todavía sin valoraciones.</p>
             <div id="resumen-cifras" class="resumen-cifras">
               <div class="resumen-nota">
                 <p id="resumen-media" class="resumen-media"></p>
@@ -109,7 +109,7 @@
           </div>
 
           <div role="tabpanel" id="panel-amigos" aria-labelledby="pestana-amigos">
-            <p id="sin-valoraciones-amigos" class="text-muted d-none">
+            <p id="sin-valoraciones-amigos" class="text-secondary d-none">
               Ningún amigo o seguidor ha valorado este plan.
             </p>
             <div id="lista-valoraciones-amigos" class="d-flex flex-column gap-3 mb-3"></div>
@@ -119,7 +119,7 @@
           </div>
 
           <div role="tabpanel" id="panel-todas" aria-labelledby="pestana-todas" hidden>
-            <p id="sin-comentarios" class="text-muted d-none">Todavía no hay valoraciones</p>
+            <p id="sin-comentarios" class="text-secondary d-none">Todavía no hay valoraciones.</p>
             <div id="lista-comentarios" class="d-flex flex-column gap-3 mb-3"></div>
             <div class="text-center">
               <button type="button" id="btn-cargar-mas" class="btn btn-outline-primary d-none">Cargar más</button>
@@ -245,7 +245,7 @@
       <div id="mensaje-reporte" class="alert d-none small"></div>
 
       <div class="d-flex justify-content-end gap-2">
-        <button type="button" class="btn btn-secondary" data-cerrar-reporte>Cancelar</button>
+        <button type="button" class="btn btn-outline-primary" data-cerrar-reporte>Cancelar</button>
         <button type="submit" class="btn btn-danger" id="btn-enviar-reporte">Enviar reporte</button>
       </div>
     </form>

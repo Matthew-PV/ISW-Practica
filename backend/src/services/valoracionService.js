@@ -47,7 +47,7 @@ function leerComentario(valor) {
 // disponible» si la experiencia no existe o no puede verla (el mismo, para no revelar que
 // existe) y 403 si es su propia experiencia.
 async function valorarExperiencia(usuarioId, experienciaId, datos) {
-  leerId(experienciaId, 'de la experiencia');
+  leerId(experienciaId, 'del plan');
   // Number.isInteger descarta el texto "4", los decimales y la ausencia de valor
   const puntuacion = datos?.puntuacion;
   if (!Number.isInteger(puntuacion) || puntuacion < PUNTUACION_MIN || puntuacion > PUNTUACION_MAX) {
@@ -57,7 +57,7 @@ async function valorarExperiencia(usuarioId, experienciaId, datos) {
 
   const experiencia = await experienciaService.obtenerExperiencia(usuarioId, experienciaId);
   if (experiencia.autorId === usuarioId) {
-    throw crearError('No puedes valorar tu propia experiencia', 403);
+    throw crearError('No puedes valorar tu propio plan', 403);
   }
 
   // El repositorio decide si la crea o actualiza la existente, incluso con peticiones simultáneas

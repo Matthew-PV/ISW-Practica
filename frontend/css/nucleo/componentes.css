@@ -103,6 +103,32 @@ a {
   --bs-btn-active-border-color: var(--color-exito);
 }
 
+/* Destructivo principal (diálogos) y estado activo, rellenos */
+.btn-danger,
+.btn-success {
+  --bs-btn-color: var(--color-fondo);
+  --bs-btn-hover-color: var(--color-fondo);
+  --bs-btn-active-color: var(--color-fondo);
+}
+.btn-danger {
+  --bs-btn-bg: var(--color-peligro);
+  --bs-btn-border-color: var(--color-peligro);
+  --bs-btn-hover-bg: var(--color-error-texto);
+  --bs-btn-hover-border-color: var(--color-error-texto);
+  --bs-btn-active-bg: var(--color-error-texto);
+  --bs-btn-active-border-color: var(--color-error-texto);
+  --bs-btn-disabled-bg: var(--color-peligro);
+  --bs-btn-disabled-border-color: var(--color-peligro);
+}
+.btn-success {
+  --bs-btn-bg: var(--color-exito);
+  --bs-btn-border-color: var(--color-exito);
+  --bs-btn-hover-bg: var(--color-exito-texto);
+  --bs-btn-hover-border-color: var(--color-exito-texto);
+  --bs-btn-active-bg: var(--color-exito-texto);
+  --bs-btn-active-border-color: var(--color-exito-texto);
+}
+
 .btn-outline-danger:hover { box-shadow: inset 0 0 0 1px var(--color-peligro); }
 .btn-outline-success:hover { box-shadow: inset 0 0 0 1px var(--color-exito); }
 .btn-outline-danger:active,
