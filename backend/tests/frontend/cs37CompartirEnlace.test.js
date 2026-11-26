@@ -72,3 +72,20 @@ describe('CS-37: compartir enlace de una experiencia', () => {
 
 });
 
+
+test('si no se puede copiar, deja la dirección a la vista; si no es público, dice quién puede abrirlo', async () => {
+  cargarScripts(['js/experiencias/compartir-enlace.js']);
+  const boton = document.getElementById('btn-copiar-enlace');
+  boton.dataset.visibilidad = 'AMIGOS';
+
+  boton.click();
+  await esperar();
+  expect(document.getElementById('mensaje-compartir').textContent).toContain('amigos');
+
+  navigator.clipboard.writeText.mockRejectedValueOnce(new Error('Permiso denegado'));
+  boton.click();
+  await esperar();
+  const campo = document.getElementById('enlace-compartir');
+  expect(campo.hidden).toBe(false);
+  expect(campo.value).toBe(window.location.origin + RUTA);
+});

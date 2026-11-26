@@ -4,6 +4,12 @@
 const botonCopiarEnlace = document.getElementById('btn-copiar-enlace');
 const mensajeCompartir = document.getElementById('mensaje-compartir');
 
+// Quién podrá abrir el enlace de un plan que no es público
+const QUIEN_PUEDE_ABRIR = {
+  AMIGOS: ' Solo pueden abrirlo los amigos de quien lo publicó.',
+  PRIVADA: ' Es privado: solo puede abrirlo quien lo publicó.',
+};
+
 function mostrarResultadoCompartir(texto, correcto) {
   mensajeCompartir.textContent = texto;
   mensajeCompartir.className = correcto
@@ -42,14 +48,18 @@ async function copiarEnlaceExperiencia() {
     await navigator.clipboard.writeText(url.href);
 
     mostrarResultadoCompartir(
-      '¡Enlace copiado!',
+      `¡Enlace copiado!${QUIEN_PUEDE_ABRIR[botonCopiarEnlace.dataset.visibilidad] ?? ''}`,
       true
     );
   } catch (error) {
     mostrarResultadoCompartir(
-      'No se ha podido copiar el enlace.',
+      'No se ha podido copiar el enlace. Cópialo de aquí:',
       false
     );
+    const campo = document.getElementById('enlace-compartir');
+    campo.value = url.href;
+    campo.hidden = false;
+    campo.select();
   } finally {
     botonCopiarEnlace.disabled = false;
   }

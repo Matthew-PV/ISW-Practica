@@ -1,5 +1,15 @@
 /* Landing pública (index.html). Solo variables del tema. */
 
+/* Los adornos que asoman no crean desplazamiento horizontal */
+body:has(.landing) {
+  overflow-x: clip;
+}
+
+/* La cabecera, alineada con el contenido */
+body:has(.landing) .cabecera-interior {
+  max-width: calc(1100px + 48px);
+}
+
 .landing {
   width: min(1100px, calc(100% - 48px));
   margin: 0 auto;

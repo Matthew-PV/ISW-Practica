@@ -391,7 +391,8 @@ fieldset:disabled .btn {
 
 .rejilla-experiencias {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow-wrap: anywhere;
   grid-auto-rows: 1fr;
   gap: var(--espacio-16);
   margin: 0;

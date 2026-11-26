@@ -11,6 +11,11 @@
   border-radius: var(--radio-tarjeta);
 }
 
+.cabecera-perfil > div {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .cabecera-perfil img {
   width: 96px;
   height: 96px;

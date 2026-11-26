@@ -51,6 +51,18 @@ function rutaDeVuelta() {
   return '/paginas/cuenta/bienvenida.html';
 }
 
+// Al volver de editar (js/cuenta/mis-planes.js) se confirma el guardado
+function avisarSiSeEdito() {
+  if (sessionStorage.getItem('planb-plan-editado') !== experienciaId) return;
+  sessionStorage.removeItem('planb-plan-editado');
+  document.getElementById('aviso-cambios').classList.remove('d-none');
+}
+avisarSiSeEdito();
+// Si el navegador recupera la pantalla anterior, se recarga para no enseñar el plan sin los cambios
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted && sessionStorage.getItem('planb-plan-editado') === experienciaId) window.location.reload();
+});
+
 const enlaceVolver = document.getElementById('enlace-volver');
 enlaceVolver.href = rutaDeVuelta();
 // Si hay una pantalla de PlanB detrás, se retrocede en el historial: vuelve como estaba (filtros,
@@ -145,6 +157,7 @@ async function cargarPaginaExperiencia() {
     ciudadEl.textContent =
       experiencia.ciudad?.nombre || 'Ciudad desconocida';
 
+    document.getElementById('btn-copiar-enlace').dataset.visibilidad = experiencia.visibilidad;
     const etiqueta = ETIQUETAS_VISIBILIDAD[experiencia.visibilidad];
     if (etiqueta) {
       visibilidadEl.className = etiqueta.clase;
@@ -174,6 +187,7 @@ async function cargarPaginaExperiencia() {
 
     if (autorId !== yo.id) {
       cajaFormulario.classList.remove('d-none');
+      document.getElementById('enlace-valorar').classList.remove('d-none');
       cargarMiValoracion();
     } else {
       document.getElementById('boton-editar').href =

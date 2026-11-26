@@ -81,7 +81,8 @@
 }
 
 .tira-fila > .tarjeta-plan {
-  flex: 0 0 220px;
+  /* Cuatro enteras; en ventanas estrechas no bajan de 220 px */
+  flex: 0 0 max(220px, calc((100% - 3 * var(--espacio-16)) / 4));
   scroll-snap-align: start;
 }
 

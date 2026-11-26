@@ -55,15 +55,17 @@
   </header>
 
   <main id="contenido" class="container py-4">
+    <p class="mb-3">
+      <a id="enlace-volver" href="/paginas/cuenta/bienvenida.html">← Volver</a>
+    </p>
+
     <!-- Contenedor de mensajes de error o carga -->
     <div id="mensaje-estado" class="alert alert-info">Cargando plan…</div>
 
+    <p id="aviso-cambios" class="alert alert-success d-none" role="status">Cambios guardados.</p>
+
     <!-- Contenido de la experiencia -->
     <div id="contenido-experiencia" class="d-none">
-      <p class="mb-3">
-        <a id="enlace-volver" href="/paginas/cuenta/bienvenida.html">← Volver</a>
-      </p>
-
       <div class="detalle-rejilla">
         <div class="detalle-principal">
           <h1 id="detalle-titulo" class="mb-3"></h1>
@@ -192,6 +194,8 @@
             </div>
           </dl>
 
+          <a id="enlace-valorar" href="#caja-formulario-valoracion" class="btn btn-primary w-100 mt-3 d-none">Valorar</a>
+
           <!-- CS-37: compartir mediante enlace -->
           <div class="mt-3">
             <button
@@ -199,6 +203,7 @@
               id="btn-copiar-enlace"
               class="btn btn-outline-primary w-100"
             >Copiar enlace</button>
+            <input id="enlace-compartir" class="form-control form-control-sm mt-2" aria-label="Enlace del plan" readonly hidden>
             <p
               id="mensaje-compartir"
               class="small mt-2 mb-0"

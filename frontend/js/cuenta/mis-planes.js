@@ -520,6 +520,7 @@ formulario.addEventListener('submit', async (e) => {
     if (editando) {
       const experiencia = await api(`/experiencias/${editando.id}`, { method: 'PATCH', body: JSON.stringify(datos) });
       if (volverA) {
+        sessionStorage.setItem('planb-plan-editado', String(editando.id));
         irAlDetalle();
         return;
       }
@@ -620,6 +621,10 @@ async function abrirDesdeEnlace() {
     const id = Number(parametros.get('editar'));
     try {
       const experiencia = await api(`/experiencias/${id}`);
+      if (experiencia.autor && experiencia.autor.nombreUsuario !== autorExperiencias) {
+        mostrarMensaje(cajaErrorLista, 'No puedes editar un plan de otro usuario');
+        return;
+      }
       volverA = `/paginas/experiencias/experiencia.html?id=${id}`;
       abrirFormulario(experiencia);
     } catch (err) {

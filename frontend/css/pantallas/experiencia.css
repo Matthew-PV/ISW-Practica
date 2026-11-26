@@ -136,19 +136,24 @@
   outline-offset: 2px;
 }
 
-/* El comentario ocupa una fila y crece al enfocarlo */
+/* Altura fija: si cambiara al perder el foco, movería el botón de publicar */
 .campo-comentario {
-  min-height: 44px;
-  resize: vertical;
-  transition: min-height var(--duracion-corta);
-}
-
-.campo-comentario:focus {
   min-height: 112px;
+  resize: vertical;
 }
 
 /* Bloque de categoría de la ficha, con las cuatro esquinas redondeadas */
 .detalle-categoria .bloque-categoria {
   height: 96px;
   border-radius: var(--radio-tarjeta);
+}
+
+/* Los párrafos de la descripción se ven y un texto sin espacios no desborda */
+#detalle-titulo,
+#detalle-descripcion {
+  overflow-wrap: anywhere;
+}
+
+#detalle-descripcion {
+  white-space: pre-line;
 }
