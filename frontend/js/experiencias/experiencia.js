@@ -1,6 +1,7 @@
 
  // Página de una experiencia: título, descripción, valoraciones y ficha.
  // CS-53: muestra duración en minutos y tarifa en euros.
+// CS-50: fichas de sus lugares, con shared/lugares.js.
  // CS-30: si no existe o no es visible, muestra «Contenido no disponible».
  // «Útil» y «Reportar» son simulaciones hasta CS-02 y CS-04.
 
@@ -72,6 +73,30 @@ function pintarDuracionTarifa(experiencia) {
     : '';
 }
 
+// CS-50: una ficha por lugar, en el orden del autor y con su nota. Sin lugares no hay apartado.
+async function mostrarLugares(experiencia) {
+  const seccion = document.getElementById('seccion-lugares');
+  try {
+    const lugares = await lugaresDe(experiencia);
+    document.getElementById('lista-lugares').replaceChildren(...lugares.map((lugar) => {
+      const elemento = document.createElement('li');
+      const ficha = crearFichaLugar(lugar);
+      if (lugar.nota) {
+        const nota = document.createElement('p');
+        nota.className = 'ficha-lugar-nota';
+        nota.textContent = lugar.nota;
+        ficha.querySelector('.ficha-lugar-datos').append(nota);
+      }
+      elemento.append(ficha);
+      return elemento;
+    }));
+    seccion.hidden = !lugares.length;
+  } catch (error) {
+    document.getElementById('mensaje-lugares').textContent = error.message;
+    seccion.hidden = false;
+  }
+}
+
 async function cargarPaginaExperiencia() {
   if (!experienciaId) {
     mostrarError('No se ha especificado ningún plan.');
@@ -120,6 +145,7 @@ async function cargarPaginaExperiencia() {
     pintarDuracionTarifa(experiencia);
 
     cargarResumen();
+    mostrarLugares(experiencia);
 
     const autorId = experiencia.autorId ||
       (experiencia.autor && experiencia.autor.id);
@@ -170,6 +196,7 @@ function mostrarNoDisponible() {
   tipoEl.textContent = '';
   momentoEl.textContent = '';
   descEl.textContent = '';
+  document.getElementById('lista-lugares').replaceChildren();
 
   // CS-53: ocultar también duración y tarifa.
   duracionEl.textContent = '';

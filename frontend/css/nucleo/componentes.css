@@ -511,7 +511,15 @@ fieldset:disabled .btn {
 .estado-vacio img { width: 100%; max-width: 280px; height: auto; }
 .estado-vacio p { margin: 0; }
 
-/* Ficha de un lugar (CS-50): imagen a la izquierda y datos a la derecha */
+/* Lugares de un plan (CS-50): la lista y la ficha, con la imagen a la izquierda y los datos a la derecha */
+.lista-lugares {
+  display: grid;
+  gap: var(--espacio-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
 .ficha-lugar {
   display: flex;
   gap: var(--espacio-12);
@@ -544,4 +552,8 @@ fieldset:disabled .btn {
   margin: 0;
   font-size: 0.875rem;
   color: var(--color-texto-suave);
+}
+
+.ficha-lugar-nota {
+  margin: var(--espacio-8) 0 0;
 }

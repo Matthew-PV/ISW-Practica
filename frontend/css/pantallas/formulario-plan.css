@@ -141,14 +141,6 @@
 }
 
 /* CS-50: buscador de lugares, resultados y lugares elegidos */
-.lista-lugares {
-  display: grid;
-  gap: var(--espacio-8);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
 #resultados-lugares {
   max-height: 18rem;
   overflow-y: auto;
