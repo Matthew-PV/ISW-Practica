@@ -273,7 +273,7 @@ Pruebas: `inicio.test.js`.
 
 ### `/paginas/experiencias/explorar.html`: explorar
 
-* Planes reales de `GET /api/experiencias`, de 12 en 12 con «Cargar más» (`#mas-planes`). Filtros: categoría (botones con `aria-pressed`, de `GET /experiencias/opciones`), momento adecuado (`#filtro-momento`), ciudad (`#filtro-ciudad`) y «solo planes de mis amigos» (`#filtro-amigos`); cada cambio vuelve a pedir la primera página. `#total-planes` cuenta los cargados («o más» si hay otra página); `#sin-resultados` si no hay ninguno; `#error-planes` con «Reintentar» si falla.
+* Planes reales de `GET /api/experiencias`, de 12 en 12 con «Cargar más» (`#mas-planes`). Filtros: categoría (botones con `aria-pressed`, de `GET /experiencias/opciones`), momento adecuado (`#filtro-momento`), ciudad (`#filtro-ciudad`), presupuesto máximo en euros (`#filtro-tarifa`) y duración máxima en minutos (`#filtro-duracion`; los planes sin ese dato no aparecen), valoración mínima sobre la media (`#filtro-minimo`; los planes sin valoraciones no la alcanzan) y «solo planes de mis amigos» (`#filtro-amigos`); cada cambio vuelve a pedir la primera página. `#total-planes` cuenta los cargados («o más» si hay otra página); `#sin-resultados` si no hay ninguno; `#error-planes` con «Reintentar» si falla.
 * `?tira=` pone el título de la tira de origen y deja puestos sus filtros (`ciudad`: la ciudad del perfil; `amigos`: solo amigos). `?texto=` filtra por texto (viene de «Ver todos los planes» en el buscador).
 
 Pruebas: `explorar.test.js`.

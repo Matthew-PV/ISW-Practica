@@ -1,5 +1,5 @@
 // Explorar (/paginas/experiencias/explorar.html): rejilla de planes reales con filtros de categoría, momento adecuado,
-// ciudad y «solo mis amigos», paginada con «Cargar más». Acepta ?tira=ciudad|nuevos|amigos (viene de «Ver más»
+// ciudad, presupuesto, duración, valoración mínima y «solo mis amigos», paginada con «Cargar más». Acepta ?tira=ciudad|nuevos|amigos (viene de «Ver más»
 // en Inicio) para titular la página y dejar puestos los filtros de esa tira, y ?texto= (viene del buscador).
 // Usa `api` de shared/api.js, `irAlLogin`, `ocultarMensaje`, `mostrarErrorConReintento` y `listaConCargarMas` de
 // shared/pantalla.js y `crearTarjetaPlan`, `pedirPlanes` y `buscarCiudadPorNombre` de shared/planes.js.
@@ -16,6 +16,9 @@ const filtros = document.getElementById('filtros');
 const campoMomento = document.getElementById('filtro-momento');
 const campoCiudad = document.getElementById('filtro-ciudad');
 const campoAmigos = document.getElementById('filtro-amigos');
+const campoTarifa = document.getElementById('filtro-tarifa');
+const campoDuracion = document.getElementById('filtro-duracion');
+const campoMinimo = document.getElementById('filtro-minimo');
 const errorPlanes = document.getElementById('error-planes');
 const total = document.getElementById('total-planes');
 
@@ -38,6 +41,9 @@ const listado = listaConCargarMas({
       categoria,
       momento: campoMomento.value,
       amigos: campoAmigos.checked,
+      minimo: campoMinimo.value,
+      tarifaMax: campoTarifa.value,
+      duracionMax: campoDuracion.value,
       despuesDe: cursor,
       limite: PLANES_POR_PAGINA,
     });
@@ -84,7 +90,9 @@ function pintarOpciones({ categorias, momentos }) {
   }
 }
 
-for (const campo of [campoMomento, campoCiudad, campoAmigos]) campo.addEventListener('change', () => listado.reiniciar());
+for (const campo of [campoMomento, campoCiudad, campoAmigos, campoTarifa, campoDuracion, campoMinimo]) {
+  campo.addEventListener('change', () => listado.reiniciar());
+}
 
 async function iniciar() {
   try {
