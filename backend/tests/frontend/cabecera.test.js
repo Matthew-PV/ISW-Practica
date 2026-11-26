@@ -120,7 +120,7 @@ describe('comportamiento de js/shared/cabecera.js', () => {
       configurable: true,
       writable: true,
     });
-    cargarScripts(['js/shared/api.js', 'js/shared/cabecera.js']);
+    cargarScripts(['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/cabecera.js']);
     window.fetch.mockClear(); // la petición del avatar al cargar no es lo que miden las pruebas de abajo
   });
 
@@ -145,7 +145,7 @@ describe('comportamiento de js/shared/cabecera.js', () => {
     otro.dataset.cerrarSesion = '';
     otro.textContent = 'Cerrar sesión';
     document.body.append(otro);
-    cargarScripts(['js/shared/api.js', 'js/shared/cabecera.js']);
+    cargarScripts(['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/cabecera.js']);
     window.fetch.mockClear();
     window.fetch.mockReturnValue(respuesta204());
 
@@ -232,7 +232,7 @@ describe('avatar del menú de cuenta', () => {
   const cargarCon = async (respuesta) => {
     cargar('bienvenida');
     window.fetch = jest.fn().mockImplementation(respuesta);
-    cargarScripts(['js/shared/api.js', 'js/shared/cabecera.js']);
+    cargarScripts(['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/cabecera.js']);
     await terminar();
   };
   const json = (datos) => () => Promise.resolve({ ok: true, status: 200, json: () => Promise.resolve(datos) });
@@ -263,7 +263,7 @@ describe('campana de notificaciones', () => {
   const cargarCon = async (respuesta) => {
     cargar('bienvenida');
     window.fetch = jest.fn().mockImplementation((ruta) => (ruta === '/api/amistades/solicitudes' ? respuesta() : json({})()));
-    cargarScripts(['js/shared/api.js', 'js/shared/cabecera.js']);
+    cargarScripts(['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/cabecera.js']);
     await terminar();
   };
 
@@ -285,7 +285,7 @@ describe('campana de notificaciones', () => {
       if (opciones?.method === 'PATCH') return respuestaPatch();
       return json({})();
     });
-    cargarScripts(['js/shared/api.js', 'js/shared/cabecera.js']);
+    cargarScripts(['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/cabecera.js']);
     await terminar();
   };
   const botonNotificacion = (texto) => [...document.querySelectorAll('#lista-notificaciones button')].find((b) => b.textContent === texto);

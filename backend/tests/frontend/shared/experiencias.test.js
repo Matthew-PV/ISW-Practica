@@ -10,7 +10,7 @@ const { cargarScripts } = require('../../helpers/pantalla');
 
 const FRONTEND = path.join(__dirname, '..', '..', '..', '..', 'frontend');
 const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const COMUNES = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/experiencias.js', 'js/shared/password.js'];
+const COMUNES = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/planes.js', 'js/shared/experiencias.js', 'js/shared/password.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -53,16 +53,15 @@ test('en el perfil de otra persona se ven sus experiencias, enlazadas a su pági
   expect(visible('#sin-experiencias')).toBe(false);
 });
 
-test('cada experiencia es la misma tarjeta que en bienvenida: etiqueta de visibilidad y «Ver detalle»', async () => {
+test('cada experiencia es la misma tarjeta que en bienvenida: etiqueta de visibilidad y toda la tarjeta enlaza', async () => {
   await abrirPerfilDeAna({
     '/api/experiencias?autor=ana': [200, { experiencias: [experiencia(7, 'Ruta de tapas', 'AMIGOS')], siguiente: null }],
   });
 
   const tarjeta = $('#lista-experiencias .tarjeta-experiencia');
   expect(tarjeta.querySelector('.etiqueta-amigos').textContent).toBe('Amigos');
-  expect(tarjeta.textContent).not.toContain('·');
-  const ver = tarjeta.querySelector('a.btn.btn-outline-primary');
-  expect(ver.textContent).toBe('Ver detalle');
+  const ver = tarjeta.querySelector('a.stretched-link');
+  expect(ver.textContent).toBe('Ruta de tapas');
   expect(ver.getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=7');
   expect(tarjeta.textContent).not.toContain('Editar');
   expect($('#lista-experiencias .list-group-item')).toBeNull();

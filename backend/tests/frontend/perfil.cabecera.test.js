@@ -6,7 +6,7 @@
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
 const HTML = leer('/paginas/cuenta/perfil.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/experiencias.js', 'js/cuenta/perfil.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/planes.js', 'js/shared/experiencias.js', 'js/cuenta/perfil.js'];
 const PERFIL = { id: 1, nombreUsuario: 'ana', email: 'ana@ejemplo.com', ciudad: null, foto: null };
 const EXPERIENCIA = (id) => ({ id, titulo: `Plan ${id}`, ciudad: { nombre: 'Madrid' }, visibilidad: 'PUBLICA' });
 
@@ -104,11 +104,11 @@ describe('cabecera del perfil', () => {
 });
 
 describe('experiencias', () => {
-  test('mis experiencias son tarjetas con etiqueta de visibilidad y «Ver detalle»', async () => {
+  test('mis experiencias son tarjetas con etiqueta de visibilidad y toda la tarjeta enlaza', async () => {
     await abrir({ 'GET /api/experiencias?autor=ana': [200, { experiencias: [{ ...EXPERIENCIA(7), visibilidad: 'AMIGOS' }], siguiente: null }] });
 
     const tarjeta = $('#lista-experiencias .tarjeta-experiencia');
     expect(tarjeta.querySelector('.etiqueta-amigos').textContent).toBe('Amigos');
-    expect(tarjeta.querySelector('a.btn-outline-primary').getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=7');
+    expect(tarjeta.querySelector('a.stretched-link').getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=7');
   });
 });

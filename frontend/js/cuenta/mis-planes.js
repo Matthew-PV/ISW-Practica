@@ -4,7 +4,7 @@
  // su categoría (CS-55) y su momento adecuado (CS-56) elegidos de la lista del backend.
  // CS-53: duración en minutos y tarifa en euros.
 // CS-50: lugares del plan, buscados y mostrados con shared/lugares.js.
- // «Ver detalle» enlaza a la página de cada experiencia (/paginas/experiencias/experiencia.html, CS-63).
+ // Cada tarjeta enlaza a la página de su experiencia (/paginas/experiencias/experiencia.html, CS-63).
  // Usa `api` de shared/api.js y `listaConCargarMas`, `mostrarMensaje`, `ocultarMensaje`, `ocultarCargando` e
  // `alFallarCarga` de shared/pantalla.js.
 
@@ -27,13 +27,6 @@ const vistaPrevia = document.getElementById('vista-previa');
 const campoDuracion = document.getElementById('duracion-minutos');
 const campoTarifa = document.getElementById('tarifa');
 
-// Etiqueta de cada visibilidad en la tarjeta (clases definidas en componentes.css)
-const ETIQUETAS_VISIBILIDAD = {
-  PUBLICA: { clase: 'etiqueta-publica', texto: 'Pública' },
-  AMIGOS: { clase: 'etiqueta-amigos', texto: 'Amigos' },
-  PRIVADA: { clase: 'etiqueta-privada', texto: 'Privada' },
-};
-
 // Experiencia que se está editando. Es null cuando el formulario sirve para crear una nueva.
 let editando = null;
 // Ciudades del catálogo y la del perfil, para proponerla al crear (C1)
@@ -54,65 +47,19 @@ function buscarCiudad(texto) {
   return ciudades.find((ciudad) => textoCiudad(ciudad).toLowerCase() === buscado || ciudad.nombre.toLowerCase() === buscado);
 }
 
-// CS-53: muestra duración y tarifa cuando estén disponibles.
-function datosDuracionTarifa(experiencia) {
-  const datos = [];
-
-  if (experiencia.duracionMinutos != null) {
-    datos.push(`${experiencia.duracionMinutos} min`);
-  }
-
-  if (experiencia.tarifa != null) {
-    datos.push(
-      Number(experiencia.tarifa).toLocaleString('es-ES', {
-        style: 'currency',
-        currency: 'EUR',
-      })
-    );
-  }
-
-  return datos;
-}
-
-// Crea la columna con la tarjeta de una experiencia. La estructura es fija; los textos se ponen
-// después con textContent para que el contenido de usuario nunca se ejecute como HTML.
-function crearTarjeta(experiencia) {
+// Crea la columna con la tarjeta de una experiencia (shared/planes.js). Con `previa`, la del formulario,
+// sin enlace ni botón.
+function crearTarjeta(experiencia, { previa = false } = {}) {
   const columna = document.createElement('div');
   columna.className = 'col';
   columna.dataset.id = experiencia.id;
   // Cuenta como elemento de la lista aunque se cree o se edite a mano (y evita repetirla en «Cargar más»)
   columna.dataset.idElemento = experiencia.id;
-  columna.innerHTML = `
-    <div class="card h-100 tarjeta-experiencia">
-      <div class="card-body d-flex flex-column">
-        <h3 class="card-title h6"></h3>
-        <p class="card-subtitle small text-body-secondary mb-2"></p>
-        <p class="mb-2"><span class="etiqueta-visibilidad"></span></p>
-        <p class="card-text small descripcion-corta"></p>
-        <div class="d-grid gap-2 mt-auto">
-          <a class="btn btn-outline-primary btn-sm boton-ver">Ver detalle</a>
-          <button type="button" class="btn btn-outline-primary btn-sm boton-editar">Editar</button>
-        </div>
-      </div>
-    </div>
-  `;
-
-  columna.querySelector('.card').prepend(crearBloqueCategoria(experiencia.tipo));
-  columna.querySelector('.card-title').textContent = experiencia.titulo;
-
-  // CS-53: los datos nuevos también aparecen en la tarjeta y en la vista previa.
-  columna.querySelector('.card-subtitle').textContent = [
-    experiencia.ciudad?.nombre,
-    experiencia.tipo,
-    ...datosDuracionTarifa(experiencia),
-  ].filter(Boolean).join(' · ');
-
-  const etiqueta = columna.querySelector('.etiqueta-visibilidad');
-  etiqueta.className = ETIQUETAS_VISIBILIDAD[experiencia.visibilidad].clase;
-  etiqueta.textContent = ETIQUETAS_VISIBILIDAD[experiencia.visibilidad].texto;
-  columna.querySelector('.card-text').textContent = experiencia.descripcion;
-  columna.querySelector('.boton-ver').setAttribute('href', `/paginas/experiencias/experiencia.html?id=${experiencia.id}`);
-  columna.querySelector('.boton-editar').addEventListener('click', () => abrirFormulario(experiencia));
+  columna.append(crearTarjetaPlan(experiencia, {
+    conVisibilidad: true,
+    enlazar: !previa,
+    alEditar: previa ? undefined : () => abrirFormulario(experiencia),
+  }));
   return columna;
 }
 
@@ -414,8 +361,7 @@ function actualizarPrevia() {
     duracionMinutos: datos.duracionMinutos,
     tarifa: datos.tarifa,
     visibilidad: datos.visibilidad || 'PUBLICA',
-  });
-  tarjeta.querySelector('.d-grid').remove();
+  }, { previa: true });
   vistaPrevia.replaceChildren(tarjeta);
   const caracteres = descripcion.value.length;
   document.getElementById('contador-descripcion').textContent = `${caracteres} ${caracteres === 1 ? 'carácter' : 'caracteres'}`;

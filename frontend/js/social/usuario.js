@@ -46,22 +46,19 @@ function mostrarBotonesAmistad(perfil) {
   const ruta = `/amistades/${amistadId}`;
   const responder = (aceptar) => actuar(ruta, { method: 'PATCH', body: JSON.stringify({ aceptar }) });
 
-  if (amistad === 'ninguna') {
-    crearBoton(botonesAmistad, 'Añadir amigo', 'btn-primary', () =>
-      actuar('/amistades', { method: 'POST', body: JSON.stringify({ destinatarioId: perfil.id }) }));
-  } else if (amistad === 'enviada') {
-    crearBoton(botonesAmistad, 'Cancelar solicitud', 'btn-outline-secondary', () => actuar(ruta, { method: 'DELETE' }));
-  } else if (amistad === 'recibida') {
-    crearBoton(botonesAmistad, 'Aceptar', 'btn-primary', () => responder(true));
-    crearBoton(botonesAmistad, 'Rechazar', 'btn-outline-danger', () => responder(false));
-  } else if (amistad === 'amigos') {
-    crearBoton(botonesAmistad, 'Eliminar amigo', 'btn-outline-danger', () => {
+  const acciones = {
+    pedir: () => actuar('/amistades', { method: 'POST', body: JSON.stringify({ destinatarioId: perfil.id }) }),
+    cancelar: () => actuar(ruta, { method: 'DELETE' }),
+    aceptar: () => responder(true),
+    rechazar: () => responder(false),
+    eliminar: () => {
       document.getElementById('texto-eliminar-amigo').textContent =
         `${perfil.nombreUsuario} dejará de ser tu amigo. Podréis volver a enviaros una solicitud.`;
       eliminarConfirmado = () => actuar(ruta, { method: 'DELETE' });
       dialogoEliminar.showModal();
-    });
-  }
+    },
+  };
+  botonesAmistad.append(...crearBotonesAmistad(amistad, (accion) => acciones[accion]()));
 }
 
 document.getElementById('cancelar-eliminar-amigo').addEventListener('click', () => dialogoEliminar.close());

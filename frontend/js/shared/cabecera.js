@@ -70,7 +70,7 @@ if (avatar) {
     .catch(() => {});
 }
 
-// Campana: las solicitudes de amistad pendientes como notificaciones, con un contador. Cada una lleva a
+// Campana (usa `crearBotonesAmistad` de shared/pantalla.js): las solicitudes de amistad pendientes como notificaciones, con un contador. Cada una lleva a
 // la persona y se puede aceptar o rechazar desde ahí; «Ver amigos y solicitudes» lleva a /paginas/social/amigos.html.
 // Cuando una solicitud se responde (aquí o en la página Amigos) se emite 'solicitud-respondida' con
 // { detail: { id } } y las dos partes se ponen al día.
@@ -113,7 +113,7 @@ if (menuNotificaciones) {
       enlace.textContent = 'Ver perfil';
       mensaje.append(`Ahora sois amigos de ${solicitud.solicitante.nombreUsuario}. `, enlace);
     } else {
-      mensaje.textContent = 'Solicitud rechazada.';
+      mensaje.textContent = `Solicitud rechazada: ${solicitud.solicitante.nombreUsuario}.`;
     }
     notificacion.replaceChildren(mensaje);
     actualizarContador();
@@ -162,17 +162,8 @@ if (menuNotificaciones) {
 
     const acciones = document.createElement('div');
     acciones.className = 'notificacion-acciones';
-    for (const [textoBoton, clase, aceptar] of [
-      ['Aceptar', 'btn-primary', true],
-      ['Rechazar', 'btn-outline-secondary', false],
-    ]) {
-      const boton = document.createElement('button');
-      boton.type = 'button';
-      boton.className = `btn btn-sm ${clase}`;
-      boton.textContent = textoBoton;
-      boton.addEventListener('click', () => responder(notificacion, solicitud, aceptar));
-      acciones.append(boton);
-    }
+    acciones.append(...crearBotonesAmistad('recibida', (accion) =>
+      responder(notificacion, solicitud, accion === 'aceptar')));
 
     notificacion.append(enlace, acciones);
     return notificacion;

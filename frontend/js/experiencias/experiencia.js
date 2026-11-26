@@ -180,6 +180,7 @@ async function cargarPaginaExperiencia() {
   } catch (error) {
     if (!tratarErrorDeAcceso(error)) {
       mostrarError(error.message);
+      mostrarErrorConReintento(mensajeEstado, error.message, () => window.location.reload());
     }
   }
 }
@@ -274,10 +275,13 @@ function crearTarjetaValoracion(valoracion) {
   return { tarjeta, cuerpo };
 }
 
-function avisarFalloDeCarga(lista, texto) {
+function avisarFalloDeCarga(lista, texto, reintentar) {
   const alertaError = document.createElement('div');
   alertaError.className = 'alert alert-danger mt-3';
-  alertaError.textContent = texto;
+  mostrarErrorConReintento(alertaError, texto, () => {
+    alertaError.remove();
+    reintentar();
+  });
   lista.appendChild(alertaError);
 }
 
@@ -361,11 +365,12 @@ const listadoComentarios = listaConCargarMas({
   botonMas: document.getElementById('btn-cargar-mas'),
   pedir: (cursor) => pedirValoraciones('/valoraciones', cursor),
   crear: crearElementoComentario,
-  alFallar: (error) => {
+  alFallar: (error, reintentar) => {
     if (!tratarErrorDeAcceso(error)) {
       avisarFalloDeCarga(
         listaComentarios,
-        'Problema de conexión al cargar los comentarios. Inténtalo de nuevo.'
+        'Problema de conexión al cargar los comentarios. Inténtalo de nuevo.',
+        reintentar
       );
     }
   },
@@ -379,11 +384,12 @@ const listadoAmigos = listaConCargarMas({
   pedir: (cursor) => pedirValoraciones('/valoraciones/amigos', cursor),
   crear: (valoracion) =>
     crearTarjetaValoracion(valoracion).tarjeta,
-  alFallar: (error) => {
+  alFallar: (error, reintentar) => {
     if (!tratarErrorDeAcceso(error)) {
       avisarFalloDeCarga(
         listaAmigos,
-        'Problema de conexión al cargar las valoraciones de tus amigos. Inténtalo de nuevo.'
+        'Problema de conexión al cargar las valoraciones de tus amigos. Inténtalo de nuevo.',
+        reintentar
       );
     }
   },

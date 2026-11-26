@@ -75,7 +75,7 @@ async function llenarTira(seccion, tira) {
   try {
     const planes = tira.filtros ? (await pedirPlanes({ ...tira.filtros, limite: PLANES_POR_TIRA })).experiencias : [];
     fila.replaceChildren(...(planes.length
-      ? planes.map((plan, indice) => crearTarjetaPlan(plan, indice))
+      ? planes.map((plan, indice) => crearTarjetaPlan(plan, { indice }))
       : [crearAvisoTira(tira.vacio)]));
   } catch {
     const reintentar = document.createElement('button');

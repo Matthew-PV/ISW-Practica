@@ -20,7 +20,7 @@ const leer = (archivo) =>
 
 const HTML = leer('/paginas/cuenta/mis-planes.html');
 
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/lugares.js', 'js/shared/mapa.js', 'js/cuenta/mis-planes.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/lugares.js', 'js/shared/mapa.js', 'js/shared/planes.js', 'js/cuenta/mis-planes.js'];
 
 const USUARIO = {
   id: 1,
@@ -160,8 +160,8 @@ test('al enviar el formulario se incluye la visibilidad elegida', async () => {
   );
 });
 
-test('Ver detalle es un enlace a la página de la experiencia (CS-63)', () => {
-  const enlace = $('.tarjeta-experiencia .boton-ver');
+test('toda la tarjeta es un enlace a la página de la experiencia (CS-63)', () => {
+  const enlace = $('.tarjeta-experiencia a.stretched-link');
 
   expect(enlace.tagName).toBe('A');
   expect(enlace.getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=10');
@@ -226,16 +226,15 @@ test.each([
   expect(etiqueta.textContent).toBe(texto);
 });
 
-test('Ver detalle de una experiencia con id 7 enlaza a /paginas/experiencias/experiencia.html?id=7 con aspecto de botón secundario', async () => {
+test('una experiencia nueva con id 7 enlaza a su detalle', async () => {
   // Una experiencia nueva con id 7 entra por el alta
   $('#boton-nueva').click();
   window.fetch.mockImplementationOnce(() => respuesta(201, { ...EXPERIENCIA, id: 7 }));
   $('#form-experiencia').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
   await terminar();
 
-  const enlace = $('[data-id="7"] .boton-ver');
+  const enlace = $('[data-id="7"] a.stretched-link');
   expect(enlace.getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=7');
-  expect(enlace.classList.contains('btn-outline-primary')).toBe(true);
 });
 
 describe('Publicar con espera (R11)', () => {

@@ -1,7 +1,7 @@
 // Página Amigos (/paginas/social/amigos.html): arriba las solicitudes de amistad pendientes que ha recibido la
 // persona de la sesión, con «Aceptar» y «Rechazar»; debajo, su lista de amigos. Se ejecuta nada más
 // cargar la página. Usa `api` de shared/api.js y `crearEnlacePerfil`, `crearFilaPersona`,
-// `listaConCargarMas`, `crearHuecoCarga`, `mostrarMensaje` y `ocultarMensaje` de shared/pantalla.js.
+// `listaConCargarMas`, `crearHuecoCarga`, `crearBotonesAmistad`, `mostrarErrorConReintento` y `ocultarMensaje` de shared/pantalla.js.
 // La campana de la cabecera (shared/cabecera.js) también responde solicitudes: las dos partes se avisan con
 // el evento 'solicitud-respondida' ({ detail: { id } }).
 
@@ -28,8 +28,8 @@ function crearSolicitud(solicitud) {
   const foto = document.createElement('img');
   foto.src = solicitud.solicitante.foto;
   foto.alt = '';
-  foto.width = 48;
-  foto.height = 48;
+  foto.width = 40;
+  foto.height = 40;
   foto.className = 'rounded-circle';
   const nombre = document.createElement('span');
   nombre.textContent = solicitud.solicitante.nombreUsuario;
@@ -37,17 +37,8 @@ function crearSolicitud(solicitud) {
 
   const acciones = document.createElement('div');
   acciones.className = 'd-flex gap-2';
-  for (const [texto, clase, aceptar] of [
-    ['Aceptar', 'btn-outline-success', true],
-    ['Rechazar', 'btn-outline-danger', false],
-  ]) {
-    const botonRespuesta = document.createElement('button');
-    botonRespuesta.type = 'button';
-    botonRespuesta.className = `btn btn-sm ${clase}`;
-    botonRespuesta.textContent = texto;
-    botonRespuesta.addEventListener('click', () => responderSolicitud(solicitud, aceptar, fila));
-    acciones.append(botonRespuesta);
-  }
+  acciones.append(...crearBotonesAmistad('recibida', (accion) =>
+    responderSolicitud(solicitud, accion === 'aceptar', fila)));
 
   fila.append(persona, acciones);
   return fila;
@@ -66,8 +57,7 @@ async function cargarSolicitudesRecibidas() {
     mostrarSolicitudes(await api('/amistades/solicitudes'));
   } catch (err) {
     solicitudesRecibidas.replaceChildren();
-    cajaErrorSolicitudes.textContent = err.message;
-    cajaErrorSolicitudes.classList.remove('d-none');
+    mostrarErrorConReintento(cajaErrorSolicitudes, err.message, cargarSolicitudesRecibidas);
   }
 }
 
@@ -131,7 +121,7 @@ const listadoAmigos = listaConCargarMas({
     return { elementos: personas, siguiente };
   },
   crear: crearFilaPersona,
-  alFallar: (err) => mostrarMensaje(cajaErrorAmigos, err.message),
+  alFallar: (err, reintentar) => mostrarErrorConReintento(cajaErrorAmigos, err.message, reintentar),
 });
 
 cargarSolicitudesRecibidas();

@@ -87,7 +87,7 @@ async function abrirFormulario() {
     if (ruta === '/api/experiencias/opciones') return respuesta(200, { categorias: ['Cultura'], momentos: [] });
     return respuesta(200, { experiencias: [], siguiente: null });
   });
-  cargarScripts([...COMUNES, 'js/cuenta/mis-planes.js']);
+  cargarScripts([...COMUNES, 'js/shared/planes.js', 'js/cuenta/mis-planes.js']);
   await terminar();
   $('#boton-nueva').click();
 }

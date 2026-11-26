@@ -6,7 +6,7 @@
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
 const HTML = leer('/paginas/social/usuario.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/experiencias.js', 'js/social/usuario.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/planes.js', 'js/shared/experiencias.js', 'js/social/usuario.js'];
 const PERFIL = {
   id: 2, nombreUsuario: 'ana', foto: '/img/foto-por-defecto.svg', ciudad: 'Madrid',
   amigos: 3, seguidores: 5, esPropio: false, relacion: { amistad: 'ninguna', amistadId: null, siguiendo: false },

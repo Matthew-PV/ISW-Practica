@@ -51,7 +51,7 @@ test('empieza con los planes reales, cada tarjeta enlaza a su detalle y Â«TodosÂ
   await abrir();
 
   const tarjetas = [...document.querySelectorAll('#resultados .tarjeta-plan')];
-  expect(tarjetas.map((t) => t.getAttribute('href'))).toEqual([
+  expect(tarjetas.map((t) => t.querySelector('a').getAttribute('href'))).toEqual([
     '/paginas/experiencias/experiencia.html?id=1', '/paginas/experiencias/experiencia.html?id=2',
   ]);
   expect($('#filtros [aria-pressed="true"]').textContent).toBe('Todos');

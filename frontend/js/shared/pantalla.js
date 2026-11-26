@@ -79,6 +79,26 @@ function crearHuecoCarga() {
   return hueco;
 }
 
+// Acciones de amistad según la relación: los mismos textos, estilos y orden en todas las pantallas
+const ACCIONES_AMISTAD = {
+  ninguna: [['pedir', 'Añadir amigo', 'btn-primary']],
+  enviada: [['cancelar', 'Cancelar solicitud', 'btn-outline-secondary']],
+  recibida: [['aceptar', 'Aceptar', 'btn-primary'], ['rechazar', 'Rechazar', 'btn-outline-secondary']],
+  amigos: [['eliminar', 'Eliminar amigo', 'btn-outline-danger']],
+};
+
+// Botones de la relación `amistad`; al pulsar uno se llama a `alPulsar(accion, boton)`.
+function crearBotonesAmistad(amistad, alPulsar) {
+  return ACCIONES_AMISTAD[amistad].map(([accion, texto, clase]) => {
+    const boton = document.createElement('button');
+    boton.type = 'button';
+    boton.className = `btn btn-sm ${clase}`;
+    boton.textContent = texto;
+    boton.addEventListener('click', () => alPulsar(accion, boton));
+    return boton;
+  });
+}
+
 // Listado con «Cargar más» por cursor (ver backend/src/services/shared/paginacion.js):
 // - `lista`: el elemento donde se añaden las filas; `vacio`: el aviso de lista vacía (opcional);
 //   `botonMas`: el botón «Cargar más».
@@ -187,4 +207,4 @@ function crearBloqueCategoria(tipo) {
 // Funciones que usan los scripts de las páginas, que se cargan después de este. En el navegador
 // ya serían globales; se dejan en window de forma explícita para que también lo sean cuando las
 // pruebas cargan el archivo como módulo (para medir su cobertura).
-Object.assign(window, { mostrarMensaje, mostrarErrorConReintento, ocultarMensaje, mostrarCargando, ocultarCargando, irAlLogin, alFallarCarga, crearHuecoCarga, crearEnlacePerfil, crearFilaPersona, listaConCargarMas, crearBloqueCategoria });
+Object.assign(window, { mostrarMensaje, mostrarErrorConReintento, ocultarMensaje, mostrarCargando, ocultarCargando, irAlLogin, alFallarCarga, crearBotonesAmistad, crearHuecoCarga, crearEnlacePerfil, crearFilaPersona, listaConCargarMas, crearBloqueCategoria });

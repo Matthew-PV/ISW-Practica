@@ -165,7 +165,7 @@ describe('Buscar (diseño aplicado)', () => {
     expect(document.querySelectorAll('#resultados .fila-resultado')).toHaveLength(1);
     const tarjetas = [...document.querySelectorAll('#resultados-experiencias .tarjeta-plan')];
     expect(tarjetas.map((t) => t.querySelector('h3').textContent)).toEqual(['Tarde en el Prado']);
-    expect(tarjetas[0].getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=8');
+    expect(tarjetas[0].querySelector('a').getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=8');
     expect([...document.querySelectorAll('[role="tab"]')].map((p) => p.textContent)).toEqual(['Planes (1)', 'Personas (1)']);
     expect($('#ayuda-experiencias').classList.contains('d-none')).toBe(true);
     expect($('#sin-experiencias').classList.contains('d-none')).toBe(true);
@@ -430,4 +430,12 @@ describe('Buscar (relación y botón en la fila)', () => {
     expect(enlace.querySelector('button')).toBeNull();
     expect(enlace.textContent).toContain('bea');
   });
+});
+
+test('con una solicitud recibida se puede aceptar o rechazar desde el buscador', () => {
+  const fila = document.createElement('div');
+  document.documentElement.innerHTML = '<body></body>';
+  cargarScripts(['js/shared/pantalla.js']);
+  fila.append(...window.crearBotonesAmistad('recibida', () => {}));
+  expect([...fila.children].map((b) => b.textContent)).toEqual(['Aceptar', 'Rechazar']);
 });

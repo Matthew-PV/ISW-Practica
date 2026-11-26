@@ -47,7 +47,7 @@ async function actuarSobreAmistad(fila, usuario, boton, peticion, relacionNueva)
 }
 
 // Pone en la fila la relación (texto) y el botón que corresponde: «Añadir amigo» si no hay amistad,
-// «Cancelar solicitud» si la envió quien busca y «Aceptar» si la recibió. Un amigo no lleva botón.
+// «Cancelar solicitud» si la envió quien busca y «Aceptar» y «Rechazar» si la recibió. Un amigo no lleva botón.
 function pintarRelacion(fila, usuario, relacion) {
   usuario.relacion = relacion;
   fila.querySelector('.fila-resultado-relacion')?.remove();
@@ -63,25 +63,20 @@ function pintarRelacion(fila, usuario, relacion) {
     zona.append(texto);
   }
 
-  const acciones = {
-    ninguna: ['Añadir amigo', 'btn-outline-primary',
-      { ruta: '/amistades', opciones: { method: 'POST', body: JSON.stringify({ destinatarioId: usuario.id }) } },
-      { amistad: 'enviada' }],
-    enviada: ['Cancelar solicitud', 'btn-outline-secondary',
-      { ruta: `/amistades/${relacion.amistadId}`, opciones: { method: 'DELETE' } },
-      { amistad: 'ninguna' }],
-    recibida: ['Aceptar', 'btn-primary',
-      { ruta: `/amistades/${relacion.amistadId}`, opciones: { method: 'PATCH', body: JSON.stringify({ aceptar: true }) } },
-      { amistad: 'amigos' }],
-  }[relacion.amistad];
-  if (acciones) {
-    const [textoBoton, clase, peticion, nueva] = acciones;
-    const boton = document.createElement('button');
-    boton.type = 'button';
-    boton.className = `btn btn-sm ${clase}`;
-    boton.textContent = textoBoton;
-    boton.addEventListener('click', () => actuarSobreAmistad(fila, usuario, boton, peticion, nueva));
-    zona.append(boton);
+  // Desde el buscador no se elimina a un amigo: eso se hace en su perfil
+  if (relacion.amistad !== 'amigos') {
+    const ruta = `/amistades/${relacion.amistadId}`;
+    const responder = (aceptar) => [{ ruta, opciones: { method: 'PATCH', body: JSON.stringify({ aceptar }) } },
+      { amistad: aceptar ? 'amigos' : 'ninguna' }];
+    const peticiones = {
+      pedir: () => [{ ruta: '/amistades', opciones: { method: 'POST', body: JSON.stringify({ destinatarioId: usuario.id }) } },
+        { amistad: 'enviada' }],
+      cancelar: () => [{ ruta, opciones: { method: 'DELETE' } }, { amistad: 'ninguna' }],
+      aceptar: () => responder(true),
+      rechazar: () => responder(false),
+    };
+    zona.append(...crearBotonesAmistad(relacion.amistad, (accion, boton) =>
+      actuarSobreAmistad(fila, usuario, boton, ...peticiones[accion]())));
   }
   fila.append(zona);
 }
@@ -185,7 +180,7 @@ async function buscar() {
     if (planes.length === 0) {
       sinExperiencias.classList.remove('d-none');
     } else {
-      resultadosExperiencias.append(...planes.map((plan, indice) => crearTarjetaPlan(plan, indice)));
+      resultadosExperiencias.append(...planes.map((plan, indice) => crearTarjetaPlan(plan, { indice })));
     }
   } catch (err) {
     if (numero === ultimaBusqueda) mostrarMensaje(errorBusqueda, err.message);

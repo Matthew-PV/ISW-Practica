@@ -52,10 +52,9 @@ describe('solicitudes recibidas', () => {
     expect(enlace.querySelector('img').getAttribute('src')).toBe('/img/foto-por-defecto.svg');
   });
 
-  test('«Aceptar» y «Rechazar» son botones secundarios', () => {
-    expect(boton('Aceptar').classList.contains('btn-outline-success')).toBe(true);
-    expect(boton('Rechazar').classList.contains('btn-outline-danger')).toBe(true);
-    expect(document.querySelector('.btn-primary')).toBeNull();
+  test('«Aceptar» es el botón principal y «Rechazar» el secundario, como en el resto de pantallas', () => {
+    expect(boton('Aceptar').classList.contains('btn-primary')).toBe(true);
+    expect(boton('Rechazar').classList.contains('btn-outline-secondary')).toBe(true);
   });
 
   test('aceptar confirma «Ahora sois amigos» con enlace al perfil y da el foco al mensaje', async () => {
@@ -137,4 +136,15 @@ describe('lista de amigos', () => {
 
     expect($('#sin-amigos').classList.contains('d-none')).toBe(false);
   });
+});
+
+test('si fallan las listas se puede reintentar sin recargar', async () => {
+  document.documentElement.innerHTML = leer('paginas/social/amigos.html');
+  window.fetch = jest.fn(async () => ({ ok: false, status: 500, json: async () => ({ error: 'fallo' }) }));
+  cargarScripts(SCRIPTS);
+  await terminar();
+  await terminar();
+
+  expect(document.querySelector('#error-solicitudes button').textContent).toBe('Reintentar');
+  expect(document.querySelector('#error-amigos button').textContent).toBe('Reintentar');
 });

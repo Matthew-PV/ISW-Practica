@@ -63,7 +63,7 @@ test('cada tarjeta abre el detalle de su plan y muestra su ciudad real', async (
   await abrir(rutasBase({ '/api/experiencias?limite=8': lista(plan(7, { ciudad: { id: 9, nombre: 'Viena', pais: 'Austria' } })) }));
 
   const tarjeta = document.querySelectorAll('.tira')[1].querySelector('.tarjeta-plan');
-  expect(tarjeta.getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=7');
+  expect(tarjeta.querySelector('a.stretched-link').getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=7');
   expect(tarjeta.textContent).toContain('Viena');
   expect(tarjeta.textContent).toContain('lucia');
   expect(document.body.textContent).not.toContain('Tapas por La Latina');

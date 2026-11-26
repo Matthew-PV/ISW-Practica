@@ -15,7 +15,7 @@ const HTML = leer('paginas/cuenta/mis-planes.html');
 const SCRIPTS = [
   'js/shared/api.js',
   'js/shared/pantalla.js',
-  'js/shared/lugares.js', 'js/shared/mapa.js', 'js/cuenta/mis-planes.js',
+  'js/shared/lugares.js', 'js/shared/mapa.js', 'js/shared/planes.js', 'js/cuenta/mis-planes.js',
 ];
 
 const PERFIL = {
@@ -460,7 +460,7 @@ describe('C5 y C6: vista previa y descripción', () => {
         .dataset.categoria
     ).toBe('deporte');
 
-    expect(tarjeta.querySelector('button')).toBeNull();
+    expect(tarjeta.querySelector('button, a')).toBeNull();
   });
 
   test('la descripción tiene pista y contador', () => {

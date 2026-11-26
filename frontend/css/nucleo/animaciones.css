@@ -81,14 +81,14 @@ dialog[open]::backdrop {
 }
 
 /* Resultados y tarjetas de las listas: entran escalonados */
-.tarjeta-experiencia:not(.tarjeta-plan) {
+.tarjeta-experiencia {
   animation: subir 380ms ease-out both;
 }
 
-.tarjeta-experiencia:not(.tarjeta-plan):nth-child(2) { animation-delay: 50ms; }
-.tarjeta-experiencia:not(.tarjeta-plan):nth-child(3) { animation-delay: 100ms; }
-.tarjeta-experiencia:not(.tarjeta-plan):nth-child(4) { animation-delay: 150ms; }
-.tarjeta-experiencia:not(.tarjeta-plan):nth-child(n+5) { animation-delay: 200ms; }
+.tarjeta-experiencia:nth-child(2) { animation-delay: 50ms; }
+.tarjeta-experiencia:nth-child(3) { animation-delay: 100ms; }
+.tarjeta-experiencia:nth-child(4) { animation-delay: 150ms; }
+.tarjeta-experiencia:nth-child(n+5) { animation-delay: 200ms; }
 
 .fila-resultado {
   transition: transform var(--duracion-corta), background-color var(--duracion-corta);
