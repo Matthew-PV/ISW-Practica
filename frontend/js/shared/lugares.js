@@ -5,9 +5,13 @@
 const MAXIMO_RESULTADOS = 10;
 
 async function leerFicheroLugares(ruta) {
-  const respuesta = await fetch(ruta);
-  if (!respuesta.ok) throw new Error('No se han podido cargar los lugares.');
-  return respuesta.json();
+  try {
+    const respuesta = await fetch(ruta);
+    if (respuesta.ok) return await respuesta.json();
+  } catch {
+    // Sin red o con el fichero roto: el mismo aviso que si el servidor falla
+  }
+  throw new Error('No se han podido cargar los lugares.');
 }
 
 const sinTildes = (texto) => texto.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
@@ -30,7 +34,7 @@ async function buscarLugares(texto, ciudad) {
 async function lugaresDe(experiencia) {
   if (experiencia.lugares) return experiencia.lugares;
   const porTitulo = await leerFicheroLugares('/datos/lugares-planes.json');
-  return porTitulo[experiencia.titulo] ?? [];
+  return Object.hasOwn(porTitulo, experiencia.titulo) ? porTitulo[experiencia.titulo] : [];
 }
 
 // Ficha de un lugar: imagen, nombre, tipo, dirección y web. Los textos se ponen con textContent

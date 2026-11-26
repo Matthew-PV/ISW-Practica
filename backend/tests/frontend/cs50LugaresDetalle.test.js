@@ -27,11 +27,11 @@ const terminar = async () => {
   for (let i = 0; i < 3; i++) await new Promise((resolve) => setTimeout(resolve, 0));
 };
 
-async function abrir({ experiencia = EXPERIENCIA, fichero = [200, { 'Ruta de tapas': LUGARES }], estado = 200 } = {}) {
+async function abrir({ experiencia = EXPERIENCIA, fichero = [200, { 'Ruta de tapas': LUGARES }], estado = 200, lectura } = {}) {
   window.history.replaceState({}, '', '/paginas/experiencias/experiencia.html?id=7');
   document.documentElement.innerHTML = HTML;
   window.fetch = jest.fn((ruta) => {
-    if (ruta === '/datos/lugares-planes.json') return respuesta(...fichero);
+    if (ruta === '/datos/lugares-planes.json') return lectura ? lectura() : respuesta(...fichero);
     if (ruta === '/api/experiencias/7') return respuesta(estado, estado === 200 ? experiencia : { error: 'Contenido no disponible' });
     if (ruta === '/api/auth/yo') return respuesta(200, { id: 1, nombreUsuario: 'ana' });
     if (ruta.startsWith('/api/experiencias/7/valoraciones')) return respuesta(200, { valoraciones: [], siguiente: null });
@@ -74,6 +74,21 @@ describe('CS-50: lugares en el detalle del plan', () => {
     expect($('#seccion-lugares').hidden).toBe(false);
     expect($('#mensaje-lugares').textContent).toBe('No se han podido cargar los lugares.');
     expect($('#detalle-titulo').textContent).toBe('Ruta de tapas');
+  });
+
+  test('un plan titulado como una propiedad de Object no tiene lugares', async () => {
+    await abrir({ experiencia: { ...EXPERIENCIA, titulo: 'constructor' } });
+
+    expect($('#seccion-lugares').hidden).toBe(true);
+  });
+
+  test.each([
+    ['falla la red', () => Promise.reject(new TypeError('Failed to fetch'))],
+    ['el fichero llega roto', () => Promise.resolve({ ok: true, json: () => Promise.reject(new SyntaxError('roto')) })],
+  ])('si %s, avisa con el mismo mensaje', async (_caso, fallo) => {
+    await abrir({ lectura: fallo });
+
+    expect($('#mensaje-lugares').textContent).toBe('No se han podido cargar los lugares.');
   });
 
   test('un plan no disponible no pide ni muestra lugares', async () => {
