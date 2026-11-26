@@ -8,7 +8,7 @@
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
 const HTML = leer('paginas/experiencias/experiencia.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/lugares.js', 'js/experiencias/experiencia.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/lugares.js', 'js/shared/mapa.js', 'js/experiencias/experiencia.js'];
 
 const EXPERIENCIA = {
   id: 7, titulo: 'Ruta de tapas', descripcion: 'Por el centro', autorId: 2,

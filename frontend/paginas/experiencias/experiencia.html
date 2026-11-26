@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PlanB · Detalle del plan</title>
   <link rel="icon" href="/img/logo-pin.svg" type="image/svg+xml">
+  <link href="/vendor/leaflet/leaflet.css" rel="stylesheet">
   <link href="/css/nucleo/tokens.css" rel="stylesheet">
   <link href="/css/nucleo/base.css" rel="stylesheet">
   <link href="/css/nucleo/componentes.css" rel="stylesheet">
@@ -70,6 +71,7 @@
           <section id="seccion-lugares" class="tarjeta-panel mb-4" aria-labelledby="titulo-lugares" hidden>
             <h2 id="titulo-lugares" class="h5 mb-3">Lugares</h2>
             <p id="mensaje-lugares" role="status" class="text-secondary mb-0"></p>
+            <div id="mapa-lugares" class="mapa-lugares mb-3" hidden></div>
             <ol id="lista-lugares" class="lista-lugares"></ol>
           </section>
 
@@ -252,6 +254,8 @@
   <script src="/js/shared/pantalla.js"></script>
   <script src="/js/shared/cabecera.js"></script>
   <script src="/js/shared/lugares.js"></script>
+  <script src="/vendor/leaflet/leaflet.js"></script>
+  <script src="/js/shared/mapa.js"></script>
   <script src="/js/experiencias/experiencia.js"></script>
   <script src="/js/experiencias/compartir-enlace.js"></script>
   <script src="/js/shared/movimiento.js"></script>

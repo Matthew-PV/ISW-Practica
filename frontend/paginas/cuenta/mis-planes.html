@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PlanB · Mis planes</title>
   <link rel="icon" href="/img/logo-pin.svg" type="image/svg+xml">
+  <link href="/vendor/leaflet/leaflet.css" rel="stylesheet">
   <link href="/css/nucleo/tokens.css" rel="stylesheet">
   <link href="/css/nucleo/base.css" rel="stylesheet">
   <link href="/css/nucleo/componentes.css" rel="stylesheet">
@@ -197,6 +198,7 @@
             <button type="button" id="boton-buscar-lugar" class="btn btn-outline-primary">Buscar</button>
           </div>
           <p id="mensaje-lugares" role="status" class="small text-body-secondary mb-2"></p>
+          <div id="mapa-lugares" class="mapa-lugares mb-2" hidden></div>
           <ul id="resultados-lugares" class="lista-lugares mb-2" aria-label="Resultados"></ul>
           <ol id="lugares-elegidos" class="lista-lugares" aria-label="Lugares del plan"></ol>
         </fieldset>
@@ -283,6 +285,8 @@
   <script src="/js/shared/pantalla.js"></script>
   <script src="/js/shared/cabecera.js"></script>
   <script src="/js/shared/lugares.js"></script>
+  <script src="/vendor/leaflet/leaflet.js"></script>
+  <script src="/js/shared/mapa.js"></script>
   <script src="/js/cuenta/mis-planes.js"></script>
   <script src="/js/shared/movimiento.js"></script>
 </body>

@@ -529,6 +529,18 @@ fieldset:disabled .btn {
   border-radius: var(--radio-tarjeta);
 }
 
+.ficha-lugar-seleccionada {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 2px var(--bs-primary);
+}
+
+/* CS-73: isolation evita que las capas de Leaflet tapen la cabecera o los menús */
+.mapa-lienzo {
+  height: 18rem;
+  isolation: isolate;
+  border-radius: var(--radio-tarjeta);
+}
+
 .ficha-lugar img {
   flex: none;
   width: 6rem;

@@ -195,6 +195,7 @@ const botonBuscarLugar = document.getElementById('boton-buscar-lugar');
 const mensajeLugares = document.getElementById('mensaje-lugares');
 const listaResultados = document.getElementById('resultados-lugares');
 const listaElegidos = document.getElementById('lugares-elegidos');
+const mapaFormulario = crearMapaLugares(document.getElementById('mapa-lugares'));
 // Lugares elegidos, con su nota. Es null mientras no se conocen los del plan que se edita:
 // entonces no se envían, para no borrarlos.
 let lugaresElegidos = [];
@@ -235,6 +236,25 @@ function elementoLugar(lugar, ...extras) {
   return elemento;
 }
 
+// CS-73: los elegidos y, atenuados, los resultados que aún no lo están
+function pintarMapa() {
+  const elegidos = lugaresElegidos ?? [];
+  const porElegir = resultadosLugares.flatMap((lugar, posicion) => (
+    elegidos.some((otro) => otro.proveedorId === lugar.proveedorId)
+      ? []
+      : [{ lugar, atenuado: true, alPulsar: () => seleccionarResultado(posicion) }]
+  ));
+  mapaFormulario.mostrar([...elegidos.map((lugar) => ({ lugar })), ...porElegir]);
+}
+
+// Marca en la lista el resultado pulsado en el mapa y le lleva el foco
+function seleccionarResultado(posicion) {
+  [...listaResultados.children].forEach((elemento, i) => {
+    elemento.firstElementChild.classList.toggle('ficha-lugar-seleccionada', i === posicion);
+  });
+  listaResultados.children[posicion].querySelector('button').focus();
+}
+
 function pintarResultados() {
   listaResultados.replaceChildren(...resultadosLugares.map((lugar) => {
     const elegido = lugaresElegidos.some((otro) => otro.proveedorId === lugar.proveedorId);
@@ -245,6 +265,7 @@ function pintarResultados() {
     acciones.append(anadir);
     return elementoLugar(lugar, acciones);
   }));
+  pintarMapa();
 }
 
 function pintarElegidos() {
@@ -270,6 +291,7 @@ function pintarElegidos() {
     acciones.append(subir, bajar, quitar);
     return elementoLugar(lugar, nota, acciones);
   }));
+  pintarMapa();
 }
 
 function anadirLugar(lugar) {

@@ -15,7 +15,7 @@ const HTML = leer('paginas/cuenta/mis-planes.html');
 const SCRIPTS = [
   'js/shared/api.js',
   'js/shared/pantalla.js',
-  'js/shared/lugares.js', 'js/cuenta/mis-planes.js',
+  'js/shared/lugares.js', 'js/shared/mapa.js', 'js/cuenta/mis-planes.js',
 ];
 
 const PERFIL = {

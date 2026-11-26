@@ -73,6 +73,8 @@ function pintarDuracionTarifa(experiencia) {
     : '';
 }
 
+let mapaDetalle;
+
 // CS-50: una ficha por lugar, en el orden del autor y con su nota. Sin lugares no hay apartado.
 async function mostrarLugares(experiencia) {
   const seccion = document.getElementById('seccion-lugares');
@@ -91,6 +93,9 @@ async function mostrarLugares(experiencia) {
       return elemento;
     }));
     seccion.hidden = !lugares.length;
+    // CS-73: con el apartado ya visible, para que el mapa conozca su tamaño
+    mapaDetalle ??= crearMapaLugares(document.getElementById('mapa-lugares'));
+    mapaDetalle.mostrar(lugares.map((lugar) => ({ lugar })));
   } catch (error) {
     document.getElementById('mensaje-lugares').textContent = error.message;
     seccion.hidden = false;
@@ -197,6 +202,7 @@ function mostrarNoDisponible() {
   momentoEl.textContent = '';
   descEl.textContent = '';
   document.getElementById('lista-lugares').replaceChildren();
+  mapaDetalle?.mostrar([]);
 
   // CS-53: ocultar también duración y tarifa.
   duracionEl.textContent = '';
