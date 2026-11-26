@@ -94,8 +94,16 @@ function guardarEnUrl() {
   const pestana = new URLSearchParams(window.location.search).get('pestana');
   if (pestana) nuevos.set('pestana', pestana);
   actualizarLimpiar();
+  titularPorCiudad();
   const consulta = nuevos.toString();
   window.history.replaceState(window.history.state, '', `${window.location.pathname}${consulta ? `?${consulta}` : ''}`);
+}
+
+// Con una ciudad elegida, el título la nombra (CS-74). Las tiras y la búsqueda conservan el suyo
+function titularPorCiudad() {
+  if (TITULOS_TIRA[parametros.get('tira')] || texto) return;
+  const nombre = campoCiudad.value && campoCiudad.selectedOptions[0].dataset.nombre;
+  document.getElementById('titulo-explorar').textContent = nombre ? `Planes en ${nombre}` : 'Explorar';
 }
 
 // «Limpiar filtros» solo aparece si hay alguno puesto
@@ -213,13 +221,18 @@ async function iniciar() {
     api('/ciudades').catch(() => []),
   ]);
   pintarOpciones(opciones);
-  campoCiudad.append(...ciudades.map((ciudad) => crearOpcion(ciudad.id, `${ciudad.nombre} (${ciudad.pais})`)));
+  campoCiudad.append(...ciudades.map((ciudad) => {
+    const opcion = crearOpcion(ciudad.id, `${ciudad.nombre} (${ciudad.pais})`);
+    opcion.dataset.nombre = ciudad.nombre;
+    return opcion;
+  }));
   marcarCategoria();
 
   if (!esperaOpciones) return;
   campoMomento.value = parametros.get('momento') ?? '';
   if (parametros.has('ciudad')) {
     campoCiudad.value = parametros.get('ciudad');
+    titularPorCiudad();
   } else if (tira === 'ciudad') {
     // La ciudad del perfil es texto libre: se busca en el catálogo; si no está, se ven todas
     const perfil = await api('/perfil').catch(() => null);

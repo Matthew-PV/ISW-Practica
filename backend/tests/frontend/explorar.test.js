@@ -186,6 +186,24 @@ test('?tira=ciudad titula la página y filtra por la ciudad del perfil', async (
   expect(peticionesDePlanes()).toEqual(['/api/experiencias?ciudadId=3&limite=12']);
 });
 
+test('con una ciudad en la URL muestra sus planes y el título dice «Planes en» esa ciudad', async () => {
+  await abrir('?ciudad=3');
+
+  expect(peticionesDePlanes()).toEqual(['/api/experiencias?ciudadId=3&limite=12']);
+  expect($('#filtro-ciudad').value).toBe('3');
+  expect($('#titulo-explorar').textContent).toBe('Planes en Sevilla');
+});
+
+test('el título sigue a la ciudad elegida y vuelve a «Explorar» al quitarla', async () => {
+  await abrir('?ciudad=3');
+
+  await cambiar('#filtro-ciudad', '1');
+  expect($('#titulo-explorar').textContent).toBe('Planes en Madrid');
+
+  await cambiar('#filtro-ciudad', '');
+  expect($('#titulo-explorar').textContent).toBe('Explorar');
+});
+
 test('?tira=amigos marca «solo amigos» desde el principio', async () => {
   await abrir('?tira=amigos');
 
