@@ -22,7 +22,8 @@ async function requiereSesion(req, res, next) {
   // Si el usuario ya no existe, se destruye la sesión (que no sirva si otro usuario reutiliza el id)
   // y se lanza el error 401, que app.js responde (Express 5 recoge los errores de los middlewares async)
   try {
-    await authService.obtenerUsuario(req.session.usuarioId);
+    // Se deja en req para que la ruta no tenga que volver a leerlo
+    req.usuario = await authService.obtenerUsuario(req.session.usuarioId);
   } catch (err) {
     if (err.status === 401) await new Promise((resolver) => req.session.destroy(resolver));
     throw err;

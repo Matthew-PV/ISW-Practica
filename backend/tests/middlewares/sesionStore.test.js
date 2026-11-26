@@ -1,6 +1,6 @@
 // El almacén de sesiones distingue «no hay sesión» (401) de «la base ha fallado» (500).
 jest.mock('../../src/repositories/shared/prisma', () => ({
-  session: { findUnique: jest.fn(), findMany: jest.fn(async () => []), delete: jest.fn(), deleteMany: jest.fn() },
+  session: { findUnique: jest.fn(), findMany: jest.fn(async () => []), delete: jest.fn(), deleteMany: jest.fn(), update: jest.fn() },
   $connect: jest.fn(async () => {}),
   $disconnect: jest.fn(async () => {}),
 }));
@@ -35,4 +35,14 @@ test('una sesión caducada se borra sin fallar aunque otra petición ya la haya 
   prisma.session.deleteMany.mockResolvedValue({ count: 0 });
   expect(await leer()).toEqual({ err: undefined, sesion: undefined });
   expect(prisma.session.deleteMany).toHaveBeenCalledWith({ where: { sid: 'abc' } });
+});
+
+test('la caducidad se renueva como mucho una vez cada 10 minutos', async () => {
+  prisma.session.findUnique.mockResolvedValue({ sid: 'xyz', data: '{}', expiresAt: MANANA });
+  const tocar = () => new Promise((resolver) => store.touch('xyz', { cookie: {} }, resolver));
+
+  await tocar();
+  await tocar();
+
+  expect(prisma.session.update).toHaveBeenCalledTimes(1);
 });

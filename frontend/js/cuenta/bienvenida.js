@@ -1,6 +1,6 @@
 // Inicio (/paginas/cuenta/bienvenida.html): saludo y tiras horizontales de planes para descubrir, cada una con
 // «Ver más» hacia el explorador. Los planes son los reales de GET /api/experiencias.
-// Usa `api` de shared/api.js, `alFallarCarga` de shared/pantalla.js y `crearTarjetaPlan`, `pedirPlanes` y
+// Usa `api` de shared/api.js, `alFallarCarga` y `crearHuecoCarga` de shared/pantalla.js y `crearTarjetaPlan`, `pedirPlanes` y
 // `buscarCiudadPorNombre` de shared/planes.js.
 
 const PLANES_POR_TIRA = 8;
@@ -22,8 +22,8 @@ function definirTiras(ciudad, ciudadId) {
   ];
 }
 
-// Crea una tira con su cabecera, el enlace «Ver más» y la fila de tarjetas (o su aviso si no hay planes).
-function crearTira(tira, planes) {
+// Crea una tira con su cabecera, el enlace «Ver más» y la fila, con huecos hasta que lleguen sus planes.
+function crearTira(tira) {
   const seccion = document.createElement('section');
   seccion.className = 'tira';
   seccion.setAttribute('aria-labelledby', `tira-${tira.id}`);
@@ -54,53 +54,75 @@ function crearTira(tira, planes) {
   fila.tabIndex = 0;
   fila.setAttribute('role', 'group');
   fila.setAttribute('aria-labelledby', titulo.id);
-  fila.append(...planes.map((plan, indice) => crearTarjetaPlan(plan, indice)));
-  if (planes.length === 0) {
-    const vacio = document.createElement('p');
-    vacio.className = 'tira-vacia text-secondary mb-0';
-    vacio.textContent = tira.vacio;
-    fila.append(vacio);
-  }
+  fila.append(...[1, 2, 3, 4].map(crearHuecoCarga));
 
   seccion.append(cabecera, fila);
   return seccion;
 }
 
-// Al abrir la página: el saludo y las tiras. Sin sesión, al inicio de sesión.
-async function mostrarInicio() {
-  let usuario;
+// Texto que ocupa el sitio de las tarjetas: la tira está vacía o no se ha podido cargar.
+function crearAvisoTira(texto) {
+  const aviso = document.createElement('p');
+  aviso.className = 'tira-vacia text-secondary mb-0';
+  aviso.textContent = texto;
+  return aviso;
+}
+
+// Pide los planes de una tira y los pone en su fila. Una tira que falla no tumba a las demás.
+async function llenarTira(seccion, tira) {
+  const fila = seccion.querySelector('.tira-fila');
+  fila.replaceChildren(...[1, 2, 3, 4].map(crearHuecoCarga));
   try {
-    usuario = await api('/auth/yo');
+    const planes = tira.filtros ? (await pedirPlanes({ ...tira.filtros, limite: PLANES_POR_TIRA })).experiencias : [];
+    fila.replaceChildren(...(planes.length
+      ? planes.map((plan, indice) => crearTarjetaPlan(plan, indice))
+      : [crearAvisoTira(tira.vacio)]));
+  } catch {
+    const reintentar = document.createElement('button');
+    reintentar.type = 'button';
+    reintentar.className = 'btn btn-sm btn-outline-primary ms-2';
+    reintentar.textContent = 'Reintentar';
+    reintentar.addEventListener('click', () => llenarTira(seccion, tira));
+    const aviso = crearAvisoTira('No se han podido cargar estos planes.');
+    aviso.append(reintentar);
+    fila.replaceChildren(aviso);
+  }
+}
+
+// La ciudad del perfil es texto libre: se busca en el catálogo para pedir sus planes. Si algo falla o no
+// aparece, la tira de la ciudad se queda sin planes pero las demás siguen
+async function pedirCiudad() {
+  let ciudad = null;
+  try {
+    const [perfil, catalogo] = await Promise.all([api('/perfil'), api('/ciudades').catch(() => [])]);
+    ciudad = perfil?.ciudad?.trim() || null;
+    return { ciudad, ciudadId: ciudad ? buscarCiudadPorNombre(ciudad, catalogo) : null };
+  } catch {
+    return { ciudad, ciudadId: null };
+  }
+}
+
+// Al abrir la página: los encabezados con huecos y, en paralelo, el saludo y los planes de cada tira.
+// Sin sesión, al inicio de sesión.
+async function mostrarInicio() {
+  const [tiraCiudad, ...resto] = definirTiras(null, null);
+  const secciones = [tiraCiudad, ...resto].map(crearTira);
+  document.getElementById('tiras').replaceChildren(...secciones);
+
+  const usuario = api('/auth/yo');
+  resto.forEach((tira, indice) => llenarTira(secciones[indice + 1], tira));
+  pedirCiudad().then(({ ciudad, ciudadId }) => {
+    const tira = definirTiras(ciudad, ciudadId)[0];
+    const seccion = crearTira(tira);
+    secciones[0].replaceWith(seccion);
+    return llenarTira(seccion, tira);
+  });
+
+  try {
+    document.getElementById('nombre-usuario').textContent = (await usuario).nombreUsuario;
   } catch (err) {
     alFallarCarga(err, mostrarInicio);
-    return;
   }
-  document.getElementById('nombre-usuario').textContent = usuario.nombreUsuario;
-
-  // La ciudad del perfil es texto libre: se busca en el catálogo para pedir sus planes. Si algo falla o no
-  // aparece, la tira de la ciudad se queda sin planes pero las demás siguen
-  let ciudad = null;
-  let ciudadId = null;
-  try {
-    ciudad = (await api('/perfil'))?.ciudad?.trim() || null;
-    if (ciudad) ciudadId = buscarCiudadPorNombre(ciudad, await api('/ciudades'));
-  } catch {
-    // se queda sin ciudad
-  }
-
-  // Una tira que falla no tumba a las demás
-  const tiras = await Promise.all(definirTiras(ciudad, ciudadId).map(async (tira) => {
-    let planes = [];
-    if (tira.filtros) {
-      try {
-        planes = (await pedirPlanes({ ...tira.filtros, limite: PLANES_POR_TIRA })).experiencias;
-      } catch {
-        // la tira muestra su aviso de vacío
-      }
-    }
-    return crearTira(tira, planes);
-  }));
-  document.getElementById('tiras').replaceChildren(...tiras);
 }
 
 mostrarInicio();

@@ -483,6 +483,23 @@ fieldset:disabled .btn {
 }
 
 /* Con movimiento reducido, los cambios son instantáneos */
+/* Huecos mientras llegan los datos (shared/pantalla.js, crearHuecoCarga) */
+.hueco-carga {
+  min-height: 4.5rem;
+  border-radius: 0.75rem;
+  background: currentcolor;
+  opacity: 0.08;
+  animation: latido-hueco 1.2s ease-in-out infinite alternate;
+}
+
+.rejilla-planes > .hueco-carga,
+.rejilla-experiencias > .hueco-carga,
+.tira-fila > .hueco-carga { min-height: 15rem; }
+
+.tira-fila > .hueco-carga { flex: 0 0 16rem; }
+
+@keyframes latido-hueco { to { opacity: 0.16; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     transition: none !important;

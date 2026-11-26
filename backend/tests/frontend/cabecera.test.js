@@ -377,3 +377,27 @@ describe('campana de notificaciones', () => {
     expect(document.activeElement).toBe(resumen);
   });
 });
+
+describe('estado de las notificaciones', () => {
+  async function abrir(fetch) {
+    cargar('amigos');
+    window.fetch = jest.fn(fetch);
+    window.movimientoPausado = () => true;
+    cargarScripts(['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/cabecera.js']);
+    await terminar();
+    await terminar();
+    return $('#sin-notificaciones').textContent;
+  }
+
+  test('mientras no hay respuesta dice «Cargando…», no que esté vacía', async () => {
+    expect(await abrir(() => new Promise(() => {}))).toBe('Cargando…');
+  });
+
+  test('si falla, lo dice', async () => {
+    expect(await abrir(async () => ({ ok: false, status: 500, json: async () => ({}) }))).toBe('No se han podido cargar las notificaciones.');
+  });
+
+  test('vacía solo tras una respuesta correcta', async () => {
+    expect(await abrir(async () => ({ ok: true, status: 200, json: async () => [] }))).toBe('No tienes notificaciones nuevas.');
+  });
+});

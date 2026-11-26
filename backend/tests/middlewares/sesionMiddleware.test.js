@@ -61,3 +61,12 @@ test('si el usuario de la sesión ya no existe, la sesión se destruye: aunque r
 
   expect((await agente.get('/api/auth/yo')).status).toBe(401);
 });
+
+test('GET /api/auth/yo lee el usuario una sola vez', async () => {
+  const agente = request.agent(app);
+  await agente.post('/api/auth/login').send({ email: usuario.email, password: 'Secreta123' });
+  usuarioRepository.buscarPorId.mockResolvedValue(usuario);
+
+  expect((await agente.get('/api/auth/yo')).body.nombreUsuario).toBe('ana');
+  expect(usuarioRepository.buscarPorId).toHaveBeenCalledTimes(1);
+});

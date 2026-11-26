@@ -35,6 +35,8 @@ const listaExperiencias = document.getElementById('lista-experiencias');
 const botonMasExperiencias = document.getElementById('mas-experiencias');
 function contarExperiencias() {
   const cargadas = listaExperiencias.querySelectorAll('[data-id-elemento]').length;
+  // Mientras carga se queda el «–»: un 0 sería un dato falso
+  if (listaExperiencias.querySelector('.hueco-carga')) return;
   const hayMas = !botonMasExperiencias.classList.contains('d-none');
   document.getElementById('total-experiencias').textContent = hayMas ? `${cargadas}+` : cargadas;
 }

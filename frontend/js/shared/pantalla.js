@@ -71,6 +71,14 @@ function crearEnlacePerfil(enlace, usuario, miUsuarioId) {
   return enlace;
 }
 
+// Hueco que ocupa el sitio de un elemento mientras llega (el CSS le da el tamaño y el latido).
+function crearHuecoCarga() {
+  const hueco = document.createElement('div');
+  hueco.className = 'hueco-carga';
+  hueco.setAttribute('aria-hidden', 'true');
+  return hueco;
+}
+
 // Listado con «Cargar más» por cursor (ver backend/src/services/shared/paginacion.js):
 // - `lista`: el elemento donde se añaden las filas; `vacio`: el aviso de lista vacía (opcional);
 //   `botonMas`: el botón «Cargar más».
@@ -87,9 +95,17 @@ function listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar }) {
 
   async function cargar() {
     const miGeneracion = generacion;
+    // En la primera página se ponen huecos; el aviso de vacío espera a la respuesta
+    const huecos = lista.querySelector('[data-id-elemento]') ? [] : [1, 2, 3].map(crearHuecoCarga);
+    if (huecos.length) {
+      vacio?.classList.add('d-none');
+      lista.prepend(...huecos);
+    }
+    const quitarHuecos = () => huecos.forEach((hueco) => hueco.remove());
     try {
       const pagina = await pedir(siguiente);
       if (miGeneracion !== generacion) return;
+      quitarHuecos();
       for (const elemento of pagina.elementos) {
         if (!lista.querySelector(`[data-id-elemento="${elemento.id}"]`)) {
           const fila = crear(elemento);
@@ -102,6 +118,7 @@ function listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar }) {
       vacio?.classList.toggle('d-none', lista.querySelector('[data-id-elemento]') !== null);
       botonMas.classList.toggle('d-none', siguiente === null);
     } catch (err) {
+      quitarHuecos();
       if (miGeneracion === generacion) alFallar(err, cargar);
     }
   }
@@ -170,4 +187,4 @@ function crearBloqueCategoria(tipo) {
 // Funciones que usan los scripts de las páginas, que se cargan después de este. En el navegador
 // ya serían globales; se dejan en window de forma explícita para que también lo sean cuando las
 // pruebas cargan el archivo como módulo (para medir su cobertura).
-Object.assign(window, { mostrarMensaje, mostrarErrorConReintento, ocultarMensaje, mostrarCargando, ocultarCargando, irAlLogin, alFallarCarga, crearEnlacePerfil, crearFilaPersona, listaConCargarMas, crearBloqueCategoria });
+Object.assign(window, { mostrarMensaje, mostrarErrorConReintento, ocultarMensaje, mostrarCargando, ocultarCargando, irAlLogin, alFallarCarga, crearHuecoCarga, crearEnlacePerfil, crearFilaPersona, listaConCargarMas, crearBloqueCategoria });

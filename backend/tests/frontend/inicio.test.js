@@ -122,3 +122,22 @@ test('sin sesión vuelve al inicio de sesión', async () => {
   expect(window.location.href).toBe('/paginas/acceso/iniciar-sesion.html');
   Object.defineProperty(window, 'location', { value: locationReal, configurable: true, writable: true });
 });
+
+test('pinta los tres encabezados con huecos antes de que respondan los planes', async () => {
+  await abrir({ ...SESION, '/api/experiencias?limite=8': () => new Promise(() => {}) });
+
+  const tiras = [...document.querySelectorAll('.tira')];
+  expect(tiras).toHaveLength(3);
+  expect(tiras[1].querySelector('.hueco-carga')).not.toBeNull();
+  expect(tiras[1].querySelector('.tira-vacia')).toBeNull();
+});
+
+test('una tira que falla no dice que está vacía y se puede reintentar', async () => {
+  await abrir(rutasBase({ '/api/experiencias?limite=8': () => respuesta(500, { error: 'fallo' }) }));
+
+  const tira = document.querySelectorAll('.tira')[1];
+  expect(tira.textContent).toContain('No se han podido cargar');
+  window.fetch.mockClear();
+  tira.querySelector('button').click();
+  expect(window.fetch.mock.calls.map(([ruta]) => ruta)).toContain('/api/experiencias?limite=8');
+});

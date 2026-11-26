@@ -73,6 +73,7 @@ function crearOpcion(valor, textoOpcion) {
 
 // Pinta los botones de categoría y el selector de momento con las opciones del backend
 function pintarOpciones({ categorias, momentos }) {
+  filtros.replaceChildren();
   for (const [valor, textoBoton] of [['', 'Todos'], ...categorias.map((c) => [c, c])]) {
     const boton = document.createElement('button');
     boton.type = 'button';
@@ -95,19 +96,22 @@ for (const campo of [campoMomento, campoCiudad, campoAmigos, campoTarifa, campoD
 }
 
 async function iniciar() {
-  try {
-    await api('/auth/yo');
-  } catch (err) {
-    alFallarCarga(err, iniciar);
-    return;
-  }
-
+  const sesion = api('/auth/yo');
   const tira = parametros.get('tira');
   if (TITULOS_TIRA[tira]) {
     document.getElementById('titulo-explorar').textContent = TITULOS_TIRA[tira][0];
     document.getElementById('subtitulo-explorar').textContent = TITULOS_TIRA[tira][1];
   }
   campoAmigos.checked = tira === 'amigos';
+  // Los planes no esperan a los filtros, salvo en «mi ciudad», que necesita saber cuál es
+  if (tira !== 'ciudad') listado.reiniciar();
+
+  try {
+    await sesion;
+  } catch (err) {
+    alFallarCarga(err, iniciar);
+    return;
+  }
 
   // Las opciones y las ciudades no impiden ver los planes si fallan: quedan solo los filtros que se pudieron cargar
   const [opciones, ciudades] = await Promise.all([
@@ -123,8 +127,8 @@ async function iniciar() {
     // La ciudad del perfil es texto libre: se busca en el catálogo; si no está, se ven todas
     const perfil = await api('/perfil').catch(() => null);
     campoCiudad.value = buscarCiudadPorNombre(perfil?.ciudad, ciudades) ?? '';
+    listado.reiniciar();
   }
-  listado.cargar();
 }
 
 iniciar();

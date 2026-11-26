@@ -69,3 +69,29 @@ test('api: el plazo también cubre la lectura del cuerpo', async () => {
     jest.useRealTimers();
   }
 });
+
+test('listaConCargarMas: mientras llega la primera página hay huecos de carga y no se ve el vacío', async () => {
+  document.body.innerHTML = '<ul id="lista"></ul><p id="vacio"></p><button id="mas"></button>';
+  const pendientes = [];
+  const lista = document.getElementById('lista');
+  const vacio = document.getElementById('vacio');
+  const { reiniciar } = window.listaConCargarMas({
+    lista, vacio, botonMas: document.getElementById('mas'), alFallar: () => {},
+    pedir: () => new Promise((resolve, reject) => pendientes.push({ resolve, reject })),
+    crear: () => document.createElement('li'),
+  });
+
+  const primera = reiniciar();
+  expect(lista.querySelectorAll('.hueco-carga').length).toBeGreaterThan(0);
+  expect(vacio.classList.contains('d-none')).toBe(true);
+  pendientes[0].resolve({ elementos: [], siguiente: null });
+  await primera;
+  expect(lista.children).toHaveLength(0);
+  expect(vacio.classList.contains('d-none')).toBe(false);
+
+  const segunda = reiniciar();
+  pendientes[1].reject(new Error('fallo'));
+  await segunda;
+  expect(lista.children).toHaveLength(0);
+  expect(vacio.classList.contains('d-none')).toBe(true);
+});

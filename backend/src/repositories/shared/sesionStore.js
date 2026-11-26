@@ -33,4 +33,15 @@ store.get = async (sid, callback) => {
   return sesion ? callback(null, sesion) : callback();
 };
 
+// Renovar la caducidad cuesta dos consultas: se hace como mucho una vez cada 10 minutos por sesión
+const MS_ENTRE_RENOVACIONES = 10 * 60 * 1000;
+const renovadas = new Map();
+const renovar = store.touch;
+store.touch = (sid, sesion, callback) => {
+  if (Date.now() - (renovadas.get(sid) ?? 0) < MS_ENTRE_RENOVACIONES) return callback?.();
+  if (renovadas.size >= 1000) renovadas.clear();
+  renovadas.set(sid, Date.now());
+  return renovar(sid, sesion, callback);
+};
+
 module.exports = store;

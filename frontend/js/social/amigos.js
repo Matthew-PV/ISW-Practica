@@ -1,7 +1,7 @@
 // Página Amigos (/paginas/social/amigos.html): arriba las solicitudes de amistad pendientes que ha recibido la
 // persona de la sesión, con «Aceptar» y «Rechazar»; debajo, su lista de amigos. Se ejecuta nada más
 // cargar la página. Usa `api` de shared/api.js y `crearEnlacePerfil`, `crearFilaPersona`,
-// `listaConCargarMas`, `mostrarMensaje` y `ocultarMensaje` de shared/pantalla.js.
+// `listaConCargarMas`, `crearHuecoCarga`, `mostrarMensaje` y `ocultarMensaje` de shared/pantalla.js.
 // La campana de la cabecera (shared/cabecera.js) también responde solicitudes: las dos partes se avisan con
 // el evento 'solicitud-respondida' ({ detail: { id } }).
 
@@ -60,9 +60,12 @@ function mostrarSolicitudes(solicitudes) {
 
 async function cargarSolicitudesRecibidas() {
   cajaErrorSolicitudes.classList.add('d-none');
+  sinSolicitudes.classList.add('d-none');
+  solicitudesRecibidas.replaceChildren(crearHuecoCarga());
   try {
     mostrarSolicitudes(await api('/amistades/solicitudes'));
   } catch (err) {
+    solicitudesRecibidas.replaceChildren();
     cajaErrorSolicitudes.textContent = err.message;
     cajaErrorSolicitudes.classList.remove('d-none');
   }

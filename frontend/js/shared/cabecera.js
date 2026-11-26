@@ -184,12 +184,17 @@ if (menuNotificaciones) {
     actualizarContador();
   });
 
+  const textoVacio = sinNotificaciones.textContent;
+  sinNotificaciones.textContent = 'Cargando…';
   api('/amistades/solicitudes')
     .then((solicitudes) => {
+      sinNotificaciones.textContent = textoVacio;
       lista.replaceChildren(...solicitudes.map(crearNotificacion));
       actualizarContador();
     })
-    .catch(() => {});
+    .catch(() => {
+      sinNotificaciones.textContent = 'No se han podido cargar las notificaciones.';
+    });
 }
 
 // El buscador no se envía si no hay texto (aparte de espacios)
