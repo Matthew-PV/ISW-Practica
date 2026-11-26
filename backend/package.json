@@ -20,6 +20,7 @@
     "test:bdd": "node --env-file=.env.test node_modules/@cucumber/cucumber/bin/cucumber.js",
     "demo:preparar": "node --env-file=.env --env-file=.env.demo node_modules/prisma/build/index.js migrate deploy && node --env-file=.env --env-file=.env.demo prisma/seed.js && node --env-file=.env --env-file=.env.demo prisma/seed-demo.js",
     "test:e2e": "playwright test",
+    "test:bdd:e2e": "node --env-file=.env.e2e e2e/ejecutar-bdd.cjs"
   },
   "engines": {
     "node": ">=22"
