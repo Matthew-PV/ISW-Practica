@@ -13,6 +13,7 @@ async function cerrarSesion(evento) {
   boton.disabled = true;
   boton.setAttribute('aria-busy', 'true');
   boton.textContent = 'Cerrando sesión…';
+  document.querySelector('.cabecera-aviso')?.remove();
   try {
     await api('/auth/logout', { method: 'POST' });
     window.location.href = '/paginas/acceso/iniciar-sesion.html';
@@ -44,16 +45,18 @@ if (menuCuenta) {
     if (!menuCuenta.contains(e.target)) menuCuenta.open = false;
   });
 
-  // Escape: se cierra y el foco vuelve al resumen
-  menuCuenta.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
+  // Escape, esté donde esté el foco: se cierra y el foco vuelve al resumen
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menuCuenta.open) {
       menuCuenta.open = false;
       menuCuenta.querySelector('summary').focus();
     }
   });
 
   // Al elegir una opción también se cierra y el foco vuelve al resumen
-  menuCuenta.querySelector('.menu-cuenta-lista')?.addEventListener('click', () => {
+  // «Cerrar sesión» no lo cierra, para que se vea la espera
+  menuCuenta.querySelector('.menu-cuenta-lista')?.addEventListener('click', (e) => {
+    if (e.target.closest('[data-cerrar-sesion]')) return;
     menuCuenta.open = false;
     menuCuenta.querySelector('summary').focus();
   });
@@ -73,7 +76,7 @@ if (avatar) {
 // Campana (usa `crearBotonesAmistad` de shared/pantalla.js): las solicitudes de amistad pendientes como notificaciones, con un contador. Cada una lleva a
 // la persona y se puede aceptar o rechazar desde ahí; «Ver amigos y solicitudes» lleva a /paginas/social/amigos.html.
 // Cuando una solicitud se responde (aquí o en la página Amigos) se emite 'solicitud-respondida' con
-// { detail: { id } } y las dos partes se ponen al día.
+// { detail: { id, aceptada } } y las dos partes se ponen al día.
 const menuNotificaciones = document.querySelector('details.menu-notificaciones');
 
 if (menuNotificaciones) {
@@ -85,8 +88,8 @@ if (menuNotificaciones) {
   document.addEventListener('click', (e) => {
     if (!menuNotificaciones.contains(e.target)) menuNotificaciones.open = false;
   });
-  menuNotificaciones.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && menuNotificaciones.open) {
       menuNotificaciones.open = false;
       menuNotificaciones.querySelector('summary').focus();
     }
@@ -120,14 +123,31 @@ if (menuNotificaciones) {
     mensaje.focus();
   }
 
+  function mostrarCierre(notificacion, texto) {
+    delete notificacion.dataset.solicitudId;
+    const mensaje = document.createElement('p');
+    mensaje.className = 'notificacion-error';
+    mensaje.setAttribute('role', 'alert');
+    mensaje.tabIndex = -1;
+    mensaje.textContent = texto;
+    notificacion.replaceChildren(mensaje);
+    actualizarContador();
+    mensaje.focus();
+  }
+
   async function responder(notificacion, solicitud, aceptar) {
     const botones = notificacion.querySelectorAll('button');
     botones.forEach((boton) => { boton.disabled = true; });
     try {
       await api(`/amistades/${solicitud.id}`, { method: 'PATCH', body: JSON.stringify({ aceptar }) });
       mostrarResultado(notificacion, solicitud, aceptar);
-      document.dispatchEvent(new CustomEvent('solicitud-respondida', { detail: { id: solicitud.id } }));
+      document.dispatchEvent(new CustomEvent('solicitud-respondida', { detail: { id: solicitud.id, aceptada: aceptar } }));
     } catch (err) {
+      // Ya no se puede responder (se resolvió en otro sitio): deja de estar pendiente y se dice por qué
+      if (err.status === 400 || err.status === 404) {
+        mostrarCierre(notificacion, err.message);
+        return;
+      }
       botones.forEach((boton) => { boton.disabled = false; });
       let error = notificacion.querySelector('.notificacion-error');
       if (!error) {
@@ -200,5 +220,8 @@ if (menuNotificaciones) {
 
 // El buscador no se envía si no hay texto (aparte de espacios)
 document.querySelector('header.cabecera form[role="search"]')?.addEventListener('submit', (e) => {
-  if (e.currentTarget.elements.q.value.trim() === '') e.preventDefault();
+  const campo = e.currentTarget.elements.q;
+  if (campo.value.trim() !== '') return;
+  e.preventDefault();
+  campo.focus();
 });

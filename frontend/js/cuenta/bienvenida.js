@@ -6,7 +6,7 @@
 const PLANES_POR_TIRA = 8;
 
 // Siguiente paso que ofrece una tira sin planes: [texto, dirección]
-const CREAR_PLAN = ['Crear un plan', '/paginas/cuenta/mis-planes.html?nuevo=1'];
+const CREAR_PLAN = ['Nuevo plan', '/paginas/cuenta/mis-planes.html?nuevo=1'];
 
 // Cada tira: su título, su subtítulo, lo que se pide a la API para llenarla y qué decir si queda vacía.
 function definirTiras(ciudad, ciudadId) {

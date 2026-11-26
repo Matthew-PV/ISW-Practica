@@ -104,9 +104,9 @@ a.tarjeta-plan {
 
 /* Explorar */
 .filtros-explorar-campos {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: end;
   gap: var(--espacio-16);
   margin-bottom: var(--espacio-16);
 }

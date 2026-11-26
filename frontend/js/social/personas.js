@@ -18,9 +18,16 @@
       const { ruta, opciones } = peticion;
       const respuesta = await api(ruta, opciones);
       const amistadId = relacionNueva.amistad === 'enviada' ? respuesta.id : null;
-      pintarRelacion(fila, usuario, { ...usuario.relacion, ...relacionNueva, amistadId });
+      // Seguir o dejar de seguir no cambia la amistad ni su id
+      pintarRelacion(fila, usuario, { ...usuario.relacion, ...(relacionNueva.amistad && { amistadId }), ...relacionNueva });
+      desactivarUnInstante([...fila.querySelectorAll('button')]);
     } catch (err) {
       boton.disabled = false;
+      // La relación cambió en otro sitio: se vuelve a pedir antes de enseñar el mensaje
+      if (err.status === 400 || err.status === 404) {
+        const perfil = await api(`/usuarios/${encodeURIComponent(usuario.nombreUsuario)}`).catch(() => null);
+        if (perfil?.relacion) pintarRelacion(fila, usuario, perfil.relacion);
+      }
       const error = document.createElement('p');
       error.className = 'fila-resultado-error';
       error.setAttribute('role', 'alert');
@@ -30,7 +37,8 @@
   }
 
   // Pone en la fila la relación (texto) y el botón que corresponde: «Añadir amigo» si no hay amistad,
-  // «Cancelar solicitud» si la envió quien busca y «Aceptar» y «Rechazar» si la recibió. Un amigo no lleva botón.
+  // «Cancelar solicitud» si la envió quien busca y «Aceptar» y «Rechazar» si la recibió; un amigo no lleva botón de
+  // amistad. Todas llevan «Seguir» o «Dejar de seguir».
   function pintarRelacion(fila, usuario, relacion) {
     usuario.relacion = relacion;
     fila.querySelector('.fila-resultado-relacion')?.remove();
@@ -61,6 +69,16 @@
       zona.append(...crearBotonesAmistad(relacion.amistad, (accion, boton) =>
         actuarSobreAmistad(fila, usuario, boton, ...peticiones[accion]())));
     }
+    const seguir = document.createElement('button');
+    seguir.type = 'button';
+    seguir.className = `btn btn-sm ${relacion.siguiendo ? 'btn-outline-secondary' : 'btn-outline-primary'}`;
+    seguir.textContent = relacion.siguiendo ? 'Dejar de seguir' : 'Seguir';
+    seguir.addEventListener('click', () => actuarSobreAmistad(fila, usuario, seguir,
+      relacion.siguiendo
+        ? { ruta: `/seguimientos/${usuario.id}`, opciones: { method: 'DELETE' } }
+        : { ruta: '/seguimientos', opciones: { method: 'POST', body: JSON.stringify({ seguidoId: usuario.id }) } },
+      { siguiendo: !relacion.siguiendo }));
+    zona.append(seguir);
     fila.append(zona);
   }
 

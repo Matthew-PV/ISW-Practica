@@ -630,3 +630,13 @@ fieldset:disabled .btn {
   z-index: 1080;
   max-width: 360px;
 }
+
+/* El «Cargando…» de la página flota bajo la cabecera: al quitarlo no sube el contenido */
+#cargando {
+  position: fixed;
+  top: calc(var(--alto-cabecera) + var(--espacio-8));
+  left: 50%;
+  z-index: 5;
+  margin: 0;
+  transform: translateX(-50%);
+}

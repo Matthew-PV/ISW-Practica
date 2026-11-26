@@ -51,16 +51,6 @@
 
 /* ---------- Animaciones ---------- */
 
-/* Enlaces de la barra: el subrayado crece desde el centro al pasar el ratón */
-.cabecera-enlace {
-  background: linear-gradient(var(--color-primario), var(--color-primario)) center bottom / 0 2px no-repeat;
-  transition: background-size 180ms ease-out;
-}
-
-.cabecera-enlace:hover {
-  background-size: 100% 2px;
-}
-
 /* Botones: se hunden un poco al pulsarlos */
 .btn:active:not(:disabled) {
   transform: scale(0.97);
@@ -92,11 +82,7 @@ dialog[open]::backdrop {
 .tarjeta-experiencia:nth-child(n+5) { animation-delay: 200ms; }
 
 .fila-resultado {
-  transition: transform var(--duracion-corta), background-color var(--duracion-corta);
-}
-
-.fila-resultado:hover {
-  transform: translateX(4px);
+  transition: background-color var(--duracion-corta);
 }
 
 /* Ilustraciones de los estados vacíos: flotan despacio */

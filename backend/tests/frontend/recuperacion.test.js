@@ -100,7 +100,7 @@ describe('/paginas/acceso/restablecer.html', () => {
 
     await enviar('#form-restablecer');
 
-    expect($('#error-restablecer').textContent).toBe('Las dos contraseñas no coinciden');
+    expect($('#error-restablecer').textContent).toBe('Las dos contraseñas no coinciden.');
     expect(window.fetch).not.toHaveBeenCalled();
   });
 
@@ -124,8 +124,8 @@ describe('/paginas/acceso/restablecer.html', () => {
 
     await enviar('#form-restablecer');
 
-    expect($('#error-restablecer').textContent).toBe('El enlace no es válido o ha caducado');
-    expect($('#password-nueva').value).toBe('Nueva12345');
+    expect($('#error-restablecer').textContent).toBe('El enlace no es válido o ha caducado. Pide uno nuevo.');
+    expect($('#error-restablecer a').getAttribute('href')).toBe('/paginas/acceso/recuperar.html');
   });
 
   test('sin token en la dirección avisa y no muestra el formulario', async () => {

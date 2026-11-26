@@ -41,7 +41,24 @@
   color: var(--color-texto-suave);
 }
 
-/* El enlace al perfil ocupa lo que sobra; a la derecha, la relación y el botón de amistad */
+/* El enlace al perfil se estira por toda la fila; los botones quedan por encima */
+.fila-resultado {
+  position: relative;
+}
+
+.fila-resultado-persona::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.fila-resultado-relacion button,
+.fila-resultado-error button {
+  position: relative;
+  z-index: 1;
+}
+
+/* El enlace al perfil ocupa lo que sobra; a la derecha, la relación y los botones */
 .fila-resultado-persona {
   display: flex;
   flex: 1;

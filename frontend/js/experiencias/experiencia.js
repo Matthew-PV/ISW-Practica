@@ -5,12 +5,6 @@
  // CS-30: si no existe o no es visible, muestra «Contenido no disponible».
  // «Útil» está desactivado y «Reportar» avisa de que no envía nada, hasta CS-02 y CS-04.
 
-const ETIQUETAS_VISIBILIDAD = {
-  PUBLICA: { clase: 'etiqueta-publica', texto: 'Pública' },
-  AMIGOS: { clase: 'etiqueta-amigos', texto: 'Amigos' },
-  PRIVADA: { clase: 'etiqueta-privada', texto: 'Privada' },
-};
-
 const parametros = new URLSearchParams(window.location.search);
 const experienciaId = parametros.get('id');
 let miUsuarioId = null;
@@ -85,16 +79,8 @@ function pintarDuracionTarifa(experiencia) {
   filaDuracion.hidden = !tieneDuracion;
   filaTarifa.hidden = !tieneTarifa;
 
-  duracionEl.textContent = tieneDuracion
-    ? `${experiencia.duracionMinutos} min`
-    : '';
-
-  tarifaEl.textContent = tieneTarifa
-    ? Number(experiencia.tarifa).toLocaleString('es-ES', {
-        style: 'currency',
-        currency: 'EUR',
-      })
-    : '';
+  duracionEl.textContent = tieneDuracion ? formatearDuracion(experiencia.duracionMinutos) : '';
+  tarifaEl.textContent = tieneTarifa ? formatearTarifa(experiencia.tarifa) : '';
 }
 
 let mapaDetalle;
@@ -165,6 +151,7 @@ async function cargarPaginaExperiencia() {
     }
 
     descEl.textContent = experiencia.descripcion;
+    document.title = `PlanB · ${experiencia.titulo}`;
     tipoEl.textContent = experiencia.tipo || 'Sin indicar';
     momentoEl.textContent = experiencia.momentoAdecuado ?? '';
 
@@ -354,6 +341,10 @@ function crearElementoComentario(valoracion) {
   btnUtil.disabled = true;
   btnUtil.title = esMio ? 'No puedes votar tu propio comentario' : 'Todavía no está disponible';
   if (valoracion.leDiUtil) btnUtil.classList.replace('btn-outline-success', 'btn-success');
+  // Un botón desactivado no enseña su title: el motivo se escribe al lado
+  const motivoUtil = document.createElement('span');
+  motivoUtil.className = 'small text-secondary ms-2';
+  motivoUtil.textContent = btnUtil.title;
 
   // CS-04: botón Reportar. Persistencia pendiente.
   const btnReportar = document.createElement('button');
@@ -367,7 +358,7 @@ function crearElementoComentario(valoracion) {
     () => abrirReporte()
   );
 
-  acciones.append(btnUtil, btnReportar);
+  acciones.append(btnUtil, btnReportar, motivoUtil);
   cuerpo.appendChild(acciones);
 
   return tarjeta;

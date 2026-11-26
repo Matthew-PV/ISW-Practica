@@ -67,7 +67,7 @@ test('mientras se sube, el campo está desactivado e indica que se está subiend
   await terminar();
 
   expect($('#foto').disabled).toBe(true);
-  expect($('#ayuda-foto').textContent).toBe('Subiendo foto...');
+  expect($('#ayuda-foto').textContent).toBe('Subiendo foto…');
 });
 
 test('si el servidor la rechaza, muestra el motivo y se queda la foto anterior', async () => {

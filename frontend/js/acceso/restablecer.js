@@ -20,22 +20,24 @@ function mostrarError(mensaje) {
   cajaError.classList.remove('d-none');
 }
 
-// Sin token en la dirección no hay nada que restablecer
-if (!token) {
+function mostrarEnlaceNoValido(texto) {
   formulario.classList.add('d-none');
   const enlace = document.createElement('a');
   enlace.href = '/paginas/acceso/recuperar.html';
   enlace.textContent = 'Pide uno nuevo';
-  cajaError.replaceChildren('El enlace no es válido. ', enlace, '.');
+  cajaError.replaceChildren(`${texto} `, enlace, '.');
   cajaError.classList.remove('d-none');
 }
+
+// Sin token en la dirección no hay nada que restablecer
+if (!token) mostrarEnlaceNoValido('El enlace no es válido.');
 
 formulario.addEventListener('submit', async (e) => {
   e.preventDefault();
   cajaError.classList.add('d-none');
 
   if (campoNueva.value !== campoRepetida.value) {
-    mostrarError('Las dos contraseñas no coinciden');
+    mostrarError('Las dos contraseñas no coinciden.');
     return;
   }
 
@@ -56,7 +58,9 @@ formulario.addEventListener('submit', async (e) => {
     cajaExito.classList.remove('d-none');
   } catch (err) {
     // Lo escrito se mantiene: si el problema son los requisitos, se puede corregir y reintentar
-    mostrarError(err.message);
+    // Un enlace usado o caducado no se arregla reintentando: se ofrece pedir otro
+    if (err.message.startsWith('El enlace no es válido')) mostrarEnlaceNoValido(`${err.message}.`);
+    else mostrarError(err.message);
   }
   boton.textContent = textoBoton;
   boton.disabled = false;

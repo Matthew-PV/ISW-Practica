@@ -9,6 +9,8 @@
 // el Error lleva además su código HTTP en `status` (por ejemplo, 404), para que la página pueda
 // distinguir los casos sin depender del texto del mensaje.
 const PLAZO_MS = 30000;
+// Subir un archivo (foto) puede tardar bastante más
+const PLAZO_ARCHIVO_MS = 120000;
 
 // Peticiones GET en curso: quien pide lo mismo mientras tanto recibe la misma respuesta.
 // No guarda datos: cada una se olvida al terminar, y cualquier escritura las olvida todas
@@ -30,7 +32,12 @@ async function pedirAlServidor(ruta, opciones) {
   let res;
   // Plazo máximo para que un servidor que no responde no deje la pantalla esperando siempre
   const plazo = new AbortController();
-  const temporizador = setTimeout(() => plazo.abort(), PLAZO_MS);
+  const conArchivo = opciones.body instanceof FormData;
+  const temporizador = setTimeout(() => plazo.abort(), conArchivo ? PLAZO_ARCHIVO_MS : PLAZO_MS);
+  // Si se corta una escritura, puede que el servidor la haya guardado: repetirla podría duplicarla
+  const tardanza = () => new Error(opciones.method && opciones.method !== 'GET'
+    ? 'El servidor ha tardado demasiado en responder. Puede que se haya guardado: compruébalo antes de repetirlo.'
+    : 'El servidor ha tardado demasiado en responder. Inténtalo de nuevo.');
   try {
     // La ruta es relativa (mismo servidor que sirve la página), así que el navegador envía
     // sola la cookie de sesión y no hace falta gestionarla aquí.
@@ -45,6 +52,7 @@ async function pedirAlServidor(ruta, opciones) {
   } catch {
     // fetch solo falla así si no llega al servidor (caído o sin red); su mensaje es en inglés
     clearTimeout(temporizador);
+    if (plazo.signal.aborted) throw tardanza();
     throw new Error('No se ha podido conectar con el servidor. Inténtalo de nuevo.');
   }
   // Se lee el cuerpo como JSON; si viene vacío, no es JSON o el plazo vence a medias, se queda
@@ -52,7 +60,7 @@ async function pedirAlServidor(ruta, opciones) {
   const datos = await res.json().catch(() => null);
   clearTimeout(temporizador);
   if (plazo.signal.aborted) {
-    throw new Error('El servidor ha tardado demasiado en responder. Inténtalo de nuevo.');
+    throw tardanza();
   }
   // Códigos 4xx/5xx: el backend manda { error: 'mensaje' }; si no lo trae, se usa el código
   if (!res.ok) {

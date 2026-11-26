@@ -157,3 +157,8 @@
 #detalle-descripcion {
   white-space: pre-line;
 }
+
+/* Al saltar al formulario («Cambiar», «Valorar») no queda debajo de la cabecera */
+#caja-formulario-valoracion {
+  scroll-margin-top: calc(var(--alto-cabecera) + var(--espacio-16));
+}

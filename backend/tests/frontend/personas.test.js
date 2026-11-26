@@ -168,18 +168,32 @@ describe('Buscar (relación y botón en la fila)', () => {
       method: 'PATCH', body: JSON.stringify({ aceptar: true }),
     }));
     const fila = $('#resultados-personas .fila-resultado');
-    expect(fila.querySelector('button')).toBeNull();
+    expect([...fila.querySelectorAll('button')].map((b) => b.textContent)).toEqual(['Seguir']);
     expect(fila.textContent).toContain('Amigos');
   });
 
-  test('un amigo no tiene botón y se indica; a quien sigues se le añade «Le sigues»', async () => {
+  test('«Seguir» desde la fila sigue a la persona y ofrece dejar de seguirla', async () => {
+    await abrirCon([persona(5, 'bea', sinRelacion)]);
+    window.fetch.mockImplementation(() => respuesta(201, { id: 1 }));
+    const botones = () => [...document.querySelectorAll('#resultados-personas .fila-resultado button')];
+
+    botones()[1].click();
+    await terminar();
+
+    expect(window.fetch).toHaveBeenCalledWith('/api/seguimientos', expect.objectContaining({
+      method: 'POST', body: JSON.stringify({ seguidoId: 5 }),
+    }));
+    expect(botones().map((b) => b.textContent)).toEqual(['Añadir amigo', 'Dejar de seguir']);
+  });
+
+  test('un amigo no tiene botón de amistad y se indica; a quien sigues se le añade «Le sigues»', async () => {
     await abrirCon([
       persona(5, 'bea', { amistad: 'amigos', amistadId: 3, siguiendo: false }),
       persona(6, 'raul', { amistad: 'ninguna', amistadId: null, siguiendo: true }),
     ]);
 
     const [amigo, seguido] = document.querySelectorAll('#resultados-personas .fila-resultado');
-    expect(amigo.querySelector('button')).toBeNull();
+    expect(amigo.querySelector('button').textContent).toBe('Seguir');
     expect(amigo.textContent).toContain('Amigos');
     expect(seguido.textContent).toContain('Le sigues');
     expect(seguido.querySelector('button').textContent).toBe('Añadir amigo');

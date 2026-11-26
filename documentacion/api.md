@@ -17,7 +17,7 @@
 | Datos públicos | Cuando una respuesta incluye a otro usuario, solo lleva `{ id, nombreUsuario, foto }`, nunca su email. Si no tiene foto, `foto` es la imagen por defecto. |
 | Contenido no disponible | Una experiencia que no existe y una que el usuario no puede ver responden igual: 404 «Contenido no disponible». Así no se revela que existe. |
 | Listas por páginas | Las rutas marcadas con **Páginas: sí** admiten `?limite=` (de 1 a 50) y `?despuesDe=` (el cursor). Devuelven la lista y `siguiente`: el valor que hay que pasar en `despuesDe` para pedir la página siguiente, o `null` si no hay más. Sin `despuesDe` (o con él vacío) empiezan por el principio. Un valor no válido da 400 «La paginación no es válida». Ver [F9](flujos.md#f9-listas-con-cargar-más). |
-| Límites de intentos | Al pasarlos, la ruta responde 429 durante el resto de la ventana. Cuentan por IP. |
+| Límites de intentos | Al pasarlos, la ruta responde 429 durante el resto de la ventana, con los minutos que faltan en el mensaje. Cuentan por IP. |
 
 ## Índice
 

@@ -2,7 +2,7 @@
 // role="tablist" cuyas pestañas (role="tab") llevan aria-controls hacia su panel. Devuelve
 // `{ seleccionar(pestana) }` para abrir otra pestaña desde el código.
 // La pestaña que elige la persona queda en la URL (?pestana=<id>), para recuperarla al volver; si
-// la URL ya trae una, `seleccionar` desde el código no la cambia.
+// ya ha elegido una o la URL la trae, `seleccionar` desde el código no la cambia.
 // Cada página que las usa carga este archivo antes de su propio script.
 
 function activarPestanas(lista) {
@@ -21,7 +21,9 @@ function activarPestanas(lista) {
   }
 
   // Lo que elige la persona se apunta en la URL sin añadir entradas al historial
+  let elegidaPorLaPersona = false;
   function elegir(elegida, darFoco) {
+    elegidaPorLaPersona = true;
     seleccionar(elegida, darFoco);
     const url = new URL(window.location.href);
     url.searchParams.set('pestana', elegida.id);
@@ -49,7 +51,7 @@ function activarPestanas(lista) {
   seleccionar(recordada ?? pestanas[0], false);
   return {
     seleccionar: (pestana) => {
-      if (!recordada) seleccionar(pestana, false);
+      if (!recordada && !elegidaPorLaPersona) seleccionar(pestana, false);
     },
   };
 }

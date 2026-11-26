@@ -320,7 +320,7 @@ describe('campana de notificaciones', () => {
   });
 
   test('si falla la respuesta muestra el error y deja volver a intentarlo', async () => {
-    await cargarYResponder(() => Promise.resolve({ ok: false, status: 400, json: async () => ({ error: 'La solicitud de amistad ya no está pendiente' }) }));
+    await cargarYResponder(() => Promise.resolve({ ok: false, status: 500, json: async () => ({ error: 'La solicitud de amistad ya no está pendiente' }) }));
 
     botonNotificacion('Aceptar').click();
     await terminar();
@@ -328,6 +328,17 @@ describe('campana de notificaciones', () => {
     expect($('#lista-notificaciones').textContent).toContain('La solicitud de amistad ya no está pendiente');
     expect(botonNotificacion('Aceptar').disabled).toBe(false);
     expect($('#contador-notificaciones').textContent).toBe('1');
+  });
+
+  test('si la solicitud ya no se puede responder, dice por qué y deja de contar como pendiente', async () => {
+    await cargarYResponder(() => Promise.resolve({ ok: false, status: 404, json: async () => ({ error: 'Solicitud no encontrada' }) }));
+
+    botonNotificacion('Aceptar').click();
+    await terminar();
+
+    expect($('#lista-notificaciones').textContent).toContain('Solicitud no encontrada');
+    expect($('#lista-notificaciones button')).toBeNull();
+    expect($('#contador-notificaciones').classList.contains('d-none')).toBe(true);
   });
 
   test('si otra parte de la página responde la solicitud, la campana la quita y actualiza el contador', async () => {

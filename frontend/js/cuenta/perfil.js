@@ -77,6 +77,8 @@ async function cargarContadores() {
     const resumen = await api('/perfil/resumen');
     document.getElementById('total-amigos').textContent = resumen.amigos;
     document.getElementById('total-seguidores').textContent = resumen.seguidores;
+    rotularContador('total-amigos', resumen.amigos, 'amigo', 'amigos');
+    rotularContador('total-seguidores', resumen.seguidores, 'seguidor', 'seguidores');
   } catch (err) {
     mostrarErrorRelaciones(err);
   }

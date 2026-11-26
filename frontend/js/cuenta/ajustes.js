@@ -65,9 +65,13 @@ formulario.addEventListener('change', (e) => {
   if (e.target !== campoNombre) formulario.requestSubmit();
 });
 
-// Enter en un campo termina su edición, igual que salir de él
+// Enter en un campo termina su edición, igual que salir de él; en el nombre ya cambiado, equivale a
+// «Cambiar nombre»
 formulario.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && e.target.tagName === 'INPUT') e.target.blur();
+  if (e.key !== 'Enter' || e.target.tagName !== 'INPUT') return;
+  e.preventDefault();
+  if (e.target === campoNombre && !botonNombre.hidden) botonNombre.click();
+  else e.target.blur();
 });
 
 formulario.addEventListener('submit', async (e) => {
@@ -149,7 +153,7 @@ campoFoto.addEventListener('change', async () => {
   cajaErrorFoto.classList.add('d-none');
   cajaExitoFoto.classList.add('d-none');
   campoFoto.disabled = true;
-  ayudaFoto.textContent = 'Subiendo foto...';
+  ayudaFoto.textContent = 'Subiendo foto…';
 
   // FormData = formulario multipart; el backend espera el archivo en el campo `foto`
   const datos = new FormData();
@@ -201,7 +205,7 @@ formPassword.addEventListener('submit', async (e) => {
   cajaExitoPassword.classList.add('d-none');
 
   if (campoPasswordNueva.value !== campoPasswordRepetida.value) {
-    mostrarErrorPassword('Las dos contraseñas nuevas no coinciden');
+    mostrarErrorPassword('Las dos contraseñas nuevas no coinciden.');
     return;
   }
 

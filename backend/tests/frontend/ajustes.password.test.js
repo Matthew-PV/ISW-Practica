@@ -60,7 +60,7 @@ test('si las dos contraseñas nuevas no coinciden se avisa y no se envía nada',
   await enviar();
 
   expect(visible('#error-password')).toBe(true);
-  expect($('#error-password').textContent).toBe('Las dos contraseñas nuevas no coinciden');
+  expect($('#error-password').textContent).toBe('Las dos contraseñas nuevas no coinciden.');
   expect(peticionesPut()).toHaveLength(0);
 });
 

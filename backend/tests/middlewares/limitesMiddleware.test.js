@@ -16,7 +16,7 @@ test('el login fallido 11 veces seguidas responde 429', async () => {
   const res = await intento();
 
   expect(res.status).toBe(429);
-  expect(res.body.error).toMatch(/Demasiados intentos/);
+  expect(res.body.error).toBe('Demasiados intentos. Vuelve a intentarlo dentro de 15 minutos.');
 });
 
 test('el registro 21 veces seguidas responde 429', async () => {

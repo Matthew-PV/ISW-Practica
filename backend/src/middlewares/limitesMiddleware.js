@@ -16,7 +16,12 @@ const MINUTO = 60 * 1000; // en milisegundos
 const opcionesComunes = {
   standardHeaders: 'draft-8', // informa al cliente con la cabecera RateLimit
   legacyHeaders: false, // sin las cabeceras antiguas X-RateLimit-*
-  message: { error: 'Demasiados intentos. Vuelve a intentarlo dentro de unos minutos.' },
+  // El mensaje dice cuánto falta para que la ventana vuelva a empezar
+  message: (req) => {
+    const minutos = Math.max(1, Math.ceil((req.rateLimit.resetTime - Date.now()) / MINUTO));
+    const espera = minutos === 1 ? '1 minuto' : `${minutos} minutos`;
+    return { error: `Demasiados intentos. Vuelve a intentarlo dentro de ${espera}.` };
+  },
 };
 
 // Login: 10 intentos fallidos cada 15 minutos (los correctos no cuentan)

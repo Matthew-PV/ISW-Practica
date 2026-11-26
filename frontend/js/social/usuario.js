@@ -40,6 +40,7 @@ async function actuar(ruta, opciones) {
     if (ruta.startsWith('/amistades')) {
       await recargarExperiencias();
     }
+    desactivarUnInstante([...botonesAmistad.querySelectorAll('button'), ...botonSeguir.querySelectorAll('button')]);
   } catch (err) {
     mostrarMensaje(cajaError, err.message);
     // La relación puede haber cambiado (por ejemplo, ya estaba enviada): se vuelve a pedir
@@ -102,6 +103,9 @@ function mostrarPerfil(perfil) {
   document.getElementById('foto-usuario').src = perfil.foto;
   document.getElementById('amigos').textContent = perfil.amigos;
   document.getElementById('seguidores').textContent = perfil.seguidores;
+  rotularContador('amigos', perfil.amigos, 'amigo', 'amigos');
+  rotularContador('seguidores', perfil.seguidores, 'seguidor', 'seguidores');
+  document.title = `PlanB · ${perfil.nombreUsuario}`;
   mostrarBotonesAmistad(perfil);
   mostrarBotonSeguir(perfil);
 }
@@ -129,6 +133,12 @@ async function cargarPerfil(reintentar = cargarPerfil) {
     ocultarCargando();
   }
 }
+
+// La campana respondió una solicitud estando aquí: cambian la relación, los contadores y quizá lo visible
+document.addEventListener('solicitud-respondida', (e) => {
+  cargarPerfil();
+  if (e.detail.aceptada) recargarExperiencias();
+});
 
 // Al abrir la página: el perfil y sus experiencias. Las acciones de amistad y
 // seguimiento vuelven a pedir solo el perfil.

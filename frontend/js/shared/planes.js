@@ -5,13 +5,6 @@
  //
  // CS-53: mostrar duración y tarifa cuando estén disponibles.
 
-// Etiqueta de cada visibilidad (clases definidas en componentes.css)
-const ETIQUETAS_VISIBILIDAD = {
-  PUBLICA: { clase: 'etiqueta-publica', texto: 'Pública' },
-  AMIGOS: { clase: 'etiqueta-amigos', texto: 'Amigos' },
-  PRIVADA: { clase: 'etiqueta-privada', texto: 'Privada' },
-};
-
 // La tarjeta de un plan, la misma en todas las pantallas. Se puede pulsar entera: el enlace del título
 // se estira hasta cubrirla. Los textos se ponen con textContent para que nunca se interpreten como HTML.
 // `indice` escalona la entrada; `conVisibilidad` añade su etiqueta; `alEditar`, el botón «Editar»;
@@ -41,13 +34,13 @@ function crearTarjetaPlan(plan, { indice = 0, conVisibilidad = false, alEditar, 
   const subtitulo = document.createElement('p');
   subtitulo.className = 'card-subtitle small text-body-secondary mb-2';
 
-  // CS-53: duración y tarifa opcionales. La tarifa puede llegar como texto decimal desde Prisma.
+  // CS-53: duración y tarifa opcionales.
   const datos = [plan.ciudad?.nombre, plan.tipo];
   if (plan.duracionMinutos != null) {
-    datos.push(`${plan.duracionMinutos} min`);
+    datos.push(formatearDuracion(plan.duracionMinutos));
   }
   if (plan.tarifa != null) {
-    datos.push(Number(plan.tarifa).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' }));
+    datos.push(formatearTarifa(plan.tarifa));
   }
   subtitulo.textContent = datos.filter(Boolean).join(' · ');
   cuerpo.append(titulo, subtitulo);

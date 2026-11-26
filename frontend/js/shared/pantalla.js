@@ -101,6 +101,30 @@ function crearBotonesAmistad(amistad, alPulsar) {
   });
 }
 
+// Los botones que aparecen donde se acaba de pulsar tardan un instante en admitir clics, para que un
+// doble clic no haga y deshaga (enviar y cancelar una solicitud)
+function desactivarUnInstante(botones) {
+  botones.forEach((boton) => { boton.disabled = true; });
+  setTimeout(() => botones.forEach((boton) => { boton.disabled = false; }), 600);
+}
+
+// Rótulo en singular o plural junto al número de un contador (#id)
+function rotularContador(id, cuantos, uno, varios) {
+  document.getElementById(id).nextElementSibling.textContent = cuantos === 1 ? uno : varios;
+}
+
+// Etiqueta de cada visibilidad (clases definidas en componentes.css)
+const ETIQUETAS_VISIBILIDAD = {
+  PUBLICA: { clase: 'etiqueta-publica', texto: 'Pública' },
+  AMIGOS: { clase: 'etiqueta-amigos', texto: 'Amigos' },
+  PRIVADA: { clase: 'etiqueta-privada', texto: 'Privada' },
+};
+
+// CS-53: duración y tarifa de un plan, como se enseñan en tarjetas y detalle. La tarifa puede llegar
+// como texto decimal desde Prisma
+const formatearDuracion = (minutos) => `${minutos} min`;
+const formatearTarifa = (tarifa) => Number(tarifa).toLocaleString('es-ES', { style: 'currency', currency: 'EUR' });
+
 // Listado con «Cargar más» por cursor (ver backend/src/services/shared/paginacion.js):
 // - `lista`: el elemento donde se añaden las filas; `vacio`: el aviso de lista vacía (opcional);
 //   `botonMas`: el botón «Cargar más».
@@ -217,4 +241,4 @@ function crearBloqueCategoria(tipo) {
 // Funciones que usan los scripts de las páginas, que se cargan después de este. En el navegador
 // ya serían globales; se dejan en window de forma explícita para que también lo sean cuando las
 // pruebas cargan el archivo como módulo (para medir su cobertura).
-Object.assign(window, { mostrarMensaje, mostrarErrorConReintento, ocultarMensaje, mostrarCargando, ocultarCargando, irAlLogin, alFallarCarga, crearBotonesAmistad, crearHuecoCarga, crearEnlacePerfil, crearFilaPersona, listaConCargarMas, crearBloqueCategoria });
+Object.assign(window, { mostrarMensaje, mostrarErrorConReintento, ocultarMensaje, mostrarCargando, ocultarCargando, irAlLogin, alFallarCarga, crearBotonesAmistad, crearHuecoCarga, crearEnlacePerfil, desactivarUnInstante, rotularContador, ETIQUETAS_VISIBILIDAD, formatearDuracion, formatearTarifa, crearFilaPersona, listaConCargarMas, crearBloqueCategoria });

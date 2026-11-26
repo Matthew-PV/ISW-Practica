@@ -78,3 +78,8 @@
     var(--color-primario);
   border-radius: 50%;
 }
+
+/* Sitio del CAPTCHA antes de que llegue, para que no empuje el botón */
+#captcha {
+  min-height: 73px;
+}

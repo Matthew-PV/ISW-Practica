@@ -3,7 +3,7 @@
 // cargar la página. Usa `api` de shared/api.js y `crearEnlacePerfil`, `crearFilaPersona`,
 // `listaConCargarMas`, `crearHuecoCarga`, `crearBotonesAmistad`, `mostrarErrorConReintento` y `ocultarMensaje` de shared/pantalla.js.
 // La campana de la cabecera (shared/cabecera.js) también responde solicitudes: las dos partes se avisan con
-// el evento 'solicitud-respondida' ({ detail: { id } }).
+// el evento 'solicitud-respondida' ({ detail: { id, aceptada } }).
 
 const solicitudesRecibidas = document.getElementById('solicitudes-recibidas');
 const sinSolicitudes = document.getElementById('sin-solicitudes');
@@ -91,21 +91,22 @@ async function responderSolicitud(solicitud, aceptar, fila) {
       body: JSON.stringify({ aceptar }),
     });
     mostrarResultado(fila, solicitud, aceptar);
-    document.dispatchEvent(new CustomEvent('solicitud-respondida', { detail: { id: solicitud.id } }));
-    if (aceptar) {
-      listadoAmigos.reiniciar();
-    }
+    document.dispatchEvent(new CustomEvent('solicitud-respondida', { detail: { id: solicitud.id, aceptada: aceptar } }));
   } catch (err) {
+    // Ya no se puede responder (se resolvió en otro sitio): se vuelve a pedir la lista
+    if (err.status === 400 || err.status === 404) cargarSolicitudesRecibidas();
     cajaErrorSolicitudes.textContent = err.message;
     cajaErrorSolicitudes.classList.remove('d-none');
     botonesRespuesta.forEach((botonRespuesta) => { botonRespuesta.disabled = false; });
   }
 }
 
-// La campana respondió una solicitud: se quita de esta lista
+// Una solicitud respondida (aquí o en la campana): se quita de las pendientes y, si se aceptó, se
+// recarga la lista de amigos
 document.addEventListener('solicitud-respondida', (e) => {
   solicitudesRecibidas.querySelector(`[data-solicitud-id="${e.detail.id}"]`)?.remove();
   actualizarEstadoSolicitudes();
+  if (e.detail.aceptada) listadoAmigos.reiniciar();
 });
 
 // Lista de amigos (GET /perfil/amigos) con «Cargar más»
