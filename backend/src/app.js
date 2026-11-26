@@ -31,8 +31,15 @@ app.use(
         scriptSrc: ["'self'", CLOUDFLARE_CAPTCHA],
         // El CAPTCHA se dibuja dentro de un iframe de Cloudflare
         frameSrc: [CLOUDFLARE_CAPTCHA],
-        // Fotos de perfil: las propias (imagen por defecto) y las subidas a Cloudinary
-        imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com'],
+        // Imágenes: las propias (imagen por defecto), las subidas a Cloudinary, las teselas
+        // del mapa (OpenStreetMap) y las fotos de lugares (Wikimedia)
+        imgSrc: [
+          "'self'",
+          'data:',
+          'https://res.cloudinary.com',
+          'https://tile.openstreetmap.org',
+          'https://upload.wikimedia.org',
+        ],
       },
     },
     // El origen solo viaja entre páginas de PlanB («← Volver» de una experiencia); nunca a otros sitios

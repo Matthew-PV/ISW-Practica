@@ -297,7 +297,9 @@ ISW-Practica/
 │   ├── css/
 │   │   ├── nucleo/            # tokens, base y componentes, comunes a todas las páginas
 │   │   └── pantallas/         # estilos propios de una pantalla o grupo de pantallas
-│   └── img/
+│   ├── img/
+│   ├── datos/                 # lugares en ficheros JSON, leídos por js/shared/lugares.js
+│   └── vendor/                # librerías de terceros copiadas tal cual (Leaflet, el mapa)
 ├── docker-compose.yml         # MySQL local solo para pruebas
 └── documentacion/
     ├── customer-stories/      # documentos de partida y copia obsoleta del libro de historias

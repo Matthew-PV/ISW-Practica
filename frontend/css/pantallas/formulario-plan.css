@@ -139,3 +139,16 @@
   border-color: var(--color-acento);
   box-shadow: inset 0 0 0 1px var(--color-acento);
 }
+
+/* CS-50: buscador de lugares, resultados y lugares elegidos */
+#resultados-lugares {
+  max-height: 18rem;
+  overflow-y: auto;
+}
+
+.acciones-lugar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-8);
+  margin-top: var(--espacio-8);
+}

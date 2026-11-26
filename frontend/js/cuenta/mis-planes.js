@@ -3,6 +3,7 @@
  // por páginas (CS-44) y permite crearlas (CS-49) y editarlas (CS-57), con su visibilidad (CS-22),
  // su categoría (CS-55) y su momento adecuado (CS-56) elegidos de la lista del backend.
  // CS-53: duración en minutos y tarifa en euros.
+// CS-50: lugares del plan, buscados y mostrados con shared/lugares.js.
  // «Ver detalle» enlaza a la página de cada experiencia (/paginas/experiencias/experiencia.html, CS-63).
  // Usa `api` de shared/api.js y `listaConCargarMas`, `mostrarMensaje`, `ocultarMensaje`, `ocultarCargando` e
  // `irAlLogin` de shared/pantalla.js.
@@ -187,6 +188,212 @@ function leerFormulario() {
   };
 }
 
+// CS-50: lugares del plan
+const MAXIMO_LUGARES = 20;
+const campoLugar = document.getElementById('buscar-lugar');
+const botonBuscarLugar = document.getElementById('boton-buscar-lugar');
+const mensajeLugares = document.getElementById('mensaje-lugares');
+const listaResultados = document.getElementById('resultados-lugares');
+const listaElegidos = document.getElementById('lugares-elegidos');
+const mapaFormulario = crearMapaLugares(document.getElementById('mapa-lugares'));
+// Lugares elegidos, con su nota. Es null mientras no se conocen los del plan que se edita:
+// entonces no se envían, para no borrarlos.
+let lugaresElegidos = [];
+let lugaresIniciales = '[]';
+// Ciudad a la que pertenecen los lugares elegidos
+let ciudadLugares = null;
+let resultadosLugares = [];
+// Descartan las respuestas que llegan después de abrir otro plan o de hacer otra búsqueda
+let cargaLugares = 0;
+let busquedaLugares = 0;
+
+const avisarLugares = (texto) => {
+  mensajeLugares.textContent = texto;
+};
+
+// Aviso si hay lugares de una ciudad distinta de la escrita; vacío si todo cuadra
+function avisoOtraCiudad() {
+  if (!lugaresElegidos?.length || !ciudadLugares) return '';
+  if (buscarCiudad(campoCiudad.value) === ciudadLugares) return '';
+  return `Estos lugares son de ${ciudadLugares.nombre}: quítalos o vuelve a esa ciudad.`;
+}
+
+function botonLugar(texto, nombre, alPulsar) {
+  const elemento = document.createElement('button');
+  elemento.type = 'button';
+  elemento.className = 'btn btn-outline-primary btn-sm';
+  elemento.textContent = texto;
+  elemento.setAttribute('aria-label', `${texto} ${nombre}`);
+  elemento.addEventListener('click', alPulsar);
+  return elemento;
+}
+
+function elementoLugar(lugar, ...extras) {
+  const elemento = document.createElement('li');
+  const ficha = crearFichaLugar(lugar);
+  ficha.querySelector('.ficha-lugar-datos').append(...extras);
+  elemento.append(ficha);
+  return elemento;
+}
+
+// CS-73: los elegidos y, atenuados, los resultados que aún no lo están
+function pintarMapa() {
+  const elegidos = lugaresElegidos ?? [];
+  const porElegir = resultadosLugares.flatMap((lugar, posicion) => (
+    elegidos.some((otro) => otro.proveedorId === lugar.proveedorId)
+      ? []
+      : [{ lugar, atenuado: true, alPulsar: () => seleccionarResultado(posicion) }]
+  ));
+  mapaFormulario.mostrar([...elegidos.map((lugar) => ({ lugar })), ...porElegir]);
+}
+
+// Marca en la lista el resultado pulsado en el mapa y le lleva el foco
+function seleccionarResultado(posicion) {
+  [...listaResultados.children].forEach((elemento, i) => {
+    elemento.firstElementChild.classList.toggle('ficha-lugar-seleccionada', i === posicion);
+  });
+  listaResultados.children[posicion].querySelector('button').focus();
+}
+
+function pintarResultados() {
+  listaResultados.replaceChildren(...resultadosLugares.map((lugar) => {
+    const elegido = lugaresElegidos.some((otro) => otro.proveedorId === lugar.proveedorId);
+    const anadir = botonLugar(elegido ? 'Añadido' : 'Añadir', lugar.nombre, () => anadirLugar(lugar));
+    anadir.disabled = elegido || lugaresElegidos.length >= MAXIMO_LUGARES;
+    const acciones = document.createElement('div');
+    acciones.className = 'acciones-lugar';
+    acciones.append(anadir);
+    return elementoLugar(lugar, acciones);
+  }));
+  pintarMapa();
+}
+
+function pintarElegidos() {
+  const lugares = lugaresElegidos ?? [];
+  listaElegidos.replaceChildren(...lugares.map((lugar, posicion) => {
+    const nota = document.createElement('textarea');
+    nota.className = 'form-control form-control-sm mt-2';
+    nota.rows = 2;
+    nota.maxLength = 300;
+    nota.placeholder = 'Nota (opcional)';
+    nota.setAttribute('aria-label', `Nota sobre ${lugar.nombre}`);
+    nota.value = lugar.nota;
+    nota.addEventListener('input', () => {
+      lugar.nota = nota.value;
+    });
+    const subir = botonLugar('Subir', lugar.nombre, () => moverLugar(posicion, posicion - 1));
+    subir.disabled = posicion === 0;
+    const bajar = botonLugar('Bajar', lugar.nombre, () => moverLugar(posicion, posicion + 1));
+    bajar.disabled = posicion === lugares.length - 1;
+    const quitar = botonLugar('Quitar', lugar.nombre, () => quitarLugar(posicion));
+    const acciones = document.createElement('div');
+    acciones.className = 'acciones-lugar';
+    acciones.append(subir, bajar, quitar);
+    return elementoLugar(lugar, nota, acciones);
+  }));
+  pintarMapa();
+}
+
+function anadirLugar(lugar) {
+  const aviso = avisoOtraCiudad();
+  if (aviso) {
+    avisarLugares(aviso);
+    return;
+  }
+  if (!lugaresElegidos.length) ciudadLugares = buscarCiudad(campoCiudad.value);
+  lugaresElegidos.push({ ...lugar, nota: '' });
+  pintarElegidos();
+  pintarResultados();
+  avisarLugares(`${lugar.nombre} añadido al plan.`);
+}
+
+function moverLugar(desde, hasta) {
+  const [lugar] = lugaresElegidos.splice(desde, 1);
+  lugaresElegidos.splice(hasta, 0, lugar);
+  pintarElegidos();
+  // El foco sigue al lugar movido
+  listaElegidos.children[hasta].querySelector('button:not(:disabled)').focus();
+}
+
+function quitarLugar(posicion) {
+  lugaresElegidos.splice(posicion, 1);
+  pintarElegidos();
+  pintarResultados();
+  avisarLugares(avisoOtraCiudad());
+  campoLugar.focus();
+}
+
+async function buscarEnFormulario() {
+  const busqueda = ++busquedaLugares;
+  const ciudad = buscarCiudad(campoCiudad.value);
+  const texto = campoLugar.value.trim();
+  resultadosLugares = [];
+  pintarResultados();
+  const aviso = !ciudad ? 'Elige primero la ciudad del plan.' : avisoOtraCiudad() || (!texto && 'Escribe qué lugar buscas.');
+  if (aviso) {
+    avisarLugares(aviso);
+    return;
+  }
+  avisarLugares('Buscando…');
+  try {
+    const encontrados = await buscarLugares(texto, ciudad);
+    if (busqueda !== busquedaLugares) return;
+    resultadosLugares = encontrados;
+    pintarResultados();
+    const cuantos = encontrados.length === 1 ? '1 lugar encontrado.' : `${encontrados.length} lugares encontrados.`;
+    avisarLugares(encontrados.length ? cuantos : `No hay lugares con ese nombre en ${ciudad.nombre}.`);
+  } catch (err) {
+    if (busqueda === busquedaLugares) avisarLugares(err.message);
+  }
+}
+
+const activarBuscador = (activo) => {
+  campoLugar.disabled = !activo;
+  botonBuscarLugar.disabled = !activo;
+};
+
+// Vacía el apartado y, al editar, carga los lugares del plan
+async function prepararLugares(experiencia) {
+  const carga = ++cargaLugares;
+  busquedaLugares++;
+  lugaresElegidos = experiencia ? null : [];
+  lugaresIniciales = JSON.stringify(lugaresElegidos);
+  ciudadLugares = null;
+  resultadosLugares = [];
+  campoLugar.value = '';
+  listaResultados.replaceChildren();
+  pintarElegidos();
+  avisarLugares('');
+  activarBuscador(!experiencia);
+  if (!experiencia) return;
+  try {
+    const lugares = await lugaresDe(experiencia);
+    if (carga !== cargaLugares) return;
+    lugaresElegidos = lugares.map(({ id, ...lugar }) => ({ ...lugar, nota: lugar.nota ?? '' }));
+    lugaresIniciales = JSON.stringify(lugaresElegidos);
+    ciudadLugares = ciudades.find((ciudad) => ciudad.id === experiencia.ciudadId) ?? null;
+    pintarElegidos();
+    activarBuscador(true);
+  } catch (err) {
+    if (carga === cargaLugares) avisarLugares(err.message);
+  }
+}
+
+botonBuscarLugar.addEventListener('click', buscarEnFormulario);
+campoLugar.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter') return;
+  e.preventDefault();
+  buscarEnFormulario();
+});
+// Los resultados eran de la ciudad anterior
+campoCiudad.addEventListener('input', () => {
+  if (lugaresElegidos === null) return;
+  busquedaLugares++;
+  resultadosLugares = [];
+  pintarResultados();
+  avisarLugares(avisoOtraCiudad());
+});
+
 // Pone o quita el error junto al campo de ciudad
 function avisarCiudad(texto) {
   errorCiudad.textContent = texto;
@@ -244,6 +451,7 @@ function abrirFormulario(experiencia) {
   marcar('visibilidad', experiencia?.visibilidad ?? 'PUBLICA');
 
   datosIniciales = JSON.stringify(leerFormulario());
+  prepararLugares(experiencia);
   avisarCiudad('');
   ocultarMensaje(cajaError);
   actualizarPrevia();
@@ -261,7 +469,8 @@ function cerrarFormulario() {
 
 // Antes de cerrar con cambios sin guardar, se pregunta (C7)
 function pedirCerrar() {
-  if (JSON.stringify(leerFormulario()) === datosIniciales) cerrarFormulario();
+  const sinCambios = JSON.stringify(leerFormulario()) === datosIniciales && JSON.stringify(lugaresElegidos) === lugaresIniciales;
+  if (sinCambios) cerrarFormulario();
   else dialogoDescartar.showModal();
 }
 
@@ -299,6 +508,17 @@ formulario.addEventListener('submit', async (e) => {
   }
   avisarCiudad('');
   datos.ciudadId = ciudad.id;
+
+  // CS-50: los lugares tienen que ser de la ciudad del plan. Un plan nuevo sin ellos no los envía.
+  const aviso = avisoOtraCiudad();
+  if (aviso) {
+    avisarLugares(aviso);
+    campoCiudad.focus();
+    return;
+  }
+  if (lugaresElegidos && (editando || lugaresElegidos.length)) {
+    datos.lugares = lugaresElegidos.map((lugar) => ({ ...lugar, nota: lugar.nota.trim() }));
+  }
 
   // Acción con espera: «Guardando…» y desactivado hasta que acabe
   const textoBoton = boton.textContent;

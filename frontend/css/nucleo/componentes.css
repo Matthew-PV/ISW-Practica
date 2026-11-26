@@ -510,3 +510,62 @@ fieldset:disabled .btn {
 
 .estado-vacio img { width: 100%; max-width: 280px; height: auto; }
 .estado-vacio p { margin: 0; }
+
+/* Lugares de un plan (CS-50): la lista y la ficha, con la imagen a la izquierda y los datos a la derecha */
+.lista-lugares {
+  display: grid;
+  gap: var(--espacio-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ficha-lugar {
+  display: flex;
+  gap: var(--espacio-12);
+  padding: var(--espacio-12);
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde-suave);
+  border-radius: var(--radio-tarjeta);
+}
+
+.ficha-lugar-seleccionada {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 2px var(--bs-primary);
+}
+
+/* CS-73: isolation evita que las capas de Leaflet tapen la cabecera o los menús */
+.mapa-lienzo {
+  height: 18rem;
+  isolation: isolate;
+  border-radius: var(--radio-tarjeta);
+}
+
+.ficha-lugar img {
+  flex: none;
+  width: 6rem;
+  height: 4.5rem;
+  object-fit: cover;
+  border-radius: var(--espacio-8);
+}
+
+.ficha-lugar-datos {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.ficha-lugar-nombre {
+  margin: 0;
+  font-weight: 600;
+}
+
+.ficha-lugar-detalle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-texto-suave);
+}
+
+.ficha-lugar-nota {
+  margin: var(--espacio-8) 0 0;
+}
