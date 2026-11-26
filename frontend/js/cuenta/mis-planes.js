@@ -574,7 +574,8 @@ async function cargarCatalogos(perfil) {
 async function cargarExperiencias(perfil) {
   autorExperiencias = perfil.nombreUsuario;
   try {
-    await Promise.all([cargarCatalogos(perfil), listadoExperiencias.cargar()]);
+    // El formulario de un enlace solo necesita los catálogos: no espera al listado
+    await Promise.all([cargarCatalogos(perfil).then(abrirDesdeEnlace), listadoExperiencias.cargar()]);
   } finally {
     ocultarCargando();
     // La región de estado no debe seguir diciendo «Cargando…» a los lectores de pantalla (C9)
@@ -593,7 +594,6 @@ async function mostrarPlanes() {
     return;
   }
   await cargarExperiencias(perfil);
-  abrirDesdeEnlace();
 }
 
 // Los enlaces de otras pantallas abren el formulario directamente: ?nuevo=1 desde Inicio y

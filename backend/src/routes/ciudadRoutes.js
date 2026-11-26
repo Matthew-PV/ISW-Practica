@@ -13,7 +13,8 @@ const router = express.Router();
 // El catálogo completo [{ id, nombre, pais }], ordenado por nombre.
 // Es público: solo son nombres de ciudades.
 router.get('/', async (req, res) => {
-  res.json(await ciudadService.listarCiudades());
+  const ciudades = await ciudadService.listarCiudades();
+  res.set('Cache-Control', 'public, max-age=3600').json(ciudades);
 });
 
 module.exports = router;

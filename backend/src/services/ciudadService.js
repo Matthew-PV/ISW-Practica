@@ -21,8 +21,16 @@ async function cargarCatalogoInicial() {
 }
 
 // Devuelve el catálogo de ciudades [{ id, nombre, pais }] ordenado por nombre.
+// El catálogo casi no cambia: se guarda en memoria una hora. Una consulta fallida no se guarda.
+let guardado = null;
+let caduca = 0;
+
 async function listarCiudades() {
-  return ciudadRepository.listar();
+  if (Date.now() >= caduca) {
+    guardado = await ciudadRepository.listar();
+    caduca = Date.now() + 3600000;
+  }
+  return guardado;
 }
 
 module.exports = { cargarCatalogoInicial, listarCiudades };

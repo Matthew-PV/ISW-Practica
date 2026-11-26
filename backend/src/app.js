@@ -76,7 +76,16 @@ app.use('/api', (req, res) => {
 
 // Páginas del frontend: cualquier petición que no sea de la API se busca como archivo
 // dentro de la carpeta frontend/ (HTML, CSS, JS). La raíz "/" sirve frontend/index.html.
-app.use(express.static(path.join(__dirname, '..', '..', 'frontend')));
+// Caché del navegador: las librerías e imágenes cambian poco; el CSS y el JS, con cada entrega,
+// así que duran minutos. El HTML se revalida siempre
+const FRONTEND = path.join(__dirname, '..', '..', 'frontend');
+app.use(express.static(FRONTEND, {
+  setHeaders: (res, archivo) => {
+    const ruta = path.relative(FRONTEND, archivo);
+    if (/^(vendor|img)[\\/]/.test(ruta)) res.set('Cache-Control', 'public, max-age=604800');
+    else if (/\.(css|js)$/.test(ruta)) res.set('Cache-Control', 'public, max-age=300');
+  },
+}));
 
 // Manejador de errores: Express lo reconoce porque recibe 4 parámetros (err primero).
 // Llegan aquí los errores lanzados en cualquier ruta, servicio o middleware.

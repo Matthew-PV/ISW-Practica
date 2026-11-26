@@ -8,6 +8,10 @@
 // En MySQL solo se guarda la URL que devuelve esta función (columna Usuario.foto).
 const { v2: cloudinary } = require('cloudinary');
 
+// Cómo la sirve Cloudinary: cuadrada de 300 px centrada en la cara, con el formato y la calidad
+// que más convengan al navegador (el original se conserva)
+const REDUCCION = 'c_fill,g_face,w_300,h_300,f_auto,q_auto';
+
 // Sube la foto de perfil y devuelve su URL pública (https). Cada usuario tiene una sola foto:
 // se guarda siempre con el mismo nombre, así que una nueva sustituye a la anterior.
 // Si Cloudinary la rechaza, la anterior se conserva.
@@ -25,7 +29,7 @@ function subirFotoPerfil(usuarioId, contenido) {
           invalidate: true, // que la CDN deje de servir la versión antigua
           resource_type: 'image',
         },
-        (err, resultado) => (err ? reject(err) : resolve(resultado.secure_url))
+        (err, resultado) => (err ? reject(err) : resolve(resultado.secure_url.replace('/upload/', `/upload/${REDUCCION}/`)))
       )
       // upload_stream abre la subida; .end() le pasa el archivo y la termina
       .end(contenido);

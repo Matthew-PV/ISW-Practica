@@ -10,7 +10,23 @@
 // distinguir los casos sin depender del texto del mensaje.
 const PLAZO_MS = 30000;
 
-async function api(ruta, opciones = {}) {
+// Peticiones GET en curso: quien pide lo mismo mientras tanto recibe la misma respuesta.
+// No guarda datos: cada una se olvida al terminar, y cualquier escritura las olvida todas
+const enCurso = new Map();
+
+function api(ruta, opciones = {}) {
+  if (opciones.method && opciones.method !== 'GET') enCurso.clear();
+  if (Object.keys(opciones).length) return pedirAlServidor(ruta, opciones);
+  if (!enCurso.has(ruta)) {
+    const peticion = pedirAlServidor(ruta, opciones).finally(() => {
+      if (enCurso.get(ruta) === peticion) enCurso.delete(ruta);
+    });
+    enCurso.set(ruta, peticion);
+  }
+  return enCurso.get(ruta);
+}
+
+async function pedirAlServidor(ruta, opciones) {
   let res;
   // Plazo máximo para que un servidor que no responde no deje la pantalla esperando siempre
   const plazo = new AbortController();

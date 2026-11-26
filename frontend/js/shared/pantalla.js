@@ -159,8 +159,11 @@ function listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar, alP
 
   // El botón se desactiva mientras llega la página para no pedirla dos veces
   botonMas.addEventListener('click', async () => {
+    const texto = botonMas.textContent;
     botonMas.disabled = true;
+    botonMas.textContent = 'Cargando…';
     await cargar();
+    botonMas.textContent = texto;
     botonMas.disabled = false;
   });
 

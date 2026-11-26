@@ -204,7 +204,7 @@ stateDiagram-v2
   Pidiendo --> ConMas : siguiente distinto de null
   Pidiendo --> Completa : siguiente es null
   Pidiendo --> Fallo : error
-  ConMas --> Pidiendo : «Cargar más» (el botón se desactiva mientras tanto)
+  ConMas --> Pidiendo : «Cargar más» (el botón se desactiva y dice «Cargando…»)
   Vacia --> Pidiendo : reiniciar()
   Completa --> Pidiendo : reiniciar()
   ConMas --> Pidiendo : reiniciar()
@@ -313,7 +313,7 @@ Pruebas: `perfil.relaciones.test.js`, `perfil.cabecera.test.js`, `estados.test.j
 
 Dos pestañas (`shared/pestanas.js`); «Cerrar sesión» está solo en el menú de la cuenta:
 
-* **Perfil:** la foto es un avatar grande clicable con icono de cámara (el `input` de archivo va oculto y la etiqueta lo abre); se sube nada más elegirla. La ciudad es texto libre con las ciudades del catálogo (`GET /ciudades`) como sugerencias (`datalist`) y se guarda sola al salir del campo: `#estado-guardado` (`role="status"`) muestra «Guardando…» y «Guardado», y los errores salen en `#error-perfil`. El nombre de usuario, que es la dirección del perfil, no se guarda solo: al editarlo aparece «Cambiar nombre» (`#cambiar-nombre`) y solo ese botón lo envía. Los envíos se serializan. El email es solo de lectura y explica por qué. El interruptor «Pausar las animaciones del fondo» (`#pausar-animaciones`) guarda la preferencia de movimiento.
+* **Perfil:** los campos y la foto están desactivados hasta que llega el perfil. La foto es un avatar grande clicable con icono de cámara (el `input` de archivo va oculto y la etiqueta lo abre); se sube nada más elegirla. La ciudad es texto libre con las ciudades del catálogo (`GET /ciudades`) como sugerencias (`datalist`) y se guarda sola al salir del campo: `#estado-guardado` (`role="status"`) muestra «Guardando…» y «Guardado», y los errores salen en `#error-perfil`. El nombre de usuario, que es la dirección del perfil, no se guarda solo: al editarlo aparece «Cambiar nombre» (`#cambiar-nombre`) y solo ese botón lo envía. Los envíos se serializan. El email es solo de lectura y explica por qué. El interruptor «Pausar las animaciones del fondo» (`#pausar-animaciones`) guarda la preferencia de movimiento.
 * **Contraseña:** aviso de que se seguirá con la sesión iniciada en este y otros dispositivos; actual, nueva y repetida, con la lista de requisitos visible desde el principio (✓ y verde al cumplirse).
 
 Pruebas: `ajustes.test.js`, `ajustes.foto.test.js`, `ajustes.password.test.js` y `estados.test.js`.
@@ -326,6 +326,7 @@ Se llega desde la pestaña «Amigos» o desde la campana de la cabecera. Pruebas
 
 ### `/paginas/social/usuario.html?nombre=`: perfil de otro usuario
 
+* El perfil y «Sus planes» se piden a la vez.
 * Foto, nombre, ciudad y contadores de amigos y seguidores. Hasta que llega el perfil se ve «Cargando…» (`#cargando`) y no los datos de relleno. Si el usuario no existe, solo se muestra `#no-encontrado`; si es el propio usuario, va a `/paginas/cuenta/perfil.html`.
 * En `#botones-amistad` aparecen los botones que corresponden a la relación (ver [E2](flujos.md#e2-la-relación-vista-desde-el-perfil-de-otro-usuario)). «Eliminar amigo» pide confirmación en un `<dialog>` (`#dialogo-eliminar-amigo`) y «Cancelar solicitud» borra la solicitud enviada.
 * `#boton-seguir` alterna entre «Seguir» y «Dejar de seguir».
@@ -342,7 +343,7 @@ Pruebas: `usuario.test.js`, `estados.test.js`, `usuario.cabecera.test.js` y `sha
 * **Resumen** (CS-14, `#resumen-valoraciones`): media con coma decimal y en estrellas, número de valoraciones y de comentarios, y una barra por puntuación de 5 a 1. Sin valoraciones dice «Todavía sin valoraciones.»; si no se puede cargar, se oculta y el resto de la página sigue igual.
 * **Tu valoración** (`#mi-valoracion`): si ya la había valorado, mis estrellas y mi comentario encima de las listas, con un enlace «Cambiar» al formulario. Al publicar se actualizan al momento, junto con el resumen y la lista «Todas».
 * **Valorar:** el formulario va al final, solo aparece si no soy el autor y se rellena con mi valoración si ya la había hecho. La puntuación es obligatoria y se elige con cinco estrellas (`role="radiogroup"`, con las flechas se mueve y elige entre ellas y solo la elegida entra en el orden de Tab; el valor va en el campo oculto `#val-puntuacion`); las valoraciones publicadas la muestran con estrellas rellenas (`.estrellas`, `aria-label="n de 5"`). `#contador-caracteres` cuenta hasta 1000. El botón «Publicar valoración» pasa a «Actualizar valoración» cuando ya existe una.
-* **Valoraciones de amigos y seguidores** (CS-48) y **todas las valoraciones** (CS-63): dos pestañas de 10 en 10 con «Cargar más». Se abre la de amigos, salvo que esté vacía y «Todas» no.
+* **Valoraciones de amigos y seguidores** (CS-48) y **todas las valoraciones** (CS-63): dos pestañas de 10 en 10 con «Cargar más». Se abre la de amigos, salvo que esté vacía y «Todas» no; las listas no se ven hasta decidirlo, y el resumen reserva un hueco mientras llega.
 * **«Útil» y «Reportar»:** no guardan nada hasta que se implementen CS-02 y CS-04: «Útil» está desactivado y «Reportar» abre el `<dialog>` `#dialogo-reporte`, que al enviar avisa de que todavía no se puede.
 * Si cualquier petición responde 404, se borra lo que se mostraba y queda solo «Contenido no disponible».
 
@@ -352,7 +353,7 @@ Pruebas: `experiencia.test.js`, `experiencia.formulario.test.js`, `cs50LugaresDe
 
 | Archivo | Ofrece | Lo usan |
 |---|---|---|
-| `api.js` | `api(ruta, opciones)`: llama a `/api` + `ruta` con `fetch` y la cookie de sesión. Envía `Content-Type: application/json` salvo con `FormData`, en cuyo caso la cabecera la pone el navegador. Devuelve el JSON (o `null` si no hay cuerpo); si falla, lanza un `Error` con el mensaje del servidor y `error.status`. | Todas las páginas |
+| `api.js` | `api(ruta, opciones)`: llama a `/api` + `ruta` con `fetch` y la cookie de sesión. Envía `Content-Type: application/json` salvo con `FormData`, en cuyo caso la cabecera la pone el navegador. Devuelve el JSON (o `null` si no hay cuerpo); si falla, lanza un `Error` con el mensaje del servidor y `error.status`. Los GET iguales que coinciden en el tiempo comparten una petición; cualquier escritura la olvida. | Todas las páginas |
 | `pantalla.js` | `mostrarMensaje(caja, texto)` y `ocultarMensaje(caja)`; `mostrarErrorConReintento(caja, texto, reintentar)`, que añade al aviso un botón «Reintentar» (lo usan Mis planes y el listado de experiencias del perfil, y `listaConCargarMas` se lo pasa a `alFallar`); `mostrarCargando()` y `ocultarCargando()`, que muestran y ocultan el texto `#cargando` de la página; `irAlLogin()`; `crearBotonesAmistad(amistad, alPulsar)` (los botones de cada relación); `crearHuecoCarga()` (hueco que late mientras llega un elemento); `alFallarCarga(err, reintentar)` (login solo con 401; si no, aviso con «Reintentar»); `crearEnlacePerfil(enlace, usuario, miUsuarioId)`; `crearBloqueCategoria(tipo)`, que devuelve el bloque de color con el icono de la categoría deducida de `tipo` (texto libre; «rincones» si no encaja ninguna); `listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar, alPintar })`, que devuelve `{ cargar, reiniciar }` y no repite un elemento que ya está en la lista. La lista está vacía cuando no tiene ningún hijo con `data-id-elemento`, de modo que la tarjeta «+» de la bienvenida no cuenta. | Las páginas con sesión y `experiencias.js` (la página de una experiencia también usa `crearBloqueCategoria` en su cabecera) |
 | `lugares.js` | `buscarLugares(texto, ciudad)` (hasta 10 lugares de esa ciudad), `lugaresDe(experiencia)` (los suyos, en orden) y `crearFichaLugar(lugar)` (imagen, nombre, tipo, dirección y web si es http(s)). Lee los datos de `frontend/datos/lugares-madrid.json` y `lugares-planes.json` (este, por título del plan). | `mis-planes.js`, `experiencia.js` |
 | `mapa.js` | `crearMapaLugares(contenedor)`: mapa de Leaflet (`/vendor/leaflet/`) con fondo de OpenStreetMap, al que solo se envía el origen como referencia. `mostrar(puntos)` pone un marcador por lugar y oculta el mapa si no hay ninguno. Sin Leaflet dice «El mapa no está disponible.» y, si falla el fondo, «No se ha podido cargar el fondo del mapa.» | `mis-planes.js`, `experiencia.js` |

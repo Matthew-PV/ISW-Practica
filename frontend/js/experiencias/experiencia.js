@@ -161,6 +161,11 @@ async function cargarPaginaExperiencia() {
     // CS-53: presentar duración y tarifa.
     pintarDuracionTarifa(experiencia);
 
+    // El hueco del resumen se reserva mientras llega, para que lo de debajo no salte
+    document.getElementById('resumen-vacio').hidden = true;
+    document.getElementById('resumen-cifras').hidden = true;
+    cajaResumen.append(crearHuecoCarga());
+    cajaResumen.hidden = false;
     cargarResumen();
     mostrarLugares(experiencia);
 
@@ -176,6 +181,9 @@ async function cargarPaginaExperiencia() {
       document.getElementById('caja-editar').classList.remove('d-none');
     }
 
+    // Las listas no se enseñan hasta saber qué pestaña toca, para no cambiarla a la vista
+    const listas = [listaAmigos, listaComentarios];
+    listas.forEach((lista) => lista.classList.add('invisible'));
     await Promise.all([
       listadoAmigos.cargar(),
       listadoComentarios.cargar(),
@@ -189,6 +197,7 @@ async function cargarPaginaExperiencia() {
         document.getElementById('pestana-todas')
       );
     }
+    listas.forEach((lista) => lista.classList.remove('invisible'));
   } catch (error) {
     if (!tratarErrorDeAcceso(error)) {
       mostrarError(error.message);
@@ -397,6 +406,7 @@ const enPlural = (n, singular, plural) =>
   `${n} ${n === 1 ? singular : plural}`;
 
 function pintarResumen({ media, total, distribucion, comentarios }) {
+  cajaResumen.querySelector('.hueco-carga')?.remove();
   const hayValoraciones = total > 0;
 
   document.getElementById('resumen-vacio').hidden =

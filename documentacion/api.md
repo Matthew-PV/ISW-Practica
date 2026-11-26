@@ -8,7 +8,7 @@
 
 | Tema | Regla |
 |---|---|
-| Prefijo | Todas las rutas empiezan por `/api`. El servidor también sirve las páginas de `frontend/` desde la raíz (`/paginas/cuenta/perfil.html`...). |
+| Prefijo | Todas las rutas empiezan por `/api`. El servidor también sirve las páginas de `frontend/` desde la raíz (`/paginas/cuenta/perfil.html`...); el navegador guarda `vendor/` e `img/` una semana, el CSS y el JS cinco minutos, y revalida el HTML. |
 | Formato | Las peticiones y respuestas van en JSON, salvo la subida de la foto (`multipart/form-data`). |
 | Sesión | Se guarda en MySQL; el navegador solo tiene una cookie `HttpOnly` con su identificador. Las rutas marcadas con **Sesión: sí** pasan antes por `requiereSesion`, que responde 401 «No hay sesión iniciada» si no hay sesión o si su usuario ya no existe. |
 | Quién soy | El usuario que hace algo sale siempre de la sesión, nunca del cuerpo ni de la URL. Por eso no hay rutas del tipo «editar el perfil del usuario 7». |
@@ -149,7 +149,7 @@ Todas exigen sesión y trabajan sobre el usuario de la sesión.
 `fotoMiddleware.recibirFoto` y `perfilService.actualizarFotoPropia`.
 
 * **Cuerpo:** `multipart/form-data` con un único archivo en el campo `foto`.
-* **Responde:** 200 con el perfil y la URL nueva de Cloudinary en `foto`.
+* **Responde:** 200 con el perfil y la URL nueva de Cloudinary en `foto`, que la sirve cuadrada a 300 px.
 * **Errores 400:** «Falta la foto», «La foto no puede superar los 5 MB», «Envía una sola foto en el campo «foto»», «La foto debe ser JPG, PNG o WebP» (se mira el contenido, no la extensión), «La foto no es una imagen válida». Ver [F3](flujos.md#f3-foto-de-perfil).
 
 ### `GET /api/perfil/resumen`
@@ -187,6 +187,7 @@ Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, p
 `experienciaService.listarOpciones` (lista en `services/shared/opcionesExperiencia.js`).
 
 * **Responde:** 200 `{ categorias, momentos }`: `categorias` es `["Gastronomía", "Cultura", "Naturaleza", "Noche", "Deporte", "Rincones"]` y `momentos`, `[{ grupo, valores }]` con «Franja del día», «Día de la semana» y «Estación».
+* **Caché:** una hora en el navegador (`Cache-Control`).
 
 ### `GET /api/experiencias`
 
@@ -280,6 +281,7 @@ Están montadas bajo `/api/experiencias/:id`. Todas comprueban antes que el usua
 `ciudadService.listarCiudades` · Sesión: no.
 
 * **Responde:** 200 `[{ id, nombre, pais }]` ordenadas por nombre. Es el catálogo que carga `npm run db:seed`.
+* **Caché:** una hora en el navegador (`Cache-Control`) y en memoria del servidor.
 
 ## Usuarios (`usuarioRoutes.js` → `usuarioService`)
 

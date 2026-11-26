@@ -130,13 +130,11 @@ async function cargarPerfil(reintentar = cargarPerfil) {
   }
 }
 
-// Al abrir la página: el perfil y, si se muestra, sus experiencias. Las acciones de amistad y
+// Al abrir la página: el perfil y sus experiencias. Las acciones de amistad y
 // seguimiento vuelven a pedir solo el perfil.
 function abrirPerfil() {
-  cargarPerfil(abrirPerfil).then((mostrado) => {
-    if (mostrado) {
-      mostrarExperienciasDe(nombre);
-    }
-  });
+  // A la vez; si el perfil no se muestra, su bloque (y el listado dentro) queda oculto
+  cargarPerfil(abrirPerfil);
+  mostrarExperienciasDe(nombre);
 }
 abrirPerfil();

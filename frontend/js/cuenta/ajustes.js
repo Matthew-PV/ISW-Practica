@@ -27,10 +27,17 @@ function mostrarPerfil(perfil) {
   }
 }
 
+// Hasta que llega el perfil no se puede escribir: lo escrito se pisaría al rellenar
+function bloquearCampos(bloqueado) {
+  for (const id of ['nombreUsuario', 'ciudad', 'foto']) document.getElementById(id).disabled = bloqueado;
+}
+
 // Rellena el formulario con los datos actuales del perfil
 async function cargarPerfil() {
+  bloquearCampos(true);
   try {
     mostrarPerfil(await api('/perfil'));
+    bloquearCampos(false);
   } catch (err) {
     alFallarCarga(err, cargarPerfil);
   } finally {

@@ -30,7 +30,7 @@ router.get('/', requiereSesion, async (req, res) => {
 // CS-55 y CS-56: { categorias, momentos } que admite el formulario. Público, como el catálogo de
 // ciudades. Va antes de /:id para que «opciones» no se lea como un identificador.
 router.get('/opciones', (req, res) => {
-  res.json(experienciaService.listarOpciones());
+  res.set('Cache-Control', 'public, max-age=3600').json(experienciaService.listarOpciones());
 });
 
 // GET /api/experiencias/:id → experienciaService.obtenerExperiencia
