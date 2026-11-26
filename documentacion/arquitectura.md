@@ -225,6 +225,7 @@ Qué hace cada herramienta: [anexo/herramientas-e-instalacion.md](anexo/herramie
 * Registro e inicio de sesión con **email y contraseña**. La secuencia completa está en los flujos [F1](flujos.md#f1-registro) y [F2](flujos.md#f2-inicio-de-sesión-y-petición-protegida).
 * La contraseña se guarda como hash con **bcrypt** y tiene que cumplir los requisitos de CS-64 (`services/shared/password.js`): entre 8 y 72 bytes, mayúscula, minúscula, número y sin el nombre de usuario.
 * La sesión se mantiene con **express-session** mediante una cookie `HttpOnly`. Al iniciar sesión se crea siempre una sesión nueva, para que nadie pueda reutilizar un identificador anterior.
+* La sesión solo se carga en las rutas `/api`. Si la base de datos falla al leerla, la API responde 500, no 401.
 * El middleware `requiereSesion` protege las rutas: sin sesión, o si el usuario de la sesión ya no existe, responde 401 y la petición no llega a la ruta. Así los servicios dan por bueno el usuario de la sesión.
 * Todos los datos se validan en el backend (tipo, formato y longitud), aunque el formulario ya los compruebe.
 * El login y el cambio de contraseña admiten un número limitado de intentos fallidos por IP, la recuperación de la contraseña un número limitado de peticiones, y el registro exige superar el CAPTCHA.

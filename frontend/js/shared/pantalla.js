@@ -42,6 +42,24 @@ function irAlLogin() {
   window.location.href = '/paginas/acceso/iniciar-sesion.html';
 }
 
+// Fallo al cargar los datos de la pantalla: solo sin sesión (401) se va al login. Con cualquier otro
+// error la persona se queda donde está, con un aviso y «Reintentar».
+function alFallarCarga(err, reintentar) {
+  if (err.status === 401) {
+    irAlLogin();
+    return;
+  }
+  let caja = document.getElementById('error-carga');
+  if (!caja) {
+    caja = document.createElement('div');
+    caja.id = 'error-carga';
+    caja.className = 'alert alert-danger';
+    caja.setAttribute('role', 'alert');
+    document.querySelector('main').prepend(caja);
+  }
+  mostrarErrorConReintento(caja, err.message, reintentar);
+}
+
 // Convierte `enlace` (un <a>) en el enlace al perfil de `usuario`: el mío lleva a «Mi perfil» y
 // el de otra persona, a su página (CS-62). El nombre se pone como texto, nunca como HTML.
 // - `miUsuarioId`: el id del usuario de la sesión, si se conoce.
@@ -152,4 +170,4 @@ function crearBloqueCategoria(tipo) {
 // Funciones que usan los scripts de las páginas, que se cargan después de este. En el navegador
 // ya serían globales; se dejan en window de forma explícita para que también lo sean cuando las
 // pruebas cargan el archivo como módulo (para medir su cobertura).
-Object.assign(window, { mostrarMensaje, mostrarErrorConReintento, ocultarMensaje, mostrarCargando, ocultarCargando, irAlLogin, crearEnlacePerfil, crearFilaPersona, listaConCargarMas, crearBloqueCategoria });
+Object.assign(window, { mostrarMensaje, mostrarErrorConReintento, ocultarMensaje, mostrarCargando, ocultarCargando, irAlLogin, alFallarCarga, crearEnlacePerfil, crearFilaPersona, listaConCargarMas, crearBloqueCategoria });

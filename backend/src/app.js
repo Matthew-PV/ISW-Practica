@@ -5,8 +5,8 @@
 //      (dónde se guardan las sesiones).
 //
 // Recorrido de una petición: Express la pasa por cada `app.use` en el orden en que aparecen
-// aquí. Primero las cabeceras de seguridad, luego se lee el JSON, luego se carga la sesión,
-// y después se decide si es de la API (/api/...) o una página del frontend. Si algo lanza
+// aquí. Primero las cabeceras de seguridad, luego se lee el JSON, y en la API (/api/...) se carga
+// la sesión; el resto son archivos del frontend. Si algo lanza
 // un error por el camino, salta directamente al manejador de errores del final.
 //
 // Se exporta sin arrancar el servidor para que las pruebas la usen directamente.
@@ -53,6 +53,8 @@ app.use(express.json());
 // Sesiones: se guardan en MySQL (sobreviven a los reinicios). La cookie solo lleva el
 // identificador de sesión y JavaScript no puede leerla (httpOnly)
 app.use(
+  // Solo en la API: los archivos del frontend no necesitan sesión ni deben consultar la base
+  '/api',
   session({
     store: sesionStore,
     // Clave con la que se firma la cookie, para que nadie pueda fabricar una (de .env)

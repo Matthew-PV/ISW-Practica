@@ -31,9 +31,8 @@ function mostrarPerfil(perfil) {
 async function cargarPerfil() {
   try {
     mostrarPerfil(await api('/perfil'));
-  } catch {
-    // Sin sesión (o el servidor no responde): se vuelve al login
-    irAlLogin();
+  } catch (err) {
+    alFallarCarga(err, cargarPerfil);
   } finally {
     ocultarCargando();
   }

@@ -1,6 +1,6 @@
 // Inicio (/paginas/cuenta/bienvenida.html): saludo y tiras horizontales de planes para descubrir, cada una con
 // «Ver más» hacia el explorador. Los planes son los reales de GET /api/experiencias.
-// Usa `api` de shared/api.js, `irAlLogin` de shared/pantalla.js y `crearTarjetaPlan`, `pedirPlanes` y
+// Usa `api` de shared/api.js, `alFallarCarga` de shared/pantalla.js y `crearTarjetaPlan`, `pedirPlanes` y
 // `buscarCiudadPorNombre` de shared/planes.js.
 
 const PLANES_POR_TIRA = 8;
@@ -71,8 +71,8 @@ async function mostrarInicio() {
   let usuario;
   try {
     usuario = await api('/auth/yo');
-  } catch {
-    irAlLogin();
+  } catch (err) {
+    alFallarCarga(err, mostrarInicio);
     return;
   }
   document.getElementById('nombre-usuario').textContent = usuario.nombreUsuario;

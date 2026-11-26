@@ -3,7 +3,7 @@
 // Se abre con /paginas/social/usuario.html?nombre=ana. Si el usuario no existe lo indica, y si es el propio usuario
 // va a /paginas/cuenta/perfil.html. Debajo, sus experiencias que puedo ver (CS-44). Usa `api` de shared/api.js y
 // `mostrarExperienciasDe` y `recargarExperiencias` de shared/experiencias.js, y `mostrarMensaje`,
-// `ocultarMensaje`, `ocultarCargando` e `irAlLogin` de shared/pantalla.js.
+// `ocultarMensaje`, `ocultarCargando` y `alFallarCarga` de shared/pantalla.js.
 
 const nombre = new URLSearchParams(window.location.search).get('nombre');
 const botonesAmistad = document.getElementById('botones-amistad');
@@ -100,7 +100,7 @@ function mostrarPerfil(perfil) {
 
 // Pide el perfil del usuario indicado en la dirección (?nombre=...). Devuelve true si se ha
 // mostrado (existe y no es el propio).
-async function cargarPerfil() {
+async function cargarPerfil(reintentar = cargarPerfil) {
   try {
     const perfil = await api(`/usuarios/${encodeURIComponent(nombre)}`);
     mostrarPerfil(perfil);
@@ -114,8 +114,7 @@ async function cargarPerfil() {
       document.getElementById('perfil-usuario').classList.add('d-none');
       document.getElementById('no-encontrado').classList.remove('d-none');
     } else {
-      // Sin sesión (o el servidor no responde): se vuelve al login
-      irAlLogin();
+      alFallarCarga(err, () => reintentar());
     }
     return false;
   } finally {
@@ -125,8 +124,11 @@ async function cargarPerfil() {
 
 // Al abrir la página: el perfil y, si se muestra, sus experiencias. Las acciones de amistad y
 // seguimiento vuelven a pedir solo el perfil.
-cargarPerfil().then((mostrado) => {
-  if (mostrado) {
-    mostrarExperienciasDe(nombre);
-  }
-});
+function abrirPerfil() {
+  cargarPerfil(abrirPerfil).then((mostrado) => {
+    if (mostrado) {
+      mostrarExperienciasDe(nombre);
+    }
+  });
+}
+abrirPerfil();

@@ -10,7 +10,27 @@
 const { PrismaSessionStore } = require('@quixo3/prisma-session-store');
 const prisma = require('./prisma');
 
-module.exports = new PrismaSessionStore(prisma, {
+const store = new PrismaSessionStore(prisma, {
   checkPeriod: 10 * 60 * 1000, // cada 10 minutos (en ms) borra las sesiones caducadas
   dbRecordIdIsSessionId: true, // usa el id de la sesión como clave de la fila
 });
+
+// Sustituye a la lectura de la librería, que responde «sin sesión» si la base falla (y echaría al
+// login a quien tiene la sesión viva). Aquí el error se propaga y la API responde 500.
+store.get = async (sid, callback) => {
+  let sesion;
+  try {
+    const fila = await prisma.session.findUnique({ where: { sid } });
+    if (fila && fila.expiresAt > new Date()) {
+      sesion = JSON.parse(fila.data);
+    } else if (fila) {
+      // deleteMany no falla si otra petición ya la ha borrado
+      await prisma.session.deleteMany({ where: { sid } });
+    }
+  } catch (err) {
+    return callback(err);
+  }
+  return sesion ? callback(null, sesion) : callback();
+};
+
+module.exports = store;

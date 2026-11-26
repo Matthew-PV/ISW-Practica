@@ -6,7 +6,7 @@
 // CS-50: lugares del plan, buscados y mostrados con shared/lugares.js.
  // «Ver detalle» enlaza a la página de cada experiencia (/paginas/experiencias/experiencia.html, CS-63).
  // Usa `api` de shared/api.js y `listaConCargarMas`, `mostrarMensaje`, `ocultarMensaje`, `ocultarCargando` e
- // `irAlLogin` de shared/pantalla.js.
+ // `alFallarCarga` de shared/pantalla.js.
 
 const rejilla = document.getElementById('rejilla');
 const columnaNueva = document.getElementById('columna-nueva');
@@ -593,8 +593,9 @@ async function mostrarPlanes() {
   let perfil;
   try {
     perfil = await api('/perfil');
-  } catch {
-    irAlLogin();
+  } catch (err) {
+    ocultarCargando();
+    alFallarCarga(err, mostrarPlanes);
     return;
   }
   await cargarExperiencias(perfil);

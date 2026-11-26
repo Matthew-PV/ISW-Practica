@@ -1,7 +1,7 @@
 // Explorar (/paginas/experiencias/explorar.html): rejilla de planes reales con filtros de categoría, momento adecuado,
 // ciudad, presupuesto, duración, valoración mínima y «solo mis amigos», paginada con «Cargar más». Acepta ?tira=ciudad|nuevos|amigos (viene de «Ver más»
 // en Inicio) para titular la página y dejar puestos los filtros de esa tira, y ?texto= (viene del buscador).
-// Usa `api` de shared/api.js, `irAlLogin`, `ocultarMensaje`, `mostrarErrorConReintento` y `listaConCargarMas` de
+// Usa `api` de shared/api.js, `alFallarCarga`, `ocultarMensaje`, `mostrarErrorConReintento` y `listaConCargarMas` de
 // shared/pantalla.js y `crearTarjetaPlan`, `pedirPlanes` y `buscarCiudadPorNombre` de shared/planes.js.
 
 const PLANES_POR_PAGINA = 12;
@@ -97,8 +97,8 @@ for (const campo of [campoMomento, campoCiudad, campoAmigos, campoTarifa, campoD
 async function iniciar() {
   try {
     await api('/auth/yo');
-  } catch {
-    irAlLogin();
+  } catch (err) {
+    alFallarCarga(err, iniciar);
     return;
   }
 
