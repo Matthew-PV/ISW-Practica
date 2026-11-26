@@ -21,6 +21,22 @@ describe('cabeceras de seguridad', () => {
     expect(res.headers['x-powered-by']).toBeUndefined();
   });
 
+  test('las imágenes solo pueden venir de PlanB, Cloudinary, las teselas del mapa y Wikimedia', async () => {
+    const res = await request(app).get('/');
+
+    expect(res.headers['content-security-policy']).toContain(
+      "img-src 'self' data: https://res.cloudinary.com https://tile.openstreetmap.org https://upload.wikimedia.org"
+    );
+  });
+
+  test('Leaflet se sirve desde el propio servidor, sin CDN', async () => {
+    const script = await request(app).get('/vendor/leaflet/leaflet.js');
+    const estilos = await request(app).get('/vendor/leaflet/leaflet.css');
+
+    expect(script.status).toBe(200);
+    expect(estilos.status).toBe(200);
+  });
+
   test('el origen solo se comunica dentro de PlanB, para que «Volver» lleve a la pantalla anterior', async () => {
     const res = await request(app).get('/paginas/experiencias/experiencia.html');
     expect(res.headers['referrer-policy']).toBe('same-origin');
