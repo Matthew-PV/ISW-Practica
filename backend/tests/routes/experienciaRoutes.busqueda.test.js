@@ -44,12 +44,13 @@ describe('GET /api/experiencias (búsqueda, CS-10)', () => {
     experienciaRepository.buscar.mockResolvedValue(encontradas);
     const agente = await agenteConSesion();
 
-    const res = await agente.get('/api/experiencias?texto=tapas&categoria=Gastronom%C3%ADa&amigos=true&minimo=4');
+    const res = await agente.get('/api/experiencias?texto=tapas&categoria=Gastronom%C3%ADa&amigos=true&minimo=4&tarifaMax=20&duracionMax=120');
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ experiencias: encontradas, siguiente: null });
     expect(experienciaRepository.buscar).toHaveBeenCalledWith(1, {
       texto: 'tapas', ciudadId: null, categoria: 'Gastronomía', momento: null, soloAmigos: true, minimo: 4,
+      tarifaMax: '20', duracionMax: 120,
     }, null, 11);
     expect(experienciaRepository.listarDeAutor).not.toHaveBeenCalled();
   });

@@ -20,3 +20,4 @@ Una por archivo, con la plantilla de [plantilla.md](plantilla.md). Orden cronol�
 - 2026-10-29 · [`db:migrate` aplica migraciones; crear una nueva se hace en la base local](2026-10-29-migraciones-sin-migrate-dev-en-la-base-compartida.md)
 - 2026-10-29 · [El origen de la navegación solo viaja dentro de PlanB](2026-10-29-referrer-dentro-de-planb.md)
 - 2026-10-29 · [«Plan» y «experiencia» en la interfaz](2026-10-29-vocabulario-plan-y-experiencia.md)
+- 2026-11-26 · [Presupuesto y duración en la búsqueda son máximos](2026-11-26-filtros-presupuesto-y-duracion.md)

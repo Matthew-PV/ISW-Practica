@@ -83,9 +83,11 @@ const autorAmigoDe = (usuarioId) => ({ OR: esAmigoDe(usuarioId) });
 // reciente a la más antigua y anteriores al id `despuesDe` si se indica. Con su ciudad y los datos
 // públicos de su autor. La visibilidad es la de services/shared/visibilidad.js, pero dentro de la
 // propia consulta: las públicas, las suyas y las de amigos cuyo autor es su amigo.
-// - `filtros`: { texto, ciudadId, categoria, momento, soloAmigos, minimo }; null o false = sin filtro.
-//   `texto` se busca en el título y la descripción; `minimo` es la media mínima de valoraciones.
-async function buscar(usuarioId, { texto, ciudadId, categoria, momento, soloAmigos, minimo }, despuesDe, cantidad) {
+// - `filtros`: { texto, ciudadId, categoria, momento, soloAmigos, minimo, tarifaMax, duracionMax };
+//   null o false = sin filtro. `texto` se busca en el título y la descripción; `minimo` es la media
+//   mínima de valoraciones; `tarifaMax` y `duracionMax` incluyen el límite y dejan fuera los planes
+//   sin ese dato.
+async function buscar(usuarioId, { texto, ciudadId, categoria, momento, soloAmigos, minimo, tarifaMax, duracionMax }, despuesDe, cantidad) {
   const condiciones = [{
     OR: [
       { visibilidad: 'PUBLICA' },
@@ -99,6 +101,8 @@ async function buscar(usuarioId, { texto, ciudadId, categoria, momento, soloAmig
   if (ciudadId !== null) condiciones.push({ ciudadId });
   if (categoria !== null) condiciones.push({ tipo: categoria });
   if (momento !== null) condiciones.push({ momentoAdecuado: momento });
+  if (tarifaMax !== null) condiciones.push({ tarifa: { lte: tarifaMax } });
+  if (duracionMax !== null) condiciones.push({ duracionMinutos: { lte: duracionMax } });
   if (soloAmigos) condiciones.push({ autor: autorAmigoDe(usuarioId) });
   if (minimo !== null) {
     // Prisma no filtra por una media en el where: primero se piden las experiencias que la alcanzan

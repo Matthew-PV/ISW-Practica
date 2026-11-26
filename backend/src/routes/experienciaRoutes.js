@@ -15,7 +15,7 @@ const router = express.Router();
 // GET /api/experiencias?autor=ana&despuesDe=57&limite=10 → experienciaService.listarDeAutor
 // CS-44: las experiencias de un usuario
 // que puede ver el de la sesión, por páginas: { experiencias, siguiente }.
-// GET /api/experiencias?texto=&ciudadId=&categoria=&momento=&amigos=&minimo=&despuesDe=&limite=
+// GET /api/experiencias?texto=&ciudadId=&categoria=&momento=&amigos=&minimo=&tarifaMax=&duracionMax=&despuesDe=&limite=
 // → experienciaService.buscar. CS-10: sin `autor`, busca entre todas las que puede ver.
 router.get('/', requiereSesion, async (req, res) => {
   const { autor, despuesDe, limite } = req.query;
