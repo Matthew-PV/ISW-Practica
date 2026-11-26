@@ -578,3 +578,14 @@ describe('Sesión caducada al publicar una valoración', () => {
     expect($('#form-valoracion').textContent).toContain('Debes iniciar sesión');
   });
 });
+
+describe('CS-74: la ciudad del detalle', () => {
+  test('enlaza a Explorar con los planes de esa ciudad', async () => {
+    await abrir({ [`GET ${BASE}`]: [200, { ...EXPERIENCIA, ciudadId: 3, ciudad: { id: 3, nombre: 'Sevilla' } }] });
+
+    const enlace = $('#detalle-ciudad a');
+    expect(enlace).not.toBeNull();
+    expect(enlace.textContent).toBe('Sevilla');
+    expect(enlace.getAttribute('href')).toBe('/paginas/experiencias/explorar.html?ciudad=3');
+  });
+});

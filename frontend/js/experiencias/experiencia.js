@@ -149,8 +149,15 @@ async function cargarPaginaExperiencia() {
       autorEl.textContent = 'Usuario anónimo';
     }
 
-    ciudadEl.textContent =
-      experiencia.ciudad?.nombre || 'Ciudad desconocida';
+    // CS-74: la ciudad lleva a sus planes en Explorar
+    if (experiencia.ciudad?.id) {
+      const enlaceCiudad = document.createElement('a');
+      enlaceCiudad.href = `/paginas/experiencias/explorar.html?ciudad=${experiencia.ciudad.id}`;
+      enlaceCiudad.textContent = experiencia.ciudad.nombre;
+      ciudadEl.replaceChildren(enlaceCiudad);
+    } else {
+      ciudadEl.textContent = experiencia.ciudad?.nombre || 'Ciudad desconocida';
+    }
 
     document.getElementById('btn-copiar-enlace').dataset.visibilidad = experiencia.visibilidad;
     const etiqueta = ETIQUETAS_VISIBILIDAD[experiencia.visibilidad];

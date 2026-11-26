@@ -336,7 +336,7 @@ Pruebas: `usuario.test.js`, `estados.test.js`, `usuario.cabecera.test.js` y `sha
 
 ### `/paginas/experiencias/experiencia.html?id=`: una experiencia
 
-* Dos columnas: a la izquierda título, descripción, resumen, «Tu valoración», las listas y el formulario, en ese orden; a la derecha la ficha (`aside.ficha-experiencia`, fija al desplazar): bloque de color de la categoría, autor (enlace a su perfil), ciudad, categoría, momento (oculto si no se indicó), duración y tarifa (CS-53, ocultas si no se indicaron), visibilidad y, solo para el autor, «Editar plan».
+* Dos columnas: a la izquierda título, descripción, resumen, «Tu valoración», las listas y el formulario, en ese orden; a la derecha la ficha (`aside.ficha-experiencia`, fija al desplazar): bloque de color de la categoría, autor (enlace a su perfil), ciudad (enlace a sus planes en Explorar, CS-74), categoría, momento (oculto si no se indicó), duración y tarifa (CS-53, ocultas si no se indicaron), visibilidad y, solo para el autor, «Editar plan».
 * **«← Volver»** (`#enlace-volver`) lleva a la pantalla de PlanB desde la que se llegó, con su búsqueda (`document.referrer`, que Helmet solo envía dentro del mismo origen); sin ella, a Inicio. Si se llegó desde PlanB, retrocede en el historial.
 * **Lugares** (CS-50, `#seccion-lugares`, debajo de la descripción): una ficha por lugar en el orden del autor, con su nota. Sin lugares no aparece; si no se pueden cargar, dice «No se han podido cargar los lugares.» y el resto de la página sigue igual.
 * **Mapa** (CS-73, `#mapa-lugares`, encima de las fichas): un marcador por lugar; al pulsarlo se ve su nombre.
