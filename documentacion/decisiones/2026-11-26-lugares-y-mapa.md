@@ -8,7 +8,7 @@
   - El plan guarda una copia de cada lugar (nombre, tipo, dirección, coordenadas, imagen y web) más la nota del autor.
   - Contrato:
     - `GET /api/lugares/buscar?q=<texto>&ciudadId=<id>` → `200 [{ proveedorId, nombre, tipo, direccion, lat, lon, imagen, web }]`, máximo 10 y solo de esa ciudad; `imagen` y `web` pueden ser `null`. `400` si falta `q` o la ciudad no es válida.
-    - `POST /api/experiencias` y `PUT /api/experiencias/:id` aceptan `lugares: [{ proveedorId, nombre, tipo, direccion, lat, lon, imagen, web, nota }]`. El orden es el de la lista; máximo 20; `nota` de hasta 300 caracteres. Un lugar fuera de la ciudad o una web que no sea http(s) → `400` sin guardar nada.
+    - `POST /api/experiencias` y `PATCH /api/experiencias/:id` aceptan `lugares: [{ proveedorId, nombre, tipo, direccion, lat, lon, imagen, web, nota }]`. El orden es el de la lista; máximo 20; `nota` de hasta 300 caracteres. Un lugar fuera de la ciudad o una web que no sea http(s) → `400` sin guardar nada.
     - `GET /api/experiencias/:id` devuelve `lugares` con esos campos más `id`.
   - Mientras no exista el backend, `frontend/js/shared/lugares.js` es el único acceso a los lugares y lee los ficheros de `frontend/datos/`.
   - Leaflet 1.9.4 copiado en `frontend/vendor/leaflet/`, con teselas de OpenStreetMap.

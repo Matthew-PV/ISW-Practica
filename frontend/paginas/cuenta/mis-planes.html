@@ -189,6 +189,18 @@
           <div id="opciones-momento"></div>
         </fieldset>
 
+        <!-- CS-50: lugares del plan -->
+        <fieldset class="mb-3" data-campo="lugares">
+          <legend class="form-label">Lugares (opcional)</legend>
+          <div class="input-group mb-2">
+            <input type="search" class="form-control" id="buscar-lugar" autocomplete="off" aria-label="Nombre o dirección del lugar" placeholder="Nombre o dirección">
+            <button type="button" id="boton-buscar-lugar" class="btn btn-outline-primary">Buscar</button>
+          </div>
+          <p id="mensaje-lugares" role="status" class="small text-body-secondary mb-2"></p>
+          <ul id="resultados-lugares" class="lista-lugares mb-2" aria-label="Resultados"></ul>
+          <ol id="lugares-elegidos" class="lista-lugares" aria-label="Lugares del plan"></ol>
+        </fieldset>
+
         <!-- CS-22: visibilidad -->
         <fieldset class="mb-3" data-campo="visibilidad">
           <legend class="form-label">Quién la verá</legend>
@@ -270,6 +282,7 @@
   <script src="/js/shared/api.js"></script>
   <script src="/js/shared/pantalla.js"></script>
   <script src="/js/shared/cabecera.js"></script>
+  <script src="/js/shared/lugares.js"></script>
   <script src="/js/cuenta/mis-planes.js"></script>
   <script src="/js/shared/movimiento.js"></script>
 </body>

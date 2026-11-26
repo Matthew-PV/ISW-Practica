@@ -152,7 +152,7 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 | `/paginas/acceso/restablecer.html` | `restablecer.js` | `acceso.css` | `api`, `password` | `POST /auth/restablecer` | CS-64 |
 | `/paginas/cuenta/bienvenida.html` | `bienvenida.js` | `descubrir.css` | `api`, `pantalla`, `planes`, `cabecera` | `GET /auth/yo`, `GET /perfil`, `GET /ciudades`, `GET /experiencias` | CS-24, CS-25 |
 | `/paginas/experiencias/explorar.html` | `explorar.js` | `descubrir.css` | `api`, `pantalla`, `planes`, `cabecera` | `GET /auth/yo`, `GET /experiencias/opciones`, `GET /ciudades`, `GET /perfil`, `GET /experiencias` | CS-10, CS-27 |
-| `/paginas/cuenta/mis-planes.html` | `mis-planes.js` | ninguno | `api`, `pantalla`, `cabecera` | `GET /perfil`, `GET /ciudades`, `GET /experiencias/opciones`, `GET /experiencias?autor=`, `GET /experiencias/:id`, `POST /experiencias`, `PATCH /experiencias/:id` | CS-44, CS-49, CS-57, CS-22, CS-55, CS-56 |
+| `/paginas/cuenta/mis-planes.html` | `mis-planes.js` | ninguno | `api`, `pantalla`, `cabecera`, `lugares` | `GET /perfil`, `GET /ciudades`, `GET /experiencias/opciones`, `GET /experiencias?autor=`, `GET /experiencias/:id`, `POST /experiencias`, `PATCH /experiencias/:id`; ficheros `/datos/lugares-*.json` | CS-44, CS-49, CS-50, CS-57, CS-22, CS-55, CS-56 |
 | `/paginas/cuenta/perfil.html` | `perfil.js` | `perfil.css` | `api`, `pantalla`, `pestanas`, `cabecera`, `experiencias` | `GET /perfil`, `GET /perfil/resumen`, `/perfil/amigos` y `/perfil/seguidores`, `GET /experiencias?autor=` | CS-45, CS-44 |
 | `/paginas/cuenta/ajustes.html` | `ajustes.js` | ninguno | `api`, `pantalla`, `pestanas`, `cabecera`, `password`, `movimiento` | `GET` y `PUT /perfil`, `GET /ciudades`, `PUT /perfil/foto`, `PUT /perfil/password` | CS-47, CS-64 |
 | `/paginas/social/amigos.html` | `social/amigos.js` | `perfil.css` | `api`, `pantalla`, `cabecera` | `GET /amistades/solicitudes`, `PATCH /amistades/:id`, `GET /perfil/amigos` | CS-61, CS-45 |
@@ -289,13 +289,14 @@ Pruebas: `explorar.test.js`.
   * Descripción, con una pista de qué contar y un contador de caracteres (`#contador-descripcion`).
   * Momento adecuado (opcional): «Sin indicar» y pastillas agrupadas por franja del día, día de la semana y estación.
   * Duración en minutos y tarifa en euros (CS-53, opcionales; `#duracion-minutos`, `#tarifa`): vacío = sin especificar.
+  * Lugares (CS-50, opcionales): buscador (`#buscar-lugar`; Intro o «Buscar» buscan en la ciudad del plan) con las fichas encontradas en `#resultados-lugares` y «Añadir». Los elegidos (`#lugares-elegidos`, máximo 20) llevan nota opcional de hasta 300 caracteres y «Subir», «Bajar» y «Quitar». `#mensaje-lugares` (`role="status"`) anuncia el resultado. Con lugares de otra ciudad no se busca ni se guarda hasta quitarlos o volver a ella. Se envían en `lugares` al crear (si hay alguno) y al editar; si al editar no se pueden cargar, el buscador se desactiva y no se envían.
   * Quién la verá: tres tarjetas de radio (Pública, Amigos, Privada) con icono y quién la verá; Pública por defecto.
 * El botón dice «Publicar plan» al crear y «Guardar cambios» al editar.
 * Cancelar o Esc con cambios sin guardar abren `#dialogo-descartar` («Seguir editando» o «Descartar»); sin cambios, cierran.
 * `?nuevo=1` abre el diálogo de creación y `?editar=<id>` el de edición de esa experiencia; el botón «Editar plan» del detalle usa este último. La dirección se limpia al abrirlo. Desde `?editar=`, guardar o cancelar vuelven al detalle de la experiencia.
 * Al guardar, la tarjeta nueva aparece la primera y la editada se sustituye en su sitio, sin recargar la página. Tras crear, `#aviso-creada` dice «Plan publicado.» con el enlace «Ver plan», que recibe el foco.
 
-Pruebas: `mis-planes.test.js`, `mis-planes.formulario.test.js` y `estados.test.js`.
+Pruebas: `mis-planes.test.js`, `mis-planes.formulario.test.js`, `cs50LugaresFormulario.test.js` y `estados.test.js`.
 
 ### `/paginas/cuenta/perfil.html`: mi perfil
 
@@ -356,6 +357,7 @@ Pruebas: `experiencia.test.js`, `experiencia.formulario.test.js`.
 |---|---|---|
 | `api.js` | `api(ruta, opciones)`: llama a `/api` + `ruta` con `fetch` y la cookie de sesión. Envía `Content-Type: application/json` salvo con `FormData`, en cuyo caso la cabecera la pone el navegador. Devuelve el JSON (o `null` si no hay cuerpo); si falla, lanza un `Error` con el mensaje del servidor y `error.status`. | Todas las páginas |
 | `pantalla.js` | `mostrarMensaje(caja, texto)` y `ocultarMensaje(caja)`; `mostrarErrorConReintento(caja, texto, reintentar)`, que añade al aviso un botón «Reintentar» (lo usan Mis planes y el listado de experiencias del perfil, y `listaConCargarMas` se lo pasa a `alFallar`); `mostrarCargando()` y `ocultarCargando()`, que muestran y ocultan el texto `#cargando` de la página; `irAlLogin()`; `crearEnlacePerfil(enlace, usuario, miUsuarioId)`; `crearBloqueCategoria(tipo)`, que devuelve el bloque de color con el icono de la categoría deducida de `tipo` (texto libre; «rincones» si no encaja ninguna); `listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar })`, que devuelve `{ cargar, reiniciar }` y no repite un elemento que ya está en la lista. La lista está vacía cuando no tiene ningún hijo con `data-id-elemento`, de modo que la tarjeta «+» de la bienvenida no cuenta. | Las páginas con sesión y `experiencias.js` (la página de una experiencia también usa `crearBloqueCategoria` en su cabecera) |
+| `lugares.js` | `buscarLugares(texto, ciudad)` (hasta 10 lugares de esa ciudad), `lugaresDe(experiencia)` (los suyos, en orden) y `crearFichaLugar(lugar)` (imagen, nombre, tipo, dirección y web si es http(s)). Lee los datos de `frontend/datos/lugares-madrid.json` y `lugares-planes.json` (este, por título del plan). | `mis-planes.js` |
 | `experiencias.js` | `mostrarExperienciasDe(nombreUsuario)` y `recargarExperiencias()`: la lista «Cargar más» de experiencias de un autor. La página debe tener `#lista-experiencias`, `#sin-experiencias`, `#mas-experiencias` y `#error-experiencias`. | `perfil.js`, `usuario.js` |
 | `movimiento.js` | Pone `data-movimiento="pausado"` en `<html>` a los 5 s, o al cargar si la persona lo pausó o el sistema pide reducir el movimiento. Expone `fijarMovimiento(pausado)` (aplica y guarda en `localStorage`) y `movimientoPausado()`. | Todas las páginas |
 | `cabecera.js` | Comportamiento de la cabecera común (ver «Cabecera común»). No exporta nada. | Las nueve páginas con sesión |
@@ -371,7 +373,7 @@ Los módulos se cargan con `<script>` normales (no son módulos ES) y exponen su
 * **Texto de usuarios con `textContent`.** Nunca con `innerHTML`, para que un nombre o comentario con HTML se vea como texto y no se ejecute. `innerHTML` solo se usa para estructuras fijas sin datos, como el esqueleto de una tarjeta.
 * **Ventanas con `<dialog>`.** La CSP no deja cargar el JavaScript de Bootstrap desde el CDN, así que los diálogos usan el elemento nativo `<dialog>` con `showModal()` y `close()`.
 * **La seguridad está en el backend.** Ocultar un botón (por ejemplo, el formulario de valorar en una experiencia propia) solo mejora la interfaz: el servidor comprueba siempre los permisos.
-* **Llamadas con `api`.** Ninguna página usa `fetch` directamente.
+* **Llamadas con `api`.** Ninguna página usa `fetch` directamente; `shared/lugares.js` lo usa para leer sus ficheros de `/datos/`, que no son la API.
 * **Colores en variables.** Los colores solo se definen como variables en `css/nucleo/tokens.css`; los demás CSS las usan.
 * **Escritorio.** El diseño se comprueba en escritorio.
 
