@@ -103,3 +103,10 @@ npm.cmd run test:bdd
 - Respetar los permisos y la visibilidad.
 - Mantener las pruebas Jest existentes.
 - Documentar los resultados antes de integrar los cambios.
+
+## Pruebas End-to-End con navegador real
+
+PlanB dispone de pruebas automatizadas mediante Playwright
+y escenarios Cucumber ejecutados en Chromium.
+
+Consulta la [guía de instalación y ejecución](playwright-e2e.md).
