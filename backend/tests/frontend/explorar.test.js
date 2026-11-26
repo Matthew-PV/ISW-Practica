@@ -92,6 +92,38 @@ test('el momento, la ciudad y «solo amigos» se combinan en la misma petición'
   expect(peticionesDePlanes().at(-1)).toBe('/api/experiencias?ciudadId=3&momento=Verano&amigos=true&limite=12');
 });
 
+// Escribe o elige un valor en un filtro y espera a que lleguen los planes
+async function cambiar(selector, valor) {
+  $(selector).value = valor;
+  $(selector).dispatchEvent(new Event('change'));
+  await terminar();
+  await terminar();
+}
+
+test('presupuesto, duración y valoración mínima filtran, y al vaciarlos dejan de filtrar', async () => {
+  await abrir();
+
+  await cambiar('#filtro-tarifa', '20');
+  await cambiar('#filtro-duracion', '120');
+  await cambiar('#filtro-minimo', '4');
+
+  expect(peticionesDePlanes().at(-1)).toBe('/api/experiencias?minimo=4&tarifaMax=20&duracionMax=120&limite=12');
+
+  await cambiar('#filtro-tarifa', '');
+  await cambiar('#filtro-duracion', '');
+  await cambiar('#filtro-minimo', '');
+
+  expect(peticionesDePlanes().at(-1)).toBe('/api/experiencias?limite=12');
+});
+
+test('un presupuesto de 0 euros se envía: busca planes gratuitos', async () => {
+  await abrir();
+
+  await cambiar('#filtro-tarifa', '0');
+
+  expect(peticionesDePlanes().at(-1)).toBe('/api/experiencias?tarifaMax=0&limite=12');
+});
+
 test('«Cargar más» pide la página siguiente con el cursor y el contador avisa de que hay más', async () => {
   const fetchSimulado = servidor((params) => (params.get('despuesDe')
     ? { experiencias: [plan(3)], siguiente: null }

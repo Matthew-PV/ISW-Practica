@@ -21,11 +21,11 @@ beforeAll(async () => {
   const titulo = (texto) => `${MARCA} ${texto}`;
   e = {
     anaPrivada: await crearExperiencia(u.ana, { titulo: titulo('mía privada'), visibilidad: 'PRIVADA' }),
-    beaAmigos: await crearExperiencia(u.bea, { titulo: titulo('de bea para amigos'), visibilidad: 'AMIGOS', tipo: 'Noche' }),
-    beaPublica: await crearExperiencia(u.bea, { titulo: titulo('de bea pública'), tipo: 'Gastronomía', momentoAdecuado: 'Atardecer', ciudadId: otraCiudad.id }),
+    beaAmigos: await crearExperiencia(u.bea, { titulo: titulo('de bea para amigos'), visibilidad: 'AMIGOS', tipo: 'Noche', tarifa: '10.00', duracionMinutos: 60 }),
+    beaPublica: await crearExperiencia(u.bea, { titulo: titulo('de bea pública'), tipo: 'Gastronomía', momentoAdecuado: 'Atardecer', ciudadId: otraCiudad.id, tarifa: '25.00', duracionMinutos: 180 }),
     beaPrivada: await crearExperiencia(u.bea, { titulo: titulo('de bea privada'), visibilidad: 'PRIVADA' }),
-    carlaAmigos: await crearExperiencia(u.carla, { titulo: titulo('de carla para amigos'), visibilidad: 'AMIGOS' }),
-    carlaPublica: await crearExperiencia(u.carla, { titulo: titulo('de carla pública'), descripcion: 'Churros con chocolate' }),
+    carlaAmigos: await crearExperiencia(u.carla, { titulo: titulo('de carla para amigos'), visibilidad: 'AMIGOS', tarifa: '0', duracionMinutos: 30 }),
+    carlaPublica: await crearExperiencia(u.carla, { titulo: titulo('de carla pública'), descripcion: 'Churros con chocolate', tarifa: '0', duracionMinutos: 120 }),
   };
   // Medias: beaPublica 4,5 (5 y 4); carlaPublica 2
   await prisma.valoracion.createMany({
@@ -81,6 +81,10 @@ test.each([
   ['el momento', () => '&momento=Atardecer', () => [e.beaPublica.id]],
   ['«de mis amigos»', () => '&amigos=true', () => [e.beaPublica.id, e.beaAmigos.id]],
   ['la valoración media mínima', () => '&minimo=4', () => [e.beaPublica.id]],
+  ['el presupuesto, límite incluido', () => '&tarifaMax=10', () => [e.carlaPublica.id, e.beaAmigos.id]],
+  ['la duración, límite incluido', () => '&duracionMax=120', () => [e.carlaPublica.id, e.beaAmigos.id]],
+  ['el presupuesto y la duración a la vez', () => '&tarifaMax=25&duracionMax=90', () => [e.beaAmigos.id]],
+  ['un presupuesto de 0 euros', () => '&tarifaMax=0', () => [e.carlaPublica.id]],
 ])('filtra por %s', async (_filtro, query, esperado) => {
   expect(await buscar(query())).toEqual(esperado());
 });

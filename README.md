@@ -6,7 +6,7 @@ PlanB es una red social web, pensada para escritorio, para compartir y descubrir
 
 Qué está hecho y qué falta lo recoge el libro de historias (sección «Historias de usuario»); las pantallas y rutas implementadas, [`frontend.md`](documentacion/frontend.md) y [`api.md`](documentacion/api.md).
 
-Pendiente: la pestaña «Experiencias» de la búsqueda aún no devuelve resultados (CS-24). «Útil» y «Reportar» en las valoraciones funcionan solo en la pantalla, sin guardar nada, hasta que se implementen CS-02 y CS-04. El estado de cada tarea se lleva en el libro de historias (ver [Historias de usuario](#historias-de-usuario)).
+Pendiente: «Útil» y «Reportar» en las valoraciones funcionan solo en la pantalla, sin guardar nada, hasta que se implementen CS-02 y CS-04. El estado de cada tarea se lleva en el libro de historias (ver [Historias de usuario](#historias-de-usuario)).
 
 ## Arquitectura
 

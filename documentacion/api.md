@@ -192,9 +192,9 @@ Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, p
 
 `experienciaService.buscar` · Páginas: sí, 10 por defecto.
 
-* **Parámetros:** todos opcionales; vacío equivale a no enviarlo. `texto` (en el título o la descripción, como mucho 191 caracteres), `ciudadId`, `categoria` y `momento` (valores de `GET /api/experiencias/opciones`), `amigos=true` (solo de amigos con la amistad aceptada) y `minimo` (media de valoraciones mínima, entero del 1 al 5; sin valoraciones no la alcanza).
+* **Parámetros:** todos opcionales; vacío equivale a no enviarlo. `texto` (en el título o la descripción, como mucho 191 caracteres), `ciudadId`, `categoria` y `momento` (valores de `GET /api/experiencias/opciones`), `amigos=true` (solo de amigos con la amistad aceptada) `minimo` (media de valoraciones mínima, entero del 1 al 5; sin valoraciones no la alcanza), `tarifaMax` (euros, importe no negativo con hasta dos decimales) y `duracionMax` (minutos, entero positivo). Los dos últimos incluyen el límite y dejan fuera los planes sin ese dato.
 * **Responde:** 200 `{ experiencias, siguiente }`, de la más reciente a la más antigua, cada una con su ciudad y `autor: { id, nombreUsuario, foto }`. Solo las que puede ver el usuario de la sesión: las públicas, las suyas y las «solo amigos» de quienes son sus amigos.
-* **Errores 400:** «El texto de búsqueda no puede superar los 191 caracteres», «El texto de búsqueda debe ser un texto», «El identificador de la ciudad no es válido», «La categoría debe ser una de: ...», «El momento adecuado debe ser una de: ...», «El filtro de amigos debe ser true o false», «La valoración mínima debe ser un número entero del 1 al 5».
+* **Errores 400:** «El texto de búsqueda no puede superar los 191 caracteres», «El texto de búsqueda debe ser un texto», «El identificador de la ciudad no es válido», «La categoría debe ser una de: ...», «El momento adecuado debe ser una de: ...», «El filtro de amigos debe ser true o false», «La valoración mínima debe ser un número entero del 1 al 5», «La tarifa debe ser un importe válido», «La tarifa debe ser un importe no negativo con hasta dos decimales», «La duración máxima debe ser un número entero positivo de minutos».
 * **Notas:** con `autor` en la URL responde el listado de CS-44 y se ignoran los filtros.
 
 ### `GET /api/experiencias?autor=`

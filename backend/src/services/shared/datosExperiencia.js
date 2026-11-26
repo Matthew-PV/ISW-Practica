@@ -209,4 +209,4 @@ async function validarEdicion(datos) {
   return cambios;
 }
 
-module.exports = { validarCreacion, validarEdicion, leerTextoCorto, leerOpcion, MOMENTOS_VALIDOS, ID_MAX };
+module.exports = { validarCreacion, validarEdicion, leerTextoCorto, leerOpcion, leerTarifa, MOMENTOS_VALIDOS, ID_MAX };

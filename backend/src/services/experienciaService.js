@@ -15,7 +15,7 @@ const { leerPaginacion, cortarPagina } = require('./shared/paginacion');
 const { leerId } = require('./shared/identificadores');
 const { conFotoPorDefecto } = require('./shared/fotoPorDefecto');
 const { CATEGORIAS, MOMENTOS } = require('./shared/opcionesExperiencia');
-const { validarCreacion, validarEdicion, leerTextoCorto, leerOpcion, MOMENTOS_VALIDOS, ID_MAX } = require('./shared/datosExperiencia');
+const { validarCreacion, validarEdicion, leerTextoCorto, leerOpcion, leerTarifa, MOMENTOS_VALIDOS, ID_MAX } = require('./shared/datosExperiencia');
 const { crearError } = require('../errores');
 
 // Crea una experiencia (CS-49). El autor viene de la sesión, nunca del cuerpo de la petición.
@@ -138,7 +138,7 @@ function leerSoloAmigos(valor) {
 // CS-10: busca entre las experiencias que puede ver el usuario de la sesión (las públicas, las
 // suyas y las «solo amigos» de sus amigos), de la más reciente a la más antigua y por páginas.
 // - `consulta`: la query de la URL { texto, ciudadId, categoria, momento, amigos, minimo,
-//   despuesDe, limite }; todos opcionales. Un filtro vacío no filtra.
+//   tarifaMax, duracionMax, despuesDe, limite }; todos opcionales. Un filtro vacío no filtra.
 // Devuelve { experiencias, siguiente }, cada una con su ciudad y su autor. Error 400 si algún
 // filtro o la paginación no son válidos, antes de consultar la base de datos.
 async function buscar(usuarioId, consulta) {
@@ -150,6 +150,8 @@ async function buscar(usuarioId, consulta) {
     momento: leerOpcion(consulta.momento, 'El momento adecuado', MOMENTOS_VALIDOS),
     soloAmigos: leerSoloAmigos(consulta.amigos),
     minimo: leerFiltroEntero(consulta.minimo, (n) => n >= 1 && n <= 5, 'La valoración mínima debe ser un número entero del 1 al 5'),
+    tarifaMax: leerTarifa(consulta.tarifaMax),
+    duracionMax: leerFiltroEntero(consulta.duracionMax, (n) => n > 0 && n <= ID_MAX, 'La duración máxima debe ser un número entero positivo de minutos'),
   };
 
   const filas = await experienciaRepository.buscar(usuarioId, filtros, despuesDe, limite + 1);
