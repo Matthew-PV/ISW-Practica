@@ -4,6 +4,7 @@ const formulario = document.getElementById('form-login');
 const cajaError = document.getElementById('error-login');
 const boton = formulario.querySelector('button[type="submit"]');
 const textoBoton = boton.textContent;
+conservarVuelta('registro.html');
 
 // Al pulsar «Entrar» se envían el email y la contraseña al backend
 formulario.addEventListener('submit', async (e) => {
@@ -24,7 +25,7 @@ formulario.addEventListener('submit', async (e) => {
   try {
     // Si los datos son correctos, el backend inicia la sesión (cookie) y se pasa a la bienvenida
     await api('/auth/login', { method: 'POST', body: JSON.stringify(datos) });
-    window.location.href = '/paginas/cuenta/bienvenida.html';
+    window.location.href = destinoTrasAcceso();
   } catch (err) {
     // Se muestra el mensaje del backend y se vuelve a habilitar el botón para reintentar
     cajaError.textContent = err.message;

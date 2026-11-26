@@ -105,7 +105,7 @@ formulario.addEventListener('submit', async (e) => {
   try {
     // Si todo es correcto, el backend crea la cuenta, inicia la sesión y se pasa a la bienvenida
     await api('/auth/registro', { method: 'POST', body: JSON.stringify(datos) });
-    window.location.href = '/paginas/cuenta/bienvenida.html';
+    window.location.href = destinoTrasAcceso();
   } catch (err) {
     // Se muestra el mensaje del backend y se vuelve a habilitar el botón para reintentar
     mostrarError(err.message);
@@ -116,6 +116,8 @@ formulario.addEventListener('submit', async (e) => {
     window.turnstile?.reset();
   }
 });
+
+conservarVuelta('iniciar-sesion.html');
 
 // CS-64: requisitos de la contraseña, marcados mientras se escribe. El de «sin el nombre de
 // usuario» depende también del nombre, así que se vuelve a marcar cuando este cambia.

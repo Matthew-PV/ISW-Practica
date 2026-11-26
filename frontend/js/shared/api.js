@@ -42,6 +42,8 @@ async function api(ruta, opciones = {}) {
   if (!res.ok) {
     const error = new Error(datos?.error || `Error ${res.status}`);
     error.status = res.status;
+    // Al guardar con la sesión caducada se avisa sin salir, para no perder lo escrito
+    if (res.status === 401 && opciones.method && opciones.method !== 'GET' && enPaginaPrivada()) avisarSesionCaducada();
     throw error;
   }
   return datos;
@@ -51,3 +53,45 @@ async function api(ruta, opciones = {}) {
 // ya serían globales; se dejan en window de forma explícita para que también lo sean cuando las
 // pruebas cargan el archivo como módulo (para medir su cobertura).
 window.api = api;
+
+// Páginas con sesión: todo lo de /paginas/ menos las de acceso
+function enPaginaPrivada() {
+  return /^\/paginas\/(?!acceso\/)/.test(window.location.pathname);
+}
+
+function avisarSesionCaducada() {
+  if (document.querySelector('.aviso-sesion')) return;
+  const aviso = document.createElement('div');
+  aviso.className = 'alert alert-warning aviso-sesion';
+  aviso.setAttribute('role', 'alert');
+  const enlace = document.createElement('a');
+  enlace.href = '/paginas/acceso/iniciar-sesion.html';
+  enlace.target = '_blank';
+  enlace.textContent = 'Inicia sesión en otra pestaña';
+  aviso.append('Tu sesión ha caducado. ', enlace, ' y vuelve a guardar.');
+  document.body.append(aviso);
+}
+
+// Adonde ir tras entrar o registrarse: la pantalla de ?volver= si es una propia, o Inicio
+function destinoTrasAcceso() {
+  const volver = new URLSearchParams(window.location.search).get('volver') ?? '';
+  return /^\/paginas\/(?!acceso\/)[\w-]+\/[\w-]+\.html(\?[^#]*)?$/.test(volver)
+    ? volver
+    : '/paginas/cuenta/bienvenida.html';
+}
+window.destinoTrasAcceso = destinoTrasAcceso;
+
+// Los enlaces entre iniciar sesión y registro conservan la vuelta
+function conservarVuelta(pagina) {
+  if (!new URLSearchParams(window.location.search).has('volver')) return;
+  for (const enlace of document.querySelectorAll(`a[href="/paginas/acceso/${pagina}"]`)) {
+    enlace.href += window.location.search;
+  }
+}
+window.conservarVuelta = conservarVuelta;
+
+// Con «atrás», el navegador puede restaurar la pantalla tal como se dejó (botones desactivados, o
+// datos privados tras cerrar sesión): se vuelve a cargar
+window.addEventListener('pageshow', (e) => {
+  if (e.persisted) window.location.reload();
+});

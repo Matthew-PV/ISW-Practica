@@ -14,7 +14,7 @@ El [sitemap de PlanB](sitemap.mmd) es la referencia del mapa de navegación, en 
 %% Sitemap de PlanB — rediseño (maqueta completa).
 %% Cada caja es una página; las flechas, enlaces o redirecciones. Estado entre paréntesis: implementada, a reorganizar o diseño futuro.
 %% Navegación principal (barra de pestañas): Inicio, Explorar, Mis planes y Amigos. Secundaria: menú de cuenta (Mi perfil, Guardados, Ajustes, Ayuda, Cerrar sesión), campana, «Crear plan», buscador y pie.
-%% Línea discontinua: enlace recibido por correo. Sesión no válida (401): se vuelve a Iniciar sesión.
+%% Línea discontinua: enlace recibido por correo. Sesión no válida (401) al cargar: se va a Iniciar sesión y, tras entrar, se vuelve a la misma pantalla (?volver=). Al guardar: aviso con enlace a Iniciar sesión en otra pestaña.
 %% Los parámetros de las URL se explican en frontend.md.
 flowchart TB
     subgraph g_0["Público"]

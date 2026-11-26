@@ -41,6 +41,7 @@ function rutaDeVuelta() {
   try {
     const origen = new URL(document.referrer);
     if (origen.origin === window.location.origin &&
+        !origen.pathname.startsWith('/paginas/acceso/') &&
         origen.pathname !== window.location.pathname) {
       return origen.pathname + origen.search;
     }
@@ -55,7 +56,9 @@ enlaceVolver.href = rutaDeVuelta();
 // Si hay una pantalla de PlanB detrás, se retrocede en el historial: vuelve como estaba (filtros,
 // pestaña y posición) en lugar de abrirse de cero
 enlaceVolver.addEventListener('click', (e) => {
-  if (document.referrer.startsWith(`${window.location.origin}/`) && window.history.length > 1) {
+  const referente = document.referrer;
+  if (referente.startsWith(`${window.location.origin}/`) &&
+      !referente.includes('/paginas/acceso/') && window.history.length > 1) {
     e.preventDefault();
     window.history.back();
   }

@@ -39,7 +39,9 @@ function ocultarCargando() {
 
 // Sin sesión no se puede usar la página: se vuelve al inicio de sesión.
 function irAlLogin() {
-  window.location.href = '/paginas/acceso/iniciar-sesion.html';
+  const { pathname = '', search } = window.location;
+  const vuelta = pathname.startsWith('/paginas/') ? `?volver=${encodeURIComponent(pathname + search)}` : '';
+  window.location.href = '/paginas/acceso/iniciar-sesion.html' + vuelta;
 }
 
 // Fallo al cargar los datos de la pantalla: solo sin sesión (401) se va al login. Con cualquier otro

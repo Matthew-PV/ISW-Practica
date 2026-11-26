@@ -594,3 +594,12 @@ fieldset:disabled .btn {
 .ficha-lugar-nota {
   margin: var(--espacio-8) 0 0;
 }
+
+/* Sesión caducada al guardar: flota sobre la pantalla sin tapar el formulario */
+.aviso-sesion {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1080;
+  max-width: 360px;
+}
