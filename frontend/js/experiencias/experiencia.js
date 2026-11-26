@@ -3,7 +3,7 @@
  // CS-53: muestra duración en minutos y tarifa en euros.
 // CS-50: fichas de sus lugares, con shared/lugares.js.
  // CS-30: si no existe o no es visible, muestra «Contenido no disponible».
- // «Útil» y «Reportar» son simulaciones hasta CS-02 y CS-04.
+ // «Útil» está desactivado y «Reportar» avisa de que no envía nada, hasta CS-02 y CS-04.
 
 const ETIQUETAS_VISIBILIDAD = {
   PUBLICA: { clase: 'etiqueta-publica', texto: 'Pública' },
@@ -50,7 +50,16 @@ function rutaDeVuelta() {
   return '/paginas/cuenta/bienvenida.html';
 }
 
-document.getElementById('enlace-volver').href = rutaDeVuelta();
+const enlaceVolver = document.getElementById('enlace-volver');
+enlaceVolver.href = rutaDeVuelta();
+// Si hay una pantalla de PlanB detrás, se retrocede en el historial: vuelve como estaba (filtros,
+// pestaña y posición) en lugar de abrirse de cero
+enlaceVolver.addEventListener('click', (e) => {
+  if (document.referrer.startsWith(`${window.location.origin}/`) && window.history.length > 1) {
+    e.preventDefault();
+    window.history.back();
+  }
+});
 
 // CS-53: muestra los datos disponibles.
 // Las experiencias antiguas pueden tener ambos campos a null.
@@ -313,32 +322,12 @@ function crearElementoComentario(valoracion) {
   btnUtil.type = 'button';
   btnUtil.className = 'btn btn-sm btn-outline-success';
 
-  let cantidadUtiles = valoracion.utiles || 0;
-  let leDiUtil = valoracion.leDiUtil || false;
+  pintarUtil(btnUtil, valoracion.utiles || 0);
 
-  if (leDiUtil) {
-    btnUtil.classList.replace(
-      'btn-outline-success',
-      'btn-success'
-    );
-  }
-
-  pintarUtil(btnUtil, cantidadUtiles);
-
-  if (esMio) {
-    btnUtil.disabled = true;
-    btnUtil.title = 'No puedes votar tu propio comentario';
-  }
-
-  btnUtil.addEventListener('click', () => {
-    leDiUtil = !leDiUtil;
-    cantidadUtiles += leDiUtil ? 1 : -1;
-
-    btnUtil.classList.toggle('btn-success', leDiUtil);
-    btnUtil.classList.toggle('btn-outline-success', !leDiUtil);
-
-    pintarUtil(btnUtil, cantidadUtiles);
-  });
+  // CS-02: el voto aún no se guarda, así que no se deja marcar
+  btnUtil.disabled = true;
+  btnUtil.title = esMio ? 'No puedes votar tu propio comentario' : 'Todavía no está disponible';
+  if (valoracion.leDiUtil) btnUtil.classList.replace('btn-outline-success', 'btn-success');
 
   // CS-04: botón Reportar. Persistencia pendiente.
   const btnReportar = document.createElement('button');
@@ -349,7 +338,7 @@ function crearElementoComentario(valoracion) {
 
   btnReportar.addEventListener(
     'click',
-    () => abrirReporte(valoracion)
+    () => abrirReporte()
   );
 
   acciones.append(btnUtil, btnReportar);
@@ -731,18 +720,10 @@ formValoracion.addEventListener('submit', async (e) => {
 const dialogoReporte = document.getElementById('dialogo-reporte');
 const formReporte = document.getElementById('form-reporte');
 const mensajeReporte = document.getElementById('mensaje-reporte');
-const btnEnviarReporte = document.getElementById('btn-enviar-reporte');
 
-let comentarioYaReportado = false;
-
-function abrirReporte(valoracion) {
-  comentarioYaReportado = valoracion.yaReportado || false;
-
+function abrirReporte() {
   formReporte.reset();
   mensajeReporte.className = 'alert d-none small';
-  btnEnviarReporte.disabled = false;
-  btnEnviarReporte.classList.remove('d-none');
-
   dialogoReporte.showModal();
 }
 
@@ -755,26 +736,11 @@ for (const boton of dialogoReporte.querySelectorAll(
   );
 }
 
-formReporte.addEventListener('submit', async (e) => {
+// CS-04: todavía no hay ruta para reportar, y se dice tal cual
+formReporte.addEventListener('submit', (e) => {
   e.preventDefault();
-  btnEnviarReporte.disabled = true;
-
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  if (comentarioYaReportado) {
-    mensajeReporte.className = 'alert alert-warning small';
-    mensajeReporte.textContent =
-      'Ya habías reportado este comentario anteriormente.';
-  } else {
-    mensajeReporte.className = 'alert alert-success small';
-    mensajeReporte.textContent =
-      'Comentario reportado correctamente. Gracias por avisarnos.';
-
-    comentarioYaReportado = true;
-    btnEnviarReporte.classList.add('d-none');
-
-    setTimeout(() => dialogoReporte.close(), 2000);
-  }
+  mensajeReporte.className = 'alert alert-warning small';
+  mensajeReporte.textContent = 'Los reportes todavía no se pueden enviar: no se ha guardado nada.';
 });
 
 // Iniciar la página.

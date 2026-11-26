@@ -47,8 +47,8 @@
 
 .cabecera-busqueda {
   order: 3;
-  flex: 1 1 160px;
-  min-width: 160px;
+  flex: 1 1 200px;
+  min-width: 200px;
   max-width: 280px;
   margin: 0 var(--espacio-4) 0 auto;
   display: flex;
@@ -92,21 +92,22 @@
   border-color: var(--color-borde-campo);
 }
 
-/* El botón va relleno y encajado en la píldora, sin borde propio */
+/* El botón va relleno y encajado en la píldora, sin borde propio. Solo se ve la lupa: el texto
+   sigue ahí para quien usa lector de pantalla */
 .cabecera-busqueda .btn {
   flex: none;
   height: 100%;
   min-height: 0;
-  padding: 0 var(--espacio-16);
-  color: var(--color-fondo);
-  font-weight: 600;
-  background: var(--color-acento);
+  width: 36px;
+  padding: 0;
+  font-size: 0;
+  background: var(--color-acento) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E") center / 18px no-repeat;
   border: 0;
   border-radius: var(--radio-pildora);
 }
 
 .cabecera-busqueda .btn:hover {
-  background: var(--color-acento-hover);
+  background-color: var(--color-acento-hover);
 }
 
 .cabecera-marca,

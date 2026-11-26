@@ -165,6 +165,11 @@ fieldset:disabled .btn {
   transition: border-color var(--duracion-corta);
 }
 
+/* El texto no llega a la flecha del desplegable */
+.form-select {
+  padding-right: 2.25rem;
+}
+
 .form-control:hover:not(:disabled),
 .form-select:hover:not(:disabled) {
   border-color: var(--color-texto);

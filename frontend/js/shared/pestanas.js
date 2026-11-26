@@ -1,6 +1,8 @@
 // Pestañas accesibles. Uso: `activarPestanas(lista)`, donde `lista` es el elemento con
 // role="tablist" cuyas pestañas (role="tab") llevan aria-controls hacia su panel. Devuelve
 // `{ seleccionar(pestana) }` para abrir otra pestaña desde el código.
+// La pestaña que elige la persona queda en la URL (?pestana=<id>), para recuperarla al volver; si
+// la URL ya trae una, `seleccionar` desde el código no la cambia.
 // Cada página que las usa carga este archivo antes de su propio script.
 
 function activarPestanas(lista) {
@@ -18,8 +20,16 @@ function activarPestanas(lista) {
     if (darFoco) elegida.focus();
   }
 
+  // Lo que elige la persona se apunta en la URL sin añadir entradas al historial
+  function elegir(elegida, darFoco) {
+    seleccionar(elegida, darFoco);
+    const url = new URL(window.location.href);
+    url.searchParams.set('pestana', elegida.id);
+    window.history.replaceState(window.history.state, '', url);
+  }
+
   for (const [i, pestana] of pestanas.entries()) {
-    pestana.addEventListener('click', () => seleccionar(pestana, false));
+    pestana.addEventListener('click', () => elegir(pestana, false));
     // Flechas con vuelta circular; Inicio y Fin saltan a la primera y a la última
     pestana.addEventListener('keydown', (e) => {
       let destino;
@@ -29,13 +39,19 @@ function activarPestanas(lista) {
       else if (e.key === 'End') destino = pestanas[pestanas.length - 1];
       if (destino) {
         e.preventDefault();
-        seleccionar(destino, true);
+        elegir(destino, true);
       }
     });
   }
 
-  seleccionar(pestanas[0], false);
-  return { seleccionar: (pestana) => seleccionar(pestana, false) };
+  const idEnUrl = new URLSearchParams(window.location.search).get('pestana');
+  const recordada = pestanas.find((pestana) => pestana.id === idEnUrl);
+  seleccionar(recordada ?? pestanas[0], false);
+  return {
+    seleccionar: (pestana) => {
+      if (!recordada) seleccionar(pestana, false);
+    },
+  };
 }
 
 window.activarPestanas = activarPestanas;

@@ -274,7 +274,7 @@ Pruebas: `inicio.test.js`.
 
 ### `/paginas/experiencias/explorar.html`: explorar
 
-* Planes reales de `GET /api/experiencias`, de 12 en 12 con «Cargar más» (`#mas-planes`). Filtros: categoría (botones con `aria-pressed`, de `GET /experiencias/opciones`), momento adecuado (`#filtro-momento`), ciudad (`#filtro-ciudad`), presupuesto máximo en euros (`#filtro-tarifa`) y duración máxima en minutos (`#filtro-duracion`; los planes sin ese dato no aparecen), valoración mínima sobre la media (`#filtro-minimo`; los planes sin valoraciones no la alcanzan) y «solo planes de mis amigos» (`#filtro-amigos`); cada cambio vuelve a pedir la primera página. Al abrir, los planes se piden a la vez que los filtros, salvo con `?tira=ciudad`, que necesita antes la ciudad del perfil. `#total-planes` cuenta los cargados («o más» si hay otra página); `#sin-resultados` si no hay ninguno; `#error-planes` con «Reintentar» si falla.
+* Planes reales de `GET /api/experiencias`, de 12 en 12 con «Cargar más» (`#mas-planes`). Filtros: categoría (botones con `aria-pressed`, de `GET /experiencias/opciones`), momento adecuado (`#filtro-momento`), ciudad (`#filtro-ciudad`), presupuesto máximo en euros (`#filtro-tarifa`) y duración máxima en minutos (`#filtro-duracion`; los planes sin ese dato no aparecen), valoración mínima sobre la media (`#filtro-minimo`; los planes sin valoraciones no la alcanzan) y «solo planes de mis amigos» (`#filtro-amigos`); cada cambio vuelve a pedir la primera página y queda en la URL; al volver o recargar se recuperan los filtros, y al volver también las tarjetas cargadas y la posición. Al abrir, los planes se piden a la vez que los filtros, salvo que haga falta alguna opción (categoría, momento o ciudad en la URL, o `?tira=ciudad`). `#total-planes` cuenta los cargados («o más» si hay otra página); `#sin-resultados` si no hay ninguno; `#error-planes` con «Reintentar» si falla.
 * `?tira=` pone el título de la tira de origen y deja puestos sus filtros (`ciudad`: la ciudad del perfil; `amigos`: solo amigos). `?texto=` filtra por texto (viene de «Ver todos los planes» en el buscador).
 
 Pruebas: `explorar.test.js`.
@@ -294,7 +294,7 @@ Pruebas: `explorar.test.js`.
   * Mapa (CS-73, `#mapa-lugares`): los lugares elegidos y, atenuados, los resultados sin elegir; pulsar un resultado en el mapa lo marca en la lista y lleva el foco a «Añadir». Sin resultados ni elegidos no se muestra.
   * Quién la verá: tres tarjetas de radio (Pública, Amigos, Privada) con icono y quién la verá; Pública por defecto.
 * El botón dice «Publicar plan» al crear y «Guardar cambios» al editar.
-* Cancelar o Esc con cambios sin guardar abren `#dialogo-descartar` («Seguir editando» o «Descartar»); sin cambios, cierran.
+* Cancelar o Esc con cambios sin guardar abren `#dialogo-descartar` («Seguir editando» o «Descartar»); sin cambios, cierran. Enter en un campo corto no publica, Escape pasa siempre por esa pregunta y salir de la página con cambios pide confirmación.
 * `?nuevo=1` abre el diálogo de creación y `?editar=<id>` el de edición de esa experiencia; el botón «Editar plan» del detalle usa este último. La dirección se limpia al abrirlo. Desde `?editar=`, guardar o cancelar vuelven al detalle de la experiencia.
 * Al guardar, la tarjeta nueva aparece la primera y la editada se sustituye en su sitio, sin recargar la página. Tras crear, `#aviso-creada` dice «Plan publicado.» con el enlace «Ver plan», que recibe el foco.
 
@@ -343,14 +343,14 @@ Pruebas: `usuario.test.js`, `estados.test.js`, `usuario.cabecera.test.js` y `sha
 ### `/paginas/experiencias/experiencia.html?id=`: una experiencia
 
 * Dos columnas: a la izquierda título, descripción, resumen, «Tu valoración», las listas y el formulario, en ese orden; a la derecha la ficha (`aside.ficha-experiencia`, fija al desplazar): bloque de color de la categoría, autor (enlace a su perfil), ciudad, categoría, momento (oculto si no se indicó), duración y tarifa (CS-53, ocultas si no se indicaron), visibilidad y, solo para el autor, «Editar plan».
-* **«← Volver»** (`#enlace-volver`) lleva a la pantalla de PlanB desde la que se llegó, con su búsqueda (`document.referrer`, que Helmet solo envía dentro del mismo origen); sin ella, a Inicio.
+* **«← Volver»** (`#enlace-volver`) lleva a la pantalla de PlanB desde la que se llegó, con su búsqueda (`document.referrer`, que Helmet solo envía dentro del mismo origen); sin ella, a Inicio. Si se llegó desde PlanB, retrocede en el historial.
 * **Lugares** (CS-50, `#seccion-lugares`, debajo de la descripción): una ficha por lugar en el orden del autor, con su nota. Sin lugares no aparece; si no se pueden cargar, dice «No se han podido cargar los lugares.» y el resto de la página sigue igual.
 * **Mapa** (CS-73, `#mapa-lugares`, encima de las fichas): un marcador por lugar; al pulsarlo se ve su nombre.
 * **Resumen** (CS-14, `#resumen-valoraciones`): media con coma decimal y en estrellas, número de valoraciones y de comentarios, y una barra por puntuación de 5 a 1. Sin valoraciones dice «Todavía sin valoraciones.»; si no se puede cargar, se oculta y el resto de la página sigue igual.
 * **Tu valoración** (`#mi-valoracion`): si ya la había valorado, mis estrellas y mi comentario encima de las listas, con un enlace «Cambiar» al formulario. Al publicar se actualizan al momento, junto con el resumen y la lista «Todas».
 * **Valorar:** el formulario va al final, solo aparece si no soy el autor y se rellena con mi valoración si ya la había hecho. La puntuación es obligatoria y se elige con cinco estrellas (`role="radiogroup"`, con las flechas se mueve y elige entre ellas y solo la elegida entra en el orden de Tab; el valor va en el campo oculto `#val-puntuacion`); las valoraciones publicadas la muestran con estrellas rellenas (`.estrellas`, `aria-label="n de 5"`). `#contador-caracteres` cuenta hasta 1000. El botón «Publicar valoración» pasa a «Actualizar valoración» cuando ya existe una.
 * **Valoraciones de amigos y seguidores** (CS-48) y **todas las valoraciones** (CS-63): dos pestañas de 10 en 10 con «Cargar más». Se abre la de amigos, salvo que esté vacía y «Todas» no.
-* **«Útil» y «Reportar»:** solo funcionan en la pantalla y no guardan nada, hasta que se implementen CS-02 y CS-04. «Reportar» abre el `<dialog>` `#dialogo-reporte`.
+* **«Útil» y «Reportar»:** no guardan nada hasta que se implementen CS-02 y CS-04: «Útil» está desactivado y «Reportar» abre el `<dialog>` `#dialogo-reporte`, que al enviar avisa de que todavía no se puede.
 * Si cualquier petición responde 404, se borra lo que se mostraba y queda solo «Contenido no disponible».
 
 Pruebas: `experiencia.test.js`, `experiencia.formulario.test.js`, `cs50LugaresDetalle.test.js` y `cs73Mapa.test.js`.
@@ -366,7 +366,7 @@ Pruebas: `experiencia.test.js`, `experiencia.formulario.test.js`, `cs50LugaresDe
 | `experiencias.js` | `mostrarExperienciasDe(nombreUsuario)` y `recargarExperiencias()`: la lista «Cargar más» de experiencias de un autor. La página debe tener `#lista-experiencias`, `#sin-experiencias`, `#mas-experiencias` y `#error-experiencias`. | `perfil.js`, `usuario.js` |
 | `movimiento.js` | Pone `data-movimiento="pausado"` en `<html>` a los 5 s, o al cargar si la persona lo pausó o el sistema pide reducir el movimiento. Expone `fijarMovimiento(pausado)` (aplica y guarda en `localStorage`) y `movimientoPausado()`. | Todas las páginas |
 | `cabecera.js` | Comportamiento de la cabecera común (ver «Cabecera común»). No exporta nada. | Las nueve páginas con sesión |
-| `pestanas.js` | `window.activarPestanas(lista)`: pestañas accesibles (`role="tablist"`) que se manejan con ratón y teclado. | `personas.js`, `experiencia.js` |
+| `pestanas.js` | `window.activarPestanas(lista)`: pestañas accesibles (`role="tablist"`) que se manejan con ratón y teclado; la elegida queda en la URL (`?pestana=`). | `personas.js`, `experiencia.js`, `perfil.js`, `ajustes.js` |
 | `password.js` | `mostrarRequisitosPassword(campo, lista, obtenerNombre)`: marca los requisitos cumplidos mientras se escribe. Son los mismos que comprueba el backend, que es quien decide. | `registro.js`, `ajustes.js`, `restablecer.js` |
 
 Los módulos se cargan con `<script>` normales (no son módulos ES) y exponen sus funciones con `window.nombre = nombre`, para que se vea qué ofrece cada archivo y las pruebas puedan cargarlos.

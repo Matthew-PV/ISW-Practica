@@ -8,6 +8,7 @@ const { cargarScripts } = require('../helpers/pantalla');
 const $ = (selector) => document.querySelector(selector);
 
 beforeEach(() => {
+  window.history.replaceState({}, '', '/');
   document.body.innerHTML = `
     <div role="tablist" id="lista">
       <button type="button" role="tab" id="tab-1" aria-controls="panel-1">Personas</button>
@@ -58,4 +59,16 @@ test('flecha izquierda en la primera pestaña pasa a la última y le da el foco'
 
   esperarActiva(2);
   expect(document.activeElement).toBe($('#tab-2'));
+});
+
+test('la pestaña elegida queda en la URL y se recupera al volver a la página', () => {
+  $('#tab-2').click();
+  expect(window.location.search).toBe('?pestana=tab-2');
+
+  const copia = $('#lista').cloneNode(true);
+  $('#lista').replaceWith(copia);
+  const pestanas = window.activarPestanas(copia);
+  pestanas.seleccionar($('#tab-1'));
+
+  esperarActiva(2);
 });

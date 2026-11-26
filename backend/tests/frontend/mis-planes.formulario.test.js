@@ -571,6 +571,7 @@ describe('C8: editar desde el detalle', () => {
         pathname: '/paginas/cuenta/mis-planes.html',
         search: '',
         href: 'http://localhost/paginas/cuenta/mis-planes.html',
+        replace: jest.fn(),
       },
       configurable: true,
       writable: true,
@@ -586,7 +587,7 @@ describe('C8: editar desde el detalle', () => {
     enviar();
     await terminar();
 
-    expect(window.location.href).toBe(
+    expect(window.location.replace).toHaveBeenCalledWith(
       '/paginas/experiencias/experiencia.html?id=10'
     );
   });
@@ -597,7 +598,7 @@ describe('C8: editar desde el detalle', () => {
     vigilarNavegacion();
     $('#boton-cancelar').click();
 
-    expect(window.location.href).toBe(
+    expect(window.location.replace).toHaveBeenCalledWith(
       '/paginas/experiencias/experiencia.html?id=10'
     );
   });
@@ -665,5 +666,41 @@ describe('C9: tras crear', () => {
       $('#form-experiencia button[type="submit"]')
         .textContent.trim()
     ).toBe('Guardar cambios');
+  });
+});
+
+describe('Formulario: no se publica ni se pierde sin querer', () => {
+  const pulsar = (elemento, key) => elemento.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true }));
+
+  test.each(['#titulo', '#ciudad'])('Enter en %s no envía el formulario', async (campo) => {
+    await abrir('?editar=10');
+
+    expect(pulsar($(campo), 'Enter')).toBe(false);
+  });
+
+  test('Escape con cambios pregunta antes de cerrar, por muchas veces que se pulse', async () => {
+    await abrir('?editar=10');
+    escribir('#titulo', 'Otro título');
+
+    expect(pulsar($('#titulo'), 'Escape')).toBe(false);
+    expect(pulsar($('#titulo'), 'Escape')).toBe(false);
+    expect($('#titulo').closest('dialog').open).toBe(true);
+  });
+
+  test('recargar o salir con cambios sin guardar pide confirmación', async () => {
+    // Solo el aviso de esta carga: la ventana de jsdom conserva los de las pruebas anteriores
+    const escuchar = jest.spyOn(window, 'addEventListener');
+    await abrir('?editar=10');
+    const avisar = escuchar.mock.calls.filter(([tipo]) => tipo === 'beforeunload').at(-1)[1];
+    escuchar.mockRestore();
+    const salir = () => {
+      const evento = new Event('beforeunload', { cancelable: true });
+      avisar(evento);
+      return evento.defaultPrevented;
+    };
+    expect(salir()).toBe(false);
+
+    escribir('#titulo', 'Otro título');
+    expect(salir()).toBe(true);
   });
 });

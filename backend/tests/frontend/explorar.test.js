@@ -47,6 +47,23 @@ async function abrir(busqueda = '', fetchSimulado = servidor()) {
 
 const botonCategoria = (texto) => [...document.querySelectorAll('#filtros button')].find((b) => b.textContent === texto);
 
+test('los filtros quedan en la URL y se recuperan al volver', async () => {
+  await abrir();
+  botonCategoria('Cultura').click();
+  $('#filtro-momento').value = 'Verano';
+  $('#filtro-momento').dispatchEvent(new Event('change'));
+  await terminar();
+  const busqueda = window.location.search;
+  expect(busqueda).toBe('?categoria=Cultura&momento=Verano');
+
+  const servidorNuevo = servidor();
+  await abrir(busqueda, servidorNuevo);
+
+  expect($('#filtro-momento').value).toBe('Verano');
+  expect(botonCategoria('Cultura').getAttribute('aria-pressed')).toBe('true');
+  expect(peticionesDePlanes()).toEqual(['/api/experiencias?categoria=Cultura&momento=Verano&limite=12']);
+});
+
 test('empieza con los planes reales, cada tarjeta enlaza a su detalle y «Todos» está marcado', async () => {
   await abrir();
 

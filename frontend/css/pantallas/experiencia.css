@@ -9,7 +9,10 @@
 
 .ficha-experiencia {
   position: sticky;
-  top: var(--espacio-24);
+  /* Debajo de la cabecera fija; si no cabe en la ventana, se desplaza por dentro */
+  top: calc(var(--alto-cabecera) + var(--espacio-16));
+  max-height: calc(100vh - var(--alto-cabecera) - var(--espacio-32));
+  overflow-y: auto;
 }
 
 /* Ficha: cada dato con su nombre encima */

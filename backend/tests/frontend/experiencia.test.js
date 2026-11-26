@@ -306,39 +306,25 @@ describe('CS-63: el formulario de valoración', () => {
   });
 });
 
-describe('CS-63: «Útil» y «Reportar» (solo en la pantalla hasta CS-02 y CS-04)', () => {
-  const botonUtil = (id) => [...$(`[data-valoracion-id="${id}"]`).querySelectorAll('button')].find((b) => b.textContent.includes('Útil'));
+describe('CS-63: «Útil» y «Reportar» (sin guardar hasta CS-02 y CS-04)', () => {
+  const boton = (id, texto) => [...$(`[data-valoracion-id="${id}"]`).querySelectorAll('button')].find((b) => b.textContent.includes(texto));
 
-  test('«Útil» se marca y se desmarca en un comentario ajeno y el contador cambia en uno', async () => {
+  test('«Útil» no se puede marcar y avisa de que aún no está disponible', async () => {
     await abrir({ [`GET ${BASE}/valoraciones`]: [200, pagina([valoracion(30, CARLOS, { utiles: 2 })])] });
 
-    botonUtil(30).click();
-    await terminar();
-    expect(botonUtil(30).textContent).toContain('3');
-
-    botonUtil(30).click();
-    await terminar();
-    expect(botonUtil(30).textContent).toContain('2');
+    expect(boton(30, 'Útil').disabled).toBe(true);
+    expect(boton(30, 'Útil').title).toBe('Todavía no está disponible');
   });
 
-  test('«Útil» está desactivado en mi propio comentario', async () => {
-    await abrir({ [`GET ${BASE}/valoraciones`]: [200, pagina([valoracion(30, YO)])] });
+  test('al enviar un reporte se dice que todavía no se envía', async () => {
+    await abrir({ [`GET ${BASE}/valoraciones`]: [200, pagina([valoracion(30, CARLOS)])] });
 
-    expect(botonUtil(30).disabled).toBe(true);
-  });
-
-  test.each([
-    [false, 'Comentario reportado correctamente. Gracias por avisarnos.'],
-    [true, 'Ya habías reportado este comentario anteriormente.'],
-  ])('al reportar (ya reportado: %p) se elige un motivo y se ve «%s»', async (yaReportado, mensaje) => {
-    await abrir({ [`GET ${BASE}/valoraciones`]: [200, pagina([valoracion(30, CARLOS, { yaReportado })])] });
-
-    [...$('[data-valoracion-id="30"]').querySelectorAll('button')].find((b) => b.textContent.includes('Reportar')).click();
+    boton(30, 'Reportar').click();
     $('#motivoSpam').checked = true;
     $('#form-reporte').dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-    await esperar(600);
+    await terminar();
 
-    expect($('#mensaje-reporte').textContent).toBe(mensaje);
+    expect($('#mensaje-reporte').textContent).toBe('Los reportes todavía no se pueden enviar: no se ha guardado nada.');
   });
 });
 
@@ -555,6 +541,18 @@ describe('Detalle del plan (D1-D6): CS-14, CS-02, CS-32', () => {
       await abrir();
 
       expect($('#enlace-volver').getAttribute('href')).toBe('/paginas/social/personas.html?q=tapas');
+    });
+
+    test('pulsarlo retrocede en el historial, para recuperar la pantalla como estaba', async () => {
+      conReferente(`${window.location.origin}/paginas/experiencias/explorar.html`);
+      window.history.pushState({}, '', window.location.href);
+      const atras = jest.spyOn(window.history, 'back').mockImplementation(() => {});
+      await abrir();
+
+      $('#enlace-volver').click();
+
+      expect(atras).toHaveBeenCalled();
+      atras.mockRestore();
     });
 
     test.each(['', 'https://otro-sitio.example/pagina'])('sin origen de PlanB (%p) vuelve a Inicio', async (url) => {

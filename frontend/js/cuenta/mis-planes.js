@@ -404,21 +404,54 @@ function abrirFormulario(experiencia) {
   dialogo.showModal();
 }
 
+// Vuelve al detalle desde el que se abrió el formulario: retrocediendo si se venía de él, para que
+// su «Volver» siga llevando a donde se estaba antes
+function irAlDetalle() {
+  datosIniciales = null;
+  if (document.referrer.includes('/paginas/experiencias/experiencia.html')) window.history.back();
+  else window.location.replace(volverA);
+}
+
 // Cierra el formulario; si se abrió desde el detalle, vuelve a él
 function cerrarFormulario() {
   if (volverA) {
-    window.location.href = volverA;
+    irAlDetalle();
     return;
   }
   dialogo.close();
 }
 
+const hayCambios = () =>
+  JSON.stringify(leerFormulario()) !== datosIniciales || JSON.stringify(lugaresElegidos) !== lugaresIniciales;
+
 // Antes de cerrar con cambios sin guardar, se pregunta (C7)
 function pedirCerrar() {
-  const sinCambios = JSON.stringify(leerFormulario()) === datosIniciales && JSON.stringify(lugaresElegidos) === lugaresIniciales;
-  if (sinCambios) cerrarFormulario();
-  else dialogoDescartar.showModal();
+  if (hayCambios()) dialogoDescartar.showModal();
+  else cerrarFormulario();
 }
+
+// Enter en un campo corto no publica el plan: se publica con el botón
+formulario.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.tagName === 'INPUT') e.preventDefault();
+});
+
+// Escape se atiende aquí: el navegador deja de lanzar «cancel» si se pulsa varias veces seguidas
+dialogo.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape' || e.defaultPrevented) return;
+  e.preventDefault();
+  pedirCerrar();
+});
+dialogoDescartar.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  e.preventDefault();
+  e.stopPropagation();
+  dialogoDescartar.close();
+});
+
+// Recargar o salir de la página con cambios sin guardar pide confirmación
+window.addEventListener('beforeunload', (e) => {
+  if (dialogo.open && datosIniciales !== null && hayCambios()) e.preventDefault();
+});
 
 document.getElementById('boton-nueva').addEventListener('click', () => abrirFormulario(null));
 document.getElementById('boton-cancelar').addEventListener('click', pedirCerrar);
@@ -476,7 +509,7 @@ formulario.addEventListener('submit', async (e) => {
     if (editando) {
       const experiencia = await api(`/experiencias/${editando.id}`, { method: 'PATCH', body: JSON.stringify(datos) });
       if (volverA) {
-        window.location.href = volverA;
+        irAlDetalle();
         return;
       }
       rejilla.querySelector(`[data-id="${editando.id}"]`)?.replaceWith(crearTarjeta(experiencia));

@@ -58,10 +58,51 @@ const listado = listaConCargarMas({
 // Marca el botón de la categoría elegida ('' = todas) y vuelve a pedir los planes
 function elegirCategoria(nueva) {
   categoria = nueva;
+  marcarCategoria();
+  guardarEnUrl();
+  return listado.reiniciar();
+}
+
+function marcarCategoria() {
   for (const boton of filtros.querySelectorAll('button')) {
     boton.setAttribute('aria-pressed', String(boton.dataset.categoria === categoria));
   }
-  return listado.reiniciar();
+}
+
+// Los filtros de ahora, en la URL: al volver o recargar se recuperan
+const CAMPOS_EN_URL = { momento: campoMomento, ciudad: campoCiudad, tarifa: campoTarifa, duracion: campoDuracion, minimo: campoMinimo };
+
+function guardarEnUrl() {
+  const tira = parametros.get('tira');
+  const nuevos = new URLSearchParams();
+  if (tira) nuevos.set('tira', tira);
+  if (texto) nuevos.set('texto', texto);
+  if (categoria) nuevos.set('categoria', categoria);
+  for (const [nombre, campo] of Object.entries(CAMPOS_EN_URL)) {
+    // En «mi ciudad», «todas las ciudades» también hay que recordarlo
+    if (campo.value || (nombre === 'ciudad' && tira === 'ciudad')) nuevos.set(nombre, campo.value);
+  }
+  if (campoAmigos.checked || tira === 'amigos') nuevos.set('amigos', String(campoAmigos.checked));
+  const consulta = nuevos.toString();
+  window.history.replaceState(window.history.state, '', `${window.location.pathname}${consulta ? `?${consulta}` : ''}`);
+}
+
+// Al salir se apunta cuánto se había cargado y por dónde se iba; al volver se repone
+window.addEventListener('pagehide', () => {
+  window.history.replaceState({ cargados, scroll: window.scrollY }, '');
+});
+
+async function reponerPosicion(primeraCarga) {
+  const anterior = window.history.state;
+  await primeraCarga;
+  if (!anterior?.cargados) return;
+  const botonMas = document.getElementById('mas-planes');
+  while (cargados < anterior.cargados && !botonMas.classList.contains('d-none')) {
+    const antes = cargados;
+    await listado.cargar();
+    if (cargados === antes) break;
+  }
+  if (anterior.scroll) window.scrollTo(0, anterior.scroll);
 }
 
 function crearOpcion(valor, textoOpcion) {
@@ -92,7 +133,10 @@ function pintarOpciones({ categorias, momentos }) {
 }
 
 for (const campo of [campoMomento, campoCiudad, campoAmigos, campoTarifa, campoDuracion, campoMinimo]) {
-  campo.addEventListener('change', () => listado.reiniciar());
+  campo.addEventListener('change', () => {
+    guardarEnUrl();
+    listado.reiniciar();
+  });
 }
 
 async function iniciar() {
@@ -102,9 +146,14 @@ async function iniciar() {
     document.getElementById('titulo-explorar').textContent = TITULOS_TIRA[tira][0];
     document.getElementById('subtitulo-explorar').textContent = TITULOS_TIRA[tira][1];
   }
-  campoAmigos.checked = tira === 'amigos';
-  // Los planes no esperan a los filtros, salvo en «mi ciudad», que necesita saber cuál es
-  if (tira !== 'ciudad') listado.reiniciar();
+  campoAmigos.checked = parametros.has('amigos') ? parametros.get('amigos') === 'true' : tira === 'amigos';
+  // Los planes no esperan a las opciones, salvo que haga falta alguna para saber qué filtrar
+  const esperaOpciones = tira === 'ciudad' || ['categoria', 'momento', 'ciudad'].some((nombre) => parametros.has(nombre));
+  categoria = parametros.get('categoria') ?? '';
+  for (const nombre of ['tarifa', 'duracion', 'minimo']) {
+    if (parametros.has(nombre)) CAMPOS_EN_URL[nombre].value = parametros.get(nombre);
+  }
+  if (!esperaOpciones) reponerPosicion(listado.reiniciar());
 
   try {
     await sesion;
@@ -120,15 +169,18 @@ async function iniciar() {
   ]);
   pintarOpciones(opciones);
   campoCiudad.append(...ciudades.map((ciudad) => crearOpcion(ciudad.id, `${ciudad.nombre} (${ciudad.pais})`)));
-  filtros.firstElementChild?.setAttribute('aria-pressed', 'true');
-  for (const boton of filtros.querySelectorAll('button:not(:first-child)')) boton.setAttribute('aria-pressed', 'false');
+  marcarCategoria();
 
-  if (tira === 'ciudad') {
+  if (!esperaOpciones) return;
+  campoMomento.value = parametros.get('momento') ?? '';
+  if (parametros.has('ciudad')) {
+    campoCiudad.value = parametros.get('ciudad');
+  } else if (tira === 'ciudad') {
     // La ciudad del perfil es texto libre: se busca en el catálogo; si no está, se ven todas
     const perfil = await api('/perfil').catch(() => null);
     campoCiudad.value = buscarCiudadPorNombre(perfil?.ciudad, ciudades) ?? '';
-    listado.reiniciar();
   }
+  reponerPosicion(listado.reiniciar());
 }
 
 iniciar();

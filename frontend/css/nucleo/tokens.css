@@ -79,6 +79,9 @@
   --espacio-32: 32px;
   --espacio-48: 48px;
 
+  /* Alto de la cabecera fija, para lo que se queda pegado debajo */
+  --alto-cabecera: 68px;
+
   /* Anchos de contenido por tipo de pantalla */
   --ancho-contenido: 960px;
   --ancho-lectura: 720px;
