@@ -176,16 +176,26 @@ if (menuNotificaciones) {
   });
 
   const textoVacio = sinNotificaciones.textContent;
-  sinNotificaciones.textContent = 'Cargando…';
-  api('/amistades/solicitudes')
-    .then((solicitudes) => {
-      sinNotificaciones.textContent = textoVacio;
-      lista.replaceChildren(...solicitudes.map(crearNotificacion));
-      actualizarContador();
-    })
-    .catch(() => {
-      sinNotificaciones.textContent = 'No se han podido cargar las notificaciones.';
-    });
+  let fallo = false;
+  function cargarNotificaciones() {
+    fallo = false;
+    sinNotificaciones.textContent = 'Cargando…';
+    api('/amistades/solicitudes')
+      .then((solicitudes) => {
+        sinNotificaciones.textContent = textoVacio;
+        lista.replaceChildren(...solicitudes.map(crearNotificacion));
+        actualizarContador();
+      })
+      .catch(() => {
+        fallo = true;
+        sinNotificaciones.textContent = 'No se han podido cargar las notificaciones.';
+      });
+  }
+  // Si falló, abrir la campana lo vuelve a intentar
+  menuNotificaciones.addEventListener('toggle', () => {
+    if (menuNotificaciones.open && fallo) cargarNotificaciones();
+  });
+  cargarNotificaciones();
 }
 
 // El buscador no se envía si no hay texto (aparte de espacios)

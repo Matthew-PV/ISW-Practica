@@ -127,7 +127,7 @@ test('si el servidor falla se muestra su mensaje y el resto del perfil sigue fun
   await abrirPerfil({ [RESUMEN]: [500, { error: 'No se han podido cargar tus relaciones' }] });
 
   expect(oculto('#error-relaciones')).toBe(false);
-  expect($('#error-relaciones').textContent).toBe('No se han podido cargar tus relaciones');
+  expect($('#error-relaciones').textContent).toContain('No se han podido cargar tus relaciones');
   expect($('#nombre-perfil').textContent).toBe('ana');
 });
 
@@ -141,7 +141,7 @@ test('si falla «Cargar más» se avisa y el botón sigue disponible para reinte
   await terminar();
 
   expect(oculto('#error-relaciones')).toBe(false);
-  expect($('#error-relaciones').textContent).toBe('Error temporal');
+  expect($('#error-relaciones').textContent).toContain('Error temporal');
   expect($('#lista-seguidores').children).toHaveLength(20);
   expect(oculto('#mas-seguidores')).toBe(false);
   expect($('#mas-seguidores').disabled).toBe(false);

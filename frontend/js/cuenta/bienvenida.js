@@ -78,28 +78,38 @@ async function llenarTira(seccion, tira) {
       ? planes.map((plan, indice) => crearTarjetaPlan(plan, { indice }))
       : [crearAvisoTira(tira.vacio)]));
   } catch {
-    const reintentar = document.createElement('button');
-    reintentar.type = 'button';
-    reintentar.className = 'btn btn-sm btn-outline-primary ms-2';
-    reintentar.textContent = 'Reintentar';
-    reintentar.addEventListener('click', () => llenarTira(seccion, tira));
-    const aviso = crearAvisoTira('No se han podido cargar estos planes.');
-    aviso.append(reintentar);
-    fila.replaceChildren(aviso);
+    pintarFalloTira(fila, () => llenarTira(seccion, tira));
   }
 }
 
-// La ciudad del perfil es texto libre: se busca en el catálogo para pedir sus planes. Si algo falla o no
-// aparece, la tira de la ciudad se queda sin planes pero las demás siguen
+function pintarFalloTira(fila, alReintentar) {
+  const reintentar = document.createElement('button');
+  reintentar.type = 'button';
+  reintentar.className = 'btn btn-sm btn-outline-primary ms-2';
+  reintentar.textContent = 'Reintentar';
+  reintentar.addEventListener('click', alReintentar);
+  const aviso = crearAvisoTira('No se han podido cargar estos planes.');
+  aviso.append(reintentar);
+  fila.replaceChildren(aviso);
+}
+
+// La ciudad del perfil es texto libre: se busca en el catálogo para pedir sus planes. Si falla, la tira de
+// la ciudad lo dice y deja reintentar; las demás siguen
 async function pedirCiudad() {
-  let ciudad = null;
-  try {
-    const [perfil, catalogo] = await Promise.all([api('/perfil'), api('/ciudades').catch(() => [])]);
-    ciudad = perfil?.ciudad?.trim() || null;
-    return { ciudad, ciudadId: ciudad ? buscarCiudadPorNombre(ciudad, catalogo) : null };
-  } catch {
-    return { ciudad, ciudadId: null };
-  }
+  const [perfil, catalogo] = await Promise.all([api('/perfil'), api('/ciudades')]);
+  const ciudad = perfil?.ciudad?.trim() || null;
+  return { ciudad, ciudadId: ciudad ? buscarCiudadPorNombre(ciudad, catalogo) : null };
+}
+
+function llenarTiraCiudad(hueco) {
+  const fila = hueco.querySelector('.tira-fila');
+  fila.replaceChildren(...[1, 2, 3, 4].map(crearHuecoCarga));
+  return pedirCiudad().then(({ ciudad, ciudadId }) => {
+    const tira = definirTiras(ciudad, ciudadId)[0];
+    const seccion = crearTira(tira);
+    hueco.replaceWith(seccion);
+    return llenarTira(seccion, tira);
+  }, () => pintarFalloTira(fila, () => llenarTiraCiudad(hueco)));
 }
 
 // Al abrir la página: los encabezados con huecos y, en paralelo, el saludo y los planes de cada tira.
@@ -111,12 +121,7 @@ async function mostrarInicio() {
 
   const usuario = api('/auth/yo');
   resto.forEach((tira, indice) => llenarTira(secciones[indice + 1], tira));
-  pedirCiudad().then(({ ciudad, ciudadId }) => {
-    const tira = definirTiras(ciudad, ciudadId)[0];
-    const seccion = crearTira(tira);
-    secciones[0].replaceWith(seccion);
-    return llenarTira(seccion, tira);
-  });
+  llenarTiraCiudad(secciones[0]);
 
   try {
     document.getElementById('nombre-usuario').textContent = (await usuario).nombreUsuario;

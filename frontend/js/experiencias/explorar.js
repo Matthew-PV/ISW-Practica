@@ -51,13 +51,16 @@ const listado = listaConCargarMas({
       despuesDe: cursor,
       limite: PLANES_POR_PAGINA,
     });
-    cargados += experiencias.length;
-    total.textContent = `${cargados} ${cargados === 1 ? 'plan' : 'planes'}${siguiente === null ? '' : ' o más'}`;
-    if (texto) pestanaPlanes.textContent = `Planes (${cargados}${siguiente === null ? '' : '+'})`;
     return { elementos: experiencias, siguiente };
   },
   crear: (plan) => crearTarjetaPlan(plan),
   alFallar: (err, reintentar) => mostrarErrorConReintento(errorPlanes, err.message, reintentar),
+  // Se cuentan las tarjetas que están puestas: una respuesta descartada no cuenta
+  alPintar: (siguiente) => {
+    cargados = document.querySelectorAll('#resultados [data-id-elemento]').length;
+    total.textContent = `${cargados} ${cargados === 1 ? 'plan' : 'planes'}${siguiente === null ? '' : ' o más'}`;
+    if (texto) pestanaPlanes.textContent = `Planes (${cargados}${siguiente === null ? '' : '+'})`;
+  },
 });
 
 // Marca el botón de la categoría elegida ('' = todas) y vuelve a pedir los planes
@@ -222,8 +225,11 @@ async function iniciar() {
     const perfil = await api('/perfil').catch(() => null);
     const ciudadId = buscarCiudadPorNombre(perfil?.ciudad, ciudades);
     campoCiudad.value = ciudadId ?? '';
-    if (perfil?.ciudad && ciudades.length && ciudadId === null) {
-      document.getElementById('subtitulo-explorar').textContent = 'Tu ciudad no está en el catálogo: se muestran todas.';
+    const subtitulo = document.getElementById('subtitulo-explorar');
+    if (!perfil) {
+      subtitulo.textContent = 'No se ha podido saber tu ciudad: se muestran todas.';
+    } else if (perfil.ciudad && ciudades.length && ciudadId === null) {
+      subtitulo.textContent = 'Tu ciudad no está en el catálogo: se muestran todas.';
     }
   }
   cargarPlanes(personas);

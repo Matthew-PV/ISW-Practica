@@ -24,8 +24,14 @@ function crearBoton(zona, texto, clase, alPulsar) {
 }
 
 // Hace una petición de amistad o de seguimiento y, si sale bien, vuelve a pedir el perfil para actualizar
-// los botones y los contadores sin recargar la página. Si falla, se muestra el mensaje del backend.
+// los botones y los contadores sin recargar la página. Si falla, se muestra el mensaje del backend. Hasta que
+// acaba no se admite otra.
+let actuando = false;
 async function actuar(ruta, opciones) {
+  if (actuando) return;
+  actuando = true;
+  const botones = [...botonesAmistad.querySelectorAll('button'), ...botonSeguir.querySelectorAll('button')];
+  botones.forEach((boton) => { boton.disabled = true; });
   ocultarMensaje(cajaError);
   try {
     await api(ruta, opciones);
@@ -36,6 +42,11 @@ async function actuar(ruta, opciones) {
     }
   } catch (err) {
     mostrarMensaje(cajaError, err.message);
+    // La relación puede haber cambiado (por ejemplo, ya estaba enviada): se vuelve a pedir
+    await cargarPerfil();
+  } finally {
+    actuando = false;
+    botones.forEach((boton) => { boton.disabled = false; });
   }
 }
 

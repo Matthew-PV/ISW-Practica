@@ -1,7 +1,7 @@
 // Página de mi perfil (/paginas/cuenta/perfil.html): cabecera con contadores y, en pestañas, mis experiencias,
 // amigos y seguidores. Las solicitudes y los ajustes tienen su propia página.
 // Se ejecuta nada más cargar la página. Usa `api` de shared/api.js, `listaConCargarMas`,
-// `crearEnlacePerfil`, `mostrarMensaje`, `ocultarMensaje` y `ocultarCargando` de shared/pantalla.js,
+// `crearEnlacePerfil`, `mostrarErrorConReintento`, `ocultarMensaje` y `ocultarCargando` de shared/pantalla.js,
 // `activarPestanas` de shared/pestanas.js y `mostrarExperienciasDe` de shared/experiencias.js (CS-44).
 
 // Pone en la cabecera los datos del perfil que devuelve el backend
@@ -48,7 +48,8 @@ vigilante.observe(botonMasExperiencias, { attributes: true, attributeFilter: ['c
 const cajaErrorRelaciones = document.getElementById('error-relaciones');
 const PERSONAS_POR_PAGINA = 20;
 
-const mostrarErrorRelaciones = (err) => mostrarMensaje(cajaErrorRelaciones, err.message);
+const mostrarErrorRelaciones = (err, reintentar = cargarRelaciones) =>
+  mostrarErrorConReintento(cajaErrorRelaciones, err.message, reintentar);
 
 // Un listado con «Cargar más» de 'amigos' o 'seguidores' (ver shared/pantalla.js)
 function crearListadoPersonas(tipo, idLista, idVacio, idBoton) {
@@ -70,26 +71,24 @@ function crearListadoPersonas(tipo, idLista, idVacio, idBoton) {
 const listadoAmigos = crearListadoPersonas('amigos', 'lista-amigos', 'sin-amigos', 'mas-amigos');
 const listadoSeguidores = crearListadoPersonas('seguidores', 'lista-seguidores', 'sin-seguidores', 'mas-seguidores');
 
-// Pide los contadores de amigos y seguidores. Devuelve false si fallan (y lo muestra).
+// Pide los contadores de amigos y seguidores.
 async function cargarContadores() {
-  ocultarMensaje(cajaErrorRelaciones);
   try {
     const resumen = await api('/perfil/resumen');
     document.getElementById('total-amigos').textContent = resumen.amigos;
     document.getElementById('total-seguidores').textContent = resumen.seguidores;
-    return true;
   } catch (err) {
     mostrarErrorRelaciones(err);
-    return false;
   }
 }
 
-// Al abrir la página: los contadores y la primera página de cada listado.
-async function cargarRelaciones() {
-  if (await cargarContadores()) {
-    await listadoAmigos.cargar();
-    await listadoSeguidores.cargar();
-  }
+// Al abrir la página (y al reintentar): los contadores y la primera página de cada listado, cada cosa
+// por su lado para que un fallo no impida ver las demás.
+function cargarRelaciones() {
+  ocultarMensaje(cajaErrorRelaciones);
+  cargarContadores();
+  listadoAmigos.reiniciar();
+  listadoSeguidores.reiniciar();
 }
 
 cargarRelaciones();

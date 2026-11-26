@@ -631,7 +631,16 @@ inputComentario.addEventListener(
   actualizarContador
 );
 
+// Hasta saber si ya hay valoración, el formulario no se puede usar: publicar la reemplazaría
+function bloquearValoracion(bloquear) {
+  for (const control of formValoracion.querySelectorAll('button, textarea, input')) {
+    control.disabled = bloquear;
+  }
+}
+
 async function cargarMiValoracion() {
+  bloquearValoracion(true);
+  ocultarMensaje(errorValoracion);
   try {
     const miValoracion = await api(
       `/experiencias/${experienciaId}/valoracion`
@@ -649,8 +658,11 @@ async function cargarMiValoracion() {
 
       pintarMiValoracion(miValoracion);
     }
+    bloquearValoracion(false);
   } catch (error) {
-    tratarErrorDeAcceso(error);
+    if (!tratarErrorDeAcceso(error)) {
+      mostrarErrorConReintento(errorValoracion, 'No se ha podido comprobar si ya la habías valorado.', cargarMiValoracion);
+    }
   }
 }
 

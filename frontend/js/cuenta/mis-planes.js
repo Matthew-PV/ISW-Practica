@@ -425,7 +425,10 @@ const hayCambios = () =>
   JSON.stringify(leerFormulario()) !== datosIniciales || JSON.stringify(lugaresElegidos) !== lugaresIniciales;
 
 // Antes de cerrar con cambios sin guardar, se pregunta (C7)
+let guardando = false;
 function pedirCerrar() {
+  // Mientras se guarda no se puede cerrar: la respuesta cambiaría otro formulario
+  if (guardando) return;
   if (hayCambios()) dialogoDescartar.showModal();
   else cerrarFormulario();
 }
@@ -504,6 +507,7 @@ formulario.addEventListener('submit', async (e) => {
   boton.textContent = 'Guardando…';
   boton.disabled = true;
   boton.setAttribute('aria-busy', 'true');
+  guardando = true;
 
   try {
     if (editando) {
@@ -527,6 +531,7 @@ formulario.addEventListener('submit', async (e) => {
     mostrarMensaje(cajaError, err.message);
   }
 
+  guardando = false;
   boton.textContent = textoBoton;
   boton.disabled = false;
   boton.removeAttribute('aria-busy');
@@ -548,18 +553,28 @@ const listadoExperiencias = listaConCargarMas({
   alFallar: (err, reintentar) => mostrarErrorConReintento(cajaErrorLista, err.message, reintentar),
 });
 
-// Carga el catálogo de ciudades, las opciones del formulario y la primera página de mis experiencias.
-async function cargarExperiencias(perfil) {
-  autorExperiencias = perfil.nombreUsuario;
+// El catálogo de ciudades y las opciones: sin ellos no se puede abrir el formulario
+async function cargarCatalogos(perfil) {
+  const botonNueva = document.getElementById('boton-nueva');
+  botonNueva.disabled = true;
   try {
-    const [catalogo, opciones] = await Promise.all([api('/ciudades'), api('/experiencias/opciones'), listadoExperiencias.cargar()]);
+    const [catalogo, opciones] = await Promise.all([api('/ciudades'), api('/experiencias/opciones')]);
     ciudades = catalogo;
     // La ciudad del perfil es texto libre: se propone si coincide con una del catálogo
     ciudadPerfil = buscarCiudad(perfil.ciudad ?? '') ?? null;
     pintarCiudades();
     pintarOpciones(opciones);
+    botonNueva.disabled = false;
   } catch (err) {
-    mostrarMensaje(cajaErrorLista, err.message);
+    mostrarErrorConReintento(cajaErrorLista, err.message, () => cargarCatalogos(perfil));
+  }
+}
+
+// Carga el catálogo de ciudades, las opciones del formulario y la primera página de mis experiencias.
+async function cargarExperiencias(perfil) {
+  autorExperiencias = perfil.nombreUsuario;
+  try {
+    await Promise.all([cargarCatalogos(perfil), listadoExperiencias.cargar()]);
   } finally {
     ocultarCargando();
     // La región de estado no debe seguir diciendo «Cargando…» a los lectores de pantalla (C9)
@@ -589,6 +604,7 @@ async function abrirDesdeEnlace() {
   if (parametros.has('nuevo') || parametros.has('editar')) {
     window.history.replaceState(null, '', window.location.pathname);
   }
+  if (document.getElementById('boton-nueva').disabled) return;
   if (parametros.has('nuevo')) {
     abrirFormulario(null);
   } else if (parametros.has('editar')) {

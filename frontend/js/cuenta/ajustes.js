@@ -86,7 +86,10 @@ formulario.addEventListener('submit', async (e) => {
     const perfil = await api('/perfil', { method: 'PUT', body: JSON.stringify(datos) });
     // Un nombre a medio escribir se conserva mientras se guarda la ciudad
     const nombreEscrito = campoNombre.value;
+    const ciudadElegida = document.getElementById('ciudad').value;
     mostrarPerfil(perfil);
+    // Una ciudad cambiada durante la petición se conserva: se envía a continuación
+    if (ciudadElegida !== datos.ciudad) document.getElementById('ciudad').value = ciudadElegida;
     if (!cambiaNombre && nombreEscrito.trim() !== perfil.nombreUsuario) {
       campoNombre.value = nombreEscrito;
       botonNombre.hidden = false;
@@ -148,7 +151,8 @@ campoFoto.addEventListener('change', async () => {
   try {
     // El backend valida formato y tamaño, la sube a Cloudinary y devuelve el perfil con la URL nueva
     const perfil = await api('/perfil/foto', { method: 'PUT', body: datos });
-    mostrarPerfil(perfil);
+    // Solo la foto: lo que se esté escribiendo en el formulario no se toca
+    if (perfil.foto) document.getElementById('foto-perfil').src = perfil.foto;
     cajaExitoFoto.textContent = 'Foto actualizada.';
     cajaExitoFoto.classList.remove('d-none');
   } catch (err) {

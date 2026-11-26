@@ -107,10 +107,11 @@ function crearBotonesAmistad(amistad, alPulsar) {
 // - `pedir(cursor)`: pide una página (cursor null = la primera) y devuelve { elementos, siguiente }.
 // - `crear(elemento)`: crea la fila de un elemento.
 // - `alFallar(err, reintentar)`: qué hacer si falla una petición; `reintentar` la vuelve a pedir.
+// - `alPintar(siguiente)` (opcional): se llama tras añadir una página.
 // Cada fila guarda el id de su elemento en data-id-elemento, para no repetir ninguna aunque la
 // lista cambie entre dos páginas. Devuelve { cargar, reiniciar }: `cargar` pide la página
 // siguiente y `reiniciar` vacía la lista y vuelve a pedir la primera.
-function listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar }) {
+function listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar, alPintar }) {
   let siguiente = null;
   // Se cuenta cada reinicio: la respuesta de una petición anterior a él se descarta
   let generacion = 0;
@@ -139,6 +140,7 @@ function listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar }) {
       // Solo cuentan los elementos de la lista: la bienvenida lleva además la tarjeta «+» dentro de la rejilla
       vacio?.classList.toggle('d-none', lista.querySelector('[data-id-elemento]') !== null);
       botonMas.classList.toggle('d-none', siguiente === null);
+      alPintar?.(siguiente);
     } catch (err) {
       quitarHuecos();
       if (miGeneracion === generacion) alFallar(err, cargar);
@@ -149,6 +151,9 @@ function listaConCargarMas({ lista, vacio, botonMas, pedir, crear, alFallar }) {
     generacion++;
     siguiente = null;
     lista.replaceChildren();
+    // Ni «Cargar más» ni el aviso de vacío valen hasta que llegue la primera página
+    botonMas.classList.add('d-none');
+    vacio?.classList.add('d-none');
     return cargar();
   }
 
