@@ -24,3 +24,4 @@ Una por archivo, con la plantilla de [plantilla.md](plantilla.md). Orden cronol�
 - 2026-11-26 · [Caché del navegador para archivos estáticos y catálogos](2026-11-26-cache-del-navegador.md)
 - 2026-11-26 · [«Plan» en toda la interfaz](2026-11-26-plan-en-toda-la-interfaz.md)
 - 2026-11-26 · [Sombra en los paneles flotantes](2026-11-26-sombra-en-paneles-flotantes.md)
+- 2026-11-26 · [Incorporación de pruebas E2E con Playwright](2026-11-26-pruebas-e2e-playwright.md)
