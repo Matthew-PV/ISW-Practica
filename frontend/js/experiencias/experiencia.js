@@ -696,6 +696,8 @@ formValoracion.addEventListener('submit', async (e) => {
 
   ocultarMensaje(errorValoracion);
 
+  const exito = document.getElementById('exito-valoracion');
+  exito.textContent = '';
   const textoGuardar = btnGuardarValoracion.textContent;
   btnGuardarValoracion.disabled = true;
   btnGuardarValoracion.setAttribute('aria-busy', 'true');
@@ -719,6 +721,7 @@ formValoracion.addEventListener('submit', async (e) => {
     );
 
     pintarMiValoracion(guardada);
+    exito.textContent = 'Valoración guardada.';
     btnGuardarValoracion.textContent =
       'Actualizar valoración';
 

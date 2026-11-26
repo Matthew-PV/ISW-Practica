@@ -184,7 +184,7 @@ sequenceDiagram
       S->>ER: crear o actualizar (autorId = usuario de la sesión)
       ER-->>S: experiencia con su ciudad
       S-->>P: 201 o 200 y la experiencia
-      P->>U: tarjeta nueva con aviso «Ver plan», tarjeta actualizada o vuelta al detalle si se llegó con ?editar=
+      P->>U: tarjeta nueva o actualizada con aviso y enlace «Ver plan», o vuelta al detalle si se llegó con ?editar=
     end
   end
 ```

@@ -205,7 +205,8 @@
   width: 200px;
   padding: var(--espacio-4);
   background: var(--color-fondo);
-  border: 1px solid var(--color-borde-suave);
+  border: 1px solid var(--color-borde-flotante);
+  box-shadow: var(--sombra-flotante);
   border-radius: var(--radio-tarjeta);
 }
 
@@ -352,8 +353,12 @@
   width: 320px;
   padding: var(--espacio-8);
   background: var(--color-fondo);
-  border: 1px solid var(--color-borde-suave);
+  border: 1px solid var(--color-borde-flotante);
+  box-shadow: var(--sombra-flotante);
   border-radius: var(--radio-tarjeta);
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .menu-notificaciones[open] .menu-notificaciones-lista {
@@ -380,7 +385,6 @@
   padding: var(--espacio-8) var(--espacio-12);
   color: var(--color-texto);
   border-radius: var(--radio-boton);
-  transition: background-color var(--duracion-corta);
 }
 
 .notificacion-persona {
@@ -405,10 +409,6 @@
 
 .notificacion-error {
   color: var(--color-peligro);
-}
-
-.notificacion:hover {
-  background: var(--color-superficie);
 }
 
 .notificacion img {

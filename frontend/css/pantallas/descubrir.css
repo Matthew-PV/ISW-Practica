@@ -96,7 +96,7 @@ a.tarjeta-plan {
 }
 
 .tarjeta-plan {
-  animation: subir 360ms ease-out both;
+  animation: subir 360ms ease-out backwards;
   animation-delay: calc(var(--i, 0) * 50ms);
   background: var(--color-fondo);
 }

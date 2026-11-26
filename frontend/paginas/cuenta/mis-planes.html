@@ -59,9 +59,10 @@
     <p class="text-secondary mb-4">Los planes que has publicado, con los privados y los de tus amigos.</p>
     <p id="cargando" class="text-secondary" role="status">Cargando…</p>
 
-    <p id="aviso-creada" class="alert alert-success d-none" role="status">
-      Plan publicado. <a id="enlace-creada">Ver plan</a>
-    </p>
+    <div id="aviso-creada" class="alert alert-success alert-dismissible d-none" role="status">
+      <span id="texto-aviso">Plan publicado.</span> <a id="enlace-creada">Ver plan</a>
+      <button type="button" id="cerrar-aviso" class="btn-close" aria-label="Cerrar aviso"></button>
+    </div>
 
     <div id="error-lista" role="alert" class="alert alert-danger d-none"></div>
 

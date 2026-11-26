@@ -28,6 +28,9 @@
   --color-foco: #1D4ED8;
   --color-borde-campo: #7A6F8C;
   --color-borde-suave: #E8E3EE;
+  /* Solo los paneles que flotan sobre la página (menú de cuenta y notificaciones) */
+  --color-borde-flotante: #CFC6DA;
+  --sombra-flotante: 0 12px 32px rgb(45 20 60 / 0.18);
 
   /* Avisos (fondo y texto) */
   --color-error-fondo: #FEE2E2;

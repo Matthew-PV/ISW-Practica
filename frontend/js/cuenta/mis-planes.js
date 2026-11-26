@@ -424,6 +424,8 @@ function cerrarFormulario() {
 const hayCambios = () =>
   JSON.stringify(leerFormulario()) !== datosIniciales || JSON.stringify(lugaresElegidos) !== lugaresIniciales;
 
+const botonCancelar = document.getElementById('boton-cancelar');
+
 // Antes de cerrar con cambios sin guardar, se pregunta (C7)
 let guardando = false;
 function pedirCerrar() {
@@ -457,7 +459,7 @@ window.addEventListener('beforeunload', (e) => {
 });
 
 document.getElementById('boton-nueva').addEventListener('click', () => abrirFormulario(null));
-document.getElementById('boton-cancelar').addEventListener('click', pedirCerrar);
+botonCancelar.addEventListener('click', pedirCerrar);
 // Esc lanza «cancel»: se pasa por la misma comprobación
 dialogo.addEventListener('cancel', (e) => {
   e.preventDefault();
@@ -469,13 +471,16 @@ document.getElementById('confirmar-descartar').addEventListener('click', () => {
   cerrarFormulario();
 });
 
-// Tras crear, aviso con enlace a la nueva experiencia y el foco en él (C9)
-function avisarCreada(experiencia) {
+// Tras guardar, aviso con enlace al plan y el foco en él (C9)
+const avisoGuardado = document.getElementById('aviso-creada');
+function avisarGuardado(experiencia, texto) {
   const enlace = document.getElementById('enlace-creada');
   enlace.setAttribute('href', `/paginas/experiencias/experiencia.html?id=${experiencia.id}`);
-  document.getElementById('aviso-creada').classList.remove('d-none');
+  document.getElementById('texto-aviso').textContent = texto;
+  avisoGuardado.classList.remove('d-none');
   enlace.focus();
 }
+document.getElementById('cerrar-aviso').addEventListener('click', () => ocultarMensaje(avisoGuardado));
 
 // Al pulsar Publicar o Guardar cambios se crea o se edita la experiencia.
 formulario.addEventListener('submit', async (e) => {
@@ -508,6 +513,8 @@ formulario.addEventListener('submit', async (e) => {
   boton.disabled = true;
   boton.setAttribute('aria-busy', 'true');
   guardando = true;
+  botonCancelar.disabled = true;
+  ocultarMensaje(avisoGuardado);
 
   try {
     if (editando) {
@@ -518,6 +525,7 @@ formulario.addEventListener('submit', async (e) => {
       }
       rejilla.querySelector(`[data-id="${editando.id}"]`)?.replaceWith(crearTarjeta(experiencia));
       dialogo.close();
+      avisarGuardado(experiencia, 'Cambios guardados.');
     } else {
       const experiencia = await api('/experiencias', { method: 'POST', body: JSON.stringify(datos) });
       ciudadesUsadas.add(experiencia.ciudadId);
@@ -525,13 +533,14 @@ formulario.addEventListener('submit', async (e) => {
       columnaNueva.after(crearTarjeta(experiencia));
       ocultarMensaje(sinExperiencias);
       dialogo.close();
-      avisarCreada(experiencia);
+      avisarGuardado(experiencia, 'Plan publicado.');
     }
   } catch (err) {
     mostrarMensaje(cajaError, err.message);
   }
 
   guardando = false;
+  botonCancelar.disabled = false;
   boton.textContent = textoBoton;
   boton.disabled = false;
   boton.removeAttribute('aria-busy');

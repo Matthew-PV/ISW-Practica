@@ -82,7 +82,8 @@ dialog[open]::backdrop {
 
 /* Resultados y tarjetas de las listas: entran escalonados */
 .tarjeta-experiencia {
-  animation: subir 380ms ease-out both;
+  /* «backwards»: al acabar no retiene el transform y deja elevar la tarjeta al pasar el ratón */
+  animation: subir 380ms ease-out backwards;
 }
 
 .tarjeta-experiencia:nth-child(2) { animation-delay: 50ms; }

@@ -652,6 +652,21 @@ describe('C9: tras crear', () => {
     ).not.toContain('Cargando');
   });
 
+  test('mientras guarda no se puede cancelar y el aviso se puede cerrar', async () => {
+    $('#boton-nueva').click();
+    escribir('#titulo', 'Mercadillo');
+    escribir('#descripcion', 'Puestos de segunda mano');
+    elegir('tipo', 'Rincones');
+
+    enviar();
+    expect($('#boton-cancelar').disabled).toBe(true);
+    await terminar();
+
+    expect($('#boton-cancelar').disabled).toBe(false);
+    $('#cerrar-aviso').click();
+    expect($('#aviso-creada').classList.contains('d-none')).toBe(true);
+  });
+
   test('el botón cambia entre Publicar y Guardar', () => {
     $('#boton-nueva').click();
 

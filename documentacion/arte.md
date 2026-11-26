@@ -305,6 +305,8 @@ Solo en `index.html`, en CSS y sin scripts. Nunca se anima lo que se lee o se pu
 - Acciones con espera en gerundio: «Buscando…», «Guardando…».
 - Lo que se publica, se busca y se gestiona se llama «plan» en toda la interfaz y en los mensajes del servidor.
 - Un estado vacío ofrece el siguiente paso con un enlace; los que van dentro de otro contenido son una línea de texto, sin ilustración.
+- Sombra solo en los paneles flotantes de la cabecera (`--sombra-flotante`); las listas largas se desplazan dentro del panel.
+- Todo guardado deja un mensaje junto a lo guardado o un aviso con botón para cerrarlo.
 - Botones: relleno para la acción principal (rojo `.btn-danger` si destruye), contorno para el resto.
 
 
