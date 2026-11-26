@@ -25,3 +25,4 @@ Una por archivo, con la plantilla de [plantilla.md](plantilla.md). Orden cronol�
 - 2026-11-26 · [«Plan» en toda la interfaz](2026-11-26-plan-en-toda-la-interfaz.md)
 - 2026-11-26 · [Sombra en los paneles flotantes](2026-11-26-sombra-en-paneles-flotantes.md)
 - 2026-11-26 · [Incorporación de pruebas E2E con Playwright](2026-11-26-pruebas-e2e-playwright.md)
+- 2026-11-26 · [Una ciudad que no existe no muestra planes](2026-11-26-ciudad-inexistente-sin-planes.md)

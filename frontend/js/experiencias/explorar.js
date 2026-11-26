@@ -21,6 +21,7 @@ const campoTarifa = document.getElementById('filtro-tarifa');
 const campoDuracion = document.getElementById('filtro-duracion');
 const campoMinimo = document.getElementById('filtro-minimo');
 const errorPlanes = document.getElementById('error-planes');
+const avisoVacio = document.querySelector('#sin-resultados p');
 const total = document.getElementById('total-planes');
 
 const parametros = new URLSearchParams(window.location.search);
@@ -57,6 +58,7 @@ const listado = listaConCargarMas({
   alFallar: (err, reintentar) => mostrarErrorConReintento(errorPlanes, err.message, reintentar),
   // Se cuentan las tarjetas que están puestas: una respuesta descartada no cuenta
   alPintar: (siguiente) => {
+    explicarVacio();
     cargados = document.querySelectorAll('#resultados [data-id-elemento]').length;
     total.textContent = `${cargados} ${cargados === 1 ? 'plan' : 'planes'}${siguiente === null ? '' : ' o más'}`;
     if (texto) pestanaPlanes.textContent = `Planes (${cargados}${siguiente === null ? '' : '+'})`;
@@ -104,6 +106,25 @@ function titularPorCiudad() {
   if (TITULOS_TIRA[parametros.get('tira')] || texto) return;
   const nombre = campoCiudad.value && campoCiudad.selectedOptions[0].dataset.nombre;
   document.getElementById('titulo-explorar').textContent = nombre ? `Planes en ${nombre}` : 'Explorar';
+}
+
+// CS-74: si la ciudad es el único filtro, el aviso de vacío la nombra
+function explicarVacio() {
+  const otrosFiltros = texto || categoria || campoAmigos.checked
+    || [campoMomento, campoTarifa, campoDuracion, campoMinimo].some((campo) => campo.value);
+  avisoVacio.textContent = campoCiudad.value && !otrosFiltros
+    ? `Todavía no hay planes en ${campoCiudad.selectedOptions[0].dataset.nombre}.`
+    : 'No hay planes con estos filtros.';
+}
+
+// CS-74: la ciudad de la URL no está en el catálogo. No se piden planes, que serían de otras ciudades;
+// «Limpiar filtros» es la salida, porque el desplegable ya marca «Todas»
+function avisarCiudadDesconocida() {
+  campoCiudad.value = '';
+  avisoVacio.textContent = 'Esa ciudad no está en el catálogo de PlanB.';
+  document.getElementById('sin-resultados').classList.remove('d-none');
+  total.textContent = '0 planes';
+  botonLimpiar.classList.remove('d-none');
 }
 
 // «Limpiar filtros» solo aparece si hay alguno puesto
@@ -233,6 +254,11 @@ async function iniciar() {
   if (parametros.has('ciudad')) {
     campoCiudad.value = parametros.get('ciudad');
     titularPorCiudad();
+    // Sin catálogo (no se pudo cargar) no se puede saber si existe
+    if (parametros.get('ciudad') && ciudades.length && !campoCiudad.value) {
+      avisarCiudadDesconocida();
+      return;
+    }
   } else if (tira === 'ciudad') {
     // La ciudad del perfil es texto libre: se busca en el catálogo; si no está, se ven todas
     const perfil = await api('/perfil').catch(() => null);

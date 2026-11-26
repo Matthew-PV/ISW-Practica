@@ -6,6 +6,59 @@ Las interacciones siguientes proceden de la conversación con Claude Code de los
 
 **Pendiente:** añadir, si se conservan los prompts, las interacciones de las primeras tareas de FLA05 (consulta del perfil propio, su prueba, edición del perfil y primera versión de la pantalla «Mi perfil»), realizadas entre el 28 de septiembre y el 1 de octubre.
 
+## 2026-11-26 — CS-74: página de ciudad
+
+- **Historia u objetivo:** CS-74, sus tres objetivos.
+- **Agente/herramienta:** Claude Code; Claude Sonnet 5.5.
+- **Prompt inicial:**
+
+  > Dame una descripción y un criterio de validación para esta tarea y después los objetivos
+
+- **Correcciones relevantes:**
+
+  > espera no te salgas de la propuesta que hemos enviado al profesor vuelvemela a enseñar modo correo
+
+  > Ya la he creado podemos empezar con el primer objetivo primero las pruebas en roja y despues hacemos el código para pasar los test
+
+  > Antes de subirla hacemos un demo modo prueba paso a paso
+
+- **Qué aceptó, cambió o rechazó la persona:** creó la historia en el libro, exigió ver las pruebas en rojo antes del código, probó a mano el objetivo 1 antes de subirlo y aceptó que una ciudad inexistente no muestre planes.
+- **Commit:** `51b3a15`, `1d5ee50` y el que incluye esta entrada (objetivo 3); decisión en [una ciudad que no existe no muestra planes](../../decisiones/2026-11-26-ciudad-inexistente-sin-planes.md).
+
+## 2026-11-26 — CS-10: filtros de presupuesto, duración y valoración mínima
+
+- **Historia u objetivo:** CS-10, objetivos 3 y 4.
+- **Agente/herramienta:** Claude Code; Claude Sonnet 5.5.
+- **Prompt inicial:**
+
+  > quiero hacer la persona b quiero que primero tomes los objetivos de la tarea que vamos a hacer luego empezamos objetivo a objetivo
+
+- **Correcciones relevantes:**
+
+  > Entonces podemos añadir un nuevo objetivo en esta tarea
+
+  > Espera dame los objetivos para ponerlos en la cs 10 siguiendo la s que ya ha hecho Joaquin
+
+- **Qué aceptó, cambió o rechazó la persona:** envió el criterio de la historia, que mostró filtros sin hacer, añadió dos objetivos al estilo de los existentes, ejecutó las pruebas con MySQL y hizo los commits.
+- **Commit:** `d998f22` y `34de170`; decisión en [presupuesto y duración son máximos](../../decisiones/2026-11-26-filtros-presupuesto-y-duracion.md).
+
+## 2026-11-26 — Plan de la siguiente demo
+
+- **Historia u objetivo:** sin historia asociada.
+- **Agente/herramienta:** Claude Code; Claude Sonnet 5.5.
+- **Prompt inicial:**
+
+  > Vamos a preparar la siguiente demo te voy a pasar todo lo que tenemos que tener y dime si está hecho o no
+
+- **Correcciones relevantes:**
+
+  > Comprueba con todas estas actualizaciones que tareas están hechas, quiero ue hagamos lo siguiente: me pases lo que podemos hacer ahora mismo que encajen con las tareas que proponemos y tambien cuales son las que deberiamos abadonar y dejarlas para la siguiente demo
+
+  > Dejemoslo como lo han hecho mis compañeros por lo cual la Opcion A
+
+- **Qué aceptó, cambió o rechazó la persona:** eligió su parte del reparto, decidió no cambiar «Útil» y «Reportar» (al aclarar su último mensaje) y puso ella la duración y la tarifa en tres planes de demostración.
+- **Commit:** `db78abd` (README).
+
 ## 2026-10-26 — CS-65: estados que faltaban en las pantallas (lagunas del inventario)
 
 - **Historia u objetivo:** CS-65, objetivo 5: cubrir las lagunas detectadas en el inventario de pantallas (estado «Cargando», mensaje de vacío, ayuda antes de buscar y avisos de error accesibles).

@@ -204,6 +204,37 @@ test('el título sigue a la ciudad elegida y vuelve a «Explorar» al quitarla',
   expect($('#titulo-explorar').textContent).toBe('Explorar');
 });
 
+const avisoVacio = () => $('#sin-resultados p').textContent;
+const hayAvisoVacio = () => !$('#sin-resultados').classList.contains('d-none');
+
+test('una ciudad sin planes lo dice con su nombre, y con más filtros vuelve a hablar de los filtros', async () => {
+  await abrir('?ciudad=3', servidor(() => ({ experiencias: [], siguiente: null })));
+
+  expect(hayAvisoVacio()).toBe(true);
+  expect(avisoVacio()).toBe('Todavía no hay planes en Sevilla.');
+  expect($('#error-planes').classList.contains('d-none')).toBe(true);
+
+  await cambiar('#filtro-tarifa', '5');
+  expect(avisoVacio()).toBe('No hay planes con estos filtros.');
+});
+
+test('una ciudad que no existe se explica sin enseñar planes de otras', async () => {
+  await abrir('?ciudad=999');
+
+  expect(document.querySelectorAll('#resultados .tarjeta-plan')).toHaveLength(0);
+  expect(hayAvisoVacio()).toBe(true);
+  expect(avisoVacio()).toBe('Esa ciudad no está en el catálogo de PlanB.');
+  expect($('#total-planes').textContent).toBe('0 planes');
+  expect($('#error-planes').classList.contains('d-none')).toBe(true);
+  // El desplegable marca «Todas» (no se queda en blanco), así que hace falta otra salida
+  expect($('#filtro-ciudad').selectedOptions[0]?.textContent).toBe('Todas');
+  expect($('#limpiar-filtros').classList.contains('d-none')).toBe(false);
+
+  await cambiar('#filtro-ciudad', '1');
+  expect(document.querySelectorAll('#resultados .tarjeta-plan')).toHaveLength(2);
+  expect(hayAvisoVacio()).toBe(false);
+});
+
 test('?tira=amigos marca «solo amigos» desde el principio', async () => {
   await abrir('?tira=amigos');
 
