@@ -6,10 +6,10 @@
 // Sustituye a navegacion.test.js, que comprobaba la barra anterior.
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
-const PAGINAS = ['bienvenida', 'explorar', 'mis-planes', 'amigos', 'perfil', 'ajustes', 'personas', 'usuario', 'experiencia'];
+const PAGINAS = ['bienvenida', 'explorar', 'mis-planes', 'amigos', 'perfil', 'ajustes', 'usuario', 'experiencia'];
 // Enlace de la cabecera que lleva aria-current="page" en cada página (ninguno en el resto)
 const ACTUAL = {
-  bienvenida: 'Inicio', explorar: 'Explorar', 'mis-planes': 'Mis planes', amigos: 'Amigos', perfil: 'Mi perfil', ajustes: 'Ajustes', personas: null, usuario: null, experiencia: null,
+  bienvenida: 'Inicio', explorar: 'Explorar', 'mis-planes': 'Mis planes', amigos: 'Amigos', perfil: 'Mi perfil', ajustes: 'Ajustes', usuario: null, experiencia: null,
 };
 
 const $ = (selector) => document.querySelector(selector);
@@ -37,7 +37,7 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
   });
 
   test('tiene el buscador de personas', () => {
-    const formulario = $('header.cabecera form[role="search"][action="/paginas/social/personas.html"][method="get"]');
+    const formulario = $('header.cabecera form[role="search"][action="/paginas/experiencias/explorar.html"][method="get"]');
     expect(formulario).not.toBeNull();
 
     const campo = formulario.querySelector('input[type="search"][name="q"]');
@@ -85,10 +85,6 @@ describe.each(PAGINAS)('cabecera de %s.html', (pagina) => {
 
     expect(marcados.every((e) => e.getAttribute('aria-current') === 'page')).toBe(true);
     expect(marcados.map((e) => e.textContent.trim())).toEqual(ACTUAL[pagina] ? [ACTUAL[pagina]] : []);
-  });
-
-  test('solo /paginas/social/personas.html lleva la clase pagina-buscar en el body', () => {
-    expect(document.body.classList.contains('pagina-buscar')).toBe(pagina === 'personas');
   });
 });
 

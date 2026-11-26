@@ -1,339 +1,119 @@
 /**
  * @jest-environment jsdom
  */
-// CS-61, objetivo 12: búsqueda de personas y enlaces al perfil público.
-const fs = require('node:fs');
-const path = require('node:path');
-const { cargarScripts } = require('../helpers/pantalla');
+// CS-61 y CS-10: la búsqueda vive en Explorar, con las pestañas Planes y Personas (?q=texto).
+const { leer, cargarScripts } = require('../helpers/pantalla');
 
-const FRONTEND = path.join(__dirname, '..', '..', '..', 'frontend');
-const leer = (archivo) => fs.readFileSync(path.join(FRONTEND, archivo), 'utf8');
-const HTML = leer('/paginas/social/personas.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/planes.js', 'js/social/personas.js'];
+const HTML = leer('/paginas/experiencias/explorar.html');
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/planes.js',
+  'js/social/personas.js', 'js/experiencias/explorar.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
 const terminar = () => new Promise((resolve) => setTimeout(resolve, 0));
+const oculto = (selector) => $(selector).classList.contains('d-none');
 
-function buscar(texto) {
-  $('#texto-busqueda').value = texto;
-  $('#form-busqueda').dispatchEvent(new Event('submit'));
-}
-
-// Promesa que se resuelve a mano, para ver el estado «pendiente» de una petición
-function diferida() {
-  let resolver;
-  const promesa = new Promise((resolve) => { resolver = resolve; });
-  return { promesa, resolver };
-}
-
-const plan = (id, extra = {}) => ({
+const plan = (id) => ({
   id, titulo: `Plan ${id}`, descripcion: 'Descripción', tipo: 'Cultura', visibilidad: 'PUBLICA',
-  ciudad: { id: 3, nombre: 'Sevilla', pais: 'España' }, autor: { id: 2, nombreUsuario: 'lucia', foto: null }, ...extra,
+  ciudad: { id: 3, nombre: 'Sevilla', pais: 'España' }, autor: { id: 2, nombreUsuario: 'lucia', foto: null },
 });
-const paginaDePlanes = (experiencias = [], siguiente = null) => ({ experiencias, siguiente });
 
-// Sin más indicaciones, la búsqueda de planes no encuentra nada; los tests de personas encolan solo su respuesta
-const sinPlanes = (ruta) => (ruta.startsWith('/api/experiencias?') ? respuesta(200, paginaDePlanes()) : undefined);
+function servidor({ personas = () => respuesta(200, []), planes = [], siguiente = null } = {}) {
+  return jest.fn((ruta) => {
+    if (ruta.startsWith('/api/usuarios?')) return personas();
+    if (ruta.startsWith('/api/experiencias?')) return respuesta(200, { experiencias: planes, siguiente });
+    if (ruta === '/api/auth/yo') return respuesta(200, { id: 1 });
+    if (ruta === '/api/experiencias/opciones') return respuesta(200, { categorias: [], momentos: [] });
+    if (ruta === '/api/ciudades') return respuesta(200, []);
+    return respuesta(404, { error: 'No encontrado' });
+  });
+}
 
-beforeEach(() => {
-  window.history.pushState({}, '', '/paginas/social/personas.html');
+async function abrir(busqueda = '?q=a', opciones = {}) {
+  window.history.pushState({}, '', `/paginas/experiencias/explorar.html${busqueda}`);
   document.documentElement.innerHTML = HTML;
-  window.fetch = jest.fn(sinPlanes);
+  window.fetch = servidor(opciones);
   cargarScripts(SCRIPTS);
-});
+  for (let i = 0; i < 6; i += 1) await terminar();
+}
 
-test('busca personas y cada resultado enlaza a su perfil público sin insertar HTML', async () => {
-  window.fetch.mockReturnValueOnce(respuesta(200, [
-    { id: 2, nombreUsuario: 'ana maría', email: 'no-debe-mostrarse@ejemplo.com' },
-    { id: 3, nombreUsuario: '<b>luis</b>', email: 'tampoco@ejemplo.com' },
-  ]));
+const filas = () => [...document.querySelectorAll('#resultados-personas .fila-resultado')];
+const seleccionada = () => $('[role="tab"][aria-selected="true"]').id;
 
-  buscar('ana');
-  await terminar();
+describe('Buscar en Explorar', () => {
+  test('?q= rellena la cabecera y busca planes y personas con el texto escapado', async () => {
+    await abrir('?q=ana%20b%26c', { planes: [plan(8)], personas: () => respuesta(200, [{ id: 2, nombreUsuario: 'ana' }]) });
 
-  expect(window.fetch).toHaveBeenCalledWith('/api/usuarios?texto=ana', expect.any(Object));
-  const enlaces = [...document.querySelectorAll('#resultados a')];
-  expect(enlaces).toHaveLength(2);
-  expect(enlaces[0].getAttribute('href')).toBe('/paginas/social/usuario.html?nombre=ana%20mar%C3%ADa');
-  expect(enlaces[0].textContent).toBe('ana maría');
-  expect(enlaces[1].textContent).toBe('<b>luis</b>');
-  expect(enlaces[1].querySelector('b')).toBeNull();
-  expect(document.body.textContent).not.toContain('no-debe-mostrarse@ejemplo.com');
-});
-
-test('indica cuando la búsqueda no encuentra personas', async () => {
-  window.fetch.mockReturnValueOnce(respuesta(200, []));
-
-  buscar('nadie');
-  await terminar();
-
-  expect($('#sin-resultados').classList.contains('d-none')).toBe(false);
-  expect($('#resultados').children).toHaveLength(0);
-});
-
-test('muestra el mensaje del servidor si la búsqueda falla', async () => {
-  window.fetch.mockReturnValueOnce(respuesta(500, { error: 'No se ha podido buscar ahora' }));
-
-  buscar('ana');
-  await terminar();
-
-  expect($('#error-busqueda').textContent).toBe('No se ha podido buscar ahora');
-  expect($('#error-busqueda').classList.contains('d-none')).toBe(false);
-});
-
-// CS-66 (T4.5): pantalla Buscar con pestañas, estados de espera y descarte de respuestas atrasadas.
-describe('Buscar (diseño aplicado)', () => {
-  test('la pantalla usa una columna ancha, no la estrecha de los formularios', () => {
-    const principal = $('#contenido');
-    expect(principal.classList.contains('contenedor-formulario')).toBe(false);
-    expect(principal.classList.contains('contenedor-buscar')).toBe(true);
-  });
-
-  test('mientras busca, el botón dice «Buscando…» y vuelve a «Buscar» al llegar los resultados', async () => {
-    const pendiente = diferida();
-    window.fetch.mockReturnValueOnce(pendiente.promesa);
-    const boton = $('#form-busqueda button[type="submit"]');
-
-    buscar('ana');
-
-    expect(window.fetch).toHaveBeenCalledWith('/api/usuarios?texto=ana', expect.any(Object));
-    expect(boton.textContent).toBe('Buscando…');
-    expect(boton.disabled).toBe(true);
-    expect(boton.getAttribute('aria-busy')).toBe('true');
-    expect($('#ayuda-busqueda').classList.contains('d-none')).toBe(true);
-    expect($('#cargando').classList.contains('d-none')).toBe(false);
-
-    pendiente.resolver({ ok: true, status: 200, json: async () => [
-      { id: 1, nombreUsuario: 'ana' }, { id: 2, nombreUsuario: 'ana_b' },
-    ] });
-    await terminar();
-
-    expect(document.querySelectorAll('#resultados .fila-resultado')).toHaveLength(2);
-    expect(boton.textContent).toBe('Buscar');
-    expect(boton.disabled).toBe(false);
-    expect(boton.hasAttribute('aria-busy')).toBe(false);
-    expect($('#texto-busqueda').value).toBe('ana');
-    expect($('#cargando').classList.contains('d-none')).toBe(true);
-  });
-
-  test('sin coincidencias aparece «No se han encontrado personas.»', async () => {
-    window.fetch.mockReturnValueOnce(respuesta(200, []));
-
-    buscar('zzz');
-    await terminar();
-
-    expect($('#sin-resultados').classList.contains('d-none')).toBe(false);
-    expect($('#sin-resultados').textContent).toBe('No se han encontrado personas.');
-  });
-
-  test('/paginas/social/personas.html?q=ana%20b%26c rellena el campo y busca con el texto escapado', async () => {
-    window.history.pushState({}, '', '/paginas/social/personas.html?q=ana%20b%26c');
-    document.documentElement.innerHTML = HTML;
-    window.fetch.mockReturnValueOnce(respuesta(200, []));
-    cargarScripts(SCRIPTS);
-    await terminar();
-
-    expect($('#texto-busqueda').value).toBe('ana b&c');
-    expect(window.fetch).toHaveBeenCalledTimes(2);
     expect(window.fetch).toHaveBeenCalledWith('/api/usuarios?texto=ana%20b%26c', expect.any(Object));
-    expect(window.fetch).toHaveBeenCalledWith('/api/experiencias?texto=ana+b%26c', expect.any(Object));
+    expect(window.fetch).toHaveBeenCalledWith('/api/experiencias?texto=ana+b%26c&limite=12', expect.any(Object));
+    expect($('.cabecera-busqueda input').value).toBe('ana b&c');
+    expect($('#busqueda-activa').textContent).toContain('Resultados para «ana b&c»');
+    expect($('#busqueda-activa a').getAttribute('href')).toBe('/paginas/experiencias/explorar.html');
+    expect($('#pestana-planes').textContent).toBe('Planes (1)');
+    expect($('#pestana-personas').textContent).toBe('Personas (1)');
+    expect($('#recuento-personas').textContent).toBe('1 persona');
+    expect(seleccionada()).toBe('pestana-planes');
   });
 
-  test('/paginas/social/personas.html?q= vacío no busca y deja el texto de ayuda', async () => {
-    window.history.pushState({}, '', '/paginas/social/personas.html?q=');
-    document.documentElement.innerHTML = HTML;
-    cargarScripts(SCRIPTS);
-    await terminar();
+  test('sin texto no pide personas y la pestaña explica cómo buscarlas', async () => {
+    await abrir('');
 
-    expect(window.fetch).not.toHaveBeenCalled();
-    expect($('#ayuda-busqueda').classList.contains('d-none')).toBe(false);
+    expect(window.fetch.mock.calls.some(([ruta]) => ruta.startsWith('/api/usuarios'))).toBe(false);
+    expect(oculto('#ayuda-personas')).toBe(false);
+    expect(oculto('#busqueda-activa')).toBe(true);
+    expect($('#pestana-personas').textContent).toBe('Personas');
   });
 
-  test('una búsqueda llena a la vez Planes y Personas con los planes reales, que enlazan a su detalle', async () => {
-    window.fetch.mockImplementation((ruta) => (ruta.startsWith('/api/usuarios')
-      ? respuesta(200, [{ id: 2, nombreUsuario: 'museo_fan' }])
-      : respuesta(200, paginaDePlanes([plan(8, { titulo: 'Tarde en el Prado' })]))));
-    const pestanas = [...document.querySelectorAll('[role="tab"]')];
-    expect(pestanas.map((p) => p.textContent)).toEqual(['Planes', 'Personas']);
-    expect(pestanas[0].getAttribute('aria-selected')).toBe('true');
+  test('cada persona enlaza a su perfil sin insertar HTML ni mostrar el correo', async () => {
+    await abrir('?q=a', { personas: () => respuesta(200, [
+      { id: 2, nombreUsuario: 'ana maría', email: 'no-debe-mostrarse@ejemplo.com' },
+      { id: 3, nombreUsuario: '<b>luis</b>' },
+    ]) });
 
-    buscar('museo');
-    await terminar();
-
-    expect(window.fetch).toHaveBeenCalledWith('/api/experiencias?texto=museo', expect.any(Object));
-    expect(document.querySelectorAll('#resultados .fila-resultado')).toHaveLength(1);
-    const tarjetas = [...document.querySelectorAll('#resultados-experiencias .tarjeta-plan')];
-    expect(tarjetas.map((t) => t.querySelector('h3').textContent)).toEqual(['Tarde en el Prado']);
-    expect(tarjetas[0].querySelector('a').getAttribute('href')).toBe('/paginas/experiencias/experiencia.html?id=8');
-    expect([...document.querySelectorAll('[role="tab"]')].map((p) => p.textContent)).toEqual(['Planes (1)', 'Personas (1)']);
-    expect($('#ayuda-experiencias').classList.contains('d-none')).toBe(true);
-    expect($('#sin-experiencias').classList.contains('d-none')).toBe(true);
+    const [primera, segunda] = filas();
+    expect(primera.querySelector('a').getAttribute('href')).toBe('/paginas/social/usuario.html?nombre=ana%20mar%C3%ADa');
+    expect(segunda.textContent).toBe('<b>luis</b>');
+    expect(segunda.querySelector('b')).toBeNull();
+    expect(document.body.textContent).not.toContain('no-debe-mostrarse@ejemplo.com');
   });
 
-  test('si hay más planes de los que caben en la página, el contador lo avisa y se enlaza a Explorar', async () => {
-    window.fetch.mockImplementation((ruta) => (ruta.startsWith('/api/usuarios')
-      ? respuesta(200, [])
-      : respuesta(200, paginaDePlanes([plan(2), plan(1)], 1))));
+  test('si no hay planes pero sí personas, se abre Personas', async () => {
+    await abrir('?q=luis', { personas: () => respuesta(200, [{ id: 3, nombreUsuario: 'luis' }]) });
 
-    buscar('tapas & vino');
-    await terminar();
-
-    expect($('#pestana-experiencias').textContent).toBe('Planes (2+)');
-    const enlace = $('#ver-todos-planes');
-    expect(enlace.hidden).toBe(false);
-    expect(enlace.getAttribute('href')).toBe('/paginas/experiencias/explorar.html?texto=tapas%20%26%20vino');
+    expect(seleccionada()).toBe('pestana-personas');
   });
 
-  test('si ningún plan coincide se muestra «No se han encontrado planes.»', async () => {
-    window.fetch.mockReturnValueOnce(respuesta(200, []));
+  test('sin personas lo dice', async () => {
+    await abrir();
 
-    buscar('zzzz');
-    await terminar();
-
-    expect(document.querySelectorAll('#resultados-experiencias .tarjeta-plan')).toHaveLength(0);
-    expect($('#sin-experiencias').classList.contains('d-none')).toBe(false);
-    expect($('#sin-experiencias').textContent).toBe('No se han encontrado planes.');
-    expect($('#pestana-experiencias').textContent).toBe('Planes (0)');
-    expect($('#ver-todos-planes').hidden).toBe(true);
+    expect(oculto('#sin-personas')).toBe(false);
+    expect($('#pestana-personas').textContent).toBe('Personas (0)');
   });
 
-  test('dos búsquedas seguidas: solo se pintan los resultados de la última', async () => {
-    const primera = diferida();
-    const segunda = diferida();
-    window.fetch.mockImplementation((ruta) => {
-      if (ruta === '/api/usuarios?texto=ana') return primera.promesa;
-      if (ruta === '/api/usuarios?texto=luis') return segunda.promesa;
-      return sinPlanes(ruta);
+  test('con las 20 personas que da como máximo el servidor, el contador avisa de que puede haber más', async () => {
+    const veinte = Array.from({ length: 20 }, (_, i) => ({ id: i + 2, nombreUsuario: `a${i}` }));
+    await abrir('?q=a', { personas: () => respuesta(200, veinte) });
+
+    expect($('#pestana-personas').textContent).toBe('Personas (20+)');
+  });
+
+  test('un fallo al buscar personas no afecta a los planes y se puede reintentar', async () => {
+    let intentos = 0;
+    await abrir('?q=a', {
+      planes: [plan(1)],
+      personas: () => {
+        intentos += 1;
+        return intentos === 1 ? respuesta(500, { error: 'No se ha podido buscar' }) : respuesta(200, [{ id: 2, nombreUsuario: 'ana' }]);
+      },
     });
-    const ok = (lista) => ({ ok: true, status: 200, json: async () => lista });
+    expect(document.querySelectorAll('#resultados .tarjeta-plan')).toHaveLength(1);
+    expect($('#error-personas').textContent).toContain('No se ha podido buscar');
 
-    buscar('ana');
-    buscar('luis');
-    segunda.resolver(ok([{ id: 9, nombreUsuario: 'luis' }]));
-    await terminar();
-    primera.resolver(ok([{ id: 1, nombreUsuario: 'ana' }]));
+    $('#error-personas button').click();
     await terminar();
 
-    const nombres = [...document.querySelectorAll('#resultados .fila-resultado')].map((f) => f.textContent);
-    expect(nombres).toEqual(['luis']);
-    expect($('#form-busqueda button[type="submit"]').textContent).toBe('Buscar');
-  });
-
-  test('con el servidor caído el botón se restaura y aparece el aviso role="alert"', async () => {
-    window.fetch.mockReturnValueOnce(Promise.reject(new TypeError('Failed to fetch')));
-
-    buscar('ana');
-    await terminar();
-
-    const aviso = $('#error-busqueda');
-    expect(aviso.getAttribute('role')).toBe('alert');
-    expect(aviso.classList.contains('d-none')).toBe(false);
-    expect(aviso.textContent).not.toBe('');
-    const boton = $('#form-busqueda button[type="submit"]');
-    expect(boton.textContent).toBe('Buscar');
-    expect(boton.disabled).toBe(false);
-  });
-
-  test('un nombre <b>x</b> se ve como texto en la fila', async () => {
-    window.fetch.mockReturnValueOnce(respuesta(200, [{ id: 4, nombreUsuario: '<b>x</b>' }]));
-
-    buscar('x');
-    await terminar();
-
-    const fila = $('#resultados .fila-resultado');
-    expect(fila.textContent).toBe('<b>x</b>');
-    expect(fila.querySelector('b')).toBeNull();
-  });
-});
-
-// Menores de la revisión de T4.5: lo que ya hacía el código sin prueba y dos retoques del HTML
-describe('Buscar (menores de la revisión)', () => {
-  const ok = (lista) => ({ ok: true, status: 200, json: async () => lista });
-
-  test('«Cargando…» y el aviso de error no dependen del panel de Personas: valen para cualquier pestaña', () => {
-    expect($('#cargando').closest('[role="tabpanel"]')).toBeNull();
-    expect($('#error-busqueda').closest('[role="tabpanel"]')).toBeNull();
-  });
-
-  test('la etiqueta del campo no habla solo de nombres de usuario', () => {
-    expect($('label[for="texto-busqueda"]').textContent).not.toMatch(/nombre de usuario/i);
-  });
-
-  test('al buscar de nuevo se vacían los resultados anteriores mientras llega la respuesta', async () => {
-    window.fetch.mockReturnValueOnce(respuesta(200, [{ id: 1, nombreUsuario: 'ana' }]));
-    buscar('ana');
-    await terminar();
-    expect(document.querySelectorAll('#resultados .fila-resultado')).toHaveLength(1);
-
-    window.fetch.mockReturnValueOnce(diferida().promesa);
-    buscar('luis');
-
-    expect(document.querySelectorAll('#resultados .fila-resultado')).toHaveLength(0);
-  });
-
-  test('el error de una búsqueda atrasada no se muestra ni toca el botón de la última', async () => {
-    const primera = diferida();
-    const segunda = diferida();
-    window.fetch.mockImplementation((ruta) => {
-      if (ruta === '/api/usuarios?texto=ana') return primera.promesa;
-      if (ruta === '/api/usuarios?texto=luis') return segunda.promesa;
-      return sinPlanes(ruta);
-    });
-
-    buscar('ana');
-    buscar('luis');
-    primera.resolver({ ok: false, status: 500, json: async () => ({ error: 'fallo viejo' }) });
-    await terminar();
-
-    expect($('#error-busqueda').classList.contains('d-none')).toBe(true);
-    const boton = $('#form-busqueda button[type="submit"]');
-    expect(boton.textContent).toBe('Buscando…');
-    expect(boton.disabled).toBe(true);
-    segunda.resolver(ok([]));
-    await terminar();
-    expect(boton.textContent).toBe('Buscar');
-  });
-
-  test('la clase entrando se retira de los resultados al terminar el fundido', async () => {
-    window.fetch.mockReturnValueOnce(respuesta(200, [{ id: 1, nombreUsuario: 'ana' }]));
-    buscar('ana');
-    await terminar();
-    const fila = $('#resultados .fila-resultado');
-    expect(fila.classList.contains('entrando')).toBe(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 350));
-
-    expect(fila.classList.contains('entrando')).toBe(false);
-  });
-});
-
-describe('Buscar (recuento anunciado)', () => {
-  test('al terminar la búsqueda, un único aviso role="status" dice cuántas personas y planes hay', async () => {
-    window.fetch.mockImplementation((ruta) => (ruta.startsWith('/api/usuarios')
-      ? respuesta(200, [{ id: 2, nombreUsuario: 'museo_fan' }])
-      : respuesta(200, paginaDePlanes([plan(1)]))));
-    expect($('#recuento-busqueda').getAttribute('role')).toBe('status');
-    expect($('#recuento-busqueda').textContent).toBe('');
-
-    buscar('museo');
-    await terminar();
-
-    expect($('#recuento-busqueda').textContent).toBe('1 plan y 1 persona');
-  });
-
-  test('sin resultados el recuento dice 0 personas y 0 planes', async () => {
-    window.fetch.mockReturnValueOnce(respuesta(200, []));
-
-    buscar('zzzz');
-    await terminar();
-
-    expect($('#recuento-busqueda').textContent).toBe('0 planes y 0 personas');
-  });
-
-  test('las listas de resultados ya no se anuncian enteras (aria-live)', () => {
-    expect($('#resultados').hasAttribute('aria-live')).toBe(false);
-    expect($('#resultados-experiencias').hasAttribute('aria-live')).toBe(false);
+    expect(filas()).toHaveLength(1);
+    expect(oculto('#error-personas')).toBe(true);
   });
 });
 
@@ -343,19 +123,13 @@ describe('Buscar (relación y botón en la fila)', () => {
   const persona = (id, nombre, relacion) => ({ id, nombreUsuario: nombre, foto: null, ciudad: 'Sevilla', relacion });
   const sinRelacion = { amistad: 'ninguna', amistadId: null, siguiendo: false };
 
-  async function buscarPersonas(personas) {
-    window.fetch.mockImplementation((ruta) => (ruta.startsWith('/api/usuarios?')
-      ? respuesta(200, personas)
-      : respuesta(200, paginaDePlanes())));
-    buscar('a');
-    await terminar();
-  }
+  const abrirCon = (personas) => abrir('?q=a', { personas: () => respuesta(200, personas) });
 
   test('una persona sin relación ofrece «Añadir amigo», que envía la solicitud y pasa a «Cancelar solicitud»', async () => {
-    await buscarPersonas([persona(5, 'bea', sinRelacion)]);
+    await abrirCon([persona(5, 'bea', sinRelacion)]);
     window.fetch.mockImplementation(() => respuesta(201, { id: 77, estado: 'PENDIENTE' }));
 
-    const boton = $('#resultados .fila-resultado button');
+    const boton = $('#resultados-personas .fila-resultado button');
     expect(boton.textContent).toBe('Añadir amigo');
     boton.click();
     await terminar();
@@ -363,29 +137,29 @@ describe('Buscar (relación y botón en la fila)', () => {
     expect(window.fetch).toHaveBeenCalledWith('/api/amistades', expect.objectContaining({
       method: 'POST', body: JSON.stringify({ destinatarioId: 5 }),
     }));
-    const fila = $('#resultados .fila-resultado');
+    const fila = $('#resultados-personas .fila-resultado');
     expect(fila.querySelector('button').textContent).toBe('Cancelar solicitud');
     expect(fila.textContent).toContain('Solicitud enviada');
   });
 
   test('«Cancelar solicitud» borra la amistad pendiente y vuelve a «Añadir amigo»', async () => {
-    await buscarPersonas([persona(5, 'bea', { amistad: 'enviada', amistadId: 9, siguiendo: false })]);
+    await abrirCon([persona(5, 'bea', { amistad: 'enviada', amistadId: 9, siguiendo: false })]);
     window.fetch.mockImplementation(() => respuesta(200, { mensaje: 'ok' }));
 
-    const boton = $('#resultados .fila-resultado button');
+    const boton = $('#resultados-personas .fila-resultado button');
     expect(boton.textContent).toBe('Cancelar solicitud');
     boton.click();
     await terminar();
 
     expect(window.fetch).toHaveBeenCalledWith('/api/amistades/9', expect.objectContaining({ method: 'DELETE' }));
-    expect($('#resultados .fila-resultado button').textContent).toBe('Añadir amigo');
+    expect($('#resultados-personas .fila-resultado button').textContent).toBe('Añadir amigo');
   });
 
   test('una solicitud recibida se acepta desde la fila y la persona pasa a «Amigos»', async () => {
-    await buscarPersonas([persona(5, 'bea', { amistad: 'recibida', amistadId: 12, siguiendo: false })]);
+    await abrirCon([persona(5, 'bea', { amistad: 'recibida', amistadId: 12, siguiendo: false })]);
     window.fetch.mockImplementation(() => respuesta(200, { id: 12, estado: 'ACEPTADA' }));
 
-    const boton = $('#resultados .fila-resultado button');
+    const boton = $('#resultados-personas .fila-resultado button');
     expect(boton.textContent).toBe('Aceptar');
     boton.click();
     await terminar();
@@ -393,18 +167,18 @@ describe('Buscar (relación y botón en la fila)', () => {
     expect(window.fetch).toHaveBeenCalledWith('/api/amistades/12', expect.objectContaining({
       method: 'PATCH', body: JSON.stringify({ aceptar: true }),
     }));
-    const fila = $('#resultados .fila-resultado');
+    const fila = $('#resultados-personas .fila-resultado');
     expect(fila.querySelector('button')).toBeNull();
     expect(fila.textContent).toContain('Amigos');
   });
 
   test('un amigo no tiene botón y se indica; a quien sigues se le añade «Le sigues»', async () => {
-    await buscarPersonas([
+    await abrirCon([
       persona(5, 'bea', { amistad: 'amigos', amistadId: 3, siguiendo: false }),
       persona(6, 'raul', { amistad: 'ninguna', amistadId: null, siguiendo: true }),
     ]);
 
-    const [amigo, seguido] = document.querySelectorAll('#resultados .fila-resultado');
+    const [amigo, seguido] = document.querySelectorAll('#resultados-personas .fila-resultado');
     expect(amigo.querySelector('button')).toBeNull();
     expect(amigo.textContent).toContain('Amigos');
     expect(seguido.textContent).toContain('Le sigues');
@@ -412,21 +186,21 @@ describe('Buscar (relación y botón en la fila)', () => {
   });
 
   test('si la acción falla se muestra el error en la fila y el botón queda activo', async () => {
-    await buscarPersonas([persona(5, 'bea', sinRelacion)]);
+    await abrirCon([persona(5, 'bea', sinRelacion)]);
     window.fetch.mockImplementation(() => respuesta(400, { error: 'Ya existe una solicitud' }));
 
-    $('#resultados .fila-resultado button').click();
+    $('#resultados-personas .fila-resultado button').click();
     await terminar();
 
-    const fila = $('#resultados .fila-resultado');
+    const fila = $('#resultados-personas .fila-resultado');
     expect(fila.querySelector('[role="alert"]').textContent).toBe('Ya existe una solicitud');
     expect(fila.querySelector('button').disabled).toBe(false);
   });
 
   test('el enlace al perfil sigue siendo solo la persona, sin el botón dentro', async () => {
-    await buscarPersonas([persona(5, 'bea', sinRelacion)]);
+    await abrirCon([persona(5, 'bea', sinRelacion)]);
 
-    const enlace = $('#resultados .fila-resultado a');
+    const enlace = $('#resultados-personas .fila-resultado a');
     expect(enlace.querySelector('button')).toBeNull();
     expect(enlace.textContent).toContain('bea');
   });

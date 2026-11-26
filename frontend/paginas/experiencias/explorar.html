@@ -11,6 +11,7 @@
   <link href="/css/nucleo/cabecera.css" rel="stylesheet">
   <link href="/css/nucleo/animaciones.css" rel="stylesheet">
   <link href="/css/pantallas/descubrir.css" rel="stylesheet">
+  <link href="/css/pantallas/buscar.css" rel="stylesheet">
 </head>
 <body>
   <a class="saltar-contenido" href="#contenido">Saltar al contenido</a>
@@ -23,7 +24,7 @@
         <a class="cabecera-enlace" href="/paginas/cuenta/mis-planes.html">Mis planes</a>
         <a class="cabecera-enlace" href="/paginas/social/amigos.html">Amigos</a>
       </nav>
-      <form class="cabecera-busqueda" role="search" action="/paginas/social/personas.html" method="get">
+      <form class="cabecera-busqueda" role="search" action="/paginas/experiencias/explorar.html" method="get">
         <input type="search" name="q" aria-label="Buscar planes y personas" placeholder="Planes y personas" autocomplete="off">
         <button type="submit" class="btn btn-outline-primary">Buscar</button>
       </form>
@@ -54,6 +55,15 @@
     <h1 class="mb-1" id="titulo-explorar">Explorar</h1>
     <p id="subtitulo-explorar" class="text-secondary mb-3">Experiencias de otras personas para inspirarte.</p>
 
+    <p id="busqueda-activa" class="busqueda-activa d-none"><span></span> <a href="/paginas/experiencias/explorar.html">Quitar búsqueda</a></p>
+    <p id="recuento-personas" class="visually-hidden" role="status"></p>
+
+    <div role="tablist" aria-label="Tipo de resultado" id="pestanas-busqueda">
+      <button type="button" role="tab" id="pestana-planes" aria-controls="panel-planes" aria-selected="true">Planes</button>
+      <button type="button" role="tab" id="pestana-personas" aria-controls="panel-personas" aria-selected="false" tabindex="-1">Personas</button>
+    </div>
+
+    <div role="tabpanel" id="panel-planes" aria-labelledby="pestana-planes" class="pt-3">
     <div id="filtros" class="filtros-explorar" role="group" aria-label="Filtrar por categoría"></div>
     <div class="filtros-explorar-campos">
       <div>
@@ -88,18 +98,30 @@
         <label for="filtro-amigos" class="form-check-label">Solo experiencias de mis amigos</label>
       </div>
     </div>
+    <button type="button" id="limpiar-filtros" class="btn btn-link btn-sm px-0 d-none">Limpiar filtros</button>
     <p id="total-planes" class="small text-secondary" role="status"></p>
     <div id="error-planes" class="alert alert-danger d-none" role="alert"></div>
     <h2 class="visually-hidden">Experiencias</h2>
     <div id="resultados" class="rejilla-planes"></div>
     <div id="sin-resultados" class="estado-vacio d-none"><img src="/img/vacio-planes.svg" alt="" width="240" height="180"><p>No hay experiencias con estos filtros.</p></div>
     <div class="text-center mt-4"><button type="button" id="mas-planes" class="btn btn-outline-primary d-none">Cargar más</button></div>
+    </div>
+
+    <div role="tabpanel" id="panel-personas" aria-labelledby="pestana-personas" class="pt-3 panel-personas" hidden>
+      <p id="ayuda-personas" class="text-secondary">Escribe un nombre de usuario en el buscador de arriba.</p>
+      <p id="cargando-personas" class="text-secondary d-none" role="status">Cargando…</p>
+      <div id="error-personas" class="alert alert-danger d-none" role="alert"></div>
+      <div id="sin-personas" class="estado-vacio d-none"><img src="/img/vacio-personas.svg" alt="" width="240" height="180"><p>No se han encontrado personas.</p></div>
+      <div id="resultados-personas" class="lista-resultados"></div>
+    </div>
   </main>
 
   <script src="/js/shared/api.js"></script>
   <script src="/js/shared/pantalla.js"></script>
+  <script src="/js/shared/pestanas.js"></script>
   <script src="/js/shared/planes.js"></script>
   <script src="/js/shared/cabecera.js"></script>
+  <script src="/js/social/personas.js"></script>
   <script src="/js/experiencias/explorar.js"></script>
   <script src="/js/shared/movimiento.js"></script>
 </body>

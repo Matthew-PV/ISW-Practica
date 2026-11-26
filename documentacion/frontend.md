@@ -31,7 +31,6 @@ flowchart TB
         bienvenida["Inicio<br/>/paginas/cuenta/bienvenida.html<br/>(implementada)"]
         explorar["Explorar<br/>explorar.html<br/>(implementada)"]
         ciudad["Ciudad<br/>ciudad.html?id=<br/>(diseño futuro)"]
-        personas["Resultados de búsqueda<br/>/paginas/social/personas.html<br/>(a reorganizar)"]
     end
     subgraph g_2["Planes"]
         experiencia["Detalle del plan<br/>/paginas/experiencias/experiencia.html?id=<br/>(implementada)"]
@@ -89,14 +88,14 @@ flowchart TB
     cuenta -->|"Cerrar sesión"| iniciar_sesion
     nav -->|"Campana"| notificaciones
     nav -->|"Crear plan"| crear_plan
-    nav -->|"Buscador"| personas
+    nav -->|"Buscador"| explorar
     bienvenida -->|"Tarjeta de plan"| experiencia
     explorar -->|"Una ciudad"| ciudad
     explorar -->|"Un plan"| experiencia
     ciudad -->|"Un plan"| experiencia
-    personas -->|"Una persona"| usuario
-    personas -->|"Un plan"| experiencia
-    personas -->|"Una ciudad"| ciudad
+    explorar -->|"Una persona"| usuario
+    explorar -->|"Un plan"| experiencia
+    explorar -->|"Una ciudad"| ciudad
     mis_planes -->|"Un plan"| experiencia
     mis_planes -->|"Nuevo plan"| crear_plan
     guardados -->|"Un plan"| experiencia
@@ -131,11 +130,11 @@ flowchart TB
 
 **Entrada:** `/` sirve `index.html`, la landing pública, con enlaces a `/paginas/acceso/iniciar-sesion.html` y `/paginas/acceso/registro.html`. Con la sesión ya iniciada, la landing lleva a `/paginas/cuenta/bienvenida.html` (`landing.js`); un inicio de sesión o un registro correctos también.
 
-**Cabecera común:** las nueve páginas con sesión (`bienvenida`, `explorar`, `mis-planes`, `amigos`, `perfil`, `ajustes`, `personas`, `usuario` y `experiencia`) comparten `header.cabecera`: la marca PlanB, las pestañas «Inicio», «Explorar», «Mis planes» y «Amigos», un buscador, la campana de notificaciones y el menú de cuenta (ver «Cabecera común» más abajo).
+**Cabecera común:** las páginas con sesión (`bienvenida`, `explorar`, `mis-planes`, `amigos`, `perfil`, `ajustes`, `usuario` y `experiencia`) comparten `header.cabecera`: la marca PlanB, las pestañas «Inicio», «Explorar», «Mis planes» y «Amigos», un buscador, la campana de notificaciones y el menú de cuenta (ver «Cabecera común» más abajo).
 
 **Sesión no válida:** si una página con sesión recibe 401, `irAlLogin` (en `js/shared/pantalla.js`) lleva a `/paginas/acceso/iniciar-sesion.html`. Si la carga falla por otro motivo, `alFallarCarga` deja a la persona en la página con un aviso y «Reintentar».
 
-Las URL de detalle incluyen parámetros: `/paginas/social/usuario.html?nombre=...` identifica a la persona, `/paginas/experiencias/experiencia.html?id=...` la experiencia, `/paginas/social/personas.html?q=...` el texto a buscar y `/paginas/acceso/restablecer.html?token=...` recibe el código del enlace de recuperación. Un enlace a un usuario lleva a `/paginas/cuenta/perfil.html` si es el propio usuario y a `/paginas/social/usuario.html?nombre=...` si es otro: lo decide `crearEnlacePerfil`.
+Las URL de detalle incluyen parámetros: `/paginas/social/usuario.html?nombre=...` identifica a la persona, `/paginas/experiencias/experiencia.html?id=...` la experiencia, `/paginas/experiencias/explorar.html?q=...` el texto a buscar y `/paginas/acceso/restablecer.html?token=...` recibe el código del enlace de recuperación. Un enlace a un usuario lleva a `/paginas/cuenta/perfil.html` si es el propio usuario y a `/paginas/social/usuario.html?nombre=...` si es otro: lo decide `crearEnlacePerfil`.
 
 ## Páginas, archivos y llamadas
 
@@ -151,12 +150,11 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 | `/paginas/acceso/recuperar.html` | `recuperar.js` | `acceso.css` | `api` | `POST /auth/recuperar` | CS-64 |
 | `/paginas/acceso/restablecer.html` | `restablecer.js` | `acceso.css` | `api`, `password` | `POST /auth/restablecer` | CS-64 |
 | `/paginas/cuenta/bienvenida.html` | `bienvenida.js` | `descubrir.css` | `api`, `pantalla`, `planes`, `cabecera` | `GET /auth/yo`, `GET /perfil`, `GET /ciudades`, `GET /experiencias` | CS-24, CS-25 |
-| `/paginas/experiencias/explorar.html` | `explorar.js` | `descubrir.css` | `api`, `pantalla`, `planes`, `cabecera` | `GET /auth/yo`, `GET /experiencias/opciones`, `GET /ciudades`, `GET /perfil`, `GET /experiencias` | CS-10, CS-27 |
+| `/paginas/experiencias/explorar.html` | `explorar.js`, `social/personas.js` | `descubrir.css`, `buscar.css` | `api`, `pantalla`, `pestanas`, `planes`, `cabecera` | `GET /auth/yo`, `GET /experiencias/opciones`, `GET /ciudades`, `GET /perfil`, `GET /experiencias`, `GET /usuarios?texto=`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id` | CS-10, CS-27, CS-61 |
 | `/paginas/cuenta/mis-planes.html` | `mis-planes.js` | ninguno | `api`, `pantalla`, `planes`, `cabecera`, `lugares`, `mapa` (y Leaflet) | `GET /perfil`, `GET /ciudades`, `GET /experiencias/opciones`, `GET /experiencias?autor=`, `GET /experiencias/:id`, `POST /experiencias`, `PATCH /experiencias/:id`; ficheros `/datos/lugares-*.json` | CS-44, CS-49, CS-50, CS-73, CS-57, CS-22, CS-55, CS-56 |
 | `/paginas/cuenta/perfil.html` | `perfil.js` | `perfil.css` | `api`, `pantalla`, `pestanas`, `cabecera`, `planes`, `experiencias` | `GET /perfil`, `GET /perfil/resumen`, `/perfil/amigos` y `/perfil/seguidores`, `GET /experiencias?autor=` | CS-45, CS-44 |
 | `/paginas/cuenta/ajustes.html` | `ajustes.js` | ninguno | `api`, `pantalla`, `pestanas`, `cabecera`, `password`, `movimiento` | `GET` y `PUT /perfil`, `GET /ciudades`, `PUT /perfil/foto`, `PUT /perfil/password` | CS-47, CS-64 |
 | `/paginas/social/amigos.html` | `social/amigos.js` | `perfil.css` | `api`, `pantalla`, `cabecera` | `GET /amistades/solicitudes`, `PATCH /amistades/:id`, `GET /perfil/amigos` | CS-61, CS-45 |
-| `/paginas/social/personas.html` | `personas.js` | `descubrir.css`, `buscar.css` | `api`, `pantalla`, `pestanas`, `planes`, `cabecera` | `GET /usuarios?texto=`, `GET /experiencias?texto=`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id` | CS-61, CS-10 |
 | `/paginas/social/usuario.html` | `usuario.js` | `perfil.css` | `api`, `pantalla`, `cabecera`, `planes`, `experiencias` | `GET /usuarios/:nombre`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id`, `POST` y `DELETE /seguimientos`, `GET /experiencias?autor=` | CS-62, CS-61, CS-44 |
 | `/paginas/experiencias/experiencia.html` | `experiencia.js` | `experiencia.css` | `api`, `pestanas`, `pantalla`, `cabecera`, `lugares`, `mapa` (y Leaflet) | `GET /experiencias/:id`, `GET /auth/yo`, `GET /experiencias/:id/resumen`, `GET` y `PUT /experiencias/:id/valoracion`, `GET /experiencias/:id/valoraciones` y `/valoraciones/amigos`; fichero `/datos/lugares-planes.json` | CS-30, CS-63, CS-48, CS-01, CS-14, CS-50, CS-73 |
 
@@ -170,7 +168,7 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 * `experiencia.css`: el detalle de experiencia, con la experiencia y el formulario en una columna y las valoraciones en otra.
 * `perfil.css`: `/paginas/cuenta/perfil.html` y `/paginas/social/usuario.html`.
 * `ajustes.css`: `/paginas/cuenta/ajustes.html`. `formulario-plan.css`: el formulario de `/paginas/cuenta/mis-planes.html`.
-* `buscar.css`: `/paginas/social/personas.html`.
+* `buscar.css`: la pestaña «Personas» de Explorar.
 
 ## Estados de una pantalla
 
@@ -216,10 +214,10 @@ stateDiagram-v2
 
 ## Cabecera común
 
-Las nueve páginas con sesión llevan `header.cabecera`, con el mismo HTML en todas:
+Las páginas con sesión llevan `header.cabecera`, con el mismo HTML en todas:
 
 * La marca PlanB y los enlaces «Inicio», «Explorar», «Mis planes» y «Amigos», dentro de un `nav` con `aria-label="Principal"`; en la página actual el enlace lleva `aria-current="page"`.
-* Un buscador de planes y personas (`form[role="search"]`, píldora con el botón relleno encajado) que envía a `/paginas/social/personas.html?q=`. No se envía si el texto está vacío.
+* Un buscador de planes y personas (`form[role="search"]`, píldora con el botón relleno encajado) que envía a `/paginas/experiencias/explorar.html?q=`. No se envía si el texto está vacío.
 * La campana, un `<details class="menu-notificaciones">` con el contador `#contador-notificaciones`, la lista `#lista-notificaciones` (una por solicitud de amistad pendiente, de `GET /api/amistades/solicitudes`; el nombre lleva al perfil de quien la envía y «Aceptar» y «Rechazar» la responden ahí mismo, con mensaje de resultado, foco en él y contador actualizado), `#sin-notificaciones` (dice «Cargando…», que no hay nada nuevo o que no se han podido cargar) y el enlace «Ver amigos y solicitudes» a `/paginas/social/amigos.html`. Se cierra con clic fuera o Escape.
 * El menú de cuenta, un `<details class="menu-cuenta">` cuyo resumen lleva el avatar (`img.menu-avatar`, 32 px: la foto del usuario que `cabecera.js` pide a `/api/perfil`, o la foto por defecto) y que contiene «Mi perfil», «Ajustes» y el botón «Cerrar sesión» (`data-cerrar-sesion`). Se cierra al hacer clic fuera, al pulsar Escape (el foco vuelve al resumen) y al elegir una opción.
 
@@ -275,9 +273,11 @@ Pruebas: `inicio.test.js`.
 ### `/paginas/experiencias/explorar.html`: explorar
 
 * Planes reales de `GET /api/experiencias`, de 12 en 12 con «Cargar más» (`#mas-planes`). Filtros: categoría (botones con `aria-pressed`, de `GET /experiencias/opciones`), momento adecuado (`#filtro-momento`), ciudad (`#filtro-ciudad`), presupuesto máximo en euros (`#filtro-tarifa`) y duración máxima en minutos (`#filtro-duracion`; los planes sin ese dato no aparecen), valoración mínima sobre la media (`#filtro-minimo`; los planes sin valoraciones no la alcanzan) y «solo planes de mis amigos» (`#filtro-amigos`); cada cambio vuelve a pedir la primera página y queda en la URL; al volver o recargar se recuperan los filtros, y al volver también las tarjetas cargadas y la posición. Al abrir, los planes se piden a la vez que los filtros, salvo que haga falta alguna opción (categoría, momento o ciudad en la URL, o `?tira=ciudad`). `#total-planes` cuenta los cargados («o más» si hay otra página); `#sin-resultados` si no hay ninguno; `#error-planes` con «Reintentar» si falla.
-* `?tira=` pone el título de la tira de origen y deja puestos sus filtros (`ciudad`: la ciudad del perfil; `amigos`: solo amigos). `?texto=` filtra por texto (viene de «Ver todos los planes» en el buscador).
+* `?tira=` pone el título de la tira de origen y deja puestos sus filtros (`ciudad`: la ciudad del perfil, y si no está en el catálogo el subtítulo lo dice y se ven todas; `amigos`: solo amigos). «Limpiar filtros» (`#limpiar-filtros`) aparece cuando hay alguno puesto.
+* Es también la pantalla de resultados del buscador de la cabecera (`?q=`): rellena ese campo, `#busqueda-activa` dice qué se ha buscado y ofrece «Quitar búsqueda», y los planes se filtran por el texto. Dos pestañas (`shared/pestanas.js`), «Planes» y «Personas», que con texto llevan el número de resultados («Planes (12+)», «Personas (3)»); si no hay planes y sí personas se abre «Personas».
+* **Personas** (`social/personas.js`): busca por parte del nombre con `GET /api/usuarios?texto=` (como mucho 20, «20+»). Cada fila (`.fila-resultado`) lleva un enlace a su perfil con foto, nombre y ciudad y, a la derecha, la relación con quien busca («Amigos», «Solicitud enviada», «Te ha enviado una solicitud», «Le sigues») y su botón: «Añadir amigo», «Cancelar solicitud» o «Aceptar» y «Rechazar»; un amigo no lleva botón. Tras la acción la fila cambia sin recargar y, si falla, muestra el error en la propia fila. Si falla la búsqueda, `#error-personas` ofrece «Reintentar». Sin texto, `#ayuda-personas` remite al buscador. `?pestana=pestana-personas` abre esta pestaña.
 
-Pruebas: `explorar.test.js`.
+Pruebas: `explorar.test.js`, `personas.test.js` y `pestanas.test.js`.
 
 ### `/paginas/cuenta/mis-planes.html`: mis planes
 
@@ -322,15 +322,6 @@ Arriba, las solicitudes recibidas, cada una con «Aceptar» y «Rechazar»; si n
 
 Se llega desde la pestaña «Amigos» o desde la campana de la cabecera. Pruebas: `amigos.test.js` y `estados.test.js`.
 
-### `/paginas/social/personas.html`: buscar
-
-Un buscador de planes y personas con dos pestañas, «Planes» (la primera) y «Personas» (`shared/pestanas.js`), cuyos títulos llevan el número de resultados tras buscar («Planes (3)», «Planes (10+)» si hay otra página). Cada búsqueda llena las dos a la vez. Si la URL trae `?q=`, rellena el campo y busca al cargarse. Al terminar, `#recuento-busqueda` (`role="status"`, oculto) anuncia el total, por ejemplo «3 planes y 1 persona»; las listas de resultados no se anuncian enteras.
-
-* **Personas:** busca por parte del nombre (como mucho 20 resultados) con `GET /api/usuarios?texto=`. Cada fila (`.fila-resultado`) lleva un enlace a su perfil con foto, nombre y ciudad y, a la derecha, la relación con quien busca («Amigos», «Solicitud enviada», «Te ha enviado una solicitud», «Le sigues») y su botón: «Añadir amigo» (`POST /api/amistades`), «Cancelar solicitud» (`DELETE /api/amistades/:id`) o «Aceptar» y «Rechazar» (`PATCH /api/amistades/:id`); un amigo no lleva botón. Tras la acción la fila cambia sin recargar y, si falla, muestra el error en la propia fila. Antes de buscar, `#ayuda-busqueda` explica qué escribir; mientras se busca se ve «Cargando…» (`#cargando`) y el botón pasa a «Buscando…».
-* **Planes:** `GET /api/experiencias?texto=` (primera página de 10) pintada como tarjetas en `#resultados-experiencias`; sin coincidencias se ve «No se han encontrado planes.». Si hay otra página, `#ver-todos-planes` lleva a Explorar con el mismo texto.
-
-Pruebas: `personas.test.js`, `pestanas.test.js` y `estados.test.js`.
-
 ### `/paginas/social/usuario.html?nombre=`: perfil de otro usuario
 
 * Foto, nombre, ciudad y contadores de amigos y seguidores. Hasta que llega el perfil se ve «Cargando…» (`#cargando`) y no los datos de relleno. Si el usuario no existe, solo se muestra `#no-encontrado`; si es el propio usuario, va a `/paginas/cuenta/perfil.html`.
@@ -365,8 +356,8 @@ Pruebas: `experiencia.test.js`, `experiencia.formulario.test.js`, `cs50LugaresDe
 | `mapa.js` | `crearMapaLugares(contenedor)`: mapa de Leaflet (`/vendor/leaflet/`) con fondo de OpenStreetMap, al que solo se envía el origen como referencia. `mostrar(puntos)` pone un marcador por lugar y oculta el mapa si no hay ninguno. Sin Leaflet dice «El mapa no está disponible.» y, si falla el fondo, «No se ha podido cargar el fondo del mapa.» | `mis-planes.js`, `experiencia.js` |
 | `experiencias.js` | `mostrarExperienciasDe(nombreUsuario)` y `recargarExperiencias()`: la lista «Cargar más» de experiencias de un autor. La página debe tener `#lista-experiencias`, `#sin-experiencias`, `#mas-experiencias` y `#error-experiencias`. | `perfil.js`, `usuario.js` |
 | `movimiento.js` | Pone `data-movimiento="pausado"` en `<html>` a los 5 s, o al cargar si la persona lo pausó o el sistema pide reducir el movimiento. Expone `fijarMovimiento(pausado)` (aplica y guarda en `localStorage`) y `movimientoPausado()`. | Todas las páginas |
-| `cabecera.js` | Comportamiento de la cabecera común (ver «Cabecera común»). No exporta nada. | Las nueve páginas con sesión |
-| `pestanas.js` | `window.activarPestanas(lista)`: pestañas accesibles (`role="tablist"`) que se manejan con ratón y teclado; la elegida queda en la URL (`?pestana=`). | `personas.js`, `experiencia.js`, `perfil.js`, `ajustes.js` |
+| `cabecera.js` | Comportamiento de la cabecera común (ver «Cabecera común»). No exporta nada. | Las páginas con sesión |
+| `pestanas.js` | `window.activarPestanas(lista)`: pestañas accesibles (`role="tablist"`) que se manejan con ratón y teclado; la elegida queda en la URL (`?pestana=`). | `explorar.js`, `experiencia.js`, `perfil.js`, `ajustes.js` |
 | `password.js` | `mostrarRequisitosPassword(campo, lista, obtenerNombre)`: marca los requisitos cumplidos mientras se escribe. Son los mismos que comprueba el backend, que es quien decide. | `registro.js`, `ajustes.js`, `restablecer.js` |
 
 Los módulos se cargan con `<script>` normales (no son módulos ES) y exponen sus funciones con `window.nombre = nombre`, para que se vea qué ofrece cada archivo y las pruebas puedan cargarlos.

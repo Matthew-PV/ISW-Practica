@@ -6,7 +6,8 @@
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
 const HTML = leer('/paginas/experiencias/explorar.html');
-const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/planes.js', 'js/experiencias/explorar.js'];
+const SCRIPTS = ['js/shared/api.js', 'js/shared/pantalla.js', 'js/shared/pestanas.js', 'js/shared/planes.js',
+  'js/social/personas.js', 'js/experiencias/explorar.js'];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
 const $ = (selector) => document.querySelector(selector);
@@ -192,8 +193,8 @@ test('?tira=amigos marca «solo amigos» desde el principio', async () => {
   expect(peticionesDePlanes()).toEqual(['/api/experiencias?amigos=true&limite=12']);
 });
 
-test('?texto= viene de la búsqueda y se envía como filtro', async () => {
-  await abrir('?texto=tapas');
+test('?q= viene de la búsqueda y se envía como filtro', async () => {
+  await abrir('?q=tapas');
 
   expect(peticionesDePlanes()).toEqual(['/api/experiencias?texto=tapas&limite=12']);
 });
@@ -205,4 +206,23 @@ test('sin sesión vuelve al inicio de sesión', async () => {
 
   expect(window.location.href).toBe('/paginas/acceso/iniciar-sesion.html');
   Object.defineProperty(window, 'location', { value: locationReal, configurable: true, writable: true });
+});
+
+test('«Limpiar filtros» solo aparece con algún filtro puesto y los quita todos', async () => {
+  await abrir('?categoria=Cultura&momento=Verano');
+  expect($('#limpiar-filtros').classList.contains('d-none')).toBe(false);
+
+  $('#limpiar-filtros').click();
+  await terminar();
+
+  expect(window.location.search).toBe('');
+  expect($('#filtro-momento').value).toBe('');
+  expect(peticionesDePlanes().at(-1)).toBe('/api/experiencias?limite=12');
+  expect($('#limpiar-filtros').classList.contains('d-none')).toBe(true);
+});
+
+test('en «mi ciudad», si la ciudad del perfil no está en el catálogo se avisa', async () => {
+  await abrir('?tira=ciudad', servidor(undefined, { ciudad: 'Villanueva' }));
+
+  expect($('#subtitulo-explorar').textContent).toBe('Tu ciudad no está en el catálogo: se muestran todas.');
 });

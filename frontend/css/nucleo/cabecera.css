@@ -148,16 +148,6 @@
   border-bottom-color: var(--color-primario);
 }
 
-/* La página de búsqueda lleva su propio campo */
-body.pagina-buscar .cabecera-busqueda {
-  display: none;
-}
-
-/* Sin buscador, la campana y «Cuenta» siguen a la derecha */
-body.pagina-buscar .menu-notificaciones {
-  margin-left: auto;
-}
-
 /* Botones de la barra sin sesión (landing) */
 .cabecera-acciones {
   order: 3;
@@ -278,10 +268,6 @@ body.pagina-buscar .menu-notificaciones {
     max-width: none;
     height: 44px;
     margin: 0 0 var(--espacio-8);
-  }
-
-  body.pagina-buscar .cabecera-marca + .cabecera-enlace {
-    margin-left: 0;
   }
 }
 

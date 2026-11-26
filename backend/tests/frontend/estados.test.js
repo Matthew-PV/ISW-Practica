@@ -8,7 +8,7 @@
 const { leer, cargarScripts } = require('../helpers/pantalla');
 
 const PAGINAS = [
-  'index', 'iniciar-sesion', 'registro', 'recuperar', 'restablecer', 'bienvenida', 'mis-planes', 'explorar', 'perfil', 'ajustes', 'amigos', 'personas', 'usuario', 'experiencia',
+  'index', 'iniciar-sesion', 'registro', 'recuperar', 'restablecer', 'bienvenida', 'mis-planes', 'explorar', 'perfil', 'ajustes', 'amigos', 'usuario', 'experiencia',
 ];
 
 const respuesta = (status, cuerpo) => Promise.resolve({ ok: status < 400, status, json: async () => cuerpo });
@@ -33,64 +33,6 @@ describe('avisos de error: se anuncian a lectores de pantalla', () => {
       .map((aviso) => aviso.id);
 
     expect(sinRol).toEqual([]);
-  });
-});
-
-describe('/paginas/social/personas.html', () => {
-  beforeEach(() => {
-    document.documentElement.innerHTML = leer('/paginas/social/personas.html');
-    window.fetch = jest.fn((ruta) => (ruta.startsWith('/api/experiencias?') ? respuesta(200, { experiencias: [], siguiente: null }) : undefined));
-    cargarScripts(scriptsDe('personas'));
-  });
-
-  const buscar = (texto) => {
-    $('#texto-busqueda').value = texto;
-    $('#form-busqueda').dispatchEvent(new Event('submit'));
-  };
-
-  test('antes de buscar explica qué escribir y no muestra «Cargando…»', () => {
-    expect(oculto('#ayuda-experiencias')).toBe(false);
-    expect($('#ayuda-experiencias').textContent).toBe('Escribe parte del título o de la descripción de un plan.');
-    expect(oculto('#ayuda-busqueda')).toBe(false);
-    expect(oculto('#cargando')).toBe(true);
-  });
-
-  test('mientras busca muestra «Cargando…» y al terminar lo quita', async () => {
-    const { promesa, resolver } = pendiente();
-    window.fetch.mockReturnValueOnce(promesa);
-
-    buscar('ana');
-    await terminar();
-
-    expect(oculto('#cargando')).toBe(false);
-    expect($('#cargando').textContent).toBe('Cargando…');
-    expect(oculto('#ayuda-busqueda')).toBe(true);
-
-    resolver({ ok: true, status: 200, json: async () => [{ id: 2, nombreUsuario: 'ana_m' }] });
-    await terminar();
-
-    expect(oculto('#cargando')).toBe(true);
-    expect(document.querySelectorAll('#resultados a')).toHaveLength(1);
-  });
-
-  test('si la búsqueda falla también se quita «Cargando…» y se muestra el error', async () => {
-    window.fetch.mockReturnValueOnce(respuesta(500, { error: 'Error interno del servidor' }));
-
-    buscar('ana');
-    await terminar();
-
-    expect(oculto('#cargando')).toBe(true);
-    expect($('#error-busqueda').textContent).toBe('Error interno del servidor');
-  });
-
-  test('tras una búsqueda sin resultados la ayuda no vuelve a aparecer', async () => {
-    window.fetch.mockReturnValueOnce(respuesta(200, []));
-
-    buscar('zzzz');
-    await terminar();
-
-    expect(oculto('#ayuda-busqueda')).toBe(true);
-    expect(oculto('#sin-resultados')).toBe(false);
   });
 });
 

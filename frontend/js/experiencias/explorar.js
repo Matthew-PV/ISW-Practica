@@ -1,8 +1,9 @@
 // Explorar (/paginas/experiencias/explorar.html): rejilla de planes reales con filtros de categoría, momento adecuado,
 // ciudad, presupuesto, duración, valoración mínima y «solo mis amigos», paginada con «Cargar más». Acepta ?tira=ciudad|nuevos|amigos (viene de «Ver más»
-// en Inicio) para titular la página y dejar puestos los filtros de esa tira, y ?texto= (viene del buscador).
+// en Inicio) para titular la página y dejar puestos los filtros de esa tira, y ?q= (el buscador de la cabecera):
+// entonces la pestaña «Personas» (js/social/personas.js) busca además personas.
 // Usa `api` de shared/api.js, `alFallarCarga`, `ocultarMensaje`, `mostrarErrorConReintento` y `listaConCargarMas` de
-// shared/pantalla.js y `crearTarjetaPlan`, `pedirPlanes` y `buscarCiudadPorNombre` de shared/planes.js.
+// shared/pantalla.js, `activarPestanas` de shared/pestanas.js, `buscarPersonas` de social/personas.js y `crearTarjetaPlan`, `pedirPlanes` y `buscarCiudadPorNombre` de shared/planes.js.
 
 const PLANES_POR_PAGINA = 12;
 
@@ -23,7 +24,10 @@ const errorPlanes = document.getElementById('error-planes');
 const total = document.getElementById('total-planes');
 
 const parametros = new URLSearchParams(window.location.search);
-const texto = parametros.get('texto')?.trim() ?? '';
+const texto = parametros.get('q')?.trim() ?? '';
+const botonLimpiar = document.getElementById('limpiar-filtros');
+const pestanaPlanes = document.getElementById('pestana-planes');
+const pestanas = activarPestanas(document.getElementById('pestanas-busqueda'));
 let categoria = '';
 let cargados = 0;
 
@@ -49,6 +53,7 @@ const listado = listaConCargarMas({
     });
     cargados += experiencias.length;
     total.textContent = `${cargados} ${cargados === 1 ? 'plan' : 'planes'}${siguiente === null ? '' : ' o más'}`;
+    if (texto) pestanaPlanes.textContent = `Planes (${cargados}${siguiente === null ? '' : '+'})`;
     return { elementos: experiencias, siguiente };
   },
   crear: (plan) => crearTarjetaPlan(plan),
@@ -76,16 +81,31 @@ function guardarEnUrl() {
   const tira = parametros.get('tira');
   const nuevos = new URLSearchParams();
   if (tira) nuevos.set('tira', tira);
-  if (texto) nuevos.set('texto', texto);
+  if (texto) nuevos.set('q', texto);
   if (categoria) nuevos.set('categoria', categoria);
   for (const [nombre, campo] of Object.entries(CAMPOS_EN_URL)) {
     // En «mi ciudad», «todas las ciudades» también hay que recordarlo
     if (campo.value || (nombre === 'ciudad' && tira === 'ciudad')) nuevos.set(nombre, campo.value);
   }
   if (campoAmigos.checked || tira === 'amigos') nuevos.set('amigos', String(campoAmigos.checked));
+  const pestana = new URLSearchParams(window.location.search).get('pestana');
+  if (pestana) nuevos.set('pestana', pestana);
+  actualizarLimpiar();
   const consulta = nuevos.toString();
   window.history.replaceState(window.history.state, '', `${window.location.pathname}${consulta ? `?${consulta}` : ''}`);
 }
+
+// «Limpiar filtros» solo aparece si hay alguno puesto
+function actualizarLimpiar() {
+  const hay = categoria || campoAmigos.checked || Object.values(CAMPOS_EN_URL).some((campo) => campo.value);
+  botonLimpiar.classList.toggle('d-none', !hay);
+}
+
+botonLimpiar.addEventListener('click', () => {
+  for (const campo of Object.values(CAMPOS_EN_URL)) campo.value = '';
+  campoAmigos.checked = false;
+  elegirCategoria('');
+});
 
 // Al salir se apunta cuánto se había cargado y por dónde se iba; al volver se repone
 window.addEventListener('pagehide', () => {
@@ -139,8 +159,30 @@ for (const campo of [campoMomento, campoCiudad, campoAmigos, campoTarifa, campoD
   });
 }
 
+// Dice qué se ha buscado y lo deja escrito en el buscador de la cabecera
+function pintarBusqueda() {
+  if (!texto) return;
+  const aviso = document.getElementById('busqueda-activa');
+  aviso.querySelector('span').textContent = `Resultados para «${texto}».`;
+  aviso.classList.remove('d-none');
+  const campo = document.querySelector('.cabecera-busqueda input');
+  if (campo) campo.value = texto;
+}
+
+// Primera carga de planes; si no hay ninguno pero sí personas, se abre su pestaña
+async function cargarPlanes(personas) {
+  await reponerPosicion(listado.reiniciar());
+  actualizarLimpiar();
+  const encontradas = await personas;
+  if (encontradas > 0 && cargados === 0 && errorPlanes.classList.contains('d-none')) {
+    pestanas.seleccionar(document.getElementById('pestana-personas'));
+  }
+}
+
 async function iniciar() {
   const sesion = api('/auth/yo');
+  pintarBusqueda();
+  const personas = buscarPersonas(texto);
   const tira = parametros.get('tira');
   if (TITULOS_TIRA[tira]) {
     document.getElementById('titulo-explorar').textContent = TITULOS_TIRA[tira][0];
@@ -153,7 +195,7 @@ async function iniciar() {
   for (const nombre of ['tarifa', 'duracion', 'minimo']) {
     if (parametros.has(nombre)) CAMPOS_EN_URL[nombre].value = parametros.get(nombre);
   }
-  if (!esperaOpciones) reponerPosicion(listado.reiniciar());
+  if (!esperaOpciones) cargarPlanes(personas);
 
   try {
     await sesion;
@@ -178,9 +220,13 @@ async function iniciar() {
   } else if (tira === 'ciudad') {
     // La ciudad del perfil es texto libre: se busca en el catálogo; si no está, se ven todas
     const perfil = await api('/perfil').catch(() => null);
-    campoCiudad.value = buscarCiudadPorNombre(perfil?.ciudad, ciudades) ?? '';
+    const ciudadId = buscarCiudadPorNombre(perfil?.ciudad, ciudades);
+    campoCiudad.value = ciudadId ?? '';
+    if (perfil?.ciudad && ciudades.length && ciudadId === null) {
+      document.getElementById('subtitulo-explorar').textContent = 'Tu ciudad no está en el catálogo: se muestran todas.';
+    }
   }
-  reponerPosicion(listado.reiniciar());
+  cargarPlanes(personas);
 }
 
 iniciar();
