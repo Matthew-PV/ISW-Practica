@@ -575,8 +575,10 @@ async function cargarCatalogos(perfil) {
     pintarCiudades();
     pintarOpciones(opciones);
     botonNueva.disabled = false;
+    await abrirDesdeEnlace();
   } catch (err) {
-    mostrarErrorConReintento(cajaErrorLista, err.message, () => cargarCatalogos(perfil));
+    // Caja propia: un fallo del listado no debe pisar este «Reintentar»
+    mostrarErrorConReintento(document.getElementById('error-catalogos'), err.message, () => cargarCatalogos(perfil));
   }
 }
 
@@ -585,7 +587,7 @@ async function cargarExperiencias(perfil) {
   autorExperiencias = perfil.nombreUsuario;
   try {
     // El formulario de un enlace solo necesita los catálogos: no espera al listado
-    await Promise.all([cargarCatalogos(perfil).then(abrirDesdeEnlace), listadoExperiencias.cargar()]);
+    await Promise.all([cargarCatalogos(perfil), listadoExperiencias.cargar()]);
   } finally {
     ocultarCargando();
     // La región de estado no debe seguir diciendo «Cargando…» a los lectores de pantalla (C9)
@@ -614,7 +616,6 @@ async function abrirDesdeEnlace() {
   if (parametros.has('nuevo') || parametros.has('editar')) {
     window.history.replaceState(null, '', window.location.pathname);
   }
-  if (document.getElementById('boton-nueva').disabled) return;
   if (parametros.has('nuevo')) {
     abrirFormulario(null);
   } else if (parametros.has('editar')) {

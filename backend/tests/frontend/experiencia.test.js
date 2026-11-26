@@ -563,3 +563,18 @@ describe('Detalle del plan (D1-D6): CS-14, CS-02, CS-32', () => {
     });
   });
 });
+
+describe('Sesión caducada al publicar una valoración', () => {
+  test('avisa sin salir de la página y conserva lo escrito', async () => {
+    await abrir({ [`PUT ${BASE}/valoracion`]: [401, { error: 'Debes iniciar sesión' }] });
+    $$('#form-valoracion [role="radio"]')[4].click();
+    $('#form-valoracion textarea').value = 'Muy buen plan';
+
+    await enviarValoracion();
+
+    expect($('.aviso-sesion')).not.toBeNull();
+    expect(window.location.pathname).toBe('/paginas/experiencias/experiencia.html');
+    expect($('#form-valoracion textarea').value).toBe('Muy buen plan');
+    expect($('#form-valoracion').textContent).toContain('Debes iniciar sesión');
+  });
+});

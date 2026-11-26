@@ -67,7 +67,10 @@ async function pedirAlServidor(ruta, opciones) {
     const error = new Error(datos?.error || `Error ${res.status}`);
     error.status = res.status;
     // Al guardar con la sesión caducada se avisa sin salir, para no perder lo escrito
-    if (res.status === 401 && opciones.method && opciones.method !== 'GET' && enPaginaPrivada()) avisarSesionCaducada();
+    if (res.status === 401 && opciones.method && opciones.method !== 'GET' && enPaginaPrivada()) {
+      avisarSesionCaducada();
+      error.sesionAvisada = true; // quien lo recibe no debe irse al login
+    }
     throw error;
   }
   return datos;
@@ -84,7 +87,13 @@ function enPaginaPrivada() {
 }
 
 function avisarSesionCaducada() {
-  if (document.querySelector('.aviso-sesion')) return;
+  // Un diálogo modal deja inerte todo lo de fuera: el aviso va dentro del que esté abierto
+  const destino = document.querySelector('dialog[open]') ?? document.body;
+  const anterior = document.querySelector('.aviso-sesion');
+  if (anterior) {
+    destino.append(anterior);
+    return;
+  }
   const aviso = document.createElement('div');
   aviso.className = 'alert alert-warning aviso-sesion';
   aviso.setAttribute('role', 'alert');
@@ -93,7 +102,7 @@ function avisarSesionCaducada() {
   enlace.target = '_blank';
   enlace.textContent = 'Inicia sesión en otra pestaña';
   aviso.append('Tu sesión ha caducado. ', enlace, ' y vuelve a guardar.');
-  document.body.append(aviso);
+  destino.append(aviso);
 }
 
 // Adonde ir tras entrar o registrarse: la pantalla de ?volver= si es una propia, o Inicio

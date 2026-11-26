@@ -48,8 +48,16 @@ vigilante.observe(botonMasExperiencias, { attributes: true, attributeFilter: ['c
 const cajaErrorRelaciones = document.getElementById('error-relaciones');
 const PERSONAS_POR_PAGINA = 20;
 
-const mostrarErrorRelaciones = (err, reintentar = cargarRelaciones) =>
-  mostrarErrorConReintento(cajaErrorRelaciones, err.message, reintentar);
+// Comparten caja: «Reintentar» repite todo lo que haya fallado, no solo lo último
+const porReintentar = new Set();
+function mostrarErrorRelaciones(err, reintentar) {
+  porReintentar.add(reintentar);
+  mostrarErrorConReintento(cajaErrorRelaciones, err.message, () => {
+    const pendientes = [...porReintentar];
+    porReintentar.clear();
+    pendientes.forEach((repetir) => repetir());
+  });
+}
 
 // Un listado con «Cargar más» de 'amigos' o 'seguidores' (ver shared/pantalla.js)
 function crearListadoPersonas(tipo, idLista, idVacio, idBoton) {
@@ -80,13 +88,14 @@ async function cargarContadores() {
     rotularContador('total-amigos', resumen.amigos, 'amigo', 'amigos');
     rotularContador('total-seguidores', resumen.seguidores, 'seguidor', 'seguidores');
   } catch (err) {
-    mostrarErrorRelaciones(err);
+    mostrarErrorRelaciones(err, cargarContadores);
   }
 }
 
 // Al abrir la página (y al reintentar): los contadores y la primera página de cada listado, cada cosa
 // por su lado para que un fallo no impida ver las demás.
 function cargarRelaciones() {
+  porReintentar.clear();
   ocultarMensaje(cajaErrorRelaciones);
   cargarContadores();
   listadoAmigos.reiniciar();

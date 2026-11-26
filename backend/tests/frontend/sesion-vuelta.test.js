@@ -39,6 +39,14 @@ test('guardar sin sesión avisa una sola vez con un enlace en otra pestaña', as
   expect(aviso().querySelector('a').target).toBe('_blank');
 });
 
+test('con un diálogo abierto el aviso va dentro de él, para poder pulsarlo', async () => {
+  ir('/paginas/cuenta/mis-planes.html');
+  document.body.innerHTML = '<dialog open></dialog>';
+  window.fetch.mockReturnValue(respuesta(401, {}));
+  await expect(window.api('/experiencias', { method: 'POST' })).rejects.toThrow();
+  expect(aviso().parentElement.tagName).toBe('DIALOG');
+});
+
 test.each([
   ['/paginas/cuenta/mis-planes.html', undefined],
   ['/paginas/acceso/iniciar-sesion.html', 'POST'],

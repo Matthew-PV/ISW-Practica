@@ -70,6 +70,15 @@ enlaceVolver.addEventListener('click', (e) => {
   }
 });
 
+// Los saltos dentro de la página («Valorar», «Cambiar», «Saltar al contenido») no añaden entradas al
+// historial, para que «Volver» vuelva a la primera
+document.addEventListener('click', (e) => {
+  const salto = e.target.closest?.('a[href^="#"]');
+  if (!salto) return;
+  e.preventDefault();
+  window.location.replace(salto.getAttribute('href'));
+});
+
 // CS-53: muestra los datos disponibles.
 // Las experiencias antiguas pueden tener ambos campos a null.
 function pintarDuracionTarifa(experiencia) {
@@ -248,7 +257,8 @@ function tratarErrorDeAcceso(error) {
     mostrarNoDisponible();
     return true;
   }
-  if (error.status === 401) {
+  // Al guardar ya se ha avisado sin salir (shared/api.js): se enseña el error y no se pierde lo escrito
+  if (error.status === 401 && !error.sesionAvisada) {
     irAlLogin();
     return true;
   }
