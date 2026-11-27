@@ -78,6 +78,7 @@ function crearListadoPersonas(tipo, idLista, idVacio, idBoton) {
 
 const listadoAmigos = crearListadoPersonas('amigos', 'lista-amigos', 'sin-amigos', 'mas-amigos');
 const listadoSeguidores = crearListadoPersonas('seguidores', 'lista-seguidores', 'sin-seguidores', 'mas-seguidores');
+const listadoSeguidos = crearListadoPersonas('seguidos', 'lista-seguidos', 'sin-seguidos', 'mas-seguidos'); // CS-72
 
 // Pide los contadores de amigos y seguidores.
 async function cargarContadores() {
@@ -87,6 +88,7 @@ async function cargarContadores() {
     document.getElementById('total-seguidores').textContent = resumen.seguidores;
     rotularContador('total-amigos', resumen.amigos, 'amigo', 'amigos');
     rotularContador('total-seguidores', resumen.seguidores, 'seguidor', 'seguidores');
+    document.getElementById('total-seguidos').textContent = resumen.seguidos;
   } catch (err) {
     mostrarErrorRelaciones(err, cargarContadores);
   }
@@ -100,6 +102,7 @@ function cargarRelaciones() {
   cargarContadores();
   listadoAmigos.reiniciar();
   listadoSeguidores.reiniciar();
+  listadoSeguidos.reiniciar();
 }
 
 cargarRelaciones();

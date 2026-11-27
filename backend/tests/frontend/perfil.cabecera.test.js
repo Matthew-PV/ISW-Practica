@@ -80,11 +80,11 @@ describe('cabecera del perfil', () => {
     expect($('#lista-experiencias').classList.contains('rejilla-experiencias')).toBe(true);
   });
 
-  test('hay pestañas de experiencias, amigos y seguidores, y solo se ve la elegida', async () => {
+    test('hay pestañas de experiencias, amigos, seguidores y siguiendo, y solo se ve la elegida', async () => {
     await abrir();
 
     const pestanas = [...document.querySelectorAll('#pestanas-perfil [role="tab"]')];
-    expect(pestanas.map((p) => p.textContent)).toEqual(['Planes', 'Amigos', 'Seguidores']);
+    expect(pestanas.map((p) => p.textContent)).toEqual(['Planes', 'Amigos', 'Seguidores', 'Siguiendo']);
     expect($('#panel-experiencias').hidden).toBe(false);
     expect($('#panel-amigos').hidden).toBe(true);
 

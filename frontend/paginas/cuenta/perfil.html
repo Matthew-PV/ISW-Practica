@@ -65,6 +65,7 @@
           <li><span id="total-experiencias" class="contador-numero">–</span> <span class="contador-rotulo">planes</span></li>
           <li><span id="total-amigos" class="contador-numero">–</span> <span class="contador-rotulo">amigos</span></li>
           <li><span id="total-seguidores" class="contador-numero">–</span> <span class="contador-rotulo">seguidores</span></li>
+          <li><span id="total-seguidos" class="contador-numero">–</span> <span class="contador-rotulo">siguiendo</span></li>
         </ul>
       </div>
       <a class="btn btn-outline-primary cabecera-perfil-accion" href="/paginas/cuenta/ajustes.html">Editar perfil</a>
@@ -74,6 +75,7 @@
       <button type="button" role="tab" id="pestana-experiencias" aria-controls="panel-experiencias" aria-selected="true">Planes</button>
       <button type="button" role="tab" id="pestana-amigos" aria-controls="panel-amigos" aria-selected="false" tabindex="-1">Amigos</button>
       <button type="button" role="tab" id="pestana-seguidores" aria-controls="panel-seguidores" aria-selected="false" tabindex="-1">Seguidores</button>
+      <button type="button" role="tab" id="pestana-seguidos" aria-controls="panel-seguidos" aria-selected="false" tabindex="-1">Siguiendo</button>
     </div>
 
     <div id="error-relaciones" class="alert alert-danger d-none mt-3" role="alert"></div>
@@ -101,6 +103,12 @@
       <div id="sin-seguidores" class="estado-vacio d-none"><img src="/img/vacio-personas.svg" alt="" width="240" height="180"><p>Todavía no tienes seguidores.</p></div>
       <div id="lista-seguidores" class="list-group"></div>
       <div class="text-center mt-3"><button type="button" id="mas-seguidores" class="btn btn-outline-primary d-none">Cargar más</button></div>
+    </div>
+    <!-- CS-72: personas a las que sigo, desde /api/perfil/seguidos -->
+    <div role="tabpanel" id="panel-seguidos" aria-labelledby="pestana-seguidos" class="pt-4" hidden>
+      <div id="sin-seguidos" class="estado-vacio d-none"><img src="/img/vacio-personas.svg" alt="" width="240" height="180"><p>Todavía no sigues a nadie. <a href="/paginas/experiencias/explorar.html?pestana=pestana-personas">Busca personas</a>.</p></div>
+      <div id="lista-seguidos" class="list-group"></div>
+      <div class="text-center mt-3"><button type="button" id="mas-seguidos" class="btn btn-outline-primary d-none">Cargar más</button></div>
     </div>
   </main>
 

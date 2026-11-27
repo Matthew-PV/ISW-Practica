@@ -34,9 +34,10 @@ const SEGUIDORES_2 = '/api/perfil/seguidores?limite=20&despuesDe=23';
 const SIN_RELACIONES = {
   '/api/perfil': [200, PERFIL],
   '/api/amistades/solicitudes': [200, []],
-  [RESUMEN]: [200, { amigos: 0, seguidores: 0 }],
+  [RESUMEN]: [200, { amigos: 0, seguidores: 0, seguidos: 0 }],
   [AMIGOS]: [200, listado([])],
   [SEGUIDORES]: [200, listado([])],
+  '/api/perfil/seguidos?limite=20': [200, listado([])], // CS-72
 };
 
 // Abre la página con un servidor simulado que responde según la dirección pedida,

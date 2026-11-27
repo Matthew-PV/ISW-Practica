@@ -154,7 +154,7 @@ Cada página carga primero `js/shared/api.js`, después los módulos compartidos
 | `/paginas/cuenta/bienvenida.html` | `bienvenida.js` | `descubrir.css` | `api`, `pantalla`, `planes`, `cabecera` | `GET /auth/yo`, `GET /perfil`, `GET /ciudades`, `GET /experiencias` | CS-24, CS-25 |
 | `/paginas/experiencias/explorar.html` | `explorar.js`, `social/personas.js` | `descubrir.css`, `buscar.css` | `api`, `pantalla`, `pestanas`, `planes`, `cabecera` | `GET /auth/yo`, `GET /experiencias/opciones`, `GET /ciudades`, `GET /perfil`, `GET /experiencias`, `GET /usuarios?texto=`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id` | CS-10, CS-27, CS-61 |
 | `/paginas/cuenta/mis-planes.html` | `mis-planes.js` | ninguno | `api`, `pantalla`, `planes`, `cabecera`, `lugares`, `mapa` (y Leaflet) | `GET /perfil`, `GET /ciudades`, `GET /experiencias/opciones`, `GET /experiencias?autor=`, `GET /experiencias/:id`, `POST /experiencias`, `PATCH /experiencias/:id`; ficheros `/datos/lugares-*.json` | CS-44, CS-49, CS-50, CS-73, CS-57, CS-22, CS-55, CS-56 |
-| `/paginas/cuenta/perfil.html` | `perfil.js` | `perfil.css` | `api`, `pantalla`, `pestanas`, `cabecera`, `planes`, `experiencias` | `GET /perfil`, `GET /perfil/resumen`, `/perfil/amigos` y `/perfil/seguidores`, `GET /experiencias?autor=` | CS-45, CS-44 |
+| `/paginas/cuenta/perfil.html` | `perfil.js` | `perfil.css` | `api`, `pantalla`, `pestanas`, `cabecera`, `planes`, `experiencias` | `GET /perfil`, `GET /perfil/resumen`, `/perfil/amigos`, `/perfil/seguidores` y `/perfil/seguidos`, `GET /experiencias?autor=` | CS-45, CS-44, CS-72 |
 | `/paginas/cuenta/ajustes.html` | `ajustes.js` | ninguno | `api`, `pantalla`, `pestanas`, `cabecera`, `password`, `movimiento` | `GET` y `PUT /perfil`, `GET /ciudades`, `PUT /perfil/foto`, `PUT /perfil/password` | CS-47, CS-64 |
 | `/paginas/social/amigos.html` | `social/amigos.js` | `perfil.css` | `api`, `pantalla`, `cabecera` | `GET /amistades/solicitudes`, `PATCH /amistades/:id`, `GET /perfil/amigos` | CS-61, CS-45 |
 | `/paginas/social/usuario.html` | `usuario.js` | `perfil.css` | `api`, `pantalla`, `cabecera`, `planes`, `experiencias` | `GET /usuarios/:nombre`, `POST` y `DELETE /amistades`, `PATCH /amistades/:id`, `POST` y `DELETE /seguimientos`, `GET /experiencias?autor=` | CS-62, CS-61, CS-44 |
@@ -304,10 +304,10 @@ Pruebas: `mis-planes.test.js`, `mis-planes.formulario.test.js`, `cs50LugaresForm
 
 ### `/paginas/cuenta/perfil.html`: mi perfil
 
-* **Cabecera:** foto, nombre, ciudad (`#ciudad-perfil`), contadores de experiencias, amigos y seguidores, y el botón «Editar perfil», que lleva a los ajustes. Hasta que llegan los datos se ve «Cargando…» (`#cargando`) y los contadores muestran «–».
-* **Pestañas** (`shared/pestanas.js`): *Experiencias* (con `mostrarExperienciasDe`, incluidas las privadas), *Amigos* y *Seguidores* (listas de 20 en 20 con «Cargar más»; cada nombre lleva a su perfil).
+* **Cabecera:** foto, nombre, ciudad (`#ciudad-perfil`), contadores de experiencias, amigos, seguidores y personas a las que sigue («siguiendo», CS-72), y el botón «Editar perfil», que lleva a los ajustes. Hasta que llegan los datos se ve «Cargando…» (`#cargando`) y los contadores muestran «–».
+* **Pestañas** (`shared/pestanas.js`): *Experiencias* (con `mostrarExperienciasDe`, incluidas las privadas), *Amigos*, *Seguidores* y *Siguiendo* (CS-72) (listas de 20 en 20 con «Cargar más»; cada nombre lleva a su perfil). Quien no sigue a nadie ve un aviso con un enlace para buscar personas.
 
-Pruebas: `perfil.relaciones.test.js`, `perfil.cabecera.test.js`, `estados.test.js` y `shared/experiencias.test.js`.
+Pruebas: `perfil.relaciones.test.js`, `perfil.seguidos.test.js`, `perfil.cabecera.test.js`, `estados.test.js` y `shared/experiencias.test.js`.
 
 ### `/paginas/cuenta/ajustes.html`: ajustes
 
