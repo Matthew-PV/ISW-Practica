@@ -122,15 +122,17 @@ function paginaDePersonas(filas, limite) {
   return { personas: elementos.map((fila) => conFotoPorDefecto(fila.persona)), siguiente };
 }
 
-// Devuelve cuántos amigos y seguidores tiene el usuario de la sesión: { amigos, seguidores }.
+// Devuelve cuántos amigos y seguidores tiene el usuario de la sesión y a cuántas personas sigue
+// (CS-72): { amigos, seguidores, seguidos }.
 // Solo cuentan las amistades aceptadas; quien no tiene ninguna relación obtiene ceros.
 async function obtenerResumenRelaciones(usuarioId) {
-  // Las dos consultas son independientes: se lanzan a la vez
-  const [amigos, seguidores] = await Promise.all([
+  // Las tres consultas son independientes: se lanzan a la vez
+  const [amigos, seguidores, seguidos] = await Promise.all([
     amistadRepository.contarAmigos(usuarioId),
     seguimientoRepository.contarSeguidores(usuarioId),
+    seguimientoRepository.contarSeguidos(usuarioId),
   ]);
-  return { amigos, seguidores };
+  return { amigos, seguidores, seguidos };
 }
 
 // Devuelve una página de los amigos del usuario de la sesión: { personas, siguiente }, donde cada

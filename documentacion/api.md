@@ -33,7 +33,7 @@
 | [`GET /api/perfil`](#get-apiperfil) | sí | Mi perfil | CS-47 |
 | [`PUT /api/perfil`](#put-apiperfil) | sí | Editar nombre y ciudad | CS-47 |
 | [`PUT /api/perfil/foto`](#put-apiperfilfoto) | sí | Subir mi foto | CS-47 |
-| [`GET /api/perfil/resumen`](#get-apiperfilresumen) | sí | Mis contadores | CS-45 |
+| [`GET /api/perfil/resumen`](#get-apiperfilresumen) | sí | Mis contadores | CS-45, CS-72 |
 | [`GET /api/perfil/amigos`](#get-apiperfilamigos) | sí | Mis amigos | CS-45 |
 | [`GET /api/perfil/seguidores`](#get-apiperfilseguidores) | sí | Mis seguidores | CS-45 |
 | [`PUT /api/perfil/password`](#put-apiperfilpassword) | sí | Cambiar mi contraseña | CS-64 |
@@ -156,7 +156,7 @@ Todas exigen sesión y trabajan sobre el usuario de la sesión.
 
 `perfilService.obtenerResumenRelaciones`.
 
-* **Responde:** 200 `{ amigos, seguidores }`. Solo cuentan las amistades aceptadas.
+* **Responde:** 200 `{ amigos, seguidores, seguidos }`. Solo cuentan las amistades aceptadas; `seguidos` es a cuántas personas sigue el usuario (CS-72).
 
 ### `GET /api/perfil/amigos`
 

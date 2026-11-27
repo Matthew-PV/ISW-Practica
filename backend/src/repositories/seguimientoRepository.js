@@ -51,6 +51,11 @@ async function contarSeguidores(seguidoId) {
   });
 }
 
+// CS-72: cuántas personas sigue un usuario (las filas donde él es el seguidor).
+async function contarSeguidos(seguidorId) {
+  return prisma.seguimiento.count({ where: { seguidorId } });
+}
+
 // CS-45: hasta `cantidad` personas que siguen a un usuario, del seguimiento más reciente al más
 // antiguo, como { id, persona }: `id` es el del seguimiento (el cursor de «Cargar más») y
 // `persona`, los datos públicos del seguidor (nunca el email). Con `despuesDe` (el id de un
@@ -77,4 +82,5 @@ module.exports = {
   filtrarSeguidos,
   contarSeguidores,
   listarSeguidores,
+  contarSeguidos,
 };
