@@ -46,8 +46,8 @@ router.put('/foto', recibirFoto, async (req, res) => {
 });
 
 // GET /api/perfil/resumen → perfilService.obtenerResumenRelaciones
-// Número de amigos y de seguidores del usuario de la sesión:
-// { amigos, seguidores }.
+// Número de amigos y de seguidores del usuario de la sesión y de personas a las que sigue
+// (CS-72): { amigos, seguidores, seguidos }.
 router.get('/resumen', async (req, res) => {
   const resumen = await perfilService.obtenerResumenRelaciones(req.session.usuarioId);
   res.json(resumen);
@@ -71,6 +71,13 @@ router.get('/seguidores', async (req, res) => {
   res.json(seguidores);
 });
 
+// GET /api/perfil/seguidos?despuesDe=57&limite=20 → perfilService.listarSeguidosPropios
+// CS-72: igual que /seguidores, con las personas a las que sigue el usuario.
+router.get('/seguidos', async (req, res) => {
+  const { despuesDe, limite } = req.query;
+  const seguidos = await perfilService.listarSeguidosPropios(req.session.usuarioId, { despuesDe, limite });
+  res.json(seguidos);
+});
 // PUT /api/perfil/password → perfilService.cambiarPassword
 // CS-64: cambia la contraseña. Cuerpo: { actual, nueva }.
 // 204 si se cambia; 400 si faltan datos, la actual no es correcta o la nueva no cumple los

@@ -152,6 +152,14 @@ async function listarSeguidoresPropios(usuarioId, paginacion) {
   return paginaDePersonas(filas, limite);
 }
 
+// CS-72: igual que listarSeguidoresPropios, pero con las personas a las que sigue el usuario
+// de la sesión.
+async function listarSeguidosPropios(usuarioId, paginacion) {
+  const { despuesDe, limite } = leerPaginacion(paginacion, PERSONAS_POR_PAGINA);
+  const filas = await seguimientoRepository.listarSeguidos(usuarioId, despuesDe, limite + 1);
+  return paginaDePersonas(filas, limite);
+}
+
 // CS-64: cambia la contraseña del usuario de la sesión.
 // - `datos`: { actual, nueva }. Hay que dar la actual: si no es correcta, no cambia nada.
 // Errores 400: faltan datos, la actual no es correcta o la nueva no cumple los requisitos.
@@ -182,4 +190,5 @@ module.exports = {
   listarAmigosPropios,
   listarSeguidoresPropios,
   cambiarPassword,
+  listarSeguidosPropios,
 };

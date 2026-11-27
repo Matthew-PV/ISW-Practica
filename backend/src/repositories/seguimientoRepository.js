@@ -75,6 +75,23 @@ async function listarSeguidores(usuarioId, despuesDe, cantidad) {
   return seguimientos.map((seguimiento) => ({ id: seguimiento.id, persona: seguimiento.seguidor }));
 }
 
+// CS-72: igual que listarSeguidores, pero con las personas a las que sigue el usuario:
+// `persona` son los datos públicos del seguido (nunca el email).
+async function listarSeguidos(usuarioId, despuesDe, cantidad) {
+  const where = { seguidorId: usuarioId };
+  if (despuesDe !== null) {
+    where.id = { lt: despuesDe };
+  }
+  const seguimientos = await prisma.seguimiento.findMany({
+    where,
+    select: { id: true, seguido: { select: USUARIO_PUBLICO } },
+    orderBy: { id: 'desc' },
+    take: cantidad,
+  });
+
+  return seguimientos.map((seguimiento) => ({ id: seguimiento.id, persona: seguimiento.seguido }));
+}
+
 module.exports = {
   seguir,
   dejarDeSeguir,
@@ -83,4 +100,5 @@ module.exports = {
   contarSeguidores,
   listarSeguidores,
   contarSeguidos,
+  listarSeguidos,
 };

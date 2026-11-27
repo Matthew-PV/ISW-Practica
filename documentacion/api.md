@@ -36,6 +36,7 @@
 | [`GET /api/perfil/resumen`](#get-apiperfilresumen) | sí | Mis contadores | CS-45, CS-72 |
 | [`GET /api/perfil/amigos`](#get-apiperfilamigos) | sí | Mis amigos | CS-45 |
 | [`GET /api/perfil/seguidores`](#get-apiperfilseguidores) | sí | Mis seguidores | CS-45 |
+| [`GET /api/perfil/seguidos`](#get-apiperfilseguidos) | sí | Personas que sigo | CS-72 |
 | [`PUT /api/perfil/password`](#put-apiperfilpassword) | sí | Cambiar mi contraseña | CS-64 |
 | [`GET /api/experiencias/opciones`](#get-apiexperienciasopciones) | no | Categorías y momentos permitidos | CS-55, CS-56 |
 | [`GET /api/experiencias`](#get-apiexperiencias) | sí | Buscar experiencias con filtros | CS-10 |
@@ -169,6 +170,12 @@ Todas exigen sesión y trabajan sobre el usuario de la sesión.
 `perfilService.listarSeguidoresPropios` · Páginas: sí, 20 por defecto.
 
 * **Responde:** 200 `{ personas, siguiente }` con quienes siguen al usuario de la sesión. El cursor es el id del seguimiento.
+
+### `GET /api/perfil/seguidos`
+
+`perfilService.listarSeguidosPropios` · Páginas: sí, 20 por defecto.
+
+* **Responde:** 200 `{ personas, siguiente }` con las personas a las que sigue el usuario de la sesión, de la más reciente a la más antigua, sin email. El cursor es el id del seguimiento (CS-72).
 
 ### `PUT /api/perfil/password`
 
