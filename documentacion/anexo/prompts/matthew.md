@@ -4,6 +4,22 @@ Identificador habitual: MAT / Matthew-PV.
 
 Las interacciones siguientes proceden de la conversación conservada en Codex. Cuando no consta la fecha exacta de la interacción, `2026-10-02` indica la fecha en la que se incorporó al registro, no necesariamente la fecha en que se escribió el prompt original. Se omiten mensajes de cortesía y confirmaciones que no influyeron en el trabajo.
 
+## 2026-11-28 — Comprobar y cerrar la conexión del catálogo (CS-50, objetivo 5)
+
+- **Historia u objetivo:** CS-50, objetivo 5: conectar la búsqueda del frontend con el catálogo del backend, sustituir los archivos estáticos del navegador y comprobar creación, edición y consulta.
+- **Agente/herramienta:** Codex.
+- **Prompt inicial:**
+
+  > Trabajemos en el objetivo 5 de CS50
+
+- **Correcciones relevantes:** Matthew concretó el objetivo vigente:
+
+  > El objetivo 5 es: «Conectar la búsqueda de lugares del frontend con el catálogo servido por el backend, sustituyendo los archivos estáticos del navegador y comprobando el flujo completo de creación, edición y consulta».
+
+- **Qué aceptó, cambió o rechazó la persona:** Matthew pidió registrar la comprobación y el cierre del objetivo 5. Se reconoce como trabajo ya adelantado durante el objetivo 4, sin duplicar implementación ni atribuirle la integración externa. La actualización del Excel sigue a cargo de Matthew.
+- **Comprobación y cierre:** revisados `lugares.js`, el uso de la API en formulario y detalle y la ausencia de lecturas de `/datos/lugares-*` en el frontend. `npm test -- --runInBand cs50LugaresFormulario.test.js cs50LugaresDetalle.test.js lugaresRoutes.test.js`: 3 suites y 30 pruebas correctas de búsqueda por API, creación, edición y consulta. Se suma la verificación MySQL y la confirmación manual de Matthew contra TiDB registradas en la entrada del objetivo 4; no se atribuye una nueva prueba manual al agente. No se repite rojo/verde porque se comprueba comportamiento existente. El objetivo 5 queda cerrado; sustituir el catálogo por un proveedor externo sigue pendiente como objetivo independiente.
+- **Commit:** implementación en `837b856` y verificación local adicional en `0527649`; esta entrada se incorpora en el commit de registro solicitado. Decisión de referencia: [catálogo demo de lugares](../../decisiones/2026-11-28-catalogo-demo-lugares-cs50.md).
+
 ## 2026-11-28 — Persistir los lugares de un plan y verificar TiDB (CS-50)
 
 - **Historia u objetivo:** CS-50, objetivo 4: modelo, migración, creación, edición y consulta de lugares, con sus pruebas; búsqueda del catálogo y conexión del frontend necesarias para completar el flujo.
