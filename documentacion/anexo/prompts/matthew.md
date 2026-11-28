@@ -4,6 +4,26 @@ Identificador habitual: MAT / Matthew-PV.
 
 Las interacciones siguientes proceden de la conversación conservada en Codex. Cuando no consta la fecha exacta de la interacción, `2026-10-02` indica la fecha en la que se incorporó al registro, no necesariamente la fecha en que se escribió el prompt original. Se omiten mensajes de cortesía y confirmaciones que no influyeron en el trabajo.
 
+## 2026-11-28 — Integrar Nominatim y cerrar la comprobación local (CS-50, objetivo 6)
+
+- **Historia u objetivo:** CS-50, objetivo 6: sustituir el catálogo de demo por un proveedor externo manteniendo el contrato y sus pruebas.
+- **Agente/herramienta:** Codex.
+- **Prompt inicial:**
+
+  > Hagamos el Objetivo 6
+
+- **Correcciones relevantes:**
+
+  > Sí, evalúa Nominatim con esas limitaciones y comprueba que permite verificar la ciudad y respetar el contrato de Joaquín antes de implementar.
+
+  > He dejado de trabajar con el agente de visual studio, ¿podrías asumir tú su rol?
+
+  > Sí, cambia esas etiquetas por nombres comprensibles en español, teniendo en cuenta la categoría completa para distinguir los tipos de parada.
+
+- **Qué aceptó, cambió o rechazó la persona:** Matthew encargó a Codex continuar la implementación y pidió etiquetas en español que distingan categoría y tipo OSM. Se conservan el contrato HTTP, las fichas existentes y la compatibilidad con lugares demo. Matthew consultó el límite del proveedor: es un máximo agregado de una petición por segundo para todo PlanB, no una cuota total; las copias locales no coordinan sus colas. La actualización del Excel sigue a cargo de Matthew.
+- **Comprobación y cierre:** se observó el fallo esperado antes de implementar el adaptador, los comportamientos nuevos del servicio y las traducciones; las pruebas de compatibilidad con comportamiento existente pasaron desde el principio. Codex comprobó búsqueda y verificación real del Prado sin escribir en la base. La batería final `npm test -- --runInBand` pasó con 96 suites y 1177 pruebas; en la revisión de la integración, `npm run test:mysql` pasó con 17 suites y 82 pruebas locales. Sin migraciones ni cambios en TiDB para este objetivo. El agente no pudo hacer la revisión visual por falta de acceso al navegador local. Después del commit, Matthew confirmó literalmente: «Ya he hecho la comprobación local.» Esta comprobación final corresponde a Matthew, no al agente; con ella se confirmó el cierre del objetivo 6.
+- **Commit:** [`6ae3935`](https://github.com/Matthew-PV/ISW-Practica/commit/6ae39355bcbee3044fb8d40b18e6c51a84a6c99d), publicado en `main`, incluye la integración y las etiquetas en español. Decisiones: [Nominatim](../../decisiones/2026-11-28-nominatim-lugares-cs50.md) y [etiquetas en español](../../decisiones/2026-11-28-etiquetas-lugares-espanol.md).
+
 ## 2026-11-28 — Comprobar y cerrar la conexión del catálogo (CS-50, objetivo 5)
 
 - **Historia u objetivo:** CS-50, objetivo 5: conectar la búsqueda del frontend con el catálogo del backend, sustituir los archivos estáticos del navegador y comprobar creación, edición y consulta.
