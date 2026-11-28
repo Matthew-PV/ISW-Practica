@@ -4,6 +4,28 @@ Identificador habitual: MAT / Matthew-PV.
 
 Las interacciones siguientes proceden de la conversación conservada en Codex. Cuando no consta la fecha exacta de la interacción, `2026-10-02` indica la fecha en la que se incorporó al registro, no necesariamente la fecha en que se escribió el prompt original. Se omiten mensajes de cortesía y confirmaciones que no influyeron en el trabajo.
 
+## 2026-11-28 — Persistir los lugares de un plan y verificar TiDB (CS-50)
+
+- **Historia u objetivo:** CS-50, objetivo 4: modelo, migración, creación, edición y consulta de lugares, con sus pruebas; búsqueda del catálogo y conexión del frontend necesarias para completar el flujo.
+- **Agente/herramienta:** agente de Visual Studio (Copilot, según su informe) para implementar; Codex para preparar el encargo, revisar, verificar, gestionar Git y aplicar la migración autorizada.
+- **Prompt inicial:**
+
+  > Primero, me gustaría acutalizar el ".env" con las credenciales que nos ha pasado Joaquín. Me gustaría encargarme del backend de la CS-50. Revisa el contrato que ha dejado Joaquín y explícame qué tendríamos que hacer antes de empezar. Aquí te adjunto la última versión del Excel. Tengo un agente de IA en Visual Studio para hacer los cambios de código
+
+- **Correcciones relevantes:**
+
+  > Es decir, tan solo me interesa *mimic* el funcionamiento real que tendría. Si esta verificación de lugares y pertenencias complica demasiado el proyecto, plantéame una alternativa
+
+  > ¿Podemos aprovechar los lugares que Joaquín ya incluyó en los archivos estáticos en vez de crear un catálogo nuevo?
+
+  > Me gustaría notar que el proveedor externo real quede como una posible implementación futura
+
+  > Perfecto, comprueba qué migraciones están pendientes en TiDB y después ejecútalas
+
+- **Qué aceptó, cambió o rechazó la persona:** Matthew eligió reutilizar el catálogo de Joaquín desde el backend, conservando el contrato HTTP, con persistencia real de fichas, notas y orden y validación de ciudad. La integración externa quedó como objetivo futuro independiente; primero restringió las migraciones al entorno local y después autorizó expresamente comprobar y aplicar las pendientes en TiDB. Del Excel se encarga Matthew.
+- **Comprobación:** Copilot informó del ciclo rojo/verde y de la comprobación en navegador local; Codex revisó el código y ejecutó `npm test -- --runInBand` (93 suites, 1151 pruebas correctas) y `npm run test:mysql` (17 suites, 82 pruebas correctas, incluidas persistencia, orden, vaciado y reversión ante fallo). En TiDB, `prisma migrate status` identificó únicamente `20261128134241_cs50_lugares` pendiente; `prisma migrate deploy` la aplicó y una consulta posterior confirmó el esquema al día, sin ejecutar semillas. Tras recibir los pasos para comprobar el guardado y la consulta desde la aplicación conectada a TiDB, Matthew confirmó literalmente: «Ya he comprobado que funciona». Esta comprobación manual la realizó Matthew, no el agente.
+- **Commit:** `837b856` (implementación) y `0527649` (cierre de la verificación local y aclaración del objetivo futuro), subidos a `main`. Decisión: [catálogo demo de lugares](../../decisiones/2026-11-28-catalogo-demo-lugares-cs50.md); contrato de referencia: [lugares y mapa de Joaquín](../../decisiones/2026-11-26-lugares-y-mapa.md).
+
 ## 2026-10-27 — Aplicar el diseño a las pantallas sociales (CS-66, objetivo 3)
 
 - **Historia u objetivo:** CS-66, objetivo 3: aplicar el diseño a perfil propio, perfil de otra persona y búsqueda de personas.
