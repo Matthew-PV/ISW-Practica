@@ -116,7 +116,7 @@ function titularPorCiudad() {
 // CS-74: si la ciudad es el único filtro, el aviso de vacío la nombra
 function explicarVacio() {
   const otrosFiltros = texto || categoria || campoAmigos.checked
-    || [campoMomento, campoTarifa, campoDuracion, campoMinimo].some((campo) => campo.value);
+    || Object.values(CAMPOS_EN_URL).some((campo) => campo !== campoCiudad && campo.value);
   const ciudad = nombreCiudadElegida();
   avisoVacio.textContent = ciudad && !otrosFiltros
     ? `Todavía no hay planes en ${ciudad}.`
@@ -190,7 +190,7 @@ function pintarOpciones({ categorias, momentos }) {
   }
 }
 
-for (const campo of [campoMomento, campoCiudad, campoAmigos, campoTarifa, campoDuracion, campoMinimo]) {
+for (const campo of [...Object.values(CAMPOS_EN_URL), campoAmigos]) {
   campo.addEventListener('change', () => {
     guardarEnUrl();
     listado.reiniciar();
