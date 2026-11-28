@@ -82,13 +82,10 @@ document.getElementById('confirmar-eliminar-amigo').addEventListener('click', ()
 // Muestra «Seguir» o «Dejar de seguir» según si ya sigo a este usuario
 function mostrarBotonSeguir(perfil) {
   botonSeguir.replaceChildren();
-  if (perfil.relacion.siguiendo) {
-    crearBoton(botonSeguir, 'Dejar de seguir', 'btn-outline-secondary', () =>
-      actuar(`/seguimientos/${perfil.id}`, { method: 'DELETE' }));
-  } else {
-    crearBoton(botonSeguir, 'Seguir', 'btn-outline-primary', () =>
-      actuar('/seguimientos', { method: 'POST', body: JSON.stringify({ seguidoId: perfil.id }) }));
-  }
+  const { texto, clase, ruta, opciones } = perfil.relacion.siguiendo
+    ? { texto: 'Dejar de seguir', clase: 'btn-outline-secondary', ruta: `/seguimientos/${perfil.id}`, opciones: { method: 'DELETE' } }
+    : { texto: 'Seguir', clase: 'btn-outline-primary', ruta: '/seguimientos', opciones: { method: 'POST', body: JSON.stringify({ seguidoId: perfil.id }) } };
+  crearBoton(botonSeguir, texto, clase, () => actuar(ruta, opciones));
 }
 
 // Pone en la página los datos del perfil público que devuelve el backend
@@ -108,6 +105,8 @@ function mostrarPerfil(perfil) {
   document.title = `PlanB · ${perfil.nombreUsuario}`;
   mostrarBotonesAmistad(perfil);
   mostrarBotonSeguir(perfil);
+  // Hasta que llega el perfil la página no enseña datos de relleno (0 amigos, foto vacía...)
+  document.getElementById('perfil-usuario').classList.remove('d-none');
 }
 
 // Pide el perfil del usuario indicado en la dirección (?nombre=...). Devuelve true si se ha
@@ -116,10 +115,6 @@ async function cargarPerfil(reintentar = cargarPerfil) {
   try {
     const perfil = await api(`/usuarios/${encodeURIComponent(nombre)}`);
     mostrarPerfil(perfil);
-    // Hasta que llega el perfil la página no enseña datos de relleno (0 amigos, foto vacía...)
-    if (!perfil.esPropio) {
-      document.getElementById('perfil-usuario').classList.remove('d-none');
-    }
     return !perfil.esPropio;
   } catch (err) {
     if (err.status === 404) {
