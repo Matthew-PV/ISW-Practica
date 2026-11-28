@@ -157,7 +157,7 @@ sequenceDiagram
   participant S as experienciaService
   participant LR as lugarRoutes
   participant LS as lugarService
-  participant LRepo as lugarRepository
+  participant LRepo as nominatimRepository / lugarRepository (demo)
   participant CR as ciudadRepository
   participant ER as experienciaRepository
   U->>P: busca lugares y rellena categoría, ciudad, momento, duración, tarifa y visibilidad
@@ -165,7 +165,7 @@ sequenceDiagram
   LR->>LS: buscar(consulta)
   LS->>CR: buscarPorId(ciudadId)
   LS->>LRepo: buscar(texto, ciudad)
-  LRepo-->>P: hasta 10 fichas del catálogo demo
+  LRepo-->>P: hasta 10 fichas verificadas dentro del municipio
   Note over P: la ciudad escrita debe ser del catálogo; si no, error junto al campo y no se envía
   alt experiencia nueva
     P->>R: POST /api/experiencias
@@ -190,9 +190,11 @@ sequenceDiagram
       S-->>P: 400 «La ciudad seleccionada no existe»
     else existe
       S->>LS: resolverLugares(proveedorIds, ciudad)
-      LS->>LRepo: buscarPorProveedorIds(proveedorIds)
-      LRepo-->>LS: fichas canónicas, o lugar desconocido
-      LS-->>S: fichas del catálogo si pertenecen a la ciudad
+      Note over LS: reutiliza fichas guardadas si solo cambian nota/orden en la misma ciudad
+      LS->>LRepo: resolver IDs nuevos o revalidar si cambia la ciudad
+      LRepo-->>LS: fichas verificadas o error 400/503
+      Note over S: si falla la verificación no se inicia la escritura
+      LS-->>S: fichas obtenidas por el servidor con notas del autor
       S->>ER: crear o actualizar plan y lugares en una transacción
       ER-->>S: experiencia con su ciudad y lugares ordenados
       S-->>P: 201 o 200 y la experiencia
@@ -201,7 +203,7 @@ sequenceDiagram
   end
 ```
 
-Qué protege: el autor sale siempre de la sesión y nunca del cuerpo de la petición; la ficha guardada procede del catálogo del backend, no de campos modificables en el navegador; los lugares deben pertenecer a la ciudad del plan y el guardado del plan y su lista es atómico. La edición omite `lugares` si no cambió para conservarlos y rechaza el cambio de ciudad si los existentes quedarían incompatibles. Admite hasta 20 lugares, nota de hasta 300 caracteres, coordenadas y URLs HTTP(S) válidas. La visibilidad solo admite PRIVADA, AMIGOS o PUBLICA (PUBLICA si no se indica), la duración un entero positivo y la tarifa un importe con hasta dos decimales (ambas opcionales), y la categoría y el momento adecuado solo valores de `services/shared/opcionesExperiencia.js`.
+Qué protege: el autor sale siempre de la sesión y nunca del cuerpo de la petición; la ficha guardada se resuelve en el servidor, no desde campos modificables del navegador. Los lugares externos nuevos se comprueban contra el país y el polígono municipal de Nominatim; los demo mantienen su catálogo de compatibilidad. Un fallo externo responde 503 antes de escribir; el guardado del plan y su lista es atómico. La edición omite `lugares` si no cambió para conservarlos y rechaza el cambio de ciudad si los existentes quedarían incompatibles. Admite hasta 20 lugares, nota de hasta 300 caracteres, coordenadas y URLs HTTP(S) válidas. La visibilidad solo admite PRIVADA, AMIGOS o PUBLICA (PUBLICA si no se indica), la duración un entero positivo y la tarifa un importe con hasta dos decimales (ambas opcionales), y la categoría y el momento adecuado solo valores de `services/shared/opcionesExperiencia.js`.
 
 ### F5. Abrir una experiencia
 

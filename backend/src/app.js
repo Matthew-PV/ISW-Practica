@@ -90,13 +90,14 @@ app.use(express.static(FRONTEND, {
 // Manejador de errores: Express lo reconoce porque recibe 4 parámetros (err primero).
 // Llegan aquí los errores lanzados en cualquier ruta, servicio o middleware.
 // - los de express.json (JSON roto, cuerpo demasiado grande...) traen `type`: mensaje genérico en español;
-// - los de crearError (src/errores.js) se devuelven con su código y su mensaje;
+// - los de crearError (src/errores.js) de cliente y el 503 esperado del proveedor se devuelven
+//   con su código y mensaje; los demás fallos del servidor conservan el mensaje genérico;
 // - el resto son fallos inesperados: se registran en consola y no se muestra su detalle al usuario.
 app.use((err, req, res, next) => {
   if (err.type && err.status < 500) {
     return res.status(err.status).json({ error: 'La petición no es válida' });
   }
-  if (err.status < 500) {
+  if (err.status < 500 || err.status === 503) {
     return res.status(err.status).json({ error: err.message });
   }
   console.error(err);

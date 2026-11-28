@@ -29,7 +29,7 @@ async function crearExperiencia(usuarioId, datos) {
   if (datosValidados.lugares?.length) {
     const ciudad = await ciudadRepository.buscarPorId(datosValidados.ciudadId);
     if (!ciudad) throw crearError('La ciudad seleccionada ya no está disponible', 400);
-    datosValidados.lugares = lugarService.resolverLugares(datosValidados.lugares, ciudad);
+    datosValidados.lugares = await lugarService.resolverLugares(datosValidados.lugares, ciudad);
   }
   try {
     return await experienciaRepository.crear({ ...datosValidados, autorId: usuarioId });
@@ -70,9 +70,10 @@ async function editarExperiencia(usuarioId, experienciaId, datos) {
   if (!ciudadDestino) throw crearError('La ciudad seleccionada ya no está disponible', 400);
 
   if (lugaresEnviados) {
-    cambiosValidados.lugares = lugarService.resolverLugares(cambiosValidados.lugares, ciudadDestino);
+    const existentes = ciudadIdDestino === experiencia.ciudadId ? experiencia.lugares : [];
+    cambiosValidados.lugares = await lugarService.resolverLugares(cambiosValidados.lugares, ciudadDestino, existentes);
   } else if (cambiosValidados.ciudadId !== undefined && experiencia.lugares?.length) {
-    lugarService.comprobarCompatibilidad(experiencia.lugares, ciudadDestino);
+    await lugarService.comprobarCompatibilidad(experiencia.lugares, ciudadDestino);
   }
 
   try {

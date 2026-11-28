@@ -187,6 +187,7 @@ flowchart LR
     experienciaRep[experienciaRepository]
     valoracionRep[valoracionRepository]
     lugarRep[lugarRepository]
+    nominatimRep[nominatimRepository]
     ciudadRep[ciudadRepository]
     usuarioRep[usuarioRepository]
   end
@@ -196,14 +197,14 @@ flowchart LR
   valoracionR --> valoracionS
   lugarR --> lugarS
   experienciaS --> experienciaRep & lugarS & ciudadRep & usuarioRep & visibilidadSh & paginacionSh & idSh & fotoSh
-  lugarS --> lugarRep & ciudadRep
+  lugarS --> lugarRep & ciudadRep & nominatimRep
   valoracionS --> experienciaS & valoracionRep & paginacionSh & idSh & fotoSh
   visibilidadSh --> amistadS
 ```
 
 `valoracionService` usa `experienciaService.obtenerExperiencia` para comprobar que la experiencia existe y se puede ver: la regla de acceso de CS-30 está en un solo sitio. Todos los repositorios de MySQL usan `repositories/shared/prisma.js`; `fotoRepository` habla con Cloudinary y `emailRepository` con el servidor de correo.
 
-En CS-50, `lugarRepository` es la única capa que lee el catálogo de demostración; `experienciaRepository` persiste las fichas, notas y orden de manera transaccional. `LugarExperiencia` pertenece a `Experiencia` y se elimina con ella. El catálogo está en `backend/data/lugares-madrid.json`; sustituirlo por un proveedor externo queda como ampliación futura.
+En CS-50, `nominatimRepository` consulta y adapta el proveedor externo, con cola y caché por proceso; `lugarService` coordina la verificación de fichas nuevas y la reutilización de las guardadas. `lugarRepository` conserva acceso a `backend/data/lugares-madrid.json` para IDs demo y semillas. `experienciaRepository` persiste fichas, notas y orden de manera transaccional. `LugarExperiencia` pertenece a `Experiencia` y se elimina con ella. El endpoint configurable está en `backend/.env.example`; el uso del servicio público requiere un único backend para respetar el límite conjunto de peticiones.
 
 
 

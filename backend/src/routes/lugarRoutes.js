@@ -6,8 +6,9 @@ const lugarService = require('../services/lugarService');
 const router = express.Router();
 
 router.get('/buscar', async (req, res) => {
+  const fichas = await lugarService.buscar(req.query);
   res.set('Cache-Control', 'public, max-age=3600');
-  res.json(await lugarService.buscar(req.query));
+  res.json(fichas);
 });
 
 module.exports = router;

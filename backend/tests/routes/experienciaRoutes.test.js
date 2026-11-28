@@ -3,6 +3,7 @@ jest.mock('../../src/repositories/usuarioRepository');
 jest.mock('../../src/repositories/ciudadRepository');
 jest.mock('../../src/repositories/experienciaRepository');
 jest.mock('../../src/services/shared/visibilidad');
+jest.mock('../../src/repositories/nominatimRepository');
 
 const request = require('supertest');
 const bcrypt = require('bcrypt');
@@ -11,6 +12,7 @@ const usuarioRepository = require('../../src/repositories/usuarioRepository');
 const ciudadRepository = require('../../src/repositories/ciudadRepository');
 const experienciaRepository = require('../../src/repositories/experienciaRepository');
 const visibilidad = require('../../src/services/shared/visibilidad');
+const nominatimRepository = require('../../src/repositories/nominatimRepository');
 
 const CIUDAD = { id: 1, nombre: 'Madrid', pais: 'España' };
 const DATOS = { titulo: 'Tarde cultural', descripcion: 'Museo y paseo', ciudadId: 1 };
@@ -134,6 +136,29 @@ test('al crear rechaza lugares de otra ciudad sin crear el plan', async () => {
   });
 
   expect(res.status).toBe(400);
+  expect(experienciaRepository.crear).not.toHaveBeenCalled();
+});
+
+test('CS-50: una ficha externa se obtiene del proveedor antes de guardar', async () => {
+  const externa = { ...PLAZA_MAYOR, proveedorId: 'osm:R2:tourism' };
+  nominatimRepository.resolver.mockResolvedValue([externa]);
+  const agente = await agenteConSesion();
+  const res = await agente.post('/api/experiencias').send({
+    ...DATOS, lugares: [{ ...externa, nombre: 'Manipulado', nota: 'Visitar' }],
+  });
+  expect(res.status).toBe(201);
+  expect(experienciaRepository.crear).toHaveBeenCalledWith(expect.objectContaining({
+    lugares: [{ ...externa, nota: 'Visitar' }],
+  }));
+});
+
+test('CS-50: si el proveedor falla, no guarda ni el plan ni sus lugares', async () => {
+  nominatimRepository.resolver.mockRejectedValue(Object.assign(new Error('Sin proveedor'), { status: 503 }));
+  const agente = await agenteConSesion();
+  const res = await agente.post('/api/experiencias').send({
+    ...DATOS, lugares: [{ ...PLAZA_MAYOR, proveedorId: 'osm:R2:tourism' }],
+  });
+  expect(res.status).toBe(503);
   expect(experienciaRepository.crear).not.toHaveBeenCalled();
 });
 
