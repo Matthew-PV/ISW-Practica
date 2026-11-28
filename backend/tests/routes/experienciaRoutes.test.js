@@ -12,8 +12,18 @@ const ciudadRepository = require('../../src/repositories/ciudadRepository');
 const experienciaRepository = require('../../src/repositories/experienciaRepository');
 const visibilidad = require('../../src/services/shared/visibilidad');
 
-const CIUDAD = { id: 1, nombre: 'Madrid' };
+const CIUDAD = { id: 1, nombre: 'Madrid', pais: 'España' };
 const DATOS = { titulo: 'Tarde cultural', descripcion: 'Museo y paseo', ciudadId: 1 };
+const PLAZA_MAYOR = {
+  proveedorId: 'demo-plaza-mayor',
+  nombre: 'Plaza Mayor',
+  tipo: 'Plaza',
+  direccion: 'Plaza Mayor',
+  lat: 40.415456,
+  lon: -3.707381,
+  imagen: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Plaza_Mayor_de_Madrid_06.jpg/330px-Plaza_Mayor_de_Madrid_06.jpg',
+  web: null,
+};
 let usuario;
 
 beforeAll(async () => {
@@ -69,6 +79,62 @@ test('datos válidos: crea y devuelve 201 con una única ciudad y el autor de la
   expect(experienciaRepository.crear).toHaveBeenCalledWith({
     ...DATOS, tipo: null, momentoAdecuado: null, visibilidad: 'PUBLICA', autorId: 1,
   });
+});
+
+test('al crear toma la ficha del catálogo del servidor, no los datos de lugar enviados por el cliente', async () => {
+  const agente = await agenteConSesion();
+  const res = await agente.post('/api/experiencias').send({
+    ...DATOS,
+    lugares: [{
+      ...PLAZA_MAYOR,
+      nombre: 'Ficha manipulada',
+      direccion: 'Dirección manipulada',
+      lat: 1,
+      lon: 2,
+      imagen: 'https://images.example/falsa.jpg',
+      web: 'https://example.invalid',
+      nota: 'Encuentro aquí',
+    }],
+  });
+
+  expect(res.status).toBe(201);
+  expect(experienciaRepository.crear).toHaveBeenCalledWith(expect.objectContaining({
+    ...DATOS,
+    tipo: null,
+    momentoAdecuado: null,
+    visibilidad: 'PUBLICA',
+    autorId: 1,
+    lugares: [{ ...PLAZA_MAYOR, nota: 'Encuentro aquí' }],
+  }));
+  expect(res.body.lugares[0]).toMatchObject({
+    proveedorId: 'demo-plaza-mayor',
+    nombre: 'Plaza Mayor',
+    nota: 'Encuentro aquí',
+  });
+  expect(res.body.lugares[0].nombre).not.toBe('Ficha manipulada');
+});
+
+test('al crear rechaza un identificador ajeno al catálogo sin crear el plan', async () => {
+  const agente = await agenteConSesion();
+  const res = await agente.post('/api/experiencias').send({
+    ...DATOS,
+    lugares: [{ ...PLAZA_MAYOR, proveedorId: 'demo-inexistente', nota: null }],
+  });
+
+  expect(res.status).toBe(400);
+  expect(experienciaRepository.crear).not.toHaveBeenCalled();
+});
+
+test('al crear rechaza lugares de otra ciudad sin crear el plan', async () => {
+  const agente = await agenteConSesion();
+  ciudadRepository.buscarPorId.mockResolvedValue({ id: 1, nombre: 'Paris', pais: 'Francia' });
+  const res = await agente.post('/api/experiencias').send({
+    ...DATOS,
+    lugares: [{ ...PLAZA_MAYOR, nota: null }],
+  });
+
+  expect(res.status).toBe(400);
+  expect(experienciaRepository.crear).not.toHaveBeenCalled();
 });
 
 test('normaliza textos y no permite elegir otro autor ni identificador', async () => {

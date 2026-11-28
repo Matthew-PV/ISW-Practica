@@ -147,7 +147,7 @@ Qué protege: en MySQL solo se guarda la URL; un archivo que no es una imagen se
 
 ### F4. Crear y editar una experiencia
 
-CS-49, CS-57, CS-22, CS-55 y CS-56. Archivos: `mis-planes.js` → `experienciaRoutes.js` → `experienciaService.crearExperiencia` o `editarExperiencia` → `ciudadRepository` y `experienciaRepository`.
+CS-49, CS-50, CS-57, CS-22, CS-55 y CS-56. Archivos: `mis-planes.js` → `lugarRoutes.js` / `experienciaRoutes.js` → `lugarService` / `experienciaService` → `lugarRepository`, `ciudadRepository` y `experienciaRepository`.
 
 ```mermaid
 sequenceDiagram
@@ -155,14 +155,22 @@ sequenceDiagram
   participant P as mis-planes.js
   participant R as experienciaRoutes
   participant S as experienciaService
+  participant LR as lugarRoutes
+  participant LS as lugarService
+  participant LRepo as lugarRepository
   participant CR as ciudadRepository
   participant ER as experienciaRepository
-  U->>P: rellena el formulario: categoría, ciudad, momento, duración, tarifa y visibilidad
+  U->>P: busca lugares y rellena categoría, ciudad, momento, duración, tarifa y visibilidad
+  P->>LR: GET /api/lugares/buscar?q=...&ciudadId=...
+  LR->>LS: buscar(consulta)
+  LS->>CR: buscarPorId(ciudadId)
+  LS->>LRepo: buscar(texto, ciudad)
+  LRepo-->>P: hasta 10 fichas del catálogo demo
   Note over P: la ciudad escrita debe ser del catálogo; si no, error junto al campo y no se envía
   alt experiencia nueva
     P->>R: POST /api/experiencias
     R->>S: crearExperiencia(usuarioId, datos)
-    Note over S: validarCreacion: cada campo con su lector (LECTORES)
+    Note over S: validarCreacion y validar lista, límites, coordenadas y URLs
   else edición
     P->>R: PATCH /api/experiencias/7
     R->>S: editarExperiencia(usuarioId, 7, datos)
@@ -172,7 +180,7 @@ sequenceDiagram
     else es de otro usuario
       S-->>P: 403 «No puedes editar un plan de otro usuario»
     end
-    Note over S: validarEdicion: solo los campos que llegan, con los mismos lectores
+    Note over S: omitir lugares conserva; [] vacía; una lista sustituye y ordena
   end
   alt algún campo no es válido
     S-->>P: 400 con el campo que falla
@@ -181,15 +189,19 @@ sequenceDiagram
     alt la ciudad no existe
       S-->>P: 400 «La ciudad seleccionada no existe»
     else existe
-      S->>ER: crear o actualizar (autorId = usuario de la sesión)
-      ER-->>S: experiencia con su ciudad
+      S->>LS: resolverLugares(proveedorIds, ciudad)
+      LS->>LRepo: buscarPorProveedorIds(proveedorIds)
+      LRepo-->>LS: fichas canónicas, o lugar desconocido
+      LS-->>S: fichas del catálogo si pertenecen a la ciudad
+      S->>ER: crear o actualizar plan y lugares en una transacción
+      ER-->>S: experiencia con su ciudad y lugares ordenados
       S-->>P: 201 o 200 y la experiencia
       P->>U: tarjeta nueva o actualizada con aviso y enlace «Ver plan», o vuelta al detalle si se llegó con ?editar=
     end
   end
 ```
 
-Qué protege: el autor sale siempre de la sesión y nunca del cuerpo de la petición, la visibilidad solo admite PRIVADA, AMIGOS o PUBLICA (PUBLICA si no se indica), la duración un entero positivo y la tarifa un importe con hasta dos decimales (ambas opcionales), y la categoría y el momento adecuado solo valores de `services/shared/opcionesExperiencia.js`.
+Qué protege: el autor sale siempre de la sesión y nunca del cuerpo de la petición; la ficha guardada procede del catálogo del backend, no de campos modificables en el navegador; los lugares deben pertenecer a la ciudad del plan y el guardado del plan y su lista es atómico. La edición omite `lugares` si no cambió para conservarlos y rechaza el cambio de ciudad si los existentes quedarían incompatibles. Admite hasta 20 lugares, nota de hasta 300 caracteres, coordenadas y URLs HTTP(S) válidas. La visibilidad solo admite PRIVADA, AMIGOS o PUBLICA (PUBLICA si no se indica), la duración un entero positivo y la tarifa un importe con hasta dos decimales (ambas opcionales), y la categoría y el momento adecuado solo valores de `services/shared/opcionesExperiencia.js`.
 
 ### F5. Abrir una experiencia
 
@@ -212,7 +224,7 @@ sequenceDiagram
   end
   R->>ES: obtenerExperiencia(usuarioId, 7)
   ES->>DB: experienciaRepository.buscarPorId(7)
-  DB-->>ES: experiencia con ciudad y autor público, o null
+  DB-->>ES: experiencia con ciudad, autor público y lugares ordenados, o null
   ES->>V: puedeVerExperiencia(usuarioId, experiencia)
   V->>A: sonAmigos(usuarioId, autorId) (solo si es de AMIGOS)
   alt no existe o no la puede ver
@@ -220,7 +232,7 @@ sequenceDiagram
     P->>U: solo el aviso, sin ningún dato
   else la puede ver
     ES-->>P: 200 experiencia
-    P->>U: título, autor enlazado, ciudad y descripción
+    P->>U: título, autor enlazado, ciudad, descripción y lugares con nota y web
     par
       P->>R: GET /experiencias/7/valoraciones (todas)
     and

@@ -14,6 +14,7 @@
 const prisma = require('../src/repositories/shared/prisma');
 const fotoRepository = require('../src/repositories/fotoRepository');
 const { cifrarPassword } = require('../src/services/shared/password');
+const lugarRepository = require('../src/repositories/lugarRepository');
 
 // Contraseña común de las cuentas de demo (no es un secreto: son datos falsos).
 const PASSWORD_DEMO = 'Demo1234';
@@ -43,9 +44,9 @@ const USUARIOS = [
 // El catálogo solo tiene capitales y en inglés. «tipo» usa las palabras que reconoce el frontend
 // para elegir el color de la tarjeta (gastronomía, cultura, naturaleza, noche, deporte).
 const EXPERIENCIAS = [
-  ['demo_ana', 'ES', 'Madrid', 'Ruta de tapas por La Latina', 'Tres horas de bares en la Cava Baja: croquetas, callos y vermut. Empieza a las siete para pillar sitio.', 'Gastronomía', 'Por la tarde', 'PUBLICA'],
-  ['demo_ana', 'ES', 'Madrid', 'Atardecer en el Templo de Debod', 'Llega media hora antes de la puesta de sol para coger sitio en el muro.', 'Naturaleza', 'Atardecer', 'AMIGOS'],
-  ['demo_ana', 'ES', 'Madrid', 'Museo del Prado sin colas', 'Entrada gratuita las dos últimas horas; ve directo a Las Meninas y a Goya.', 'Cultura', 'Por la tarde', 'PRIVADA'],
+  ['demo_ana', 'ES', 'Madrid', 'Ruta de tapas por La Latina', 'Tres horas de bares en la Cava Baja: croquetas, callos y vermut. Empieza a las siete para pillar sitio.', 'Gastronomía', 'Por la tarde', 'PUBLICA', 'ruta-tapas-la-latina'],
+  ['demo_ana', 'ES', 'Madrid', 'Atardecer en el Templo de Debod', 'Llega media hora antes de la puesta de sol para coger sitio en el muro.', 'Naturaleza', 'Atardecer', 'AMIGOS', 'atardecer-templo-debod'],
+  ['demo_ana', 'ES', 'Madrid', 'Museo del Prado sin colas', 'Entrada gratuita las dos últimas horas; ve directo a Las Meninas y a Goya.', 'Cultura', 'Por la tarde', 'PRIVADA', 'museo-prado-sin-colas'],
   ['demo_ana', 'ES', 'Madrid', 'Mercado de San Miguel', 'Caro, pero imprescindible una vez. Mejor entre semana.', 'Gastronomía', 'Mediodía', 'PUBLICA'],
   ['demo_ana', 'ES', 'Madrid', 'Senderismo por la Pedriza', 'Ruta circular de cinco horas con vistas al Yelmo. Lleva agua y gorra.', 'Naturaleza', 'Por la mañana', 'PUBLICA'],
   ['demo_luis', 'ES', 'Madrid', 'Cena con vistas al Palacio Real', 'Terraza frente a la Almudena; reserva con antelación y pide las croquetas.', 'Gastronomía', 'Noche', 'PUBLICA'],
@@ -79,6 +80,24 @@ const EXPERIENCIAS = [
   ['demo_tomas', 'AT', 'Vienna', 'Concierto de órgano en la Karlskirche', 'Entradas baratas para escuchar música clásica en un templo barroco.', 'Cultura', 'Noche', 'PUBLICA'],
   ['demo_tomas', 'AT', 'Vienna', 'Patinar frente al Ayuntamiento', 'Pista de hielo gratuita en invierno y mercado navideño alrededor.', 'Deporte', 'Invierno', 'AMIGOS'],
 ];
+
+// Asociaciones de demostración por clave estable del plan, no por su título ni por IDs de MySQL.
+// Las fichas se copian desde el catálogo canónico de backend/data/lugares-madrid.json.
+const LUGARES_POR_PLAN = {
+  'ruta-tapas-la-latina': [
+    { proveedorId: 'demo-plaza-mayor', nota: 'Punto de encuentro, junto a la estatua.' },
+    { proveedorId: 'demo-mercado-san-miguel', nota: 'Un vermut para empezar.' },
+    { proveedorId: 'demo-cava-baja', nota: 'Aquí se concentran los bares.' },
+  ],
+  'atardecer-templo-debod': [
+    { proveedorId: 'demo-plaza-espana', nota: 'Se llega andando desde el metro.' },
+    { proveedorId: 'demo-templo-debod', nota: 'Busca sitio en el muro del mirador.' },
+  ],
+  'museo-prado-sin-colas': [
+    { proveedorId: 'demo-museo-prado', nota: 'Entra por la puerta de Goya.' },
+    { proveedorId: 'demo-parque-retiro', nota: 'Para descansar después.' },
+  ],
+};
 
 // Valoraciones: [valorador, título de la experiencia, puntuación, comentario]. Solo sobre públicas.
 const VALORACIONES = [
@@ -180,14 +199,30 @@ async function main() {
   console.log(`Usuarios creados: ${USUARIOS.length}.`);
 
   const experiencia = {};
-  for (const [autor, codigoPais, ciudadNombre, titulo, descripcion, tipo, momentoAdecuado, visibilidad] of EXPERIENCIAS) {
+  const experienciaPorClave = {};
+  for (const [autor, codigoPais, ciudadNombre, titulo, descripcion, tipo, momentoAdecuado, visibilidad, clave] of EXPERIENCIAS) {
     const ciudad = await prisma.ciudad.findFirst({ where: { codigoPais, nombre: ciudadNombre } });
     if (!ciudad) throw new Error(`La ciudad ${ciudadNombre} (${codigoPais}) no está en el catálogo: ejecuta antes db:seed.`);
     experiencia[titulo] = await prisma.experiencia.create({
       data: { titulo, descripcion, tipo, momentoAdecuado, visibilidad, ciudadId: ciudad.id, autorId: usuario[autor].id },
     });
+    if (clave) experienciaPorClave[clave] = experiencia[titulo];
   }
   console.log(`Experiencias creadas: ${EXPERIENCIAS.length}.`);
+
+  for (const [clave, lugares] of Object.entries(LUGARES_POR_PLAN)) {
+    const plan = experienciaPorClave[clave];
+    if (!plan) throw new Error(`La clave de plan ${clave} no está definida en las experiencias de demostración.`);
+    const fichas = lugarRepository.buscarPorProveedorIds(lugares.map((lugar) => lugar.proveedorId));
+    const fichaPorProveedorId = new Map(fichas.map((ficha) => [ficha.proveedorId, ficha]));
+    const datos = lugares.map(({ proveedorId, nota }, orden) => {
+      const ficha = fichaPorProveedorId.get(proveedorId);
+      if (!ficha) throw new Error(`El lugar ${proveedorId} no está en el catálogo de demostración.`);
+      return { ...ficha, experienciaId: plan.id, nota, orden };
+    });
+    await prisma.lugarExperiencia.createMany({ data: datos });
+  }
+  console.log(`Asociaciones de lugares creadas para ${Object.keys(LUGARES_POR_PLAN).length} planes.`);
 
   for (const [valorador, titulo, puntuacion, comentario] of VALORACIONES) {
     await prisma.valoracion.create({

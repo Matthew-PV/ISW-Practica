@@ -1,40 +1,13 @@
-// Lugares de un plan (CS-50): único punto de acceso a sus datos y ficha común de un lugar.
-// Los datos salen de los ficheros de /datos/; el contrato de la API que los sustituirá está en
-// documentacion/decisiones/2026-11-26-lugares-y-mapa.md.
-
-const MAXIMO_RESULTADOS = 10;
-
-async function leerFicheroLugares(ruta) {
-  try {
-    const respuesta = await fetch(ruta);
-    if (respuesta.ok) return await respuesta.json();
-  } catch {
-    // Sin red o con el fichero roto: el mismo aviso que si el servidor falla
-  }
-  throw new Error('No se han podido cargar los lugares.');
-}
-
-const sinTildes = (texto) => texto.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+// Lugares de un plan (CS-50): acceso por API y ficha común de un lugar.
 
 // Lugares de la ciudad cuyo nombre, tipo o dirección contienen todas las palabras escritas.
-// La ciudad se compara por nombre porque su id cambia entre bases de datos.
 async function buscarLugares(texto, ciudad) {
-  const datos = await leerFicheroLugares('/datos/lugares-madrid.json');
-  if (ciudad.nombre !== datos.ciudad.nombre) return [];
-  const palabras = sinTildes(texto).split(/\s+/).filter(Boolean);
-  return datos.lugares
-    .filter((lugar) => {
-      const donde = sinTildes(`${lugar.nombre} ${lugar.tipo} ${lugar.direccion}`);
-      return palabras.every((palabra) => donde.includes(palabra));
-    })
-    .slice(0, MAXIMO_RESULTADOS);
+  return api(`/lugares/buscar?q=${encodeURIComponent(texto)}&ciudadId=${ciudad.id}`);
 }
 
-// Lugares de una experiencia, en el orden del autor. Si no vienen en ella, se buscan por título.
+// Lugares persistidos en la experiencia, en el orden del autor.
 async function lugaresDe(experiencia) {
-  if (experiencia.lugares) return experiencia.lugares;
-  const porTitulo = await leerFicheroLugares('/datos/lugares-planes.json');
-  return Object.hasOwn(porTitulo, experiencia.titulo) ? porTitulo[experiencia.titulo] : [];
+  return experiencia.lugares ?? [];
 }
 
 // Ficha de un lugar: imagen, nombre, tipo, dirección y web. Los textos se ponen con textContent

@@ -81,10 +81,16 @@ async function abrirFormulario() {
     dialogo.close = jest.fn();
   }
   window.fetch = jest.fn((ruta) => {
-    if (ruta === '/datos/lugares-madrid.json') return respuesta(200, { ciudad: CIUDAD, lugares: [MAYOR, SOL] });
     if (ruta === '/api/perfil') return respuesta(200, { nombreUsuario: 'ana', ciudad: 'Madrid' });
     if (ruta === '/api/ciudades') return respuesta(200, [CIUDAD]);
     if (ruta === '/api/experiencias/opciones') return respuesta(200, { categorias: ['Cultura'], momentos: [] });
+    if (ruta.startsWith('/api/lugares/buscar?')) {
+      const consulta = new URL(ruta, 'http://localhost').searchParams.get('q').toLowerCase();
+      const resultados = [MAYOR, SOL].filter((lugar) =>
+        `${lugar.nombre} ${lugar.tipo} ${lugar.direccion}`.toLowerCase().includes(consulta)
+      );
+      return respuesta(200, resultados);
+    }
     return respuesta(200, { experiencias: [], siguiente: null });
   });
   cargarScripts([...COMUNES, 'js/shared/planes.js', 'js/cuenta/mis-planes.js']);

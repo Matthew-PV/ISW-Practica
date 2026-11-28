@@ -74,9 +74,30 @@ tarifa          Decimal? @db.Decimal(10, 2)
   autorId         Int?
   autor           Usuario?     @relation(fields: [autorId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   valoraciones    Valoracion[]
+  lugares         LugarExperiencia[]
 
   @@index([ciudadId])
   @@index([autorId])
+}
+
+// Ficha de catálogo copiada al plan, con nota y orden propios de esa experiencia.
+model LugarExperiencia {
+  id            Int         @id @default(autoincrement())
+  experienciaId Int
+  proveedorId   String      @db.VarChar(191)
+  nombre        String      @db.VarChar(191)
+  tipo          String      @db.VarChar(191)
+  direccion     String      @db.VarChar(512)
+  lat           Float
+  lon           Float
+  imagen        String?     @db.VarChar(2048)
+  web           String?     @db.VarChar(2048)
+  nota          String?     @db.VarChar(300)
+  orden         Int
+  experiencia   Experiencia @relation(fields: [experienciaId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([experienciaId, proveedorId])
+  @@unique([experienciaId, orden])
 }
 
 // Valoración de una experiencia por un usuario (CS-01). Cada usuario tiene como

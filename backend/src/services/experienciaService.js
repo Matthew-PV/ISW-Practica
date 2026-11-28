@@ -10,6 +10,8 @@
 //      services/shared/datosExperiencia.js (leer y validar los datos que llegan) y errores.js.
 const experienciaRepository = require('../repositories/experienciaRepository');
 const usuarioRepository = require('../repositories/usuarioRepository');
+const ciudadRepository = require('../repositories/ciudadRepository');
+const lugarService = require('./lugarService');
 const { puedeVerExperiencia, nivelesVisibles } = require('./shared/visibilidad');
 const { leerPaginacion, cortarPagina } = require('./shared/paginacion');
 const { leerId } = require('./shared/identificadores');
@@ -24,9 +26,17 @@ const { crearError } = require('../errores');
 // Devuelve la experiencia guardada, con su ciudad. Error 400 si los datos no son válidos.
 async function crearExperiencia(usuarioId, datos) {
   const datosValidados = await validarCreacion(datos);
+  if (datosValidados.lugares?.length) {
+    const ciudad = await ciudadRepository.buscarPorId(datosValidados.ciudadId);
+    if (!ciudad) throw crearError('La ciudad seleccionada ya no está disponible', 400);
+    datosValidados.lugares = lugarService.resolverLugares(datosValidados.lugares, ciudad);
+  }
   try {
     return await experienciaRepository.crear({ ...datosValidados, autorId: usuarioId });
   } catch (err) {
+    if (err.code === 'P2002') {
+      throw crearError('No puedes añadir el mismo lugar más de una vez', 400);
+    }
     // P2003: una ciudad o usuario desapareció entre la validación y el guardado.
     // Se mira cuál de los dos ha sido para dar el mensaje correcto.
     if (err.code === 'P2003') {
@@ -52,6 +62,18 @@ async function editarExperiencia(usuarioId, experienciaId, datos) {
   }
 
   const cambiosValidados = await validarEdicion(datos);
+  const lugaresEnviados = Object.hasOwn(cambiosValidados, 'lugares');
+  const ciudadIdDestino = cambiosValidados.ciudadId ?? experiencia.ciudadId;
+  const ciudadDestino = ciudadIdDestino === experiencia.ciudadId
+    ? experiencia.ciudad
+    : await ciudadRepository.buscarPorId(ciudadIdDestino);
+  if (!ciudadDestino) throw crearError('La ciudad seleccionada ya no está disponible', 400);
+
+  if (lugaresEnviados) {
+    cambiosValidados.lugares = lugarService.resolverLugares(cambiosValidados.lugares, ciudadDestino);
+  } else if (cambiosValidados.ciudadId !== undefined && experiencia.lugares?.length) {
+    lugarService.comprobarCompatibilidad(experiencia.lugares, ciudadDestino);
+  }
 
   try {
     return await experienciaRepository.actualizar(
@@ -66,6 +88,9 @@ async function editarExperiencia(usuarioId, experienciaId, datos) {
     // P2003: la ciudad nueva desapareció entre la validación y el guardado
     if (err.code === 'P2003') {
       throw crearError('La ciudad seleccionada ya no está disponible', 400);
+    }
+    if (err.code === 'P2002') {
+      throw crearError('No puedes añadir el mismo lugar más de una vez', 400);
     }
 
     throw err;

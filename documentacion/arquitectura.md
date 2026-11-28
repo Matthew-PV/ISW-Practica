@@ -168,11 +168,13 @@ flowchart LR
   subgraph Rutas
     experienciaR[experienciaRoutes]
     valoracionR[valoracionRoutes]
+    lugarR[lugarRoutes]
   end
   sesionM[sesionMiddleware]
   subgraph Servicios
     experienciaS[experienciaService]
     valoracionS[valoracionService]
+    lugarS[lugarService]
     amistadS[amistadService]
     subgraph serviciosShared["services/shared"]
       visibilidadSh[visibilidad]
@@ -184,6 +186,7 @@ flowchart LR
   subgraph Repositorios
     experienciaRep[experienciaRepository]
     valoracionRep[valoracionRepository]
+    lugarRep[lugarRepository]
     ciudadRep[ciudadRepository]
     usuarioRep[usuarioRepository]
   end
@@ -191,12 +194,16 @@ flowchart LR
   experienciaR & valoracionR --> sesionM
   experienciaR --> experienciaS
   valoracionR --> valoracionS
-  experienciaS --> experienciaRep & ciudadRep & usuarioRep & visibilidadSh & paginacionSh & idSh & fotoSh
+  lugarR --> lugarS
+  experienciaS --> experienciaRep & lugarS & ciudadRep & usuarioRep & visibilidadSh & paginacionSh & idSh & fotoSh
+  lugarS --> lugarRep & ciudadRep
   valoracionS --> experienciaS & valoracionRep & paginacionSh & idSh & fotoSh
   visibilidadSh --> amistadS
 ```
 
 `valoracionService` usa `experienciaService.obtenerExperiencia` para comprobar que la experiencia existe y se puede ver: la regla de acceso de CS-30 está en un solo sitio. Todos los repositorios de MySQL usan `repositories/shared/prisma.js`; `fotoRepository` habla con Cloudinary y `emailRepository` con el servidor de correo.
+
+En CS-50, `lugarRepository` es la única capa que lee el catálogo de demostración; `experienciaRepository` persiste las fichas, notas y orden de manera transaccional. `LugarExperiencia` pertenece a `Experiencia` y se elimina con ella. El catálogo está en `backend/data/lugares-madrid.json`; sustituirlo por un proveedor externo queda como ampliación futura.
 
 
 
@@ -273,6 +280,7 @@ El permiso se calcula en cada petición: si una experiencia pasa a privada o se 
 ISW-Practica/
 ├── backend/
 │   ├── data/capitales.json    # catálogo inicial de ciudades (npm run db:seed)
+│   ├── data/lugares-madrid.json # catálogo demo canónico de lugares
 │   ├── prisma/
 │   │   ├── schema.prisma      # esquema de la base de datos
 │   │   ├── migrations/        # migraciones generadas por Prisma

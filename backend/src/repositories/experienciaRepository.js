@@ -6,6 +6,45 @@ const prisma = require('./shared/prisma');
 const { USUARIO_PUBLICO } = require('./shared/camposPublicos');
 const { esAmigoDe } = require('./shared/condicionesAmistad');
 
+const INCLUIR_PLAN = {
+  ciudad: true,
+  lugares: {
+    orderBy: { orden: 'asc' },
+    select: {
+      id: true,
+      proveedorId: true,
+      nombre: true,
+      tipo: true,
+      direccion: true,
+      lat: true,
+      lon: true,
+      imagen: true,
+      web: true,
+      nota: true,
+    },
+  },
+};
+const INCLUIR_DETALLE = {
+  ...INCLUIR_PLAN,
+  autor: { select: USUARIO_PUBLICO },
+};
+
+function datosLugar(lugar, experienciaId, orden) {
+  return {
+    experienciaId,
+    proveedorId: lugar.proveedorId,
+    nombre: lugar.nombre,
+    tipo: lugar.tipo,
+    direccion: lugar.direccion,
+    lat: lugar.lat,
+    lon: lugar.lon,
+    imagen: lugar.imagen ?? null,
+    web: lugar.web ?? null,
+    nota: lugar.nota ?? null,
+    orden,
+  };
+}
+
 // Guarda una experiencia nueva y la devuelve junto con los datos de su ciudad.
 // Se nombran los campos uno a uno para que nunca se guarde nada que no esté en esta lista.
 // Si la ciudad o el autor no existen, Prisma lanza un error con código P2003.
@@ -20,20 +59,33 @@ async function crear({
   tarifa,
   visibilidad,
   autorId,
+  lugares = [],
 }) {
-  return prisma.experiencia.create({
-    data: {
-      titulo,
-      descripcion,
-      ciudadId,
-      tipo,
-      momentoAdecuado,
-      duracionMinutos,
-      tarifa,
-      visibilidad,
-      autorId,
-    },
-    include: { ciudad: true },
+  return prisma.$transaction(async (tx) => {
+    const creada = await tx.experiencia.create({
+      data: {
+        titulo,
+        descripcion,
+        ciudadId,
+        tipo,
+        momentoAdecuado,
+        duracionMinutos,
+        tarifa,
+        visibilidad,
+        autorId,
+      },
+    });
+
+    if (lugares.length) {
+      await tx.lugarExperiencia.createMany({
+        data: lugares.map((lugar, orden) => datosLugar(lugar, creada.id, orden)),
+      });
+    }
+
+    return tx.experiencia.findUnique({
+      where: { id: creada.id },
+      include: INCLUIR_PLAN,
+    });
   });
 }
 
@@ -43,19 +95,36 @@ async function crear({
 async function buscarPorId(id) {
   return prisma.experiencia.findUnique({
     where: { id },
-    include: {
-      ciudad: true,
-      autor: { select: USUARIO_PUBLICO },
-    },
+    include: INCLUIR_DETALLE,
   });
 }
 
 // Actualiza una experiencia existente.
 async function actualizar(id, datos) {
-  return prisma.experiencia.update({
-    where: { id },
-    data: datos,
-    include: { ciudad: true },
+  const { lugares, ...cambios } = datos;
+  const sustituirLugares = Object.hasOwn(datos, 'lugares');
+
+  return prisma.$transaction(async (tx) => {
+    if (Object.keys(cambios).length) {
+      await tx.experiencia.update({
+        where: { id },
+        data: cambios,
+      });
+    }
+
+    if (sustituirLugares) {
+      await tx.lugarExperiencia.deleteMany({ where: { experienciaId: id } });
+      if (lugares.length) {
+        await tx.lugarExperiencia.createMany({
+          data: lugares.map((lugar, orden) => datosLugar(lugar, id, orden)),
+        });
+      }
+    }
+
+    return tx.experiencia.findUnique({
+      where: { id },
+      include: INCLUIR_PLAN,
+    });
   });
 }
 

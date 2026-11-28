@@ -35,7 +35,7 @@ const GRAN_VIA = lugar('g', 'Gran Vía', { tipo: 'Calle' });
 const TRAMPA = lugar('t', '<img src=x onerror=alert(1)>', { web: 'javascript:alert(1)' });
 
 const DATOS = { ciudad: { nombre: 'Madrid', pais: 'España' }, lugares: [PALACIO, GRAN_VIA, TRAMPA] };
-const DE_PLANES = { 'Paseo por el centro': [{ ...GRAN_VIA, id: 1, nota: 'De noche' }] };
+const LUGARES_GUARDADOS = [{ ...GRAN_VIA, id: 1, orden: 0, nota: 'De noche' }];
 
 const PLAN = {
   id: 10,
@@ -62,7 +62,7 @@ const resultados = () => $$('#resultados-lugares .ficha-lugar');
 const elegidos = () => $$('#lugares-elegidos .ficha-lugar');
 const nombres = (fichas) => fichas.map((ficha) => ficha.querySelector('.ficha-lugar-nombre').textContent);
 
-async function abrir({ fallaPlanes = false } = {}) {
+async function abrir({ fallaDetalle = false } = {}) {
   window.history.replaceState({}, '', '/paginas/cuenta/mis-planes.html');
   document.documentElement.innerHTML = HTML;
   for (const dialogo of document.querySelectorAll('dialog')) {
@@ -70,14 +70,33 @@ async function abrir({ fallaPlanes = false } = {}) {
     dialogo.close = jest.fn(() => { dialogo.open = false; });
   }
   window.fetch = jest.fn((ruta, opciones = {}) => {
-    if (ruta === '/datos/lugares-madrid.json') return respuesta(200, DATOS);
-    if (ruta === '/datos/lugares-planes.json') return fallaPlanes ? respuesta(500, null) : respuesta(200, DE_PLANES);
     if (ruta === '/api/perfil') return respuesta(200, { nombreUsuario: 'ana', ciudad: 'Madrid' });
     if (ruta === '/api/ciudades') return respuesta(200, CIUDADES);
     if (ruta === '/api/experiencias/opciones') return respuesta(200, { categorias: ['Cultura'], momentos: [] });
     if (ruta === '/api/experiencias?autor=ana') return respuesta(200, { experiencias: [PLAN], siguiente: null });
-    if (ruta === '/api/experiencias/10') return respuesta(200, { ...PLAN, ...JSON.parse(opciones.body) });
+    if (ruta === '/api/experiencias/10' && !opciones.method) {
+      return fallaDetalle
+        ? respuesta(500, { error: 'No se han podido cargar los lugares.' })
+        : respuesta(200, { ...PLAN, lugares: LUGARES_GUARDADOS });
+    }
+    if (ruta === '/api/experiencias/10' && opciones.method === 'PATCH') {
+      return respuesta(200, { ...PLAN, ...JSON.parse(opciones.body) });
+    }
     if (ruta === '/api/experiencias') return respuesta(201, { ...PLAN, id: 99 });
+    if (ruta.startsWith('/api/lugares/buscar?')) {
+      const consulta = new URL(ruta, 'http://localhost').searchParams;
+      const texto = consulta.get('q').normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+      const ciudadId = consulta.get('ciudadId');
+      const palabras = texto.split(/\s+/).filter(Boolean);
+      const encontrados = ciudadId === '3'
+        ? DATOS.lugares.filter((lugar) => {
+          const datos = `${lugar.nombre} ${lugar.tipo} ${lugar.direccion}`
+            .normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase();
+          return palabras.every((palabra) => datos.includes(palabra));
+        })
+        : [];
+      return respuesta(200, encontrados.slice(0, 10));
+    }
     throw new Error(`Petición inesperada: ${ruta}`);
   });
   cargarScripts(SCRIPTS);
@@ -126,6 +145,15 @@ describe('CS-50: buscar lugares', () => {
 
     expect(nombres(resultados())).toEqual(['Gran Vía']);
     expect(resultados()[0].textContent).toContain('Calle · Calle de Gran Vía');
+  });
+
+  test('consulta el catálogo del backend con el identificador de ciudad', async () => {
+    await buscar('gran via');
+
+    expect(window.fetch.mock.calls.map(([ruta]) => ruta)).toContain(
+      '/api/lugares/buscar?q=gran%20via&ciudadId=3'
+    );
+    expect(window.fetch.mock.calls.map(([ruta]) => ruta).some((ruta) => ruta.startsWith('/datos/'))).toBe(false);
   });
 
   test('la ficha lleva imagen y enlace a la web cuando el lugar los tiene', async () => {
@@ -260,12 +288,21 @@ describe('CS-50: sin lugares y al editar', () => {
   });
 
   test('si no se pueden cargar, avisa y guarda el plan sin tocar sus lugares', async () => {
-    await abrir({ fallaPlanes: true });
+    await abrir({ fallaDetalle: true });
     await editarPlan();
 
     expect($('#mensaje-lugares').textContent).toBe('No se han podido cargar los lugares.');
     expect($('#boton-buscar-lugar').disabled).toBe(true);
     await enviar();
+    expect(cuerpo()).not.toHaveProperty('lugares');
+  });
+
+  test('editar otros campos sin tocar lugares omite la lista en PATCH', async () => {
+    await abrir();
+    await editarPlan();
+    escribir('#titulo', 'Título actualizado');
+    await enviar();
+
     expect(cuerpo()).not.toHaveProperty('lugares');
   });
 });

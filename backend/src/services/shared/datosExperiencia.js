@@ -9,6 +9,7 @@
 // datos malos se rechaza sin tocar la base de datos.
 const ciudadRepository = require('../../repositories/ciudadRepository');
 const { CATEGORIAS, MOMENTOS } = require('./opcionesExperiencia');
+const { leerListaLugares } = require('./datosLugares');
 const { crearError } = require('../../errores');
 
 const TEXTO_CORTO_MAX = 191; // Columnas VARCHAR(191) de MySQL.
@@ -178,6 +179,9 @@ async function validarCreacion(datos) {
     if (datos[campo] === undefined && CAMPOS_SOLO_SI_LLEGAN.includes(campo)) continue;
     experiencia[campo] = leer(datos[campo]);
   }
+  if (datos.lugares !== undefined) {
+    experiencia.lugares = leerListaLugares(datos.lugares);
+  }
   experiencia.ciudadId = await leerCiudadId(datos.ciudadId);
   return experiencia;
 }
@@ -196,6 +200,10 @@ async function validarEdicion(datos) {
     if (datos[campo] !== undefined) {
       cambios[campo] = leer(datos[campo]);
     }
+  }
+
+  if (datos.lugares !== undefined) {
+    cambios.lugares = leerListaLugares(datos.lugares);
   }
 
   if (datos.ciudadId !== undefined) {

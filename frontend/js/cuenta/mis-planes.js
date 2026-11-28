@@ -314,9 +314,12 @@ async function prepararLugares(experiencia) {
   activarBuscador(!experiencia);
   if (!experiencia) return;
   try {
-    const lugares = await lugaresDe(experiencia);
+    const detalle = Array.isArray(experiencia.lugares)
+      ? experiencia
+      : await api(`/experiencias/${experiencia.id}`);
+    const lugares = await lugaresDe(detalle);
     if (carga !== cargaLugares) return;
-    lugaresElegidos = lugares.map(({ id, ...lugar }) => ({ ...lugar, nota: lugar.nota ?? '' }));
+    lugaresElegidos = lugares.map(({ id, orden, ...lugar }) => ({ ...lugar, nota: lugar.nota ?? '' }));
     lugaresIniciales = JSON.stringify(lugaresElegidos);
     ciudadLugares = ciudades.find((ciudad) => ciudad.id === experiencia.ciudadId) ?? null;
     pintarElegidos();
@@ -503,7 +506,8 @@ formulario.addEventListener('submit', async (e) => {
     campoCiudad.focus();
     return;
   }
-  if (lugaresElegidos && (editando || lugaresElegidos.length)) {
+  const lugaresCambiaron = JSON.stringify(lugaresElegidos) !== lugaresIniciales;
+  if (lugaresElegidos && (!editando ? lugaresElegidos.length > 0 : lugaresCambiaron)) {
     datos.lugares = lugaresElegidos.map((lugar) => ({ ...lugar, nota: lugar.nota.trim() }));
   }
 

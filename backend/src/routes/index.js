@@ -29,6 +29,7 @@ const usuarioRoutes = require('./usuarioRoutes');
 const amistadRoutes = require('./amistadRoutes');
 const seguimientoRoutes = require('./seguimientoRoutes');
 const valoracionRoutes = require('./valoracionRoutes');
+const lugarRoutes = require('./lugarRoutes');
 
 const router = express.Router();
 
@@ -36,6 +37,7 @@ router.use('/auth', authRoutes); // /api/auth/...: registro, login, logout, usua
 router.use('/perfil', perfilRoutes); // /api/perfil/...: consultar y editar el perfil propio
 router.use('/experiencias', experienciaRoutes); // /api/experiencias/...: listar, leer, crear y editar experiencias
 router.use('/ciudades', ciudadRoutes); // /api/ciudades: catálogo de ciudades
+router.use('/lugares', lugarRoutes); // /api/lugares/buscar: catálogo demo para los lugares de un plan
 router.use('/usuarios', usuarioRoutes); // /api/usuarios: búsqueda y perfil público de otro usuario
 router.use('/amistades', amistadRoutes); // /api/amistades: solicitudes y amistades
 router.use('/seguimientos', seguimientoRoutes); // /api/seguimientos: seguir y dejar de seguir

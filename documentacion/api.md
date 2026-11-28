@@ -50,6 +50,7 @@
 | [`GET /api/experiencias/:id/valoraciones/amigos`](#get-apiexperienciasidvaloracionesamigos) | sí | Las de amigos y seguidores | CS-48 |
 | [`GET /api/experiencias/:id/resumen`](#get-apiexperienciasidresumen) | sí | Resumen de las valoraciones | CS-14 |
 | [`GET /api/ciudades`](#get-apiciudades) | no | Catálogo de ciudades | CS-49 |
+| [`GET /api/lugares/buscar`](#get-apilugaresbuscar) | no | Buscar en el catálogo demo de lugares | CS-50 |
 | [`GET /api/usuarios?texto=`](#get-apiusuariostexto) | sí | Buscar personas | CS-61 |
 | [`GET /api/usuarios/:nombreUsuario`](#get-apiusuariosnombreusuario) | sí | Perfil de otro usuario | CS-62 |
 | [`POST /api/amistades`](#post-apiamistades) | sí | Enviar una solicitud | CS-61 |
@@ -217,15 +218,16 @@ Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, p
 
 `experienciaService.obtenerExperiencia`.
 
-* **Responde:** 200 con la experiencia y `autor: { id, nombreUsuario, foto }` (`null` en las antiguas sin autor).
+* **Responde:** 200 con la experiencia, `autor: { id, nombreUsuario, foto }` (`null` en las antiguas sin autor) y `lugares`, una lista en el orden elegido por el autor. Cada lugar incluye `id`, `proveedorId`, `nombre`, `tipo`, `direccion`, `lat`, `lon`, `imagen`, `web` y `nota`; imagen, web y nota pueden ser `null`.
 * **Errores:** 404 «Contenido no disponible». Ver [F5](flujos.md#f5-abrir-una-experiencia).
 
 ### `POST /api/experiencias`
 
 `experienciaService.crearExperiencia`.
 
-* **Cuerpo:** `{ titulo, descripcion, ciudadId, tipo?, momentoAdecuado?, duracionMinutos?, tarifa?, visibilidad? }`. `ciudadId` debe ser un número, no un texto; `duracionMinutos` es un entero positivo y `tarifa` un importe no negativo con hasta dos decimales (número o texto, admite coma), vacío = sin especificar; `visibilidad` es PUBLICA si no llega (al editar, `null` da 400). Otros campos, como `autorId`, se ignoran.
-* **Responde:** 201 con la experiencia creada y su ciudad. El autor es el usuario de la sesión.
+* **Cuerpo:** `{ titulo, descripcion, ciudadId, tipo?, momentoAdecuado?, duracionMinutos?, tarifa?, visibilidad?, lugares? }`. `ciudadId` debe ser un número, no un texto; `duracionMinutos` es un entero positivo y `tarifa` un importe no negativo con hasta dos decimales (número o texto, admite coma), vacío = sin especificar; `visibilidad` es PUBLICA si no llega (al editar, `null` da 400). En creación, omitir `lugares` o enviar `[]` crea el plan sin lugares. Otros campos, como `autorId`, se ignoran.
+* **Lugares:** como máximo 20 objetos `{ proveedorId, nombre, tipo, direccion, lat, lon, imagen?, web?, nota? }`. Nombre, tipo, dirección, coordenadas e identificador son obligatorios; `lat` y `lon` deben estar en sus rangos geográficos; imagen, web y nota son opcionales. La nota admite hasta 300 caracteres. Imagen y web, si llegan, deben ser URLs HTTP(S). No se repiten identificadores. El servidor comprueba `proveedorId` y la ciudad contra el catálogo canónico; guarda la ficha del catálogo, no la ficha editable del navegador. La operación completa es atómica.
+* **Responde:** 201 con la experiencia creada, su ciudad y los lugares en orden. El autor es el usuario de la sesión.
 * **Errores 400:**
   * «Los datos del plan deben ser un objeto».
   * «El título es obligatorio», «La descripción es obligatoria», «... debe ser un texto».
@@ -234,16 +236,30 @@ Una experiencia es `{ id, titulo, descripcion, ciudadId, ciudad: { id, nombre, p
   * «La descripción es demasiado larga (máximo 65535 bytes en UTF-8)».
   * «La visibilidad debe ser una de: PRIVADA, AMIGOS o PUBLICA».
   * «Debes indicar una ciudad con un identificador entero positivo válido», «La ciudad seleccionada no existe», «La ciudad seleccionada ya no está disponible».
+  * «Los lugares deben enviarse como una lista», errores de campos, coordenadas, nota o URL, «No puedes añadir el mismo lugar más de una vez», «El lugar seleccionado no está en el catálogo», «Los lugares deben pertenecer a la ciudad del plan».
 * **Notas:** los textos se guardan sin espacios exteriores y normalizados (NFC). Ver [F4](flujos.md#f4-crear-y-editar-una-experiencia).
 
 ### `PATCH /api/experiencias/:id`
 
 `experienciaService.editarExperiencia`.
 
-* **Cuerpo:** los mismos campos que al crearla; solo cambian los que llegan, con las mismas reglas.
-* **Responde:** 200 con la experiencia actualizada.
+* **Cuerpo:** los mismos campos que al crearla; solo cambian los que llegan, con las mismas reglas. Omitir `lugares` conserva la lista actual; `lugares: []` la vacía; una lista la sustituye completa y fija el nuevo orden. Cambiar la ciudad sin enviar lugares solo se permite si los actuales siguen siendo compatibles; para retirar lugares incompatibles hay que enviar `[]` en la misma petición.
+* **Responde:** 200 con la experiencia actualizada, incluidos los lugares ordenados.
 * **Errores:** los 400 de la creación y «Debes indicar al menos un campo para modificar»; 403 «No puedes editar un plan de otro usuario» (solo si la ve); 404 «Contenido no disponible» si no existe o no la puede ver, o «El plan ya no existe» (se borró mientras tanto).
-* **Notas:** a diferencia de la lectura, la edición distingue entre «no existe» y «no es tuya». La pantalla solo ofrece «Editar» en las experiencias propias.
+* **Notas:** el cambio del plan y la lista de lugares se guarda en una transacción. A diferencia de la lectura, la edición distingue entre «no existe» y «no es tuya». La pantalla solo ofrece «Editar» en las experiencias propias.
+
+## Lugares (`lugarRoutes.js` → `lugarService`)
+
+El catálogo de demostración se mantiene en el backend. Actualmente solo contiene lugares de Madrid (España); las ciudades válidas sin catálogo responden con una lista vacía. La ficha persistida se obtiene del repositorio del catálogo por `proveedorId`.
+
+### `GET /api/lugares/buscar`
+
+`lugarService.buscar` · Sesión: no.
+
+* **Parámetros obligatorios:** `q` (texto de hasta 191 caracteres) y `ciudadId` (entero positivo).
+* **Responde:** 200 con hasta 10 fichas `{ proveedorId, nombre, tipo, direccion, lat, lon, imagen, web }`. La búsqueda compara todas las palabras con nombre, tipo y dirección, sin distinguir mayúsculas ni tildes.
+* **Errores 400:** búsqueda vacía o demasiado larga, `ciudadId` no válido o ciudad inexistente.
+* **Caché:** una hora (`Cache-Control`).
 
 ## Valoraciones (`valoracionRoutes.js` → `valoracionService`)
 

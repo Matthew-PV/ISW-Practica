@@ -12,9 +12,19 @@ const usuarioRepository = require('../../src/repositories/usuarioRepository');
 const ciudadRepository = require('../../src/repositories/ciudadRepository');
 const experienciaRepository = require('../../src/repositories/experienciaRepository');
 
-const MADRID = { id: 1, nombre: 'Madrid' };
-const PARIS = { id: 2, nombre: 'Paris' };
+const MADRID = { id: 1, nombre: 'Madrid', pais: 'España' };
+const PARIS = { id: 2, nombre: 'Paris', pais: 'Francia' };
 const CIUDADES = { 1: MADRID, 2: PARIS };
+const GRAN_VIA = {
+  proveedorId: 'demo-gran-via',
+  nombre: 'Gran Vía',
+  tipo: 'Calle',
+  direccion: 'Gran Vía',
+  lat: 40.42,
+  lon: -3.70361,
+  imagen: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/MADRID_100206_UDCI_019.jpg/330px-MADRID_100206_UDCI_019.jpg',
+  web: null,
+};
 let usuario;
 // La experiencia «guardada»: la leen buscarPorId y la cambia actualizar
 let guardada;
@@ -180,5 +190,90 @@ describe('Objetivo 7 - los cambios sustituyen a los datos anteriores', () => {
     expect(res.body.error).toBe('La ciudad seleccionada no existe');
     expect(experienciaRepository.actualizar).not.toHaveBeenCalled();
     expect(guardada).toEqual(antes);
+  });
+
+  test('enviar lugares sustituye la lista y normaliza la nota', async () => {
+    guardada.lugares = [{ id: 20, ...GRAN_VIA, nota: 'Anterior', orden: 0 }];
+    const agente = await agenteConSesion();
+
+    const res = await agente.patch('/api/experiencias/10').send({
+      lugares: [{ ...GRAN_VIA, nombre: 'Ficha manipulada', nota: '  Nueva nota  ' }],
+    });
+
+    expect(res.status).toBe(200);
+    expect(experienciaRepository.actualizar).toHaveBeenCalledWith(10, {
+      lugares: [{ ...GRAN_VIA, nota: 'Nueva nota' }],
+    });
+    expect(res.body.lugares).toEqual([{ ...GRAN_VIA, nota: 'Nueva nota' }]);
+  });
+
+  test('enviar una lista vacía vacía los lugares', async () => {
+    guardada.lugares = [{ id: 20, ...GRAN_VIA, nota: 'Anterior', orden: 0 }];
+    const agente = await agenteConSesion();
+
+    const res = await agente.patch('/api/experiencias/10').send({ lugares: [] });
+
+    expect(res.status).toBe(200);
+    expect(experienciaRepository.actualizar).toHaveBeenCalledWith(10, { lugares: [] });
+    expect(res.body.lugares).toEqual([]);
+  });
+
+  test('omitir lugares conserva los actuales al cambiar otros campos', async () => {
+    guardada.lugares = [{ id: 20, ...GRAN_VIA, nota: 'Anterior', orden: 0 }];
+    const agente = await agenteConSesion();
+
+    const res = await agente.patch('/api/experiencias/10').send({ titulo: 'Nuevo título' });
+
+    expect(res.status).toBe(200);
+    expect(experienciaRepository.actualizar).toHaveBeenCalledWith(10, { titulo: 'Nuevo título' });
+    expect(res.body.lugares).toEqual([{ id: 20, ...GRAN_VIA, nota: 'Anterior', orden: 0 }]);
+  });
+
+  test('rechaza cambiar la ciudad si se conservarían lugares incompatibles', async () => {
+    guardada.lugares = [{ id: 20, ...GRAN_VIA, nota: null, orden: 0 }];
+    const agente = await agenteConSesion();
+
+    const res = await agente.patch('/api/experiencias/10').send({ ciudadId: 2 });
+
+    expect(res.status).toBe(400);
+    expect(experienciaRepository.actualizar).not.toHaveBeenCalled();
+    expect(guardada.ciudadId).toBe(1);
+  });
+
+  test('rechaza un identificador de catálogo desconocido sin guardar otros cambios', async () => {
+    const agente = await agenteConSesion();
+
+    const res = await agente.patch('/api/experiencias/10').send({
+      titulo: 'Título que no debe guardarse',
+      lugares: [{ ...GRAN_VIA, proveedorId: 'demo-inexistente', nota: null }],
+    });
+
+    expect(res.status).toBe(400);
+    expect(experienciaRepository.actualizar).not.toHaveBeenCalled();
+    expect(guardada.titulo).toBe('Tarde cultural');
+  });
+
+  test('traduce un conflicto de unicidad de Prisma a 400 sin error interno', async () => {
+    experienciaRepository.actualizar.mockRejectedValue({ code: 'P2002' });
+    const agente = await agenteConSesion();
+
+    const res = await agente.patch('/api/experiencias/10').send({
+      lugares: [{ ...GRAN_VIA, nota: null }],
+    });
+
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('No puedes añadir el mismo lugar más de una vez');
+  });
+
+  test('cambiar ciudad junto con [] permite quitar lugares incompatibles en la misma operación', async () => {
+    guardada.lugares = [{ id: 20, ...GRAN_VIA, nota: null, orden: 0 }];
+    const agente = await agenteConSesion();
+
+    const res = await agente.patch('/api/experiencias/10').send({ ciudadId: 2, lugares: [] });
+
+    expect(res.status).toBe(200);
+    expect(experienciaRepository.actualizar).toHaveBeenCalledWith(10, { ciudadId: 2, lugares: [] });
+    expect(res.body.lugares).toEqual([]);
+    expect(res.body.ciudad).toEqual(PARIS);
   });
 });

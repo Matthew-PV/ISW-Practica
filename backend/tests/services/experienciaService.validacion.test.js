@@ -50,6 +50,7 @@ describe('CS-49: rechazar datos incorrectos antes de consultar la ciudad', () =>
     });
     expect(ciudadRepository.buscarPorId).not.toHaveBeenCalled();
   });
+
 });
 
 test('CS-49: rechaza una ciudad que no está registrada', async () => {
@@ -103,6 +104,63 @@ test('acepta los límites de caracteres y bytes de MySQL', async () => {
     visibilidad: 'PUBLICA',
   };
   await expect(validarCreacion(datos)).resolves.toEqual({ ...datos, tipo: null, momentoAdecuado: null });
+});
+
+describe('CS-50: validar lugares de la experiencia', () => {
+  const lugarValido = {
+    proveedorId: 'demo-plaza-mayor',
+    nombre: 'Plaza Mayor',
+    tipo: 'Plaza',
+    direccion: 'Plaza Mayor',
+    lat: 40.415456,
+    lon: -3.707381,
+    imagen: null,
+    web: null,
+    nota: 'Punto de encuentro',
+  };
+
+  test.each([
+    ['la lista no es un array', { lugares: {} }],
+    ['falta el identificador', { lugares: [{ ...lugarValido, proveedorId: '' }] }],
+    ['falta el nombre', { lugares: [{ ...lugarValido, nombre: '' }] }],
+    ['falta el tipo', { lugares: [{ ...lugarValido, tipo: '' }] }],
+    ['falta la dirección', { lugares: [{ ...lugarValido, direccion: '' }] }],
+    ['la latitud no es numérica', { lugares: [{ ...lugarValido, lat: '40.4' }] }],
+    ['la longitud está fuera de rango', { lugares: [{ ...lugarValido, lon: 181 }] }],
+    ['la web no usa HTTP(S)', { lugares: [{ ...lugarValido, web: 'javascript:alert(1)' }] }],
+    ['la imagen no usa HTTP(S)', { lugares: [{ ...lugarValido, imagen: '//images.example/lugar.jpg' }] }],
+    ['la nota supera 300 caracteres', { lugares: [{ ...lugarValido, nota: '😀'.repeat(301) }] }],
+    ['hay identificadores duplicados', { lugares: [lugarValido, lugarValido] }],
+    ['hay más de 20 lugares', {
+      lugares: Array.from({ length: 21 }, (_, i) => ({ ...lugarValido, proveedorId: `demo-${i}` })),
+    }],
+  ])('rechaza cuando %s antes de consultar la ciudad', async (_caso, cambios) => {
+    await expect(validarCreacion({ ...VALIDA, ...cambios })).rejects.toMatchObject({
+      status: 400,
+      message: expect.any(String),
+    });
+    expect(ciudadRepository.buscarPorId).not.toHaveBeenCalled();
+  });
+
+  test('acepta 20 lugares, una nota de 300 caracteres y coordenadas en los extremos', async () => {
+    const lugares = Array.from({ length: 20 }, (_, i) => ({
+      ...lugarValido,
+      proveedorId: `demo-${i}`,
+      nota: 'n'.repeat(300),
+      lat: i === 0 ? -90 : 90,
+      lon: i === 0 ? -180 : 180,
+      web: 'https://example.com/lugar',
+    }));
+
+    const resultado = await validarCreacion({ ...VALIDA, lugares });
+
+    expect(resultado.lugares).toHaveLength(20);
+    expect(resultado.lugares[0]).toEqual({ proveedorId: 'demo-0', nota: 'n'.repeat(300) });
+  });
+
+  test('crear con una lista vacía produce una lista validada sin lugares', async () => {
+    await expect(validarCreacion({ ...VALIDA, lugares: [] })).resolves.toMatchObject({ lugares: [] });
+  });
 });
 
 test('un fallo de base de datos no se presenta como ciudad inexistente', async () => {
