@@ -101,19 +101,25 @@ function guardarEnUrl() {
   window.history.replaceState(window.history.state, '', `${window.location.pathname}${consulta ? `?${consulta}` : ''}`);
 }
 
+// CS-74: el nombre de la ciudad elegida en el desplegable, o null con «Todas»
+function nombreCiudadElegida() {
+  return campoCiudad.value ? campoCiudad.selectedOptions[0].dataset.nombre : null;
+}
+
 // Con una ciudad elegida, el título la nombra (CS-74). Las tiras y la búsqueda conservan el suyo
 function titularPorCiudad() {
   if (TITULOS_TIRA[parametros.get('tira')] || texto) return;
-  const nombre = campoCiudad.value && campoCiudad.selectedOptions[0].dataset.nombre;
-  document.getElementById('titulo-explorar').textContent = nombre ? `Planes en ${nombre}` : 'Explorar';
+  const ciudad = nombreCiudadElegida();
+  document.getElementById('titulo-explorar').textContent = ciudad ? `Planes en ${ciudad}` : 'Explorar';
 }
 
 // CS-74: si la ciudad es el único filtro, el aviso de vacío la nombra
 function explicarVacio() {
   const otrosFiltros = texto || categoria || campoAmigos.checked
     || [campoMomento, campoTarifa, campoDuracion, campoMinimo].some((campo) => campo.value);
-  avisoVacio.textContent = campoCiudad.value && !otrosFiltros
-    ? `Todavía no hay planes en ${campoCiudad.selectedOptions[0].dataset.nombre}.`
+  const ciudad = nombreCiudadElegida();
+  avisoVacio.textContent = ciudad && !otrosFiltros
+    ? `Todavía no hay planes en ${ciudad}.`
     : 'No hay planes con estos filtros.';
 }
 

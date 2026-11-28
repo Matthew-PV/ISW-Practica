@@ -6,6 +6,21 @@ Las interacciones siguientes proceden de la conversación con Claude Code de los
 
 **Pendiente:** añadir, si se conservan los prompts, las interacciones de las primeras tareas de FLA05 (consulta del perfil propio, su prueba, edición del perfil y primera versión de la pantalla «Mi perfil»), realizadas entre el 28 de septiembre y el 1 de octubre.
 
+## 2026-11-28 — Refactorizar el trabajo propio sin cambiar la funcionalidad
+
+- **Historia u objetivo:** repaso de CS-10, CS-62 y CS-74.
+- **Agente/herramienta:** Claude Code; Claude Sonnet 5.5.
+- **Prompt inicial:** (extracto)
+
+  > vamos a pasar a hacer otra cosa quiero que analices todo lo que he hecho y quiero que limpies y lo refactorices si es necesario, quiero que sea un código optimo sin cambiar la funcionalidad de nada de mis compañeros además comprueba lo de cucumber y como lo estamos aplicando y si puedes usarlo para mi parte hazlo antes de todo dime todo lo que podríamos cambiar y empezamos
+
+- **Correcciones relevantes:**
+
+  > Solo hacemos cosas mias no de otras por ahora no tocamos cucumber solo mi parte sin afectar a otros
+
+- **Qué aceptó, cambió o rechazó la persona:** pidió ver la lista antes de cambiar nada, limitó el trabajo a su propio código y dejó Cucumber para más adelante.
+- **Commit:** el que incluye esta entrada y los siguientes del mismo repaso.
+
 ## 2026-11-26 — CS-74: página de ciudad
 
 - **Historia u objetivo:** CS-74, sus tres objetivos.
